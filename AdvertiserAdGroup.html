@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beacon - Ad Groups</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./assets/toast.css">
+  <script src="./assets/campaignConfig.js" defer></script>
+  <script src="./assets/notifications.js"></script>
+  <script src="./assets/toast.js" defer></script>
+  <script src="./assets/sidebar.js" defer></script>
+  <link rel="stylesheet" href="./assets/theme.css"><!-- ADD -->
+  <link rel="stylesheet" href="./assets/loading.css">
+  <script src="./assets/loading.js" defer></script>
+  <style>
+    body { font-family: 'apple-system', 'Segoe UI', 'Roboto', 'Inter', sans-serif; }
+
+    /* Search component styles */
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border-radius: 0.375rem;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      height: 40px;
+      width: 50px;
+      overflow: hidden;
+    }
+
+    .search-wrapper.expanded {
+      width: 300px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 5px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease;
+    }
+
+    .search-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #666;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 8px 40px 8px 40px;
+      font-size: 14px;
+      color: #333;
+      opacity: 0;
+      transition: opacity 0.2s ease 0.1s;
+    }
+
+    .search-input::placeholder {
+      color: #999;
+    }
+
+    .search-wrapper.expanded .search-input {
+      opacity: 1;
+      background-color: white;
+      height: 80%;
+      border: #c5c4c4 1px solid;
+      border-radius: .375rem;
+    }
+
+    .clear-button {
+      position: absolute;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      z-index: 2;
+    }
+
+    .clear-button svg {
+      width: 100%;
+      height: 100%;
+      fill: #666;
+    }
+
+    .clear-button:hover svg {
+      fill: #333;
+    }
+
+    .clear-button.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
+</head>
+
+<body class="font-inter">
+  <div class="flex h-screen flex-col">
+    <!-- Header -->
+    <header class="border-b border-strong shadow-sm app-header">
+      <div class="flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-3">
+          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+        </div>
+
+        <nav class="flex items-center gap-3 ml-auto">
+            <a href="./WFAdvertiserList.html" class="text-base text-white hover:text-blue-100" style="font-size: 1.5rem; padding-right: 15px;" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
+            Advertisers
+            </a>
+          <span class="text-white select-none">|</span>
+
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notificationButton" class="p-2 rounded-md  text-white relative" title="Notifications" aria-label="View notifications" onmouseover="this.style.backgroundColor=''" onmouseout="this.style.backgroundColor=''" >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+              <div class="p-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                  <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                </div>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div id="notificationList">
+                  <!-- Sample items -->
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">Campaign Performance Alert</p>
+                        <p class="text-xs text-gray-500 mt-1">"Summer Sale" exceeded budget by 15%</p>
+                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">New Advertiser Added</p>
+                        <p class="text-xs text-gray-500 mt-1">Stallion Services LLC onboarded</p>
+                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="true">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-700">Account Sync Complete</p>
+                        <p class="text-xs text-gray-500 mt-1">CRM sync finished for 12 accounts</p>
+                        <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waffle Menu -->
+          <div class="relative">
+            <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+              </svg>
+            </button>
+            <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+          <div class="flex items-center gap-3">
+            <img src="./assets/advertiser.png" alt="Advertiser" class="w-9 h-9 rounded-full" data-sidebar-avatar />
+            <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Advertiser</h2>
+          </div>
+          <button id="sidebarToggle" class="p-1 rounded hover:bg-gray-100" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse/Expand">
+            <!-- Shown when expanded (collapse icon) -->
+            <svg id="iconCollapse" class="w-5 h-5 text-gray-900" viewBox="0 0 26 26" fill="currentColor">
+              <path fill="#000000" d="M21.5 11.5h-8.793l3.035-3.035a.5.5 0 10-.707-.707l-3.888 3.888a.518.518 0 00-.109.163.505.505 0 000 .382.518.518 0 00.109.163l3.888 3.888a.5.5 0 00.707-.707L12.707 12.5H21.5a.5.5 0 000-1zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z">
+	            </path>
+            </svg>
+            <!-- Shown when collapsed (expand icon) -->
+            <svg id="iconExpand" class="w-5 h-5 text-gray-900 hidden" viewBox="0 0 26 26" fill="currentColor">
+              <path fill="#000000" d="M21.962 12.191a.505.505 0 000-.382.518.518 0 00-.109-.163l-3.888-3.888a.5.5 0 10-.707.707l3.035 3.035H11.5a.5.5 0 000 1h8.793l-3.035 3.035a.5.5 0 10.707.707l3.888-3.888a.518.518 0 00.109-.163zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z">
+	            </path>
+            </svg>
+          </button>
+        </div>
+
+        <ul class="space-y-1 mt-4">
+          <li>
+            <a href="./WFAdvertiserDetails.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+              <span data-link-label>Details</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserSalesOrder.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
+              <span data-link-label>Sales Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="./WFAdvertiserConnections.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+              <span data-link-label>Connections (P2)</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserCampaigns.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
+              <span data-link-label>Campaigns</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserAdGroup.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
+              <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
+              <span data-link-label>Ad Groups</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <div class="app-card rounded-lg shadow-lg overflow-hidden">
+          <!-- Advertiser Header -->
+          <div class="px-4 pt-4">
+            <div class="flex items-start gap-4 mb-3">
+              <div class="flex-1">
+                <h1 data-bind="adv.name" class="text-xl md:text-2xl font-semibold text-gray-900">Loading…</h1>
+                <div class="flex justify-between items-center">
+                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                </div>
+              </div>
+            </div>
+            <hr class="app-divider mp-4">
+          </div>
+
+          <!-- Page Header-->
+          <div class="px-4 pt-5">
+            <section class="space-y-2">
+              <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-semibold text-gray-900 mx-2">AD GROUPS</h1>
+              </div>
+            </section>
+          </div>
+          
+          <!-- Toolbar -->
+          <div class="px-6 py-3">
+            <div class="mb-4">
+              <div class="flex items-center space-x-3  bg-[var(--tbl-head-bg)] border border-gray-300 rounded-md">
+                <!-- New Ad Group Button -->
+                <button id="createBtn" class="flex items-center h-10 px-3 rounded-md hover:bg-gray-50 transition" title="Create New Ad Group">
+                  <span class="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-gray-400 mr-2">
+                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                  </span>
+                  <span class="text-sm font-medium text-gray-700">New Ad Group</span>
+                </button>
+
+                <div class="h-6 border-l border-gray-300 mx-1"></div>
+
+                <!-- Filters -->
+                <div id="filtersGroup" class="flex items-center space-x-2">
+                  <div class="flex items-center px-2 h-10 rounded-md">
+                    <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01.293.707l-6.707 8.707V21l-4-2v-4.586L2.707 6.707A1 1 0 013 6V4z"></path>
+                    </svg>
+
+                    <!-- Classification Filter -->
+                    <div class="relative">
+                      <button id="classChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="classification" title="Classification filter">
+                        <span id="classChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
+                        </svg>
+                      </button>
+                      <div id="classMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto min-w-max">
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Prospecting">Prospecting</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Retargeting">Retargeting</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Brand">Brand</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Loyalty">Loyalty</button>
+                      </div>
+                    </div>
+
+                    <!-- DSP Filter -->
+                    <div class="relative">
+                      <button id="dspChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="dsp" title="DSP filter">
+                        <span id="dspChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
+                        </svg>
+                      </button>
+                      <div id="dspMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto min-w-max">
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Google Campaign Manager">Google Campaign Manager</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Trade Desk">Trade Desk</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="DV360">DV360</button>
+                      </div>
+                    </div>
+
+                    <!-- Campaign Filter -->
+                    <div class="relative">
+                      <button id="campaignChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="campaign" title="Campaign filter">
+                        <span id="campaignChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
+                        </svg>
+                      </button>
+                      <div id="campaignMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto min-w-max">
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Summer Sale 2024">Summer Sale 2024</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Holiday Campaign">Holiday Campaign</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Brand Awareness Q3">Brand Awareness Q3</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Product Launch">Product Launch</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="h-6 border-l border-gray-300 mx-1"></div>
+
+                <!-- Search -->
+                <div class="relative">
+                  <div class="search-container">
+                    <div class="search-wrapper" id="searchWrapper" style="height:40px;">
+                      <button id="searchToggle" class="search-icon" aria-label="Open search" type="button">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                      </button>
+                      <input type="text" id="searchInput" class="search-input" placeholder="Enter Name, ID, DSP, or Campaign" autocomplete="off" aria-label="Search campaigns" />
+                      <button id="searchClear" class="clear-button" aria-label="Clear search" type="button">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto border border-default rounded-md">
+              <table id="campaignTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
+                <thead class="tbl-head">
+                  <tr>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="id">
+                        <span>ID</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="name">
+                        <span>Name</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp">
+                        <span>DSP</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="classification">
+                        <span>Classification</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="campaign">
+                        <span>Campaign</span>
+                      </button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="campaignTableBody" class="divide-y">
+                  <!-- Campaign rows will be populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-4 flex items-center justify-between text-xs text-gray-500">
+              <span id="recordCount">0 of 0 showing</span>
+              <div id="pagination" class="flex space-x-2">
+                <!-- Pagination buttons will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    // === CONFIGURATION ===
+    const CONFIG = {
+      STORAGE_KEYS: {
+        DATA: 'adgroups_data_v1', // unique to Ad Groups page
+        CLASS_FILTER: 'adgroup_class_filter',
+        DSP_FILTER: 'adgroup_dsp_filter',
+        CAMPAIGN_FILTER: 'adgroup_campaign_filter'
+      },
+      PAGINATION: { DEFAULT_ROWS: 15, MAX_ROWS: 200 }
+    };
+
+    // === SAMPLE AD GROUP DATA ===
+    const DEFAULT_ADGROUPS = [
+      { id: 'AG001', name: 'Prospecting – Broad', dsp: 'Google Campaign Manager', classification: 'Prospecting', campaign: 'Summer Sale 2024' },
+      { id: 'AG002', name: 'Prospecting – Interests', dsp: 'Trade Desk', classification: 'Prospecting', campaign: 'Holiday Campaign' },
+      { id: 'AG003', name: 'Brand – Video', dsp: 'DV360', classification: 'Brand', campaign: 'Brand Awareness Q3' },
+      { id: 'AG004', name: 'Retargeting – 7 Day', dsp: 'Google Campaign Manager', classification: 'Retargeting', campaign: 'Product Launch' },
+      { id: 'AG005', name: 'Retargeting – 30 Day', dsp: 'Trade Desk', classification: 'Retargeting', campaign: 'Summer Sale 2024' },
+      { id: 'AG006', name: 'Loyalty – VIP', dsp: 'DV360', classification: 'Loyalty', campaign: 'Holiday Campaign' },
+      { id: 'AG007', name: 'Brand – Social', dsp: 'Google Campaign Manager', classification: 'Brand', campaign: 'Brand Awareness Q3' },
+      { id: 'AG008', name: 'Prospecting – Lookalike', dsp: 'Trade Desk', classification: 'Prospecting', campaign: 'Product Launch' },
+      { id: 'AG009', name: 'Retargeting – Cart', dsp: 'DV360', classification: 'Retargeting', campaign: 'Summer Sale 2024' },
+      { id: 'AG010', name: 'Loyalty – Winback', dsp: 'Google Campaign Manager', classification: 'Loyalty', campaign: 'Holiday Campaign' },
+      { id: 'AG011', name: 'Brand – Display', dsp: 'Trade Desk', classification: 'Brand', campaign: 'Brand Awareness Q3' },
+      { id: 'AG012', name: 'Prospecting – Contextual', dsp: 'DV360', classification: 'Prospecting', campaign: 'Product Launch' }
+    ];
+
+    // === MAIN APPLICATION ===
+    let app = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      app = {
+        adgroups: [],
+        currentPage: 1,
+        rowsPerPage: CONFIG.PAGINATION.DEFAULT_ROWS,
+        filters: { classification: 'All', dsp: 'All', campaign: 'All' },
+        searchQuery: '',
+        elements: {},
+        searchExpanded: false,
+
+        init: function() {
+          this.loadAdGroups();
+          this.cacheElements();
+          this.loadFilters();
+          this.initEventListeners();
+          this.applyFiltersAndRender();
+        },
+
+        loadAdGroups: function() {
+          try {
+            const stored = localStorage.getItem(CONFIG.STORAGE_KEYS.DATA);
+            if (stored) {
+              const parsed = JSON.parse(stored);
+              const valid = Array.isArray(parsed) && parsed.every(x =>
+                x && typeof x === 'object' && ('id' in x || 'name' in x));
+              this.adgroups = valid ? parsed : [...DEFAULT_ADGROUPS];
+              if (!valid) this.saveAdGroups();
+            } else {
+              this.adgroups = [...DEFAULT_ADGROUPS];
+              this.saveAdGroups();
+            }
+          } catch (e) {
+            console.warn('Failed to load ad groups:', e);
+            this.adgroups = [...DEFAULT_ADGROUPS];
+          }
+        },
+
+        saveAdGroups: function() {
+          try {
+            localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(this.adgroups));
+          } catch (e) {
+            console.warn('Failed to save ad groups:', e);
+          }
+        },
+
+        loadFilters: function() {
+          this.filters.classification = localStorage.getItem(CONFIG.STORAGE_KEYS.CLASS_FILTER) || 'All';
+          this.filters.dsp = localStorage.getItem(CONFIG.STORAGE_KEYS.DSP_FILTER) || 'All';
+          this.filters.campaign = localStorage.getItem(CONFIG.STORAGE_KEYS.CAMPAIGN_FILTER) || 'All';
+        },
+
+        saveFilter: function(type, value) {
+          this.filters[type] = value;
+          const keyMap = {
+            classification: CONFIG.STORAGE_KEYS.CLASS_FILTER,
+            dsp: CONFIG.STORAGE_KEYS.DSP_FILTER,
+            campaign: CONFIG.STORAGE_KEYS.CAMPAIGN_FILTER
+          };
+          try { localStorage.setItem(keyMap[type], value); } catch(e) { console.warn('Failed to save filter:', e); }
+        },
+
+        cacheElements: function() {
+          const ids = [
+            'menuButton','menuDropdown','notificationButton','notificationDropdown',
+            'createBtn',
+            'classChip','classChipLabel','classMenu',
+            'dspChip','dspChipLabel','dspMenu',
+            'campaignChip','campaignChipLabel','campaignMenu',
+            'searchWrapper','searchToggle','searchInput','searchClear','filtersGroup',
+            'campaignTableBody','recordCount','pagination'
+          ];
+          ids.forEach(id => this.elements[id] = document.getElementById(id));
+        },
+
+        initEventListeners: function() {
+          const self = this;
+
+          // Menu dropdown (waffle menu)
+          if (this.elements.menuButton && this.elements.menuDropdown) {
+            this.elements.menuButton.addEventListener('click', function(e) {
+              e.stopPropagation();
+              self.elements.menuDropdown.classList.toggle('hidden');
+              // Close other dropdowns
+              self.elements.classMenu?.classList.add('hidden');
+              self.elements.dspMenu?.classList.add('hidden');
+              self.elements.campaignMenu?.classList.add('hidden');
+            });
+          }
+
+          // Create button -> New Ad Group
+          if (this.elements.createBtn) {
+            this.elements.createBtn.addEventListener('click', function() {
+              if (typeof showToast === 'function') showToast('Create Ad Group functionality to be implemented');
+            });
+          }
+
+          // Classification filter
+          if (this.elements.classChip) {
+            this.elements.classChip.addEventListener('click', function(e) {
+              e.stopPropagation();
+              self.elements.classMenu.classList.toggle('hidden');
+              self.elements.dspMenu?.classList.add('hidden');
+              self.elements.campaignMenu?.classList.add('hidden');
+            });
+          }
+          this.elements.classMenu?.addEventListener('click', function(e) {
+            const btn = e.target.closest('button'); if (!btn) return;
+            const value = btn.dataset.value;
+            self.elements.classChipLabel.textContent = value === 'All' ? 'All' : value;
+            self.saveFilter('classification', value);
+            self.currentPage = 1;
+            self.closeAllDropdowns();
+            self.applyFiltersAndRender();
+          });
+
+          // DSP filter
+          if (this.elements.dspChip) {
+            this.elements.dspChip.addEventListener('click', function(e) {
+              e.stopPropagation();
+              self.elements.dspMenu.classList.toggle('hidden');
+              self.elements.classMenu?.classList.add('hidden');
+              self.elements.campaignMenu?.classList.add('hidden');
+            });
+          }
+          this.elements.dspMenu?.addEventListener('click', function(e) {
+            const btn = e.target.closest('button'); if (!btn) return;
+            const value = btn.dataset.value;
+            self.elements.dspChipLabel.textContent = value === 'All' ? 'All' : value;
+            self.saveFilter('dsp', value);
+            self.currentPage = 1;
+            self.closeAllDropdowns();
+            self.applyFiltersAndRender();
+          });
+
+          // Campaign filter
+          if (this.elements.campaignChip) {
+            this.elements.campaignChip.addEventListener('click', function(e) {
+              e.stopPropagation();
+              self.elements.campaignMenu.classList.toggle('hidden');
+              self.elements.classMenu?.classList.add('hidden');
+              self.elements.dspMenu?.classList.add('hidden');
+            });
+          }
+          this.elements.campaignMenu?.addEventListener('click', function(e) {
+            const btn = e.target.closest('button'); if (!btn) return;
+            const value = btn.dataset.value;
+            self.elements.campaignChipLabel.textContent = value === 'All' ? 'All' : value;
+            self.saveFilter('campaign', value);
+            self.currentPage = 1;
+            self.closeAllDropdowns();
+            self.applyFiltersAndRender();
+          });
+
+          // Search behavior (unchanged)
+          if (this.elements.searchToggle) {
+            this.elements.searchToggle.addEventListener('click', function(e) {
+              e.stopPropagation();
+              if (!self.searchExpanded) {
+                self.elements.searchWrapper.classList.add('expanded');
+                self.searchExpanded = true;
+                setTimeout(() => self.elements.searchInput?.focus(), 100);
+              }
+            });
+          }
+          this.elements.searchInput?.addEventListener('input', function(e) {
+            self.searchQuery = e.target.value;
+            self.updateSearchState();
+            self.currentPage = 1;
+            self.applyFiltersAndRender();
+          });
+          this.elements.searchClear?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (self.elements.searchInput) self.elements.searchInput.value = '';
+            self.searchQuery = '';
+            self.updateSearchState();
+            self.currentPage = 1;
+            self.applyFiltersAndRender();
+          });
+
+          // Close dropdowns on document click
+          document.addEventListener('click', function() { self.closeAllDropdowns(); });
+
+          // Pagination
+          this.elements.pagination?.addEventListener('click', function(e) {
+            const button = e.target.closest('button');
+            if (!button || button.disabled) return;
+            e.preventDefault();
+            const action = button.dataset.action;
+            const pageNum = parseInt(button.textContent);
+            if (action === 'prev' && self.currentPage > 1) self.currentPage--;
+            else if (action === 'next' && self.currentPage < self.getTotalPages()) self.currentPage++;
+            else if (!isNaN(pageNum) && pageNum !== self.currentPage) self.currentPage = pageNum;
+            self.applyFiltersAndRender();
+          });
+
+          // Set initial filter labels
+          this.elements.classChipLabel && (this.elements.classChipLabel.textContent = this.filters.classification === 'All' ? 'All' : this.filters.classification);
+          this.elements.dspChipLabel && (this.elements.dspChipLabel.textContent = this.filters.dsp === 'All' ? 'All' : this.filters.dsp);
+          this.elements.campaignChipLabel && (this.elements.campaignChipLabel.textContent = this.filters.campaign === 'All' ? 'All' : this.filters.campaign);
+        },
+
+        closeAllDropdowns: function() {
+          this.elements.menuDropdown?.classList.add('hidden');
+          this.elements.classMenu?.classList.add('hidden');
+          this.elements.dspMenu?.classList.add('hidden');
+          this.elements.campaignMenu?.classList.add('hidden');
+          if (this.searchExpanded && !this.searchQuery.trim()) {
+            this.elements.searchWrapper?.classList.remove('expanded');
+            this.searchExpanded = false;
+            this.updateSearchState();
+          }
+        },
+
+        updateSearchState: function() {
+          const active = this.searchQuery.trim().length > 0;
+          this.elements.searchClear?.classList.toggle('visible', active);
+          if (this.elements.filtersGroup) {
+            this.elements.filtersGroup.classList.toggle('opacity-50', active);
+            this.elements.filtersGroup.classList.toggle('pointer-events-none', active);
+          }
+        },
+
+        getFilteredAdGroups: function() {
+          let filtered = [...this.adgroups];
+
+          if (this.searchQuery.trim()) {
+            const q = this.searchQuery.toLowerCase();
+            filtered = filtered.filter(ag =>
+              (ag.id && ag.id.toLowerCase().includes(q)) ||
+              (ag.name && ag.name.toLowerCase().includes(q)) ||
+              (ag.dsp && ag.dsp.toLowerCase().includes(q)) ||
+              (ag.classification && ag.classification.toLowerCase().includes(q)) ||
+              (ag.campaign && ag.campaign.toLowerCase().includes(q))
+            );
+          } else {
+            if (this.filters.classification !== 'All') {
+              filtered = filtered.filter(ag => ag.classification === this.filters.classification);
+            }
+            if (this.filters.dsp !== 'All') {
+              filtered = filtered.filter(ag => ag.dsp === this.filters.dsp);
+            }
+            if (this.filters.campaign !== 'All') {
+              filtered = filtered.filter(ag => ag.campaign === this.filters.campaign);
+            }
+          }
+
+          return filtered;
+        },
+
+        getPaginatedData: function() {
+          const filtered = this.getFilteredAdGroups();
+          const start = (this.currentPage - 1) * this.rowsPerPage;
+          const end = start + this.rowsPerPage;
+          return { data: filtered.slice(start, end), total: filtered.length };
+        },
+
+        getTotalPages: function() {
+          const total = this.getFilteredAdGroups().length;
+          return Math.max(1, Math.ceil(total / this.rowsPerPage));
+        },
+
+        applyFiltersAndRender: function() {
+          const result = this.getPaginatedData();
+          const totalPages = this.getTotalPages();
+          if (this.currentPage > totalPages) this.currentPage = totalPages;
+          if (this.currentPage < 1) this.currentPage = 1;
+
+          this.renderTable(result.data);
+          this.updateRecordCount(result.total, result.data.length);
+          this.renderPagination(result.total);
+        },
+
+        renderTable: function(data) {
+          const tbody = this.elements.campaignTableBody;
+          if (!tbody) return;
+          tbody.innerHTML = '';
+
+          if (data.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td colspan="5" class="px-6 py-4 text-center text-gray-500">No ad groups found</td>';
+            tbody.appendChild(tr);
+            return;
+          }
+
+          data.forEach(ag => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-50';
+            tr.innerHTML = `
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.id || ''}</td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
+                <a href="#" class="text-blue-600 hover:underline">${ag.name || ''}</a>
+              </td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.dsp || ''}</td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ''}</td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900">${ag.campaign || ''}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        },
+
+        updateRecordCount: function(filteredTotal, showingCount) {
+          this.elements.recordCount && (this.elements.recordCount.textContent = `${showingCount} of ${filteredTotal} showing`);
+        },
+
+        renderPagination: function(totalItems) {
+          const pager = this.elements.pagination;
+          if (!pager) return;
+
+          if (totalItems <= this.rowsPerPage) {
+            pager.style.display = 'none';
+            return;
+          }
+          pager.style.display = 'flex';
+
+          const totalPages = this.getTotalPages();
+          const buttons = [];
+          const prevDisabled = this.currentPage === 1;
+          buttons.push(`<button data-action="prev" class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md${prevDisabled ? ' opacity-50 cursor-not-allowed' : ''}" ${prevDisabled ? 'disabled' : ''}>&lt;</button>`);
+
+          const maxButtons = 5;
+          let start = Math.max(1, this.currentPage - Math.floor(maxButtons / 2));
+          let end = Math.min(totalPages, start + maxButtons - 1);
+          if (end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
+
+          for (let p = start; p <= end; p++) {
+            const activeClass = (p === this.currentPage) ? 'bg-gray-200 font-medium' : '';
+            buttons.push(`<button class="px-2 py-1 ${activeClass} text-gray-700 hover:bg-gray-200 rounded-md">${p}</button>`);
+          }
+
+          const nextDisabled = this.currentPage === totalPages;
+          buttons.push(`<button data-action="next" class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md${nextDisabled ? ' opacity-50 cursor-not-allowed' : ''}" ${nextDisabled ? 'disabled' : ''}>&gt;</button>`);
+          pager.innerHTML = buttons.join('');
+        }
+      };
+
+      app.init();
+    });
+  </script>
+
+  <!-- Data binding script for advertiser info -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load advertiser data for the header
+      try {
+        const selectedData = localStorage.getItem('adv_selected_data');
+        if (selectedData) {
+          const advertiser = JSON.parse(selectedData);
+          
+          // Bind advertiser data to header elements
+          const nameEl = document.querySelector('[data-bind="adv.name"]');
+          const accountEl = document.querySelector('[data-bind="adv.account"]');
+          const idEl = document.querySelector('[data-bind="adv.id"]');
+          
+          if (nameEl) nameEl.textContent = advertiser.name || 'Unknown Advertiser';
+          if (accountEl) accountEl.textContent = advertiser.account || '—';
+          if (idEl) idEl.textContent = advertiser.id || '—';
+        }
+      } catch (e) {
+        console.warn('Failed to load advertiser data:', e);
+      }
+    });
+  </script>
+</body>
+</html>

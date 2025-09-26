@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Table - Tree Structure</title>
+    <style>
+        :root{
+            /* Brand */
+            --brand-800:#014C86;
+            --brand-700:#0A548E;
+            --brand-600:#0F66A7;
+            --brand-100:#BACEDC; /* fixed (removed space) */
+
+            /* NEW Accessible Tree Table System */
+            /* Backgrounds */
+            --table-bg:#FFFFFF;
+            --header-primary-bg:#E9ECEF;    /* Level 1 headers (groups) */
+            --header-secondary-bg:#DEE2E6;  /* Level 2 headers (sub-groups) */
+            --header-tertiary-bg:#CED4DA;   /* Level 3 items */
+            --row-default-bg:#FFFFFF;
+            --row-alternate-bg:#F8F9FA;
+
+            /* Interactive */
+            --row-hover-bg:#E3F2FF;         /* Light brand blue */
+            --row-selected-bg:#B3DAFE;      /* Stronger brand blue for selection */
+
+            /* Text */
+            --text-primary:#212529;
+            --text-secondary:#495057;
+            --text-muted:#6C757D;
+            --text-inverse:#FFFFFF;
+
+            /* Borders */
+            --border-light:#DEE2E6;
+            --border-medium:#CED4DA;
+            --border-strong:#ADB5BD;
+
+            /* Brand Integration */
+            --focus-ring:#0F66A7;
+
+            /* Legacy variables (mapped to new system for compatibility) */
+            --bg-app:#F7F8FA;
+            --bg-card:#FFFFFF;
+            --bg-subtle:#F3F4F6;
+
+            /* Table (mapped) */
+            --tbl-bg:var(--table-bg);
+            --tbl-head-bg:var(--header-primary-bg);
+            --tbl-head-text:#374151; /* keep or change to var(--text-primary) if desired */
+            --tbl-head-border:var(--border-light);
+            --tbl-row:var(--row-default-bg);
+            --tbl-row-alt:var(--row-alternate-bg);
+            --tbl-row-hover:var(--row-hover-bg);
+            --tbl-total-bg:#FAFAFA;
+
+            /* Tree Table (mapped) */
+            --tree-group-bg:var(--header-primary-bg);
+            --tree-group-text:var(--text-primary);
+            --tree-subhead-bg:var(--header-secondary-bg);
+            --tree-guide:var(--border-light);
+            --tree-caret:#334155;
+            --tree-caret-active:#0F66A7;
+
+            /* Text (mapped) */
+            --text:var(--text-primary);
+            --text-2:var(--text-secondary);
+            --text-inverse:var(--text-inverse);
+            --link:#0F66A7;
+
+            /* Borders (mapped) */
+            --border:var(--border-light);
+            --border-strong:var(--border-medium); /* stronger app border maps to medium; adjust if you prefer darker */
+            --divider:var(--border-medium);
+
+            /* Status (unchanged) */
+            --ok:#16A34A;
+            --warn:#D97706;
+            --err:#DC2626;
+            --info:#38A1DB;
+        }
+
+        body { 
+            margin: 0; 
+            font-family: Arial, sans-serif; 
+            background: var(--bg-app);
+            color: var(--text);
+        }
+
+        .app-header { 
+            background: var(--brand-800); 
+            color: var(--text-inverse); 
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .table { 
+            background: var(--tbl-bg); 
+            border: 1px solid var(--border);
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .table th, .table td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table thead th { 
+            background: var(--tbl-head-bg); 
+            color: var(--tbl-head-text); 
+            border-bottom: 1px solid var(--tbl-head-border);
+        }
+
+        .table tbody tr:nth-child(even) { 
+            background: var(--tbl-row-alt);
+        }
+
+        .table tbody tr:hover { 
+            background: var(--tbl-row-hover);
+        }
+
+        .tree-group-header { 
+            background: var(--tree-group-bg); 
+            color: var(--tree-group-text);
+            font-weight: bold;
+        }
+
+        .tree-subheader { 
+            background: var(--tree-subhead-bg); 
+            color: var(--text-2); 
+            border-bottom: 1px solid var(--border-strong);
+            font-weight: 600;
+        }
+
+        .color-swatch {
+            width: 40px;
+            height: 20px;
+            border: 1px solid var(--border-strong);
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .indent-1 { padding-left: 20px; }
+        .indent-2 { padding-left: 40px; }
+        .indent-3 { padding-left: 60px; }
+        .indent-4 { padding-left: 80px; }
+        .indent-5 { padding-left: 100px; }
+        .indent-6 { padding-left: 120px; }
+        .indent-7 { padding-left: 140px; }
+
+        /* Add clickable affordance for pickers */
+        .color-click { cursor: pointer; }
+        .color-click:focus-visible { outline: 2px solid #0F66A7; outline-offset: 2px; }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <h1>Color Palette - Tree Structure</h1>
+    </div>
+
+    <div style="padding: 20px;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Color Name</th>
+                    <th>Variable</th>
+                    <th>Hex Value</th>
+                    <th>Preview</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="tree-group-header">
+                    <td colspan="4"><strong>Brand Colors</strong></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Brand 800</td>
+                    <td>--brand-800</td>
+                    <td>#014C86</td>
+                    <td><div class="color-swatch" style="background-color: #014C86;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Brand 700</td>
+                    <td>--brand-700</td>
+                    <td>#0A548E</td>
+                    <td><div class="color-swatch" style="background-color: #0A548E;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Brand 600</td>
+                    <td>--brand-600</td>
+                    <td>#0F66A7</td>
+                    <td><div class="color-swatch" style="background-color: #0F66A7;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Brand 100</td>
+                    <td>--brand-100</td>
+                    <td>#BACEDC</td>
+                    <td><div class="color-swatch" style="background-color: #BACEDC;"></div></td>
+                </tr>
+
+                <tr class="tree-group-header">
+                    <td colspan="4"><strong>Surface & Borders</strong></td>
+                </tr>
+                <tr class="tree-subheader indent-1">
+                    <td colspan="4">Background Colors</td>
+                </tr>
+                <tr class="indent-2">
+                    <td>App Background</td>
+                    <td>--bg-app</td>
+                    <td>#F7F8FA</td>
+                    <td><div class="color-swatch" style="background-color: #F7F8FA;"></div></td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Card Background</td>
+                    <td>--bg-card</td>
+                    <td>#FFFFFF</td>
+                    <td><div class="color-swatch" style="background-color: #FFFFFF;"></div></td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Subtle Background</td>
+                    <td>--bg-subtle</td>
+                    <td>#F3F4F6</td>
+                    <td><div class="color-swatch" style="background-color: #F3F4F6;"></div></td>
+                </tr>
+                <tr class="tree-subheader indent-1">
+                    <td colspan="4">Border Colors</td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Strong Border</td>
+                    <td>--border-strong</td>
+                    <td>#E5E7EB</td>
+                    <td><div class="color-swatch" style="background-color: #E5E7EB;"></div></td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Border</td>
+                    <td>--border</td>
+                    <td>#EDF0F3</td>
+                    <td><div class="color-swatch" style="background-color: #EDF0F3;"></div></td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Divider</td>
+                    <td>--divider</td>
+                    <td>#CBD5E1</td>
+                    <td><div class="color-swatch" style="background-color: #CBD5E1;"></div></td>
+                </tr>
+
+                <tr class="tree-group-header">
+                    <td colspan="4"><strong>Text Colors</strong></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Primary Text</td>
+                    <td>--text</td>
+                    <td>#111827</td>
+                    <td><div class="color-swatch" style="background-color: #111827;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Secondary Text</td>
+                    <td>--text-2</td>
+                    <td>#4B5563</td>
+                    <td><div class="color-swatch" style="background-color: #4B5563;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Inverse Text</td>
+                    <td>--text-inverse</td>
+                    <td>#FFFFFF</td>
+                    <td><div class="color-swatch" style="background-color: #FFFFFF;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Link</td>
+                    <td>--link</td>
+                    <td>#0F66A7</td>
+                    <td><div class="color-swatch" style="background-color: #0F66A7;"></div></td>
+                </tr>
+
+                <tr class="tree-group-header">
+                    <td colspan="4"><strong>Table Colors</strong></td>
+                </tr>
+                <tr class="tree-subheader indent-1">
+                    <td colspan="4">Table Structure</td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Table Background</td>
+                    <td>--tbl-bg</td>
+                    <td>#FFFFFF</td>
+                    <td><div class="color-swatch" style="background-color: #FFFFFF;"></div></td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Table Header Background</td>
+                    <td>--tbl-head-bg</td>
+                    <td>#E5E7EB</td>
+                    <td><div class="color-swatch" style="background-color: #E5E7EB;"></div></td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Table Header Text</td>
+                    <td>--tbl-head-text</td>
+                    <td>#374151</td>
+                    <td><div class="color-swatch" style="background-color: #374151;"></div></td>
+                </tr>
+                <tr class="tree-subheader indent-1">
+                    <td colspan="4">Table Rows</td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Row Background</td>
+                    <td>--tbl-row</td>
+                    <td>#FFFFFF</td>
+                    <td><div class="color-swatch" style="background-color: #FFFFFF;"></div></td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Alternate Row</td>
+                    <td>--tbl-row-alt</td>
+                    <td>#FCFDFE</td>
+                    <td><div class="color-swatch" style="background-color: #FCFDFE;"></div></td>
+                </tr>
+                <tr class="indent-2">
+                    <td>Row Hover</td>
+                    <td>--tbl-row-hover</td>
+                    <td>#F0F4F8</td>
+                    <td><div class="color-swatch" style="background-color: #F0F4F8;"></div></td>
+                </tr>
+
+                <tr class="tree-group-header">
+                    <td colspan="4"><strong>Tree Table Colors</strong></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Group Background</td>
+                    <td>--tree-group-bg</td>
+                    <td>#EEF2F7</td>
+                    <td><div class="color-swatch" style="background-color: #EEF2F7;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Group Text</td>
+                    <td>--tree-group-text</td>
+                    <td>#1F2937</td>
+                    <td><div class="color-swatch" style="background-color: #1F2937;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Subheader Background</td>
+                    <td>--tree-subhead-bg</td>
+                    <td>#F5F7FB</td>
+                    <td><div class="color-swatch" style="background-color: #F5F7FB;"></div></td>
+                </tr>
+
+                <tr class="tree-group-header">
+                    <td colspan="4"><strong>Status Colors</strong></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Success</td>
+                    <td>--ok</td>
+                    <td>#16A34A</td>
+                    <td><div class="color-swatch" style="background-color: #16A34A;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Warning</td>
+                    <td>--warn</td>
+                    <td>#D97706</td>
+                    <td><div class="color-swatch" style="background-color: #D97706;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Error</td>
+                    <td>--err</td>
+                    <td>#DC2626</td>
+                    <td><div class="color-swatch" style="background-color: #DC2626;"></div></td>
+                </tr>
+                <tr class="indent-1">
+                    <td>Info</td>
+                    <td>--info</td>
+                    <td>#38A1DB</td>
+                    <td><div class="color-swatch" style="background-color: #38A1DB;"></div></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+(function(){
+  const table = document.querySelector('table.table');
+  if (!table) return;
+
+  const KEY = 'color_table_overrides';
+  const overrides = safeParse(localStorage.getItem(KEY)) || {};
+  Object.entries(overrides).forEach(([varName, hex])=>{
+    document.documentElement.style.setProperty(varName, hex);
+  });
+
+  // Make each leaf row (4 cells) clickable (hex cell + swatch)
+  const rows = Array.from(table.tBodies[0].rows).filter(r => r.cells.length === 4);
+  rows.forEach(r => {
+    const varCell = r.cells[1];
+    const hexCell = r.cells[2];
+    const swatch = r.cells[3].querySelector('.color-swatch');
+    if (!varCell || !hexCell || !swatch) return;
+
+    const varName = varCell.textContent.trim();
+
+    // Sync from computed var on load
+    const computed = getVar(varName);
+    if (computed && normalizeHex(hexCell.textContent) !== computed) {
+      hexCell.textContent = computed.toUpperCase();
+      swatch.style.backgroundColor = computed;
+    }
+
+    // Click/keyboard to open color picker
+    [hexCell, swatch].forEach(el => {
+      el.tabIndex = 0;
+      el.classList.add('color-click');
+      el.title = 'Click to pick a color';
+      el.addEventListener('click', () => pick(varName, hexCell, swatch));
+      el.addEventListener('keydown', (e)=>{ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(varName, hexCell, swatch); }});
+    });
+  });
+
+  // Hidden color input used for all picks
+  const picker = document.createElement('input');
+  picker.type = 'color';
+  picker.style.position = 'fixed';
+  picker.style.left = '-1000px';
+  document.body.appendChild(picker);
+
+  function pick(varName, hexCell, swatch){
+    const current = getVar(varName) || normalizeHex(hexCell.textContent) || rgbToHex(getComputedStyle(swatch).backgroundColor);
+    picker.value = toColorInput(current);
+    picker.onchange = () => {
+      const val = picker.value.toUpperCase();
+      document.documentElement.style.setProperty(varName, val); // update CSS variable
+      hexCell.textContent = val;                                // update hex text
+      swatch.style.backgroundColor = val;                       // update preview
+      overrides[varName] = val;                                 // persist
+      localStorage.setItem(KEY, JSON.stringify(overrides));
+    };
+    picker.click();
+  }
+
+  function getVar(varName){
+    if (!varName?.startsWith('--')) return null;
+    const v = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    return v ? normalizeHex(v) : null;
+  }
+
+  function normalizeHex(h){
+    if (!h) return '';
+    let s = h.toString().trim().toUpperCase().replace(/[^#0-9A-F]/g,'');
+    if (!s.startsWith('#')) s = '#'+s;
+    if (s.length === 4) s = '#'+s[1]+s[1]+s[2]+s[2]+s[3]+s[3]; // 3->6 digits
+    if (s.length > 7) s = s.slice(0,7);
+    return s;
+  }
+
+  function toColorInput(hex){
+    const n = normalizeHex(hex);
+    return /^#[0-9A-F]{6}$/.test(n) ? n : '#000000';
+  }
+
+  function rgbToHex(rgb){
+    const m = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (!m) return '#000000';
+    return '#'+[m[1],m[2],m[3]].map(x => parseInt(x,10).toString(16).padStart(2,'0')).join('').toUpperCase();
+  }
+
+  function safeParse(s){ try { return JSON.parse(s); } catch { return null; } }
+})();
+</script>
+</body>
+</html>

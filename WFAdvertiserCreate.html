@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beacon - Create Advertiser</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./assets/toast.css">
+  <script src="./assets/toast.js" defer></script>
+  <style>
+    :root {
+      --search-transition: 0.2s ease;
+      --border-radius: 0.375rem;
+      --primary-blue: #2563eb;
+      --success-green: #10b981;
+      --error-red: #dc2626;
+      --warning-yellow: #d97706;
+    }
+
+    body { 
+      font-family: 'apple-system', 'Segoe UI', 'Roboto', 'Inter', sans-serif; 
+    }
+
+    /* Search functionality */
+    .search-container { 
+      position: relative; 
+      display: flex; 
+      align-items: center; 
+    }
+    
+    .search-wrapper { 
+      position: relative; 
+      display: flex; 
+      align-items: center; 
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px); 
+      height: 40px; 
+      width: 50px; 
+      overflow: hidden; 
+      border-radius: var(--border-radius);
+      transition: width var(--search-transition);
+    }
+    
+    .search-wrapper.expanded { 
+      width: 300px; 
+    }
+    
+    .search-icon { 
+      position: absolute; 
+      left: 5px; 
+      width: 40px; 
+      height: 40px; 
+      cursor: pointer; 
+      z-index: 2; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      transition: opacity var(--search-transition);
+    }
+    
+    .search-icon svg { 
+      width: 20px; 
+      height: 20px; 
+      fill: #666; 
+    }
+    
+    .search-input { 
+      width: 100%; 
+      height: 100%; 
+      border: none; 
+      outline: none; 
+      background: transparent; 
+      padding: 8px 40px 8px 40px; 
+      font-size: 14px; 
+      color: #333; 
+      opacity: 0; 
+      transition: opacity var(--search-transition) 0.1s;
+    }
+    
+    .search-input::placeholder { 
+      color: #999; 
+    }
+    
+    .search-wrapper.expanded .search-input { 
+      opacity: 1; 
+      background-color: white; 
+      height: 80%; 
+      border: #c5c4c4 1px solid; 
+      border-radius: var(--border-radius);
+    }
+    
+    .clear-button { 
+      position: absolute; 
+      right: 10px; 
+      width: 20px; 
+      height: 20px; 
+      cursor: pointer; 
+      opacity: 0; 
+      visibility: hidden; 
+      transition: all var(--search-transition); 
+      z-index: 2;
+    }
+    
+    .clear-button.visible { 
+      opacity: 1; 
+      visibility: visible; 
+    }
+
+    /* Table layout */
+    .table-fixed { 
+      table-layout: fixed; 
+    }
+    
+    td, th { 
+      white-space: nowrap; 
+    }
+
+    /* Field editing */
+    .field-actions {
+      transition: opacity var(--search-transition);
+    }
+
+    /* Loading states */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Status indicators */
+    .status-success { color: var(--success-green); }
+    .status-error { color: var(--error-red); }
+    .status-warning { color: var(--warning-yellow); }
+  </style>
+</head>
+    <!-- Header -->
+    <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
+      <div class="flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-3">
+          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+        </div>
+
+        <nav class="flex items-center gap-3 ml-auto">
+            <a href="./WFAdvertiserList.html" class="text-base text-white hover:text-blue-100" style="font-size: 1.5rem; padding-right: 15px;" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
+            Advertisers
+            </a>
+          <span class="text-white select-none">|</span>
+
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notificationButton" class="p-2 rounded-md  text-white relative" title="Notifications" aria-label="View notifications" onmouseover="this.style.backgroundColor=''" onmouseout="this.style.backgroundColor=''" >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+              <div class="p-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                  <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                </div>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div id="notificationList">
+                  <!-- Sample items -->
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">Campaign Performance Alert</p>
+                        <p class="text-xs text-gray-500 mt-1">"Summer Sale" exceeded budget by 15%</p>
+                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">New Advertiser Added</p>
+                        <p class="text-xs text-gray-500 mt-1">Stallion Services LLC onboarded</p>
+                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="true">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-700">Account Sync Complete</p>
+                        <p class="text-xs text-gray-500 mt-1">CRM sync finished for 12 accounts</p>
+                        <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waffle Menu -->
+          <div class="relative">
+            <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+              </svg>
+            </button>
+            <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+<body class="bg-gray-100 font-inter">
+  <div class="flex h-screen flex-col">
+    <div class="flex flex-1 overflow-hidden">
+      <main class="flex-1 overflow-y-auto p-6">
+        <div class="bg-white rounded-lg shadow-lg overflow-visible">
+          <!-- Header Section -->
+          <div class="p-4 border-b border-gray-200">
+            <div class="flex items-center space-x-4 mb-3">
+              <div class="flex flex-col flex-1">
+                <h1 data-bind="adv.name" class="text-2xl" style="font-size: 1.75rem;">Loading…</h1>
+                <div class="flex justify-between items-center">
+                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                </div>
+              </div>
+            </div>
+            
+            <hr class="border-gray-300 my-4">
+            
+            <!-- General Information Section -->
+            <div class="flex flex-wrap gap-4">
+              <div class="flex-1">
+                <h2 class="text-lg font-bold text-gray-800 mb-1">General</h2>
+                <div class="p-4 border border-gray-300 rounded-md bg-gray-100">
+                  <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+                    <!-- Company Name -->
+                    <div>
+                      <label for="companyName" class="text-sm font-semibold text-gray-600">Company Name:</label>
+                    </div>
+                    <div class="relative">
+                      <input type="text" id="companyName" data-bind="adv.name" data-original="" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300 pr-12">
+                    </div>
+                    <div></div><div></div><div></div><div></div>
+                    
+                    <!-- Account -->
+                    <div>
+                      <h3 class="text-sm font-semibold text-gray-600">Account #:</h3>
+                    </div>
+                    <div>
+                      <span id="accountDisplay" data-bind="adv.account" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 hidden">—</span>
+                      <button type="button" id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline bg-transparent border-none p-0 cursor-pointer">Select Account</button>
+                    </div>
+                    <div></div><div></div><div></div><div></div>
+                    
+                    <!-- State -->
+                    <div>
+                      <label for="advertiserState" class="text-sm font-semibold text-gray-600">State:</label>
+                    </div>
+                    <div class="relative">
+                      <select id="advertiserState" data-bind="adv.state" data-original="" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300 pr-12">
+                        <option value="">--Select--</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                    </div>
+                    <div></div><div></div><div></div><div></div>
+                    
+                    <!-- Website -->
+                    <div>
+                      <label for="advertiserWebsite" class="text-sm font-semibold text-gray-600">Website:</label>
+                    </div>
+                    <div class="relative">
+                      <input type="text" id="advertiserWebsite" data-bind="adv.website" data-original="" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300 pr-12">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <hr class="border-gray-300 my-4">
+
+          <!-- Platform Configuration -->
+          <div id="platformConfigHeader" class="flex items-center justify-between mb-4 px-4">
+            <h2 class="text-xl font-bold text-gray-800">Platform Configuration</h2>
+            <button type="button" id="editPlatformsBtn" class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors">
+              Edit Platforms
+            </button>
+          </div>
+
+          <hr class="border-gray-300 my-4">
+
+          <div id="platformContainer" class="space-y-4 px-4 pb-4">
+            <!-- GCM Configuration -->
+            <div id="gcmPlatformCard">
+              <h3 class="text-lg font-bold text-gray-800 mb-1 pt-6">GCM Configuration</h3>
+              <div class="bg-gray-100 border border-gray-300 rounded-md hidden px-4 pt-4 pb-4">
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-x-4 gap-2">
+                  <div class="flex items-center">
+                    <label for="gcmVertical" class="text-sm font-semibold text-gray-600">Advertiser Vertical: <span class="text-red-500">*</span></label>
+                  </div>
+                  <div class="relative md:col-span-2">
+                    <select id="gcmVertical" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                      <option value="">-- Select Vertical --</option>
+                      <option>None Selected</option>
+                      <option>Automotive</option>
+                      <option>Business and industrial markets</option>
+                      <option>Classifieds and local</option>
+                      <option>Consumer packaged goods</option>
+                      <option>Education and government</option>
+                      <option>Finance</option>
+                      <option>Healthcare</option>
+                      <option>Media and entertainment</option>
+                      <option>Retail</option>
+                      <option>Technology</option>
+                      <option>Travel</option>
+                    </select>
+                  </div>
+                  <div class="md:col-span-3"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Trade Desk Configuration -->
+            <div id="tradeDeskPlatformCard">
+              <h3 class="text-lg font-bold text-gray-800 mb-1 pt-6">Trade Desk Configuration</h3>
+              <div class="bg-gray-100 border border-gray-300 rounded-md hidden px-4 pt-4 pb-4">
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-x-4 gap-y-3">
+                  <div class="flex items-center">
+                    <label for="tdPartner" class="text-sm font-semibold text-gray-600">Partner: <span class="text-red-500">*</span></label>
+                  </div>
+                  <div class="relative">
+                    <input type="text" id="tdPartner" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300" placeholder="Multiview">
+                  </div>
+                  <div class="flex items-center">
+                    <label for="tdDomain" class="text-sm font-semibold text-gray-600">Domain: <span class="text-red-500">*</span></label>
+                  </div>
+                  <div class="relative md:col-span-2">
+                    <input type="text" id="tdDomain" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300" placeholder="https://www.example.com">
+                  </div>
+                  <div></div>
+
+                  <div class="flex items-center">
+                    <label for="tdCountry" class="text-sm font-semibold text-gray-600">Advertiser Country:</label>
+                  </div>
+                  <div class="relative">
+                    <input type="text" id="tdCountry" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300" placeholder="United States">
+                  </div>
+                  <div class="flex items-center">
+                    <label for="tdEU" class="text-sm font-semibold text-gray-600">Targeting EU?</label>
+                  </div>
+                  <div class="relative w-20">
+                    <select id="tdEU" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                      <option>No</option>
+                      <option>Yes</option>
+                    </select>
+                  </div>
+                  <div class="md:col-span-2"></div>
+
+                  <div class="flex items-center">
+                    <label for="tdIndustryCategory" class="text-sm font-semibold text-gray-600">Industry Category:</label>
+                  </div>
+                  <div class="relative">
+                    <input type="text" id="tdIndustryCategory" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300" placeholder="Select Category">
+                  </div>
+                  <div class="flex items-center">
+                  <div class="flex items-center">
+                    <label for="tdCountry" class="text-sm font-semibold text-gray-600">Advertiser Country:</label>
+                  </div>
+                  <div class="relative">
+                    <input type="text" id="tdCountry" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300" placeholder="United States">
+                  </div>
+                  <div class="flex items-center">
+                    <label for="tdEU" class="text-sm font-semibold text-gray-600">Targeting EU?</label>
+                  </div>
+                  <div class="relative w-20">
+                    <select id="tdEU" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                      <option>No</option>
+                      <option>Yes</option>
+                    </select>
+                  </div>
+                  <div class="md:col-span-2"></div>
+
+                  <div class="flex items-center">
+                    <label for="tdIndustryCategory" class="text-sm font-semibold text-gray-600">Industry Category:</label>
+                  </div>
+                  <div class="relative">
+                    <input type="text" id="tdIndustryCategory" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300" placeholder="Select Category">
+                  </div>
+                  <div class="flex items-center">
+                    <label for="tdIndustrySubCategory" class="text-sm font-semibold text-gray-600">Sub-Category:</label>
+                  </div>
+                  <div class="relative">
+                    <input type="text" id="tdIndustrySubCategory" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300" placeholder="Select Sub-Category">
+                  </div>
+                  <div class="md:col-span-2"></div>
+
+                  <div class="flex items-center">
+                    <label for="tdClickWindow" class="text-sm font-semibold text-gray-600">Click Attribution:</label>
+                  </div>
+                  <div class="relative flex gap-1 w-28">
+                    <input type="number" id="tdClickWindow" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-16 focus:outline-none focus:bg-white focus:border-blue-300" value="90">
+                    <select id="tdClickUnit" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-1 py-1 w-16 focus:outline-none focus:bg-white focus:border-blue-300" title="Click Attribution Time Unit">
+                      <option>Days</option>
+                      <option>Hours</option>
+                    </select>
+                  </div>
+                  <div class="flex items-center">
+                    <label for="tdViewWindow" class="text-sm font-semibold text-gray-600">View Attribution:</label>
+                  </div>
+                  <div class="relative flex gap-1 w-28">
+                    <input type="number" id="tdViewWindow" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-16 focus:outline-none focus:bg-white focus:border-blue-300" value="7">
+                    <select id="tdViewUnit" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-1 py-1 w-16 focus:outline-none focus:bg-white focus:border-blue-300" title="View Attribution Time Unit">
+                      <option>Days</option>
+                      <option>Hours</option>
+                    </select>
+                  </div>
+                  <div class="md:col-span-2"></div>
+
+                  <div class="flex items-center">
+                    <label for="tdImpressionWindow" class="text-sm font-semibold text-gray-600">Impression Attribution:</label>
+                  </div>
+                  <div class="relative flex gap-1 w-28">
+                    <input type="number" id="tdImpressionWindow" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-16 focus:outline-none focus:bg-white focus:border-blue-300" value="90">
+                    <select id="tdImpressionUnit" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-1 py-1 w-16 focus:outline-none focus:bg-white focus:border-blue-300" title="Impression Attribution Time Unit">
+                      <option>Days</option>
+                      <option>Hours</option>
+                    </select>
+                  </div>
+                  <div class="flex items-center">
+                    <label for="tdConversionWindow" class="text-sm font-semibold text-gray-600">Conversion Attribution:</label>
+                  </div>
+                  <div class="relative flex gap-1 w-28">
+                    <input type="number" id="tdConversionWindow" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-16 focus:outline-none focus:bg-white focus:border-blue-300" value="60">
+                    <select id="tdConversionUnit" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-1 py-1 w-16 focus:outline-none focus:bg-white focus:border-blue-300" title="Conversion Attribution Time Unit">
+                      <option>Days</option>
+                      <option>Hours</option>
+                    </select>
+                  </div>
+                  <div class="md:col-span-2"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DV360 Configuration -->
+            <div id="dv360PlatformCard">
+              <h3 class="text-lg font-bold text-gray-800 mb-1 pt-6">DV360 Configuration</h3>
+              <div class="bg-gray-100 border border-gray-300 rounded-md hidden px-4 pt-4 pb-4">
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-x-4 gap-y-3">
+                  <div class="flex items-center">
+                    <label for="dvStatus" class="text-sm font-semibold text-gray-600">Status: <span class="text-red-500">*</span></label>
+                  </div>
+                  <div class="relative w-24">
+                    <select id="dvStatus" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                      <option value="">-- Select --</option>
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                  </div>
+                  <div class="flex items-center">
+                    <label for="dvCurrency" class="text-sm font-semibold text-gray-600">Currency: <span class="text-red-500">*</span></label>
+                  </div>
+                  <div class="relative w-20">
+                    <select id="dvCurrency" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                      <option value="USD" selected>USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="GBP">GBP</option>
+                      <option value="CAD">CAD</option>
+                      <option value="AUD">AUD</option>
+                    </select>
+                  </div>
+                  <div class="md:col-span-2"></div>
+
+                  <div class="flex items-center">
+                    <label for="dvBillingProfile" class="text-sm font-semibold text-gray-600">Billing Profile:</label>
+                  </div>
+                  <div class="relative md:col-span-2">
+                    <input type="text" id="dvBillingProfile" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300" placeholder="Payment info, Bill-to name...">
+                  </div>
+                  <div class="flex items-center">
+                    <label for="dvAdServer" class="text-sm font-semibold text-gray-600">Ad Server: <span class="text-red-500">*</span></label>
+                  </div>
+                  <div class="relative md:col-span-2">
+                    <select id="dvAdServer" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                      <option value="cm360_thirdparty" selected>CM360 + Third party</option>
+                      <option value="cm360_only">CM360 only</option>
+                      <option value="thirdparty_only">Third-party only</option>
+                    </select>
+                  </div>
+                  
+                  <div class="flex items-center">
+                    <label for="dvWebsite" class="text-sm font-semibold text-gray-600">Website: <span class="text-red-500">*</span></label>
+                  </div>
+                  <div class="relative md:col-span-2">
+                    <input type="text" id="dvWebsite" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300" placeholder="https://www.example.com">
+                  </div>
+                  <div class="flex items-center">
+                    <label for="dvAttributionModel" class="text-sm font-semibold text-gray-600">Attribution: <span class="text-red-500">*</span></label>
+                  </div>
+                  <div class="relative">
+                    <select id="dvAttributionModel" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                      <option value="last_click" selected>Last click</option>
+                      <option value="linear">Linear</option>
+                      <option value="time_decay">Time decay</option>
+                      <option value="position_based">Position-based</option>
+                    </select>
+                  </div>
+                  <div></div>
+                  
+                  <div class="md:col-span-6 mt-2">
+                    <label class="flex items-start gap-2">
+                      <input type="checkbox" id="dvAttributionConsent" class="mt-0.5 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" checked>
+                      <span class="text-sm text-gray-700">
+                        <span class="text-red-500">*</span> I authorize sharing Floodlight group information with Display & Video 360.
+                      </span>
+                    </label>
+                  </div>
+                  
+                  <div class="md:col-span-6 mt-2">
+                    <label class="text-sm font-semibold text-gray-600 block mb-2">Campaign Manager 360 Site(s): <span class="text-red-500">*</span></label>
+                    <div class="space-y-1">
+                      <label class="flex items-center gap-2">
+                        <input type="radio" name="dvCmSiteMode" value="auto" class="h-4 w-4 text-blue-600 focus:ring-blue-500" checked>
+                        <span class="text-sm text-gray-700">Auto-create linked CM360 site</span>
+                      </label>
+                      <label class="flex items-center gap-2">
+                        <input type="radio" name="dvCmSiteMode" value="manual" class="h-4 w-4 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700">Add my own CM360 site ID(s)</span>
+                      </label>
+                      <div id="dvCmSiteIdsWrap" class="hidden mt-1 ml-6">
+                        <input type="text" id="dvCmSiteIds" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-64 focus:outline-none focus:bg-white focus:border-blue-300" placeholder="e.g. 5168904, 1234567">
+                        <p class="text-xs text-gray-500 mt-1">Comma-separate multiple IDs</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="md:col-span-6 mt-2">
+                    <label class="flex items-start gap-2">
+                      <input type="checkbox" id="dvAdBadging" class="mt-0.5 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" checked>
+                      <span class="text-sm text-gray-700">
+                        <span class="text-red-500">*</span> Ad badging, transparency, and reporting
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="noPlatformsMessage" class="text-center py-6 text-gray-500 px-4">
+              <p class="text-lg mb-2">No platforms configured</p>
+              <p class="text-sm">Click "Edit Platforms" to add platform configurations</p>
+            </div>
+          </div>
+        
+          <!-- Action Buttons -->
+          <div class="px-4 pb-6 pt-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <button type="button" id="createAdvertiserBtn" class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                Create Advertiser
+              </button>
+              <button type="button" id="cancelAdvertiserBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Edit Platforms Modal -->
+  <div id="editPlatformsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Edit Platforms</h2>
+        <button type="button" id="closePlatformsModalX" class="text-gray-400 hover:text-gray-600 transition-colors" title="Close">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <p class="text-sm text-gray-600 mb-4">Select which platforms should be configured for this advertiser:</p>
+        
+        <div class="space-y-3">
+          <label class="flex items-center">
+            <input type="checkbox" id="editGCMCheckbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <span class="ml-3 text-sm font-medium text-gray-700">GCM</span>
+          </label>
+          <label class="flex items-center">
+            <input type="checkbox" id="editTradeDeskCheckbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <span class="ml-3 text-sm font-medium text-gray-700">Trade Desk</span>
+          </label>
+          <label class="flex items-center">
+            <input type="checkbox" id="editDV360Checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <span class="ml-3 text-sm font-medium text-gray-700">DV360</span>
+          </label>
+        </div>
+        
+        <p class="mt-4 text-xs text-gray-500">Note: Unchecking a platform will hide its configuration but preserve saved settings.</p>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+        <button type="button" id="cancelPlatformsBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+          Cancel
+        </button>
+        <button type="button" id="savePlatformsBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
+          Update Platforms
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Duplicate Warning Modal -->
+  <div id="duplicateWarningModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-80">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Possible duplicate advertiser</h3>
+        <button type="button" id="duplicateCloseX" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+      <div class="p-4" id="duplicateWarningContent">
+        <p class="text-sm text-gray-700 mb-3">An existing advertiser appears to match the one you're creating.</p>
+        <ul id="duplicateList" class="list-disc list-inside text-sm text-gray-600"></ul>
+        <p class="text-sm text-gray-500 mt-3">You can cancel to review or continue to create anyway.</p>
+      </div>
+      <div class="flex items-center justify-end space-x-3 p-4 border-t border-gray-200">
+        <button type="button" id="duplicateCancelBtn" class="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Cancel</button>
+        <button type="button" id="duplicateProceedBtn" class="px-3 py-2 text-sm text-white bg-red-600 rounded-md hover:bg-red-700">Create Anyway</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- External Commit Modal -->
+  <div id="externalCommitModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-70">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[80vh] overflow-auto">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Provisioning: Create records across systems</h3>
+        <button type="button" id="externalCloseX" class="text-gray-400 hover:text-gray-600 transition-colors" title="Close">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="p-4">
+        <p class="text-sm text-gray-600 mb-3">The system will attempt to create or update records in the following locations. Beacon is required and will run first. Other systems will continue even if one fails (unless Beacon fails — then remaining tasks are cancelled).</p>
+        <ul id="externalSystemsList" class="space-y-3 mb-3"></ul>
+
+        <div id="externalSummary" class="hidden p-3 border border-gray-200 rounded-md bg-gray-50">
+          <p id="externalSummaryText" class="text-sm text-gray-700"></p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 p-4 border-t border-gray-200">
+        <button type="button" id="externalRetryBtn" class="px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700 hidden">Retry Failed</button>
+        <button type="button" id="externalContinueBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 hidden">Continue</button>
+        <button type="button" id="externalCloseBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Core application constants
+    const APP_CONFIG = {
+      STORAGE_KEYS: {
+        DATA: 'adv_list_data',
+        SELECTED_DATA: 'adv_selected_data',
+        SELECTED_ID: 'adv_selected_id'
+      },
+      SYSTEMS: [
+        { key: 'Beacon', label: 'Beacon', required: true, failRate: 0.10 },
+        { key: 'TradeDesk', label: 'Trade Desk', required: false, failRate: 0.25 },
+        { key: 'DV360', label: 'DV360', required: false, failRate: 0.20 },
+        { key: 'SimpliFi', label: 'Simpli.fi', required: false, failRate: 0.20 }
+      ],
+      TIMEOUTS: {
+        TOAST: 3000,
+        REDIRECT: 1500,
+        SYSTEM_DELAY: 1200
+      }
+    };
+
+    // Data Management Utilities
+    class DataManager {
+      static loadAdvertisers() {
+        try {
+          return JSON.parse(localStorage.getItem(APP_CONFIG.STORAGE_KEYS.DATA) || '[]');
+        } catch (e) {
+          console.error('Error loading advertisers:', e);
+          return [];
+        }
+      }
+
+      static saveAdvertisers(advertisers) {
+        try {
+          localStorage.setItem(APP_CONFIG.STORAGE_KEYS.DATA, JSON.stringify(advertisers));
+          return true;
+        } catch (e) {
+          console.error('Error saving advertisers:', e);
+          return false;
+        }
+      }
+
+      static loadSelectedAdvertiser() {
+        try {
+          const rawObj = localStorage.getItem(APP_CONFIG.STORAGE_KEYS.SELECTED_DATA);
+          if (rawObj) return JSON.parse(rawObj);
+          
+          const selectedId = localStorage.getItem(APP_CONFIG.STORAGE_KEYS.SELECTED_ID);
+          if (selectedId) {
+            const advertisers = this.loadAdvertisers();
+            return advertisers.find(a => String(a.id) === String(selectedId)) || null;
+          }
+          
+          const advertisers = this.loadAdvertisers();
+          return advertisers.length ? advertisers[0] : null;
+        } catch (e) {
+          console.error('Error loading selected advertiser:', e);
+          return null;
+        }
+      }
+
+      static saveSelectedAdvertiser(advertiser) {
+        try {
+          localStorage.setItem(APP_CONFIG.STORAGE_KEYS.SELECTED_DATA, JSON.stringify(advertiser));
+          localStorage.setItem(APP_CONFIG.STORAGE_KEYS.SELECTED_ID, advertiser.id);
+          return true;
+        } catch (e) {
+          console.error('Error saving selected advertiser:', e);
+          return false;
+        }
+      }
+    }
+
+    // Data Binding System
+    class DataBinder {
+      static bindAll(key, value, fallback = '—') {
+        const nodes = document.querySelectorAll(`[data-bind="${key}"]`);
+        const text = (value != null && String(value).trim() !== '') ? value : fallback;
+        
+        nodes.forEach(el => {
+          if (el.tagName === 'INPUT' || el.tagName === 'SELECT') {
+            el.value = text;
+            el.setAttribute('data-original', text);
+          } else {
+            el.textContent = text;
+            this.handleSpecialBinding(key, text);
+          }
+        });
+      }
+
+      static handleSpecialBinding(key, text) {
+        if (key === 'adv.account') {
+          const accountDisplay = document.getElementById('accountDisplay');
+          const accountLookupBtn = document.getElementById('accountLookupBtn');
+          
+          if (accountDisplay && accountLookupBtn) {
+            if (text && text !== '—' && text !== 'N/A' && text.trim() !== '') {
+              accountDisplay.classList.remove('hidden');
+              accountLookupBtn.classList.add('hidden');
+            } else {
+              accountDisplay.classList.add('hidden');
+              accountLookupBtn.classList.remove('hidden');
+            }
+          }
+        }
+      }
+
+      static initializeData() {
+        const adv = DataManager.loadSelectedAdvertiser();
+        
+        if (adv) {
+          this.bindAll('adv.name', adv.name, 'No advertiser found');
+          this.bindAll('adv.id', adv.id, '');
+          this.bindAll('adv.account', adv.account, '');
+          this.bindAll('adv.state', adv.status, 'N/A');
+          this.bindAll('adv.website', adv.website, 'N/A');
+        } else {
+          this.bindAll('adv.name', 'No advertiser found', 'No advertiser found');
+          this.bindAll('adv.id', '', '');
+          this.bindAll('adv.account', '', '');
+          this.bindAll('adv.state', 'N/A', 'N/A');
+          this.bindAll('adv.website', 'N/A', 'N/A');
+        }
+      }
+    }
+
+    // Duplicate Detection System
+    class DuplicateDetector {
+      static findDuplicates(candidate) {
+        const list = DataManager.loadAdvertisers();
+        const matches = [];
+        const candName = (candidate.name || '').trim().toLowerCase();
+        const candAccount = (candidate.account || '').trim();
+        
+        // Define placeholder/empty values that shouldn't trigger duplicates
+        const emptyValues = ['', 'n/a', 'na', '—', 'loading…', 'no advertiser found', 'select account'];
+        
+        list.forEach(a => {
+          const existingName = (String(a.name || '').trim().toLowerCase());
+          const existingAccount = (String(a.account || '').trim());
+          
+          // Skip if either name is empty/placeholder
+          const nameMatch = candName && 
+                           !emptyValues.includes(candName) && 
+                           !emptyValues.includes(existingName) &&
+                           existingName === candName;
+          
+          // Skip if either account is empty/placeholder  
+          const accountMatch = candAccount && 
+                              existingAccount &&
+                              !emptyValues.includes(candAccount.toLowerCase()) && 
+                              !emptyValues.includes(existingAccount.toLowerCase()) &&
+                              existingAccount === candAccount;
+          
+          if (nameMatch || accountMatch) {
+            matches.push({ id: a.id, name: a.name, account: a.account });
+          }
+        });
+        
+        return matches;
+      }
+
+      // Debug method to clean localStorage
+      static cleanStaleData() {
+        const advertisers = DataManager.loadAdvertisers();
+        const cleaned = advertisers.filter(adv => {
+          const name = (adv.name || '').trim().toLowerCase();
+          const emptyValues = ['', 'n/a', 'na', '—', 'loading…', 'no advertiser found', 'created 1'];
+          return !emptyValues.includes(name) && name.length > 0;
+        });
+        
+        DataManager.saveAdvertisers(cleaned);
+        console.log(`Cleaned ${advertisers.length - cleaned.length} stale records from localStorage`);
+        return cleaned;
+      }
+
+      static initModal() {
+        const modal = document.getElementById('duplicateWarningModal');
+        const list = document.getElementById('duplicateList');
+        const cancelBtn = document.getElementById('duplicateCancelBtn');
+        const proceedBtn = document.getElementById('duplicateProceedBtn');
+        const closeX = document.getElementById('duplicateCloseX');
+        
+        let proceedCallback = null;
+
+        const closeModal = () => {
+          if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            list.innerHTML = '';
+            proceedCallback = null;
+          }
+        };
+
+        const openModal = (matches, onProceed) => {
+          if (!modal) return;
+          
+          list.innerHTML = '';
+          matches.forEach(m => {
+            const li = document.createElement('li');
+            li.textContent = `${m.name || '(no name)'}${m.account ? ' — Account: ' + m.account : ''} (ID: ${m.id})`;
+            list.appendChild(li);
+          });
+          
+          proceedCallback = onProceed;
+          modal.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        };
+
+        if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+        if (closeX) closeX.addEventListener('click', closeModal);
+        if (proceedBtn) {
+          proceedBtn.addEventListener('click', () => {
+            closeModal();
+            if (typeof proceedCallback === 'function') proceedCallback();
+          });
+        }
+
+        return { openModal, closeModal };
+      }
+    }
+
+    // External Provisioning System
+    class ExternalProvisioner {
+      constructor() {
+        this.modal = document.getElementById('externalCommitModal');
+        this.systemsList = document.getElementById('externalSystemsList');
+        this.summary = document.getElementById('externalSummary');
+        this.summaryText = document.getElementById('externalSummaryText');
+        this.retryBtn = document.getElementById('externalRetryBtn');
+        this.continueBtn = document.getElementById('externalContinueBtn');
+        this.closeBtn = document.getElementById('externalCloseBtn');
+        
+        this.initModal();
+      }
+
+      delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      updateSystemStatus(key, status, message) {
+        const icon = document.getElementById(`sysIcon_${key}`);
+        const statusMsg = document.getElementById(`sysMsg_${key}`);
+        const statusCell = document.getElementById(`sysStatus_${key}`);
+        
+        if (!icon || !statusMsg || !statusCell) return;
+        
+        statusMsg.textContent = message || '';
+        statusCell.innerHTML = '';
+        
+        switch (status) {
+          case 'in-progress':
+            statusCell.innerHTML = `<svg class="animate-spin w-5 h-5 text-gray-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none" stroke-dasharray="60" /></svg>`;
+            break;
+          case 'success':
+            statusCell.innerHTML = `<svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M20 6L9 17l-5-5"/></svg>`;
+            icon.className = 'w-8 h-8 flex items-center justify-center rounded-full bg-green-50';
+            break;
+          case 'failed':
+            statusCell.innerHTML = `<svg class="w-5 h-5 text-red-600" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
+            icon.className = 'w-8 h-8 flex items-center justify-center rounded-full bg-red-50';
+            break;
+          case 'skipped':
+            statusCell.innerHTML = `<span class="text-xs text-gray-500">Skipped</span>`;
+            icon.className = 'w-8 h-8 flex items-center justify-center rounded-full bg-gray-50';
+            break;
+        }
+      }
+
+      async runExternalTasks(newAdvertiser) {
+        const failed = [];
+        let beaconSuccess = false;
+
+        // Helper: map system.key to platform flag name used on the advertiser object
+        const systemToPlatformMap = {
+          'TradeDesk': 'tradeDesk',
+          'DV360': 'dv360',
+          'SimpliFi': 'gcm' // treat SimpliFi as GCM/similar platform if applicable
+        };
+
+        // Helper: check if the platform has required configuration
+        const isPlatformConfigured = (platformKey, settings) => {
+          if (!platformKey) return false;
+          switch (platformKey) {
+            case 'gcm':
+              return !!(settings?.gcm?.vertical);
+            case 'tradeDesk':
+              return !!(settings?.tradeDesk?.partner && settings?.tradeDesk?.domain);
+            case 'dv360':
+              return !!(settings?.dv360?.status && settings?.dv360?.currency && settings?.dv360?.website && settings?.dv360?.adServer);
+            default:
+              return false;
+          }
+        };
+
+        // Always run Beacon first
+        const beaconSystem = APP_CONFIG.SYSTEMS.find(s => s.key === 'Beacon');
+        if (beaconSystem) {
+          this.updateSystemStatus(beaconSystem.key, 'in-progress', 'Connecting...');
+          await this.delay(APP_CONFIG.TIMEOUTS.SYSTEM_DELAY);
+          const beaconWillFail = Math.random() < beaconSystem.failRate;
+          if (beaconWillFail) {
+            this.updateSystemStatus(beaconSystem.key, 'failed', 'Failed to create record in Beacon');
+            failed.push({ key: beaconSystem.key, label: beaconSystem.label, reason: 'Beacon create failed', skipped: false });
+            beaconSuccess = false;
+
+            // mark all remaining systems skipped due to parent failure
+            APP_CONFIG.SYSTEMS.forEach(s => {
+              if (s.key !== 'Beacon') {
+                this.updateSystemStatus(s.key, 'skipped', 'Parent record was not created.');
+                failed.push({ key: s.key, label: s.label, reason: 'Parent record was not created.', skipped: true });
+              }
+            });
+            return { beaconSuccess: false, failed };
+          } else {
+            this.updateSystemStatus(beaconSystem.key, 'success', 'Beacon record created');
+            // Persist advertiser when Beacon succeeds
+            try {
+              const advertisers = DataManager.loadAdvertisers();
+              const exists = advertisers.some(a => String(a.id) === String(newAdvertiser.id));
+              if (!exists) advertisers.unshift(newAdvertiser);
+              DataManager.saveAdvertisers(advertisers);
+              DataManager.saveSelectedAdvertiser(newAdvertiser);
+            } catch (e) {
+              console.error('Error persisting advertiser after Beacon success', e);
+            }
+            beaconSuccess = true;
+          }
+        }
+
+        // Run other systems only if selected and properly configured
+        for (let i = 0; i < APP_CONFIG.SYSTEMS.length; i++) {
+          const system = APP_CONFIG.SYSTEMS[i];
+          if (system.key === 'Beacon') continue;
+
+          // Determine corresponding platform flag
+          const platformKey = systemToPlatformMap[system.key];
+          const selected = !!newAdvertiser.platforms?.[platformKey];
+          const configured = isPlatformConfigured(platformKey, newAdvertiser.platformSettings);
+
+          if (!selected) {
+            this.updateSystemStatus(system.key, 'skipped', 'Not selected');
+            continue;
+          }
+
+          if (!configured) {
+            this.updateSystemStatus(system.key, 'skipped', 'Not configured');
+            failed.push({ key: system.key, label: system.label, reason: 'Not configured', skipped: true });
+            continue;
+          }
+
+          // Attempt the system
+          this.updateSystemStatus(system.key, 'in-progress', 'Connecting...');
+          await this.delay(APP_CONFIG.TIMEOUTS.SYSTEM_DELAY);
+          const willFail = Math.random() < system.failRate;
+          if (willFail) {
+            this.updateSystemStatus(system.key, 'failed', `${system.label} create failed`);
+            failed.push({ key: system.key, label: system.label, reason: 'Create failed', skipped: false });
+          } else {
+            this.updateSystemStatus(system.key, 'success', `${system.label} record created`);
+          }
+        }
+
+         return { beaconSuccess, failed };
+       }
+
+      renderSystemRows(newAdvertiser) {  // <-- Add the parameter here
+        this.systemsList.innerHTML = '';
+        if (!newAdvertiser) return;
+ 
+        const systemToPlatformMap = {
+          'TradeDesk': 'tradeDesk',
+          'DV360': 'dv360',
+          'SimpliFi': 'gcm'
+        };
+ 
+        APP_CONFIG.SYSTEMS.forEach(system => {
+          // Always include Beacon; include others only when the corresponding platform is selected
+          if (system.key !== 'Beacon') {
+            const platformKey = systemToPlatformMap[system.key];
+            if (!platformKey || !newAdvertiser.platforms?.[platformKey]) return;
+          }
+ 
+          const li = document.createElement('li');
+          li.className = 'flex items-center justify-between p-3 border border-gray-100 rounded-md mb-2';
+          li.id = `sysRow_${system.key}`;
+          li.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100" id="sysIcon_${system.key}">
+                <svg class="w-4 h-4 text-gray-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /></svg>
+              </div>
+              <div>
+                <div class="text-sm font-medium text-gray-900">${system.label}</div>
+                <div class="text-xs text-gray-500" id="sysMsg_${system.key}">Pending</div>
+              </div>
+            </div>
+            <div id="sysStatus_${system.key}"></div>
+          `;
+          this.systemsList.appendChild(li);
+        });
+      }
+
+      async openModal(newAdvertiser) {
+        if (!this.modal) return;
+        
+        // Reset UI
+        this.summary.classList.add('hidden');
+        this.retryBtn.classList.add('hidden');
+        this.continueBtn.classList.add('hidden');
+        this.closeBtn.disabled = true;
+        
+        // Render only the systems that will be run for this advertiser (Beacon always + selected platforms)
+        this.renderSystemRows(newAdvertiser);
+        this.modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+ 
+        const result = await this.runExternalTasks(newAdvertiser);
+        this.closeBtn.disabled = false;
+ 
+        if (!result.beaconSuccess) {
+          const listText = result.failed.map(f => 
+            `${f.label}: ${f.reason}${f.skipped ? ' (skipped)' : ''}`
+          ).join('; ');
+          
+          this.summaryText.textContent = `Creation failed: ${listText}`;
+          this.summary.classList.remove('hidden');
+          this.retryBtn.classList.remove('hidden');
+          this.retryBtn.onclick = () => this.openModal(newAdvertiser);
+          return { success: false, details: result };
+        }
+ 
+        // Beacon succeeded
+        if (result.failed && result.failed.length > 0) {
+          const listText = result.failed.map(f => 
+            `${f.label}: ${f.reason}${f.skipped ? ' (skipped)' : ''}`
+          ).join('; ');
+          
+          this.summaryText.textContent = `One or more external systems failed or were skipped: ${listText}`;
+          this.summary.classList.remove('hidden');
+          this.continueBtn.classList.remove('hidden');
+          this.retryBtn.classList.remove('hidden');
+          
+          this.continueBtn.onclick = () => {
+            this.closeModal();
+            window.location.href = './WFAdvertiserDetails.html';
+          };
+          this.retryBtn.onclick = () => this.openModal(newAdvertiser);
+          return { success: true, partial: true, details: result };
+        }
+ 
+        // All succeeded
+        // Ensure success icon/checkmark is visible for at least 1500ms before navigating away
+        this.showToast('Advertiser created successfully!');
+        await this.delay(1500);
+        this.closeModal();
+        setTimeout(() => {
+          window.location.href = './WFAdvertiserDetails.html';
+        }, 50);
+        
+        return { success: true, partial: false, details: result };
+      }
+
+      closeModal() {
+        if (this.modal) {
+          this.modal.classList.add('hidden');
+          document.body.style.overflow = 'auto';
+        }
+      }
+
+      initModal() {
+        if (this.closeBtn) {
+          this.closeBtn.addEventListener('click', () => {
+            if (!this.closeBtn.disabled) this.closeModal();
+          });
+        }
+
+        const closeX = document.getElementById('externalCloseX');
+        if (closeX) {
+          closeX.addEventListener('click', () => {
+            if (!this.closeBtn.disabled) this.closeModal();
+          });
+        }
+      }
+
+      showToast(message) {
+        if (window.toast && typeof window.toast.success === 'function') {
+          window.toast.success(message, APP_CONFIG.TIMEOUTS.TOAST);
+        } else {
+          console.log('TOAST:', message);
+        }
+      }
+    }
+
+    // Field Editor System
+    class FieldEditor {
+      static init() {
+        const editableInputs = document.querySelectorAll('input[data-bind][data-original], select[data-bind][data-original]');
+        
+        editableInputs.forEach(input => {
+          const actionsDiv = input.parentNode.querySelector('.field-actions');
+          const saveBtn = actionsDiv?.querySelector('.save-field');
+          const cancelBtn = actionsDiv?.querySelector('.cancel-field');
+
+          const showActions = () => {
+            if (actionsDiv) actionsDiv.classList.remove('hidden');
+          };
+
+          const hideActions = () => {
+            if (actionsDiv) actionsDiv.classList.add('hidden');
+          };
+
+          const checkForChanges = () => {
+            const original = input.getAttribute('data-original') || '';
+            const current = input.value || '';
+            if (original !== current) {
+              showActions();
+            } else {
+              hideActions();
+            }
+          };
+
+          input.addEventListener('input', checkForChanges);
+          input.addEventListener('focus', checkForChanges);
+
+          if (saveBtn) {
+            saveBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const success = this.saveField(input, input.value);
+              if (success) {
+                hideActions();
+                input.style.borderColor = 'var(--success-green)';
+                setTimeout(() => {
+                  input.style.borderColor = '';
+                }, 1000);
+              }
+            });
+          }
+
+          if (cancelBtn) {
+            cancelBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const original = input.getAttribute('data-original') || '';
+              input.value = original;
+              hideActions();
+            });
+          }
+
+          document.addEventListener('click', (e) => {
+            if (!input.contains(e.target) && !actionsDiv?.contains(e.target)) {
+              checkForChanges();
+            }
+          });
+        });
+      }
+
+      static saveField(input, newValue) {
+        const selectedId = localStorage.getItem(APP_CONFIG.STORAGE_KEYS.SELECTED_ID);
+        if (!selectedId) return false;
+
+        try {
+          const advertisers = DataManager.loadAdvertisers();
+          const advIndex = advertisers.findIndex(a => String(a.id) === String(selectedId));
+          
+          if (advIndex !== -1) {
+            const bindKey = input.getAttribute('data-bind');
+            
+            switch (bindKey) {
+              case 'adv.name':
+                advertisers[advIndex].name = newValue;
+                DataBinder.bindAll('adv.name', newValue);
+                break;
+              case 'adv.state':
+                advertisers[advIndex].status = newValue;
+                DataBinder.bindAll('adv.state', newValue);
+                break;
+              case 'adv.website':
+                advertisers[advIndex].website = newValue;
+                DataBinder.bindAll('adv.website', newValue);
+                break;
+            }
+            
+            DataManager.saveAdvertisers(advertisers);
+            DataManager.saveSelectedAdvertiser(advertisers[advIndex]);
+            input.setAttribute('data-original', newValue);
+            return true;
+          }
+        } catch (e) {
+          console.error('Error saving field:', e);
+        }
+        return false;
+      }
+    }
+
+    // Platform Manager
+    class PlatformManager {
+      static init() {
+        this.loadConfiguration();
+        this.initModal();
+      }
+
+      static loadConfiguration() {
+        try {
+          const advertiserData = DataManager.loadSelectedAdvertiser();
+          const platforms = advertiserData?.platforms || {};
+          this.updateDisplay(platforms);
+          this.loadSettings(advertiserData);
+        } catch (e) {
+          console.error('Error loading platform configuration:', e);
+          this.showNoPlatforms();
+        }
+      }
+
+      static updateDisplay(platforms) {
+        const hasAnyPlatform = platforms && (platforms.gcm || platforms.tradeDesk || platforms.dv360);
+        const elements = {
+          gcmCard: document.getElementById('gcmPlatformCard'),
+          tradeDeskCard: document.getElementById('tradeDeskPlatformCard'),
+          dv360Card: document.getElementById('dv360PlatformCard'),
+          platformContainer: document.getElementById('platformConfigHeader'),
+          noPlatformsMessage: document.getElementById('noPlatformsMessage')
+        };
+
+        if (elements.gcmCard) elements.gcmCard.classList.toggle('hidden', !(platforms?.gcm));
+        if (elements.tradeDeskCard) elements.tradeDeskCard.classList.toggle('hidden', !(platforms?.tradeDesk));
+        if (elements.dv360Card) elements.dv360Card.classList.toggle('hidden', !(platforms?.dv360));
+        if (elements.platformContainer) elements.platformContainer.classList.toggle('hidden', !hasAnyPlatform);
+        if (elements.noPlatformsMessage) elements.noPlatformsMessage.classList.add('hidden');
+      }
+
+      static showNoPlatforms() {
+        const elements = ['gcmPlatformCard', 'tradeDeskPlatformCard', 'dv360PlatformCard', 'platformConfigHeader'];
+        elements.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('hidden');
+        });
+      }
+
+      static loadSettings(advertiserData) {
+        // Load platform-specific settings
+        if (advertiserData?.platformSettings) {
+          const { gcm, tradeDesk, dv360 } = advertiserData.platformSettings;
+          
+          if (gcm?.vertical) {
+            const gcmVertical = document.getElementById('gcmVertical');
+            if (gcmVertical) gcmVertical.value = gcm.vertical;
+          }
+          
+          if (tradeDesk) {
+            const fields = ['tdPartner', 'tdDomain', 'tdCountry', 'tdEU'];
+            fields.forEach(fieldId => {
+              const field = document.getElementById(fieldId);
+              const key = fieldId.replace('td', '').toLowerCase();
+              if (field && tradeDesk[key]) field.value = tradeDesk[key];
+            });
+          }
+          
+          if (dv360) {
+            const fields = ['dvStatus', 'dvCurrency', 'dvWebsite', 'dvAdServer'];
+            fields.forEach(fieldId => {
+              const field = document.getElementById(fieldId);
+              const key = fieldId.replace('dv', '').toLowerCase();
+              if (field && dv360[key]) field.value = dv360[key];
+            });
+          }
+        }
+      }
+
+      static initModal() {
+        const elements = {
+          editBtn: document.getElementById('editPlatformsBtn'),
+          modal: document.getElementById('editPlatformsModal'),
+          closeX: document.getElementById('closePlatformsModalX'),
+          cancelBtn: document.getElementById('cancelPlatformsBtn'),
+          saveBtn: document.getElementById('savePlatformsBtn'),
+          gcmCheckbox: document.getElementById('editGCMCheckbox'),
+          tradeDeskCheckbox: document.getElementById('editTradeDeskCheckbox'),
+          dv360Checkbox: document.getElementById('editDV360Checkbox')
+        };
+
+        const closeModal = () => {
+          if (elements.modal) {
+            elements.modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+          }
+        };
+
+        const openModal = () => {
+          try {
+            const advertiserData = DataManager.loadSelectedAdvertiser();
+            const platforms = advertiserData?.platforms || {};
+            
+            if (elements.gcmCheckbox) elements.gcmCheckbox.checked = !!platforms.gcm;
+            if (elements.tradeDeskCheckbox) elements.tradeDeskCheckbox.checked = !!platforms.tradeDesk;
+            if (elements.dv360Checkbox) elements.dv360Checkbox.checked = !!platforms.dv360;
+            
+            if (elements.modal) {
+              elements.modal.classList.remove('hidden');
+              document.body.style.overflow = 'hidden';
+            }
+          } catch (e) {
+            console.error('Error opening platforms modal:', e);
+          }
+        };
+
+        if (elements.editBtn) elements.editBtn.addEventListener('click', openModal);
+        if (elements.closeX) elements.closeX.addEventListener('click', closeModal);
+        if (elements.cancelBtn) elements.cancelBtn.addEventListener('click', closeModal);
+        
+        if (elements.saveBtn) {
+          elements.saveBtn.addEventListener('click', () => {
+            try {
+              const advertiserData = DataManager.loadSelectedAdvertiser();
+              const advertisers = DataManager.loadAdvertisers();
+              const selectedId = localStorage.getItem(APP_CONFIG.STORAGE_KEYS.SELECTED_ID);
+              
+              const newPlatforms = {
+                gcm: elements.gcmCheckbox?.checked || false,
+                tradeDesk: elements.tradeDeskCheckbox?.checked || false,
+                dv360: elements.dv360Checkbox?.checked || false
+              };
+              
+              if (advertiserData) {
+                advertiserData.platforms = newPlatforms;
+                
+                const advIndex = advertisers.findIndex(a => String(a.id) === String(selectedId));
+                if (advIndex !== -1) {
+                  advertisers[advIndex].platforms = newPlatforms;
+                  DataManager.saveAdvertisers(advertisers);
+                }
+                
+                DataManager.saveSelectedAdvertiser(advertiserData);
+                this.updateDisplay(newPlatforms);
+                closeModal();
+                
+                if (window.toast?.success) {
+                  window.toast.success('Platform configuration updated successfully', APP_CONFIG.TIMEOUTS.TOAST);
+                }
+              }
+            } catch (e) {
+              console.error('Error saving platform configuration:', e);
+              alert('Error saving platform configuration. Please try again.');
+            }
+          });
+        }
+      }
+    }
+
+    // Application Initialization
+    class App {
+      static init() {
+        // Initialize data binding
+        DataBinder.initializeData();
+        
+        // Initialize duplicate detection
+        const duplicateModal = DuplicateDetector.initModal();
+        
+        // Initialize external provisioning
+        const provisioner = new ExternalProvisioner();
+        
+        // Initialize field editing
+        FieldEditor.init();
+        
+        // Initialize platform management
+        PlatformManager.init();
+        
+        // Initialize create advertiser flow
+        this.initCreateFlow(duplicateModal, provisioner);
+        
+        // Initialize cancel button
+        this.initCancelButton();
+        
+        // Initialize account display
+        this.initAccountDisplay();
+      }
+
+      static initCreateFlow(duplicateModal, provisioner) {
+        const createBtn = document.getElementById('createAdvertiserBtn');
+        
+        if (createBtn) {
+          createBtn.addEventListener('click', async (e) => {
+            if (createBtn.disabled) return;
+            
+            createBtn.disabled = true;
+            
+            try {
+              const newAdvertiser = this.buildAdvertiserObject();
+              const duplicates = DuplicateDetector.findDuplicates(newAdvertiser);
+              
+              if (duplicates.length > 0) {
+                duplicateModal.openModal(duplicates, async () => {
+                  await provisioner.openModal(newAdvertiser);
+                  createBtn.disabled = false;
+                });
+              } else {
+                await provisioner.openModal(newAdvertiser);
+              }
+            } catch (e) {
+              console.error('Error in create flow:', e);
+              alert('Error creating advertiser. Please try again.');
+            } finally {
+              createBtn.disabled = false;
+            }
+          });
+        }
+      }
+
+      static buildAdvertiserObject() {
+        const getName = () => {
+          return (document.getElementById('companyName')?.value || '').trim() ||
+                 (document.getElementById('advertiserName')?.value || '').trim() || '';
+        };
+
+        const getAccount = () => {
+          const accInput = document.getElementById('accountNumber');
+          const accDisplay = document.getElementById('accountDisplay');
+          return (accInput?.value || '').trim() || (accDisplay?.textContent || '').trim() || '';
+        };
+
+        // Read platform selections from the Edit Platforms modal checkboxes (if present).
+        // Default to stored selected advertiser platforms if user hasn't opened the modal.
+        let platforms = { gcm: false, tradeDesk: false, dv360: false };
+        try {
+          const stored = DataManager.loadSelectedAdvertiser();
+          platforms = stored?.platforms || platforms;
+        } catch (e) {
+          // noop - keep defaults
+        }
+
+        const gcmCheckbox = document.getElementById('editGCMCheckbox');
+        const tradeDeskCheckbox = document.getElementById('editTradeDeskCheckbox');
+        const dv360Checkbox = document.getElementById('editDV360Checkbox');
+        if (gcmCheckbox) platforms.gcm = !!gcmCheckbox.checked;
+        if (tradeDeskCheckbox) platforms.tradeDesk = !!tradeDeskCheckbox.checked;
+        if (dv360Checkbox) platforms.dv360 = !!dv360Checkbox.checked;
+
+        // Collect platform-specific settings from the form so the provisioner can validate them.
+        const platformSettings = {
+          gcm: {
+            vertical: document.getElementById('gcmVertical')?.value?.trim() || ''
+          },
+          tradeDesk: {
+            partner: document.getElementById('tdPartner')?.value?.trim() || '',
+            domain: document.getElementById('tdDomain')?.value?.trim() || ''
+          },
+          dv360: {
+            status: document.getElementById('dvStatus')?.value?.trim() || '',
+            currency: document.getElementById('dvCurrency')?.value?.trim() || '',
+            website: document.getElementById('dvWebsite')?.value?.trim() || '',
+            adServer: document.getElementById('dvAdServer')?.value?.trim() || ''
+          }
+        };
+
+        return {
+          id: 'ADV000' + Date.now().toString().slice(-6),
+          name: getName(),
+          account: getAccount() || '',
+          status: document.getElementById('advertiserState')?.value || 'Active',
+          website: (document.getElementById('advertiserWebsite')?.value || '').trim() || '',
+          campaign: '',
+          adGroup: '',
+          owner: 'Current User',
+          unreadable2: '',
+          platforms: platforms,
+          platformSettings: platformSettings
+        };
+      }
+
+      static initCancelButton() {
+        const cancelBtn = document.getElementById('cancelAdvertiserBtn');
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+              window.location.href = './WFAdvertiserList.html';
+            }
+          });
+        }
+      }
+
+      static initAccountDisplay() {
+        const accountDisplay = document.getElementById('accountDisplay');
+        const accountLookupBtn = document.getElementById('accountLookupBtn');
+        
+        const updateAccountDisplay = () => {
+          const accountValue = accountDisplay?.textContent?.trim();
+          if (accountValue && accountValue !== '—' && accountValue !== '' && accountValue !== 'N/A') {
+            accountDisplay?.classList.remove('hidden');
+            accountLookupBtn?.classList.add('hidden');
+          } else {
+            accountDisplay?.classList.add('hidden');
+            accountLookupBtn?.classList.remove('hidden');
+          }
+        };
+        
+        // Initialize and watch for changes
+        if (accountDisplay && accountLookupBtn) {
+          accountDisplay.classList.remove('hidden');
+          accountLookupBtn.classList.add('hidden');
+          
+          setTimeout(updateAccountDisplay, 50);
+          setTimeout(updateAccountDisplay, 200);
+          setTimeout(updateAccountDisplay, 500);
+          
+          const observer = new MutationObserver(updateAccountDisplay);
+          observer.observe(accountDisplay, { childList: true, subtree: true });
+        }
+      }
+    }
+
+    // Initialize application when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      App.init();
+    });
+  </script>
+</body>
+</html>

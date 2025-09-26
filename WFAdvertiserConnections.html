@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beacon - Ad Groups</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./assets/toast.css">
+  <script src="./assets/campaignConfig.js" defer></script>
+  <script src="./assets/notifications.js"></script>
+  <script src="./assets/toast.js" defer></script>
+  <script src="./assets/sidebar.js" defer></script>
+  <link rel="stylesheet" href="./assets/theme.css">
+  <link rel="stylesheet" href="./assets/loading.css">
+  <script src="./assets/loading.js" defer></script>
+  <style>
+    body { font-family: 'apple-system', 'Segoe UI', 'Roboto', 'Inter', sans-serif; }
+
+    /* Search component styles */
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border-radius: 0.375rem;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      height: 40px;
+      width: 50px;
+      overflow: hidden;
+    }
+
+    .search-wrapper.expanded {
+      width: 300px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 5px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease;
+    }
+
+    .search-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #666;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 8px 40px 8px 40px;
+      font-size: 14px;
+      color: #333;
+      opacity: 0;
+      transition: opacity 0.2s ease 0.1s;
+    }
+
+    .search-input::placeholder {
+      color: #999;
+    }
+
+    .search-wrapper.expanded .search-input {
+      opacity: 1;
+      background-color: white;
+      height: 80%;
+      border: #c5c4c4 1px solid;
+      border-radius: .375rem;
+    }
+
+    .clear-button {
+      position: absolute;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      z-index: 2;
+    }
+
+    .clear-button svg {
+      width: 100%;
+      height: 100%;
+      fill: #666;
+    }
+
+    .clear-button:hover svg {
+      fill: #333;
+    }
+
+    .clear-button.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
+</head>
+
+<body class="font-inter">
+  <div class="flex h-screen flex-col">
+    <!-- Header -->
+    <header class="border-b border-strong shadow-sm app-header">
+      <div class="flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-3">
+          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+        </div>
+
+        <nav class="flex items-center gap-3 ml-auto">
+            <a href="./WFAdvertiserList.html" class="text-base text-white hover:text-blue-100" style="font-size: 1.5rem; padding-right: 15px;" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
+            Advertisers
+            </a>
+          <span class="text-white select-none">|</span>
+
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notificationButton" class="p-2 rounded-md  text-white relative" title="Notifications" aria-label="View notifications" onmouseover="this.style.backgroundColor=''" onmouseout="this.style.backgroundColor=''" >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+              <div class="p-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                  <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                </div>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div id="notificationList">
+                  <!-- Sample items -->
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">Campaign Performance Alert</p>
+                        <p class="text-xs text-gray-500 mt-1">"Summer Sale" exceeded budget by 15%</p>
+                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">New Advertiser Added</p>
+                        <p class="text-xs text-gray-500 mt-1">Stallion Services LLC onboarded</p>
+                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="true">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-700">Account Sync Complete</p>
+                        <p class="text-xs text-gray-500 mt-1">CRM sync finished for 12 accounts</p>
+                        <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waffle Menu -->
+          <div class="relative">
+            <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+              </svg>
+            </button>
+            <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+          <div class="flex items-center gap-3">
+            <img src="./assets/advertiser.png" alt="Advertiser" class="w-9 h-9 rounded-full" data-sidebar-avatar />
+            <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Advertiser</h2>
+          </div>
+          <button id="sidebarToggle" class="p-1 rounded hover:bg-gray-100" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse/Expand">
+            <!-- Shown when expanded (collapse icon) -->
+            <svg id="iconCollapse" class="w-5 h-5 text-gray-900" viewBox="0 0 26 26" fill="currentColor">
+              <path fill="#000000" d="M21.5 11.5h-8.793l3.035-3.035a.5.5 0 10-.707-.707l-3.888 3.888a.518.518 0 00-.109.163.505.505 0 000 .382.518.518 0 00.109.163l3.888 3.888a.5.5 0 00.707-.707L12.707 12.5H21.5a.5.5 0 000-1zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z">
+	            </path>
+            </svg>
+            <!-- Shown when collapsed (expand icon) -->
+            <svg id="iconExpand" class="w-5 h-5 text-gray-900 hidden" viewBox="0 0 26 26" fill="currentColor">
+              <path fill="#000000" d="M21.962 12.191a.505.505 0 000-.382.518.518 0 00-.109-.163l-3.888-3.888a.5.5 0 10-.707.707l3.035 3.035H11.5a.5.5 0 000 1h8.793l-3.035 3.035a.5.5 0 10.707.707l3.888-3.888a.518.518 0 00.109-.163zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z">
+	            </path>
+            </svg>
+          </button>
+        </div>
+
+        <ul class="space-y-1 mt-4">
+          <li>
+            <a href="./WFAdvertiserDetails.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+              <span data-link-label>Details</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserSalesOrder.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
+              <span data-link-label>Sales Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="./WFAdvertiserConnections.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+              <span data-link-label>Connections (P2)</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserCampaigns.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
+              <span data-link-label>Campaigns</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserAdGroup.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
+              <span data-link-label>Ad Groups</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+       <div class="app-card rounded-lg shadow-lg overflow-hidden">
+          <!-- Advertiser Header -->
+          <div class="px-4 pt-4">
+            <div class="flex items-start gap-4 mb-3">
+              <div class="flex-1">
+                <h1 data-bind="adv.name" class="text-xl md:text-2xl font-semibold text-gray-900">Loading…</h1>
+                <div class="flex justify-between items-center">
+                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                </div>
+              </div>
+            </div>
+            <hr class="app-divider mp-4">
+          </div>
+
+          <!-- Page Header-->
+          <div class="px-4 pt-5">
+            <section class="space-y-2">
+              <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-semibold text-gray-900 mx-2">CONNECTIONS</h1>
+              </div>
+            </section>
+          </div>
+
+          <!-- Toolbar -->
+          <div class="px-6 py-3">
+            <div class="mb-4">
+              <div class="flex items-center space-x-3  bg-[var(--tbl-head-bg)] border border-gray-300 rounded-md">
+                <!-- New Ad Group Button -->
+                <button id="createBtn" class="flex items-center h-10 px-3 rounded-md hover:bg-gray-50 transition" title="Create New Ad Group">
+                  <span class="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-gray-400 mr-2">
+                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                  </span>
+                  <span class="text-sm font-medium text-gray-700">New Connection</span>
+                </button>
+
+                <div class="h-6 border-l border-gray-300 mx-1"></div>
+
+                <!-- Filters -->
+                <div id="filtersGroup" class="flex items-center space-x-2">
+                  <div class="flex items-center px-2 h-10 rounded-md">
+                    <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01.293.707l-6.707 8.707V21l-4-2v-4.586L2.707 6.707A1 1 0 013 6V4z"></path>
+                    </svg>
+
+                    <!-- Platform Filter -->
+                    <div class="relative">
+                      <button id="platformChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="platform" title="Platform filter" type="button">
+                        <span id="platformChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
+                        </svg>
+                      </button>
+                      <div id="platformMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto min-w-max">
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Google Campaign Manager">Google Campaign Manager</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="The Trade Desk">The Trade Desk</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="SimpliFi">SimpliFi</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="StackAdapt">StackAdapt</button>
+                      </div>
+                    </div>
+
+                    <!-- Platform Type Filter -->
+                    <div class="relative">
+                      <button id="platformTypeChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="platformType" title="Platform Type filter" type="button">
+                        <span id="platformTypeChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
+                        </svg>
+                      </button>
+                      <div id="platformTypeMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto min-w-max">
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="DSP">DSP</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Ad Server">Ad Server</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="h-6 border-l border-gray-300 mx-1"></div>
+
+                <!-- Search -->
+                <div class="relative">
+                  <div class="search-container">
+                    <div class="search-wrapper" id="searchWrapper" style="height:40px;">
+                      <button id="searchToggle" class="search-icon" aria-label="Open search" type="button">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                      </button>
+                      <input type="text" id="searchInput" class="search-input" placeholder="Enter Platform Name" autocomplete="off" aria-label="Search campaigns" />
+                      <button id="searchClear" class="clear-button" aria-label="Clear search" type="button">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table -->
+              <div class="overflow-x-auto border border-default rounded-md">
+                <table id="campaignTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
+                  <colgroup>
+                    <col style="width:80px" />
+                    <col style="width:40%" />
+                    <col style="width:25%" />
+                    <col style="width:35%" />
+                  </colgroup>
+                  <thead class="tbl-head">
+                    <tr>
+                      <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
+                        <div class="px-6 py-2 whitespace-nowrap">Actions</div>
+                      </th>
+                      <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
+                        <div class="px-6 py-2 whitespace-nowrap">Platform</div>
+                      </th>
+                      <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
+                        <div class="px-6 py-2 whitespace-nowrap">Platform Type</div>
+                      </th>
+                      <th scope="col" class="text-sm font-medium uppercase tracking-wider">
+                        <div class="px-6 py-2 whitespace-nowrap">Record ID</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="campaignTableBody" class="divide-y">
+                  </tbody>
+                </table>
+              </div>
+
+            <!-- Footer -->
+            <div class="mt-4 flex items-center justify-between text-xs text-gray-500">
+              <span id="recordCount">0 of 0 showing</span>
+              <div id="pagination" class="flex space-x-2">
+                <!-- Pagination buttons will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    // === CONFIGURATION ===
+    const CONFIG = {
+      STORAGE_KEYS: {
+        DATA: 'adgroup_list_data',
+        PLATFORM_FILTER: 'adgroup_platform_filter',
+        PLATFORM_TYPE_FILTER: 'adgroup_platform_type_filter'
+      },
+      PAGINATION: { DEFAULT_ROWS: 15, MAX_ROWS: 200 }
+    };
+    
+    // === SAMPLE AD GROUP DATA ===
+    const DEFAULT_ADGROUPS = [
+      { platform: 'Google Campaign Manager', platformType: 'Ad Server', recordId: '31265-892' },
+      { platform: 'The Trade Desk',           platformType: 'DSP',       recordId: '712AB46G' },
+      { platform: 'SimpliFi',                 platformType: 'DSP',       recordId: '893472FTG-01' },
+      { platform: 'StackAdapt',               platformType: 'DSP',       recordId: '1065893' }
+    ];
+
+    // === MAIN APPLICATION ===
+    let app = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      app = {
+        adgroups: [],
+        currentPage: 1,
+        rowsPerPage: CONFIG.PAGINATION.DEFAULT_ROWS,
+        filters: { platform: 'All', platformType: 'All' },
+        searchQuery: '',
+        elements: {},
+        searchExpanded: false,
+
+        init: function() {
+          this.loadAdGroups();
+          this.cacheElements();
+          this.loadFilters();
+          this.initEventListeners();
+          this.applyFiltersAndRender();
+        },
+
+        loadAdGroups: function() {
+          try {
+            const storedRaw = localStorage.getItem(CONFIG.STORAGE_KEYS.DATA);
+            if (storedRaw) {
+              const parsed = JSON.parse(storedRaw);
+              // Validate stored format: expect non-empty array of objects with platform & recordId
+              const valid = Array.isArray(parsed) && parsed.length > 0 && parsed.every(it => it && (it.platform || it.recordId));
+              if (valid) {
+                this.adgroups = parsed;
+                return;
+              }
+            }
+
+            // No valid stored data — reset to DEFAULT_ADGROUPS and persist
+            this.adgroups = [...DEFAULT_ADGROUPS];
+            this.saveAdGroups();
+          } catch (e) {
+            console.warn('Failed to load ad groups, using defaults:', e);
+            this.adgroups = [...DEFAULT_ADGROUPS];
+          }
+        },
+
+        saveAdGroups: function() {
+          try {
+            // Always serialize the canonical data structure
+            localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(this.adgroups || []));
+          } catch (e) {
+            console.warn('Failed to save ad groups:', e);
+          }
+        },
+
+        loadFilters: function() {
+          this.filters.platform = localStorage.getItem(CONFIG.STORAGE_KEYS.PLATFORM_FILTER) || 'All';
+          this.filters.platformType = localStorage.getItem(CONFIG.STORAGE_KEYS.PLATFORM_TYPE_FILTER) || 'All';
+        },
+
+        saveFilter: function(type, value) {
+          this.filters[type] = value;
+          const keyMap = {
+            platform: CONFIG.STORAGE_KEYS.PLATFORM_FILTER,
+            platformType: CONFIG.STORAGE_KEYS.PLATFORM_TYPE_FILTER
+          };
+          try { localStorage.setItem(keyMap[type], value); } catch(e) { console.warn('Failed to save filter:', e); }
+        },
+
+        cacheElements: function() {
+          const ids = [
+            'menuButton','menuDropdown','notificationButton','notificationDropdown',
+            'createBtn',
+            'platformChip','platformChipLabel','platformMenu',
+            'platformTypeChip','platformTypeChipLabel','platformTypeMenu',
+            'searchWrapper','searchToggle','searchInput','searchClear','filtersGroup',
+            'campaignTableBody','recordCount','pagination'
+          ];
+          ids.forEach(id => this.elements[id] = document.getElementById(id));
+        },
+
+        initEventListeners: function() {
+          const self = this;
+
+          // Menu dropdown (waffle menu)
+          if (this.elements.menuButton && this.elements.menuDropdown) {
+            this.elements.menuButton.addEventListener('click', function(e) {
+              e.stopPropagation();
+              self.elements.menuDropdown.classList.toggle('hidden');
+              // Close other dropdowns
+              self.elements.platformMenu?.classList.add('hidden');
+              self.elements.platformTypeMenu?.classList.add('hidden');
+            });
+          }
+
+          // Create button -> New Ad Group
+          if (this.elements.createBtn) {
+            this.elements.createBtn.addEventListener('click', function() {
+              if (typeof showToast === 'function') showToast('Create Ad Group functionality to be implemented');
+            });
+          }
+
+          // Platform filter
+          if (this.elements.platformChip) {
+            this.elements.platformChip.addEventListener('click', function(e) {
+              e.stopPropagation();
+              self.elements.platformMenu.classList.toggle('hidden');
+              self.elements.platformTypeMenu?.classList.add('hidden');
+            });
+          }
+          this.elements.platformMenu?.addEventListener('click', function(e) {
+            const btn = e.target.closest('button'); if (!btn) return;
+            const value = btn.dataset.value;
+            self.elements.platformChipLabel.textContent = value === 'All' ? 'All' : value;
+            self.saveFilter('platform', value);
+            self.currentPage = 1;
+            self.closeAllDropdowns();
+            self.applyFiltersAndRender();
+          });
+
+          // Platform Type filter
+          if (this.elements.platformTypeChip) {
+            this.elements.platformTypeChip.addEventListener('click', function(e) {
+              e.stopPropagation();
+              self.elements.platformTypeMenu.classList.toggle('hidden');
+              self.elements.platformMenu?.classList.add('hidden');
+            });
+          }
+          this.elements.platformTypeMenu?.addEventListener('click', function(e) {
+            const btn = e.target.closest('button'); if (!btn) return;
+            const value = btn.dataset.value;
+            self.elements.platformTypeChipLabel.textContent = value === 'All' ? 'All' : value;
+            self.saveFilter('platformType', value);
+            self.currentPage = 1;
+            self.closeAllDropdowns();
+            self.applyFiltersAndRender();
+          });
+
+          // Search behavior (unchanged)
+          if (this.elements.searchToggle) {
+            this.elements.searchToggle.addEventListener('click', function(e) {
+              e.stopPropagation();
+              if (!self.searchExpanded) {
+                self.elements.searchWrapper.classList.add('expanded');
+                self.searchExpanded = true;
+                setTimeout(() => self.elements.searchInput?.focus(), 100);
+              }
+            });
+          }
+          this.elements.searchInput?.addEventListener('input', function(e) {
+            self.searchQuery = e.target.value;
+            self.updateSearchState();
+            self.currentPage = 1;
+            self.applyFiltersAndRender();
+          });
+          this.elements.searchClear?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (self.elements.searchInput) self.elements.searchInput.value = '';
+            self.searchQuery = '';
+            self.updateSearchState();
+            self.currentPage = 1;
+            self.applyFiltersAndRender();
+          });
+
+          // Row action delegation (Edit / Delete)
+          this.elements.campaignTableBody?.addEventListener('click', function(e) {
+            const btn = e.target.closest('button[data-action]');
+            if (!btn) return;
+            const action = btn.dataset.action;
+            if (action === 'edit') {
+              const tr = btn.closest('tr');
+              const platformCell = tr?.querySelector('td:nth-child(2)');
+              const platformName = platformCell ? platformCell.textContent.trim() : '';
+              if (platformName && window.openPlatformDetailsModal) {
+                window.openPlatformDetailsModal(platformName);
+              }
+              return;
+            } else if (action === 'delete') {
+              self.confirmDelete?.(btn.dataset.recordId);
+            }
+          });
+
+          // Close dropdowns on document click
+          document.addEventListener('click', function() { self.closeAllDropdowns(); });
+
+          // Pagination
+          this.elements.pagination?.addEventListener('click', function(e) {
+            const button = e.target.closest('button');
+            if (!button || button.disabled) return;
+            e.preventDefault();
+            const action = button.dataset.action;
+            const pageNum = parseInt(button.textContent);
+            if (action === 'prev' && self.currentPage > 1) self.currentPage--;
+            else if (action === 'next' && self.currentPage < self.getTotalPages()) self.currentPage++;
+            else if (!isNaN(pageNum) && pageNum !== self.currentPage) self.currentPage = pageNum;
+            self.applyFiltersAndRender();
+          });
+
+          // Set initial filter labels
+          this.elements.platformChipLabel && (this.elements.platformChipLabel.textContent = this.filters.platform === 'All' ? 'All' : this.filters.platform);
+          this.elements.platformTypeChipLabel && (this.elements.platformTypeChipLabel.textContent = this.filters.platformType === 'All' ? 'All' : this.filters.platformType);
+        },
+
+        closeAllDropdowns: function() {
+          this.elements.menuDropdown?.classList.add('hidden');
+          this.elements.platformMenu?.classList.add('hidden');
+          this.elements.platformTypeMenu?.classList.add('hidden');
+          if (this.searchExpanded && !this.searchQuery.trim()) {
+            this.elements.searchWrapper?.classList.remove('expanded');
+            this.searchExpanded = false;
+            this.updateSearchState();
+          }
+        },
+
+        updateSearchState: function() {
+          const active = this.searchQuery.trim().length > 0;
+          this.elements.searchClear?.classList.toggle('visible', active);
+          if (this.elements.filtersGroup) {
+            this.elements.filtersGroup.classList.toggle('opacity-50', active);
+            this.elements.filtersGroup.classList.toggle('pointer-events-none', active);
+          }
+        },
+
+        getFilteredAdGroups: function() {
+          let filtered = [...this.adgroups];
+ 
+          if (this.searchQuery.trim()) {
+            const q = this.searchQuery.toLowerCase();
+            filtered = filtered.filter(ag =>
+              (ag.recordId && String(ag.recordId).toLowerCase().includes(q)) ||
+              (ag.platform && ag.platform.toLowerCase().includes(q)) ||
+              (ag.platformType && ag.platformType.toLowerCase().includes(q))
+            );
+          } else {
+            if (this.filters.platform && this.filters.platform !== 'All') {
+              filtered = filtered.filter(ag => ag.platform === this.filters.platform);
+            }
+            if (this.filters.platformType && this.filters.platformType !== 'All') {
+              filtered = filtered.filter(ag => ag.platformType === this.filters.platformType);
+            }
+          }
+ 
+          return filtered;
+        },
+
+        getPaginatedData: function() {
+          const filtered = this.getFilteredAdGroups();
+          const start = (this.currentPage - 1) * this.rowsPerPage;
+          const end = start + this.rowsPerPage;
+          return { data: filtered.slice(start, end), total: filtered.length };
+        },
+
+        getTotalPages: function() {
+          const total = this.getFilteredAdGroups().length;
+          return Math.max(1, Math.ceil(total / this.rowsPerPage));
+        },
+
+        applyFiltersAndRender: function() {
+          const result = this.getPaginatedData();
+          const totalPages = this.getTotalPages();
+          if (this.currentPage > totalPages) this.currentPage = totalPages;
+          if (this.currentPage < 1) this.currentPage = 1;
+
+          this.renderTable(result.data);
+          this.updateRecordCount(result.total, result.data.length);
+          this.renderPagination(result.total);
+        },
+
+        renderTable: function(data) {
+          const tbody = this.elements.campaignTableBody;
+          if (!tbody) return;
+          tbody.innerHTML = '';
+
+          if (data.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td colspan="4" class="px-6 py-4 text-center text-gray-500">No connections found</td>';
+            tbody.appendChild(tr);
+            return;
+          }
+
+          data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-50';
+            tr.innerHTML = `
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
+                <div class="flex items-center space-x-2">
+                  <button data-action="edit" data-record-id="${row.recordId || ''}" title="Edit" class="p-1 rounded hover:bg-gray-100" type="button" aria-label="Edit">
+                    <!-- Pencil icon -->
+                    <svg class="w-4 h-4 text-gray-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path d="M17.414 2.586a2 2 0 010 2.828l-9.9 9.9a1 1 0 01-.464.263l-4 1a1 1 0 01-1.213-1.213l1-4a1 1 0 01.263-.464l9.9-9.9a2 2 0 012.828 0zM15.121 4.121l.758-.758a1 1 0 10-1.414-1.414l-.758.758 1.414 1.414z"></path>
+                    </svg>
+                  </button>
+                  <button data-action="delete" data-record-id="${row.recordId || ''}" title="Delete" class="p-1 rounded hover:bg-gray-100" type="button" aria-label="Delete">
+                    <!-- Trash icon -->
+                    <svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h6a1 1 0 011 1v1h3a1 1 0 110 2h-1v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h3V3zm2 3a1 1 0 10-2 0v8a1 1 0 102 0V6zm6 0a1 1 0 10-2 0v8a1 1 0 102 0V6z" clip-rule="evenodd"></path>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${row.platform || ''}</td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${row.platformType || ''}</td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900">${row.recordId || ''}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        },
+
+        updateRecordCount: function(filteredTotal, showingCount) {
+          this.elements.recordCount && (this.elements.recordCount.textContent = `${showingCount} of ${filteredTotal} showing`);
+        },
+
+        renderPagination: function(totalItems) {
+          const pager = this.elements.pagination;
+          if (!pager) return;
+
+          if (totalItems <= this.rowsPerPage) {
+            pager.style.display = 'none';
+            return;
+          }
+          pager.style.display = 'flex';
+
+          const totalPages = this.getTotalPages();
+          const buttons = [];
+          const prevDisabled = this.currentPage === 1;
+          buttons.push(`<button data-action="prev" class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md${prevDisabled ? ' opacity-50 cursor-not-allowed' : ''}" ${prevDisabled ? 'disabled' : ''}>&lt;</button>`);
+
+          const maxButtons = 5;
+          let start = Math.max(1, this.currentPage - Math.floor(maxButtons / 2));
+          let end = Math.min(totalPages, start + maxButtons - 1);
+          if (end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
+
+          for (let p = start; p <= end; p++) {
+            const activeClass = (p === this.currentPage) ? 'bg-gray-200 font-medium' : '';
+            buttons.push(`<button class="px-2 py-1 ${activeClass} text-gray-700 hover:bg-gray-200 rounded-md">${p}</button>`);
+          }
+
+          const nextDisabled = this.currentPage === totalPages;
+          buttons.push(`<button data-action="next" class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md${nextDisabled ? ' opacity-50 cursor-not-allowed' : ''}" ${nextDisabled ? 'disabled' : ''}>&gt;</button>`);
+          pager.innerHTML = buttons.join('');
+        }
+      };
+
+      app.init();
+    });
+  </script>
+
+  <!-- Data binding script for advertiser info -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load advertiser data for the header
+      try {
+        const selectedData = localStorage.getItem('adv_selected_data');
+        if (selectedData) {
+          const advertiser = JSON.parse(selectedData);
+          
+          // Bind advertiser data to header elements
+          const nameEl = document.querySelector('[data-bind="adv.name"]');
+          const accountEl = document.querySelector('[data-bind="adv.account"]');
+          const idEl = document.querySelector('[data-bind="adv.id"]');
+          
+          if (nameEl) nameEl.textContent = advertiser.name || 'Unknown Advertiser';
+          if (accountEl) accountEl.textContent = advertiser.account || '—';
+          if (idEl) idEl.textContent = advertiser.id || '—';
+        }
+      } catch (e) {
+        console.warn('Failed to load advertiser data:', e);
+      }
+    });
+  </script>
+
+  <!-- Platform Details Modal (single instance; remove duplicates below if present) -->
+<div id="editPlatformDetailsModal" role="dialog" aria-modal="true" aria-labelledby="platformModalTitle"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-7xl">
+    <div class="flex items-center justify-between p-4 border-b">
+      <h3 id="platformModalTitle" class="text-lg font-semibold text-gray-900">Edit Platform</h3>
+      <button id="closePlatformDetailsX" class="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700" aria-label="Close">
+        <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor"><path d="M6 6L14 14M6 14L14 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <div class="p-4 space-y-6 max-h-[70vh] overflow-auto">
+      <!-- GCM form -->
+      <section id="modal_gcmForm" class="hidden">
+        <h4 class="text-sm font-semibold text-gray-800 mb-2">GCM Configuration</h4>
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-x-4 gap-y-2">
+          <div class="flex items-center">
+            <label for="modal_gcmVertical" class="text-sm font-semibold text-gray-600">Advertiser Vertical: <span class="text-red-500">*</span></label>
+          </div>
+          <div class="relative md:col-span-2">
+            <select id="modal_gcmVertical" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300">
+              <option value="">-- Select Vertical --</option>
+              <option>None Selected</option>
+              <option>Automotive</option>
+              <option>Business and industrial markets</option>
+              <option>Classifieds and local</option>
+              <option>Consumer packaged goods</option>
+              <option>Education and government</option>
+              <option>Finance</option>
+              <option>Healthcare</option>
+              <option>Media and entertainment</option>
+              <option>Retail</option>
+              <option>Technology</option>
+              <option>Travel</option>
+            </select>
+          </div>
+          <div class="md:col-span-3"></div>
+        </div>
+      </section>
+
+      <!-- Trade Desk form -->
+      <section id="modal_tradeDeskForm" class="hidden">
+        <h4 class="text-sm font-semibold text-gray-800 mb-2">Trade Desk Configuration</h4>
+
+        <!-- 4-column grid: 180px label, flexible field, 180px label, flexible field -->
+        <div class="grid grid-cols-1 md:[grid-template-columns:180px_minmax(14rem,1fr)_180px_minmax(14rem,1fr)] gap-x-6 gap-y-3">
+          <!-- Row 1 -->
+          <label for="modal_tdPartner" class="text-sm font-semibold text-gray-600 self-center">Partner: <span class="text-red-500">*</span></label>
+          <input id="modal_tdPartner" type="text" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300" placeholder="Multiview">
+          <label for="modal_tdDomain" class="text-sm font-semibold text-gray-600 self-center">Domain: <span class="text-red-500">*</span></label>
+          <input id="modal_tdDomain" type="text" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300" placeholder="https://www.example.com">
+
+          <!-- Row 2 -->
+          <label for="modal_tdCountry" class="text-sm font-semibold text-gray-600 self-center">Advertiser Country:</label>
+          <input id="modal_tdCountry" type="text" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300" placeholder="United States">
+          <label for="modal_tdEU" class="text-sm font-semibold text-gray-600 self-center">Targeting EU?</label>
+          <select id="modal_tdEU" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300">
+            <option>No</option>
+            <option>Yes</option>
+          </select>
+
+          <!-- Row 3 -->
+          <label for="modal_tdIndustryCategory" class="text-sm font-semibold text-gray-600 self-center">Industry Category:</label>
+          <input id="modal_tdIndustryCategory" type="text" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300" placeholder="Select Category">
+          <label for="modal_tdIndustrySubCategory" class="text-sm font-semibold text-gray-600 self-center">Sub-Category:</label>
+          <input id="modal_tdIndustrySubCategory" type="text" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300" placeholder="Select Sub-Category">
+
+          <!-- Row 4 -->
+          <label for="modal_tdClickWindow" class="text-sm font-semibold text-gray-600 self-center">Click Attribution:</label>
+          <div class="flex gap-1 items-center">
+            <input id="modal_tdClickWindow" type="number" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-20 focus:outline-none focus:border-blue-300" value="90">
+            <select id="modal_tdClickUnit" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-1 py-1 w-20 focus:outline-none focus:border-blue-300" title="Click attribution time unit">
+              <option>Days</option><option>Hours</option>
+            </select>
+          </div>
+          <label for="modal_tdViewWindow" class="text-sm font-semibold text-gray-600 self-center">View Attribution:</label>
+          <div class="flex gap-1 items-center">
+            <input id="modal_tdViewWindow" type="number" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-20 focus:outline-none focus:border-blue-300" value="7">
+            <select id="modal_tdViewUnit" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-1 py-1 w-20 focus:outline-none focus:border-blue-300" title="View attribution time unit">
+              <option>Days</option><option>Hours</option>
+            </select>
+          </div>
+
+          <!-- Row 5 -->
+          <label for="modal_tdImpressionWindow" class="text-sm font-semibold text-gray-600 self-center">Impression Attribution:</label>
+          <div class="flex gap-1 items-center">
+            <input id="modal_tdImpressionWindow" type="number" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-20 focus:outline-none focus:border-blue-300" value="90">
+            <select id="modal_tdImpressionUnit" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-1 py-1 w-20 focus:outline-none focus:border-blue-300" title="Impression attribution time unit">
+              <option>Days</option><option>Hours</option>
+            </select>
+          </div>
+          <label for="modal_tdConversionWindow" class="text-sm font-semibold text-gray-600 self-center">Conversion Attribution:</label>
+          <div class="flex gap-1 items-center">
+            <input id="modal_tdConversionWindow" type="number" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-20 focus:outline-none focus:border-blue-300" value="60">
+            <select id="modal_tdConversionUnit" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-1 py-1 w-20 focus:outline-none focus:border-blue-300" title="Conversion attribution time unit">
+              <option>Days</option><option>Hours</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- DV360 form -->
+      <section id="modal_dv360Form" class="hidden">
+        <h4 class="text-sm font-semibold text-gray-800 mb-2">DV360 Configuration</h4>
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-x-4 gap-y-3">
+          <!-- Row 1: Status, Currency -->
+          <div class="flex items-center">
+            <label for="modal_dvStatus" class="text-sm font-semibold text-gray-600">Status: <span class="text-red-500">*</span></label>
+          </div>
+          <div class="relative w-24">
+            <select id="modal_dvStatus" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300">
+              <option value="">-- Select --</option>
+              <option>Active</option>
+              <option>Inactive</option>
+            </select>
+          </div>
+          <div class="flex items-center pl-6">
+            <label for="modal_dvCurrency" class="text-sm font-semibold text-gray-600">Currency: <span class="text-red-500">*</span></label>
+          </div>
+          <div class="relative w-20">
+            <select id="modal_dvCurrency" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300">
+              <option>USD</option><option>EUR</option><option>GBP</option><option>CAD</option><option>AUD</option>
+            </select>
+          </div>
+          <div class="md:col-span-2"></div>
+
+          <!-- Row 2: Billing Profile, Ad Server -->
+          <div class="flex items-center">
+            <label for="modal_dvBillingProfile" class="text-sm font-semibold text-gray-600">Billing Profile:</label>
+          </div>
+          <div class="relative md:col-span-2">
+            <input id="modal_dvBillingProfile" type="text" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300" placeholder="Payment info, Bill-to name...">
+          </div>
+          <div class="flex items-center pl-6">
+            <label for="modal_dvAdServer" class="text-sm font-semibold text-gray-600">Ad Server: <span class="text-red-500">*</span></label>
+          </div>
+          <div class="relative md:col-span-2">
+            <select id="modal_dvAdServer" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300">
+              <option value="cm360_thirdparty">CM360 + Third party</option>
+              <option value="cm360_only">CM360 only</option>
+              <option value="thirdparty_only">Third-party only</option>
+            </select>
+          </div>
+
+          <!-- Row 3: Website, Attribution Model -->
+          <div class="flex items-center">
+            <label for="modal_dvWebsite" class="text-sm font-semibold text-gray-600">Website: <span class="text-red-500">*</span></label>
+          </div>
+          <div class="relative md:col-span-2">
+            <input id="modal_dvWebsite" type="text" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300" placeholder="https://www.example.com">
+          </div>
+          <div class="flex items-center pl-6">
+            <label for="modal_dvAttributionModel" class="text-sm font-semibold text-gray-600">Attribution: <span class="text-red-500">*</span></label>
+          </div>
+          <div class="relative">
+            <select id="modal_dvAttributionModel" class="text-sm text-gray-900 border border-gray-300 bg-white rounded px-2 py-1 w-full focus:outline-none focus:border-blue-300">
+              <option value="last_click">Last click</option>
+              <option value="linear">Linear</option>
+              <option value="time_decay">Time decay</option>
+              <option value="position_based">Position-based</option>
+            </select>
+          </div>
+          <div></div>
+        </div>
+      </section>
+
+      <!-- Fallback for unsupported platforms -->
+      <section id="modal_unknown" class="hidden">
+        <div class="text-sm text-gray-700">This platform is not yet supported in the editor.</div>
+      </section>
+    </div>
+
+    <div class="flex items-center justify-start space-x-3 p-4 border-t">
+      <button id="platformModalCancel" class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+      <button id="platformModalSave" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save</button>
+    </div>
+  </div>
+</div>
+
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const platformModal = document.getElementById('editPlatformDetailsModal');
+  const modalTitle = document.getElementById('platformModalTitle');
+  const closePlatformDetailsX = document.getElementById('closePlatformDetailsX');
+  const platformModalCancel = document.getElementById('platformModalCancel');
+  const platformModalSave = document.getElementById('platformModalSave');
+
+  const sections = {
+    gcm: document.getElementById('modal_gcmForm'),
+    tradeDesk: document.getElementById('modal_tradeDeskForm'),
+    dv360: document.getElementById('modal_dv360Form'),
+    unknown: document.getElementById('modal_unknown')
+  };
+
+  function hideAll() { Object.values(sections).forEach(s => s?.classList.add('hidden')); }
+
+  function resolvePlatformKey(name) {
+    const n = (name || '').toLowerCase();
+    if (n.includes('campaign manager')) return 'gcm';
+    if (n.includes('gcm') || n.includes('cm360')) return 'gcm';
+    if (n.includes('trade')) return 'tradeDesk';
+    if (n.includes('dv360') || n.includes('display')) return 'dv360';
+    return null;
+  }
+
+  function focusFirst(sectionEl) {
+    const el = sectionEl?.querySelector('input, select, textarea, button');
+    el?.focus();
+  }
+
+  function loadAdv() {
+    try { return JSON.parse(localStorage.getItem('adv_selected_data') || '{}'); }
+    catch { return {}; }
+  }
+  function saveAdv(adv) {
+    localStorage.setItem('adv_selected_data', JSON.stringify(adv));
+    try {
+      const advertisers = JSON.parse(localStorage.getItem('adv_list_data') || '[]');
+      const selectedId = localStorage.getItem('adv_selected_id');
+      const idx = advertisers.findIndex(a => String(a.id) === String(selectedId));
+      if (idx !== -1) {
+        advertisers[idx].platformSettings = adv.platformSettings;
+        localStorage.setItem('adv_list_data', JSON.stringify(advertisers));
+      }
+    } catch {}
+  }
+
+  function open(platformName) {
+    hideAll();
+    modalTitle.textContent = `Edit ${platformName}`;
+    const key = resolvePlatformKey(platformName);
+    const adv = loadAdv();
+    adv.platformSettings = adv.platformSettings || {};
+
+    if (key === 'gcm') {
+      sections.gcm.classList.remove('hidden');
+      document.getElementById('modal_gcmVertical').value =
+        adv.platformSettings.gcm?.vertical || '';
+      focusFirst(sections.gcm);
+    } else if (key === 'tradeDesk') {
+      sections.tradeDesk.classList.remove('hidden');
+      const cfg = adv.platformSettings.tradeDesk || {};
+      document.getElementById('modal_tdPartner').value = cfg.partner || '';
+      document.getElementById('modal_tdDomain').value  = cfg.domain || '';
+      document.getElementById('modal_tdCountry').value = cfg.country || '';
+      document.getElementById('modal_tdEU').value      = cfg.eu || 'No';
+      document.getElementById('modal_tdIndustryCategory').value    = cfg.industryCategory || '';
+      document.getElementById('modal_tdIndustrySubCategory').value = cfg.industrySubCategory || '';
+      document.getElementById('modal_tdClickWindow').value   = cfg.clickWindow ?? 90;
+      document.getElementById('modal_tdClickUnit').value     = cfg.clickUnit || 'Days';
+      document.getElementById('modal_tdViewWindow').value    = cfg.viewWindow ?? 7;
+      document.getElementById('modal_tdViewUnit').value      = cfg.viewUnit || 'Days';
+      document.getElementById('modal_tdImpressionWindow').value = cfg.impressionWindow ?? 90;
+      document.getElementById('modal_tdImpressionUnit').value   = cfg.impressionUnit || 'Days';
+      document.getElementById('modal_tdConversionWindow').value = cfg.conversionWindow ?? 60;
+      document.getElementById('modal_tdConversionUnit').value   = cfg.conversionUnit || 'Days';
+      focusFirst(sections.tradeDesk);
+    } else if (key === 'dv360') {
+      sections.dv360.classList.remove('hidden');
+      const cfg = adv.platformSettings.dv360 || {};
+      document.getElementById('modal_dvStatus').value           = cfg.status || '';
+      document.getElementById('modal_dvCurrency').value         = cfg.currency || 'USD';
+      document.getElementById('modal_dvBillingProfile').value   = cfg.billingProfile || '';
+      document.getElementById('modal_dvAdServer').value         = cfg.adServer || 'cm360_thirdparty';
+      document.getElementById('modal_dvWebsite').value          = cfg.website || '';
+      document.getElementById('modal_dvAttributionModel').value = cfg.attributionModel || 'last_click';
+      focusFirst(sections.dv360);
+    } else {
+      sections.unknown.classList.remove('hidden');
+      focusFirst(sections.unknown);
+    }
+
+    platformModal.dataset.editPlatformKey = key || '';
+    platformModal.dataset.editPlatformName = platformName || '';
+    platformModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  async function save() {
+    const key = platformModal.dataset.editPlatformKey;
+    const adv = loadAdv();
+    adv.platformSettings = adv.platformSettings || {};
+
+    if (key === 'gcm') {
+      adv.platformSettings.gcm = {
+        vertical: document.getElementById('modal_gcmVertical').value || ''
+      };
+    } else if (key === 'tradeDesk') {
+      adv.platformSettings.tradeDesk = {
+        partner: document.getElementById('modal_tdPartner').value || '',
+        domain: document.getElementById('modal_tdDomain').value || '',
+        country: document.getElementById('modal_tdCountry').value || '',
+        eu: document.getElementById('modal_tdEU').value || 'No',
+        industryCategory: document.getElementById('modal_tdIndustryCategory').value || '',
+        industrySubCategory: document.getElementById('modal_tdIndustrySubCategory').value || '',
+        clickWindow: Number(document.getElementById('modal_tdClickWindow').value || 0),
+        clickUnit: document.getElementById('modal_tdClickUnit').value || 'Days',
+        viewWindow: Number(document.getElementById('modal_tdViewWindow').value || 0),
+        viewUnit: document.getElementById('modal_tdViewUnit').value || 'Days',
+        impressionWindow: Number(document.getElementById('modal_tdImpressionWindow').value || 0),
+        impressionUnit: document.getElementById('modal_tdImpressionUnit').value || 'Days',
+        conversionWindow: Number(document.getElementById('modal_tdConversionWindow').value || 0),
+        conversionUnit: document.getElementById('modal_tdConversionUnit').value || 'Days'
+      };
+    } else if (key === 'dv360') {
+      adv.platformSettings.dv360 = {
+        status: document.getElementById('modal_dvStatus').value || '',
+        currency: document.getElementById('modal_dvCurrency').value || 'USD',
+        billingProfile: document.getElementById('modal_dvBillingProfile').value || '',
+        adServer: document.getElementById('modal_dvAdServer').value || 'cm360_thirdparty',
+        website: document.getElementById('modal_dvWebsite').value || '',
+        attributionModel: document.getElementById('modal_dvAttributionModel').value || 'last_click'
+      };
+    }
+
+    saveAdv(adv);
+    close();
+    if (window.showSuccessToast) showSuccessToast('Platform details saved', 'Saved', 2500);
+  }
+
+  function close() {
+    platformModal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+
+  // Expose opener for app handler
+  window.openPlatformDetailsModal = open;
+
+  // Wire buttons + OSK
+  closePlatformDetailsX?.addEventListener('click', close);
+  platformModalCancel?.addEventListener('click', close);
+  platformModalSave?.addEventListener('click', save);
+  platformModal?.addEventListener('click', (e) => { if (e.target === platformModal) close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !platformModal.classList.contains('hidden')) close(); });
+});
+  </script>
+</body>
+</html>

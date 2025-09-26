@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beacon - Sales Orders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./assets/toast.css">
+  <link rel="stylesheet" href="./assets/theme.css">
+  <link rel="stylesheet" href="./assets/loading.css">
+  <script src="./assets/loading.js" defer></script>
+  <script src="./assets/campaignConfig.js" defer></script>
+  <script src="./assets/notifications.js"></script>
+  <script src="./assets/toast.js" defer></script>
+  
+  <style>
+  body { font-family: 'apple-system', 'Segoe UI', 'Roboto', 'Inter', sans-serif; }
+
+  .search-container { position: relative; display: flex; align-items: center; }
+
+  .search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: 0.375rem;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    height: 40px;
+    width: 50px;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: width 0.2s ease;
+  }
+
+  .search-wrapper.expanded {
+    width: 300px;
+    background: #fff;
+    border-color: #c5c4c4;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 5px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+    pointer-events: auto;
+  }
+
+  .search-icon svg { width: 20px; height: 20px; fill: #666; }
+
+  .search-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 8px 40px 8px 40px;
+    font-size: 14px;
+    color: #333;
+    opacity: 0;
+    transition: opacity 0.2s ease 0.1s;
+    box-sizing: border-box;
+  }
+
+  .search-input::placeholder { color: #999; }
+
+  .search-wrapper.expanded .search-input {
+    opacity: 1;
+  }
+
+  .clear-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 2;
+  }
+
+  .clear-button svg { width: 100%; height: 100%; fill: #666; }
+  .clear-button:hover svg { fill: #333; }
+  .clear-button.visible { opacity: 1; visibility: visible; }
+  </style>
+</head>
+
+<body class="bg-gray-100 font-inter">
+  <div class="flex h-screen flex-col">
+    <!-- Header -->
+    <header class="border-b border-gray-200 shadow-sm app-header">
+      <div class="flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-3">
+          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+        </div>
+
+        <nav class="flex items-center gap-3 ml-auto">
+            <a href="./WFAdvertiserList.html" class="text-base text-white hover:text-blue-100" style="font-size: 1.5rem; padding-right: 15px;" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
+            Advertisers
+            </a>
+          <span class="text-white select-none">|</span>
+
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notificationButton" class="p-2 rounded-md  text-white relative" title="Notifications" aria-label="View notifications" onmouseover="this.style.backgroundColor=''" onmouseout="this.style.backgroundColor=''" >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+              <div class="p-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                  <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                </div>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div id="notificationList">
+                  <!-- Sample items -->
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">Campaign Performance Alert</p>
+                        <p class="text-xs text-gray-500 mt-1">"Summer Sale" exceeded budget by 15%</p>
+                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">New Advertiser Added</p>
+                        <p class="text-xs text-gray-500 mt-1">Stallion Services LLC onboarded</p>
+                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="true">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-700">Account Sync Complete</p>
+                        <p class="text-xs text-gray-500 mt-1">CRM sync finished for 12 accounts</p>
+                        <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waffle Menu -->
+          <div class="relative">
+            <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+              </svg>
+            </button>
+            <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+          <div class="flex items-center gap-3">
+            <img src="./assets/advertiser.png" alt="Advertiser" class="w-9 h-9 rounded-full" data-sidebar-avatar />
+            <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Advertiser</h2>
+          </div>
+          <button id="sidebarToggle" class="p-1 rounded hover:bg-gray-100" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse/Expand">
+            <!-- Shown when expanded (collapse icon) -->
+            <svg id="iconCollapse" class="w-5 h-5 text-gray-900" viewBox="0 0 26 26" fill="currentColor">
+              <path fill="#000000" d="M21.5 11.5h-8.793l3.035-3.035a.5.5 0 10-.707-.707l-3.888 3.888a.518.518 0 00-.109.163.505.505 0 000 .382.518.518 0 00.109.163l3.888 3.888a.5.5 0 00.707-.707L12.707 12.5H21.5a.5.5 0 000-1zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z">
+	            </path>
+            </svg>
+            <!-- Shown when collapsed (expand icon) -->
+            <svg id="iconExpand" class="w-5 h-5 text-gray-900 hidden" viewBox="0 0 26 26" fill="currentColor">
+              <path fill="#000000" d="M21.962 12.191a.505.505 0 000-.382.518.518 0 00-.109-.163l-3.888-3.888a.5.5 0 10-.707.707l3.035 3.035H11.5a.5.5 0 000 1h8.793l-3.035 3.035a.5.5 0 10.707.707l3.888-3.888a.518.518 0 00.109-.163zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z">
+	            </path>
+            </svg>
+          </button>
+        </div>
+
+        <ul class="space-y-1 mt-4">
+          <li>
+            <a href="./WFAdvertiserDetails.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+              <span data-link-label>Details</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserSalesOrder.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
+              <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
+              <span data-link-label>Sales Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="./WFAdvertiserConnections.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+              <span data-link-label>Connections (P2)</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserCampaigns.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
+              <span data-link-label>Campaigns</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserAdGroup.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
+              <span data-link-label>Ad Groups</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <!-- Advertiser Header -->
+          <div class="px-4 pt-4">
+            <div class="flex items-start gap-4 mb-3">
+              <div class="flex-1">
+                <h1 data-bind="adv.name" class="text-xl md:text-2xl font-semibold text-gray-900">Loading…</h1>
+                <div class="flex justify-between items-center">
+                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                </div>
+              </div>
+            </div>
+            <hr class="border-gray-300 mp-4">
+          </div>
+
+          <!-- Sales Summary Container with First Sale: [Date], Last Sale: [Date], Total Sales: [Amount], Active: [Amount]-->
+          <div class="px-4 py-5">
+            <section class="space-y-2">
+              <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-semibold text-gray-900 mx-2">SALES SUMMARY</h1>
+              </div>
+                <div id="salesSummaryCard" class="p-4 border border-gray-200 rounded-md mx-2">
+                  <dl class="grid grid-cols-[140px_1fr_140px_1fr] md:grid-cols-[180px_1fr_180px_1fr] gap-y-2 items-start">
+                    <!-- Row 1 -->
+                    <dt class="text-sm font-semibold text-gray-600">First Sale:</dt>
+                    <dd id="salesFirstDate" class="text-sm text-gray-900 tabular-nums">—</dd>
+                    <dt class="text-sm font-semibold text-gray-600">Total Sales:</dt>
+                    <dd id="salesTotal" class="text-sm text-gray-900 tabular-nums">—</dd>
+
+                    <!-- Row 2 -->
+                    <dt class="text-sm font-semibold text-gray-600">Last Sale:</dt>
+                    <dd id="salesLastDate" class="text-sm text-gray-900 tabular-nums">—</dd>
+                    <dt class="text-sm font-semibold text-gray-600">Active:</dt>
+                    <dd id="salesActive" class="text-sm text-gray-900 tabular-nums">—</dd>
+                  </dl>
+                </div>
+            </section>
+          </div>
+          
+          <!-- Toolbar -->
+          <div class="px-6 py-2">
+            <div class="mb-4">
+              <div class="flex items-center space-x-3 bg-[var(--tbl-head-bg)] border border-gray-300 rounded-md">
+                <!-- New Sales Order Button -->
+                <!-- <button id="createBtn" class="flex items-center h-10 px-3 rounded-md hover:bg-gray-50 transition" title="Create New Sales Order">
+                  <span class="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-gray-400 mr-2">
+                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                  </span>
+                  <span class="text-sm font-medium text-gray-700">New Sales Order</span>
+                </button>
+
+                <div class="h-6 border-l border-gray-400 mx-1"></div> -->
+
+                <!-- Filters -->
+                <div id="filtersGroup" class="flex items-center space-x-2">
+                  <div class="flex items-center pl-4 pr-2 h-10 rounded-md">
+                    <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01.293.707l-6.707 8.707V21l-4-2v-4.586L2.707 6.707A1 1 0 013 6V4z"></path>
+                    </svg>
+                    
+                    <!-- State Filter -->
+                    <div class="relative">
+                      <button id="stateChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="state" title="State filter">
+                        <span id="stateChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
+                        </svg>
+                      </button>
+                      <div id="stateMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto">
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Active">Active</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Inactive">Inactive</button>
+                      </div>
+                    </div>
+
+                    <!-- DSP Filter -->
+                    <div class="relative">
+                      <button id="dspChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="dsp" title="DSP filter" type="button">
+                        <span id="dspChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
+                        </svg>
+                      </button>
+                      <div id="dspMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto min-w-max">
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Google Campaign Manager">Google Campaign Manager</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Trade Desk">Trade Desk</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="DV360">DV360</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="h-6 border-l border-gray-400 mx-1"></div>
+
+                <!-- Search -->
+                <div class="relative">
+                  <div class="search-container">
+                    <div class="search-wrapper" id="searchWrapper" style="height:40px;">
+                      <button id="searchToggle" class="search-icon" aria-label="Open search" type="button">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                      </button>
+                      <input type="text" id="searchInput" class="search-input" placeholder="Enter ID, DSP, or Campaign Name" autocomplete="off" aria-label="Search campaigns" />
+                      <button id="searchClear" class="clear-button" aria-label="Clear search" type="button">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto border border-gray-300 rounded-md">
+              <table id="campaignTable" class="min-w-full table-fixed divide-y divide-gray-200 rounded-md overflow-hidden tbl tbl-row-hover">
+                <thead class="tbl-head">
+                  <tr>
+                    <th style="width:12%" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <div class="px-6 py-2 whitespace-nowrap flex items-center">
+                        <span aria-hidden="true" class="inline-block w-7"></span>
+                        <span>Order Date</span>
+                      </div>
+                    </th>
+                    <th style="width:16%" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <div class="px-6 py-2 whitespace-nowrap text-left">ID</div>
+                    </th>
+                    <th style="width:20%" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <div class="px-6 py-2 whitespace-nowrap text-left">Sales Rep</div>
+                    </th>
+                    <th style="width:28%" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <div class="px-6 py-2 whitespace-nowrap text-left">Run Dates</div>
+                    </th>
+                    <th style="width:12%" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <div class="px-6 py-2 whitespace-nowrap text-left">Order Total</div>
+                    </th>
+                    <th style="width:12%" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <div class="px-6 py-2 whitespace-nowrap text-left">Amount Due</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="campaignTableBody" class="bg-white divide-y divide-gray-200">
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-4 flex items-center justify-between text-xs text-gray-500">
+              <span id="recordCount">0 of 0 showing</span>
+              <div id="pagination" class="flex space-x-2">
+                <!-- Pagination buttons will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Edit Campaign Group Modal -->
+<div id="editGroupModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+    <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+      <h3 class="text-base font-semibold text-gray-900">Edit Campaign Group</h3>
+      <button id="editGroupCloseX" class="p-1 rounded hover:bg-gray-100" aria-label="Close">
+        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="p-4">
+      <label for="editGroupNameInput" class="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
+      <input id="editGroupNameInput" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter group name"/>
+    </div>
+
+    <div class="px-4 py-3 border-t border-gray-200 flex justify-end gap-2">
+      <button id="editGroupCancelBtn" class="h-9 px-4 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">Cancel</button>
+      <button id="editGroupSaveBtn" class="h-9 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Save</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Replace the main script with Sales Orders tree-table logic -->
+  <script>
+// Storage/config keys for Sales Orders
+const SO_CONFIG = {
+  STORAGE_KEYS: { DATA: 'sales_orders_tree' },
+  PAGINATION: { DEFAULT_ROWS: 15, MAX_ROWS: 200 }
+};
+
+// Sample data (3 levels: Order -> Package -> Items)
+const DEFAULT_ORDERS = [
+  {
+    id: 'Mult00123',
+    orderDate: '2024-03-01',
+    salesRep: 'David DeHerrera',
+    runStart: '2024-03-02',
+    runEnd: '2026-01-29',
+    orderTotal: 50000,
+    amountDue: 0,
+    expanded: true,
+    packages: [
+      {
+        id: 'PKG-001',
+        channel: 'Programmatic',
+        placement: 'Mixed',
+        runStart: '2024-03-02',
+        runEnd: '2026-01-29',
+        units: '2,000,000 Impressions',
+        salesPrice: 50000,
+        discount: 0,
+        netTotal: 50000,
+        expanded: true,
+        items: [
+          {
+            id: 'ITEM-001',
+            channel: 'MultiTargeted',
+            placement: 'Programmatic Display',
+            runStart: '2024-03-01',
+            runEnd: '2026-02-29',
+            units: '1,000,000 Impressions',
+            salesPrice: 25000,
+            discount: 0,
+            netTotal: 25000
+          },
+          {
+            id: 'ITEM-002',
+            channel: 'MultiTargeted',
+            placement: 'Programmatic Video',
+            runStart: '2024-03-01',
+            runEnd: '2026-02-29',
+            units: '1,000,000 Impressions',
+            salesPrice: 25000,
+            discount: 0,
+            netTotal: 25000
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'Mult98765',
+    orderDate: '2024-07-15',
+    salesRep: 'Alex Rivera',
+    runStart: '2024-08-01',
+    runEnd: '2025-01-31',
+    orderTotal: 120000,
+    amountDue: 15000,
+    expanded: true,
+    packages: [
+      {
+        id: 'PKG-010',
+        channel: 'Social',
+        placement: 'Paid Social',
+        runStart: '2024-08-01',
+        runEnd: '2025-01-31',
+        units: '6 Months',
+        salesPrice: 70000,
+        discount: 5000,
+        netTotal: 65000,
+        expanded: false,
+        items: [
+          {
+            id: 'ITEM-010',
+            channel: 'Paid Social',
+            placement: 'Facebook/Instagram',
+            runStart: '2024-08-01',
+            runEnd: '2024-10-31',
+            units: '3 Months',
+            salesPrice: 36000,
+            discount: 3000,
+            netTotal: 33000
+          }
+        ]
+      },
+      {
+        id: 'PKG-011',
+        channel: 'Search',
+        placement: 'SEM',
+        runStart: '2024-08-01',
+        runEnd: '2025-01-31',
+        units: '6 Months',
+        salesPrice: 50000,
+        discount: 0,
+        netTotal: 50000,
+        expanded: false,
+        items: [
+          {
+            id: 'ITEM-011',
+            channel: 'Search',
+            placement: 'Google Ads',
+            runStart: '2024-08-01',
+            runEnd: '2025-01-31',
+            units: '6 Months',
+            salesPrice: 50000,
+            discount: 0,
+            netTotal: 50000
+          }
+        ]
+      }
+    ]
+  }
+];
+
+let app = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+  app = {
+    orders: [],
+    currentPage: 1,
+    rowsPerPage: SO_CONFIG.PAGINATION.DEFAULT_ROWS,
+    searchQuery: '',
+    elements: {},
+
+    init: function() {
+      this.loadOrders();
+      this.cacheElements();
+      this.initEventListeners();
+      this.applyRender();
+    },
+
+    loadOrders: function() {
+      try {
+        const stored = localStorage.getItem(SO_CONFIG.STORAGE_KEYS.DATA);
+        if (stored) this.orders = JSON.parse(stored);
+        else {
+          this.orders = JSON.parse(JSON.stringify(DEFAULT_ORDERS));
+          this.saveOrders();
+        }
+      } catch (e) {
+        console.warn('Failed to load sales orders:', e);
+        this.orders = JSON.parse(JSON.stringify(DEFAULT_ORDERS));
+      }
+    },
+
+    saveOrders: function() {
+      try { localStorage.setItem(SO_CONFIG.STORAGE_KEYS.DATA, JSON.stringify(this.orders)); }
+      catch (e) { console.warn('Failed to save sales orders:', e); }
+    },
+
+    cacheElements: function() {
+      const ids = [
+        'menuButton','menuDropdown',
+        'createBtn',
+        'searchWrapper','searchToggle','searchInput','searchClear','filtersGroup',
+        'campaignTableBody','recordCount','pagination',
+        // NEW: sales summary fields
+        'salesFirstDate','salesLastDate','salesTotal','salesActive'
+      ];
+      ids.forEach(id => this.elements[id] = document.getElementById(id));
+
+      // Toggle handlers on tbody (order and package)
+      this.elements.campaignTableBody?.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-action="toggle"]');
+        if (!btn) return;
+        const type = btn.dataset.type;
+        const oid = btn.dataset.orderId;
+        const pid = btn.dataset.packageId;
+
+        if (type === 'order') {
+          const o = this.orders.find(x => x.id === oid);
+          if (!o) return;
+          o.expanded = !o.expanded;
+        } else if (type === 'package') {
+          const o = this.orders.find(x => x.id === oid);
+          const p = o?.packages.find(pp => pp.id === pid);
+          if (!p) return;
+          p.expanded = !p.expanded;
+        }
+        this.applyRender();
+      });
+    },
+
+    initEventListeners: function() {
+      const self = this;
+
+      if (this.elements.menuButton && this.elements.menuDropdown) {
+        this.elements.menuButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          self.elements.menuDropdown.classList.toggle('hidden');
+        });
+      }
+
+      if (this.elements.createBtn) {
+        this.elements.createBtn.addEventListener('click', function() {
+          if (typeof showToast === 'function') showToast('Create Sales Order: to be implemented');
+        });
+      }
+
+      if (this.elements.searchToggle) {
+        this.elements.searchToggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          self.elements.searchWrapper?.classList.add('expanded');
+          setTimeout(() => self.elements.searchInput?.focus(), 100);
+        });
+      }
+
+      this.elements.searchInput?.addEventListener('input', function(e) {
+        self.searchQuery = e.target.value;
+        self.updateSearchState();
+        self.currentPage = 1;
+        self.applyRender();
+      });
+
+      this.elements.searchClear?.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (self.elements.searchInput) self.elements.searchInput.value = '';
+        self.searchQuery = '';
+        self.updateSearchState();
+        self.currentPage = 1;
+        self.applyRender();
+      });
+
+      document.addEventListener('click', function() {
+        self.elements.menuDropdown?.classList.add('hidden');
+        if (self.elements.searchWrapper && !self.searchQuery.trim()) {
+          self.elements.searchWrapper.classList.remove('expanded');
+          self.updateSearchState();
+        }
+      });
+
+      this.elements.pagination?.addEventListener('click', function(e) {
+        const button = e.target.closest('button');
+        if (!button || button.disabled) return;
+        e.preventDefault();
+        const action = button.dataset.action;
+        const pageNum = parseInt(button.textContent);
+        if (action === 'prev' && self.currentPage > 1) self.currentPage--;
+        else if (action === 'next' && self.currentPage < self.getTotalPages()) self.currentPage++;
+        else if (!isNaN(pageNum) && pageNum !== self.currentPage) self.currentPage = pageNum;
+        self.applyRender();
+      });
+    },
+
+    updateSearchState: function() {
+      const active = this.searchQuery.trim().length > 0;
+      this.elements.searchClear?.classList.toggle('visible', active);
+      this.elements.filtersGroup?.classList.toggle('opacity-50', active);
+      this.elements.filtersGroup?.classList.toggle('pointer-events-none', active);
+    },
+
+    // Flatten visible rows with tri-level
+    getVisibleRows: function() {
+      const q = this.searchQuery.trim().toLowerCase();
+      const rows = [];
+
+      const orderMatches = (o) =>
+        !q ||
+        o.id.toLowerCase().includes(q) ||
+        o.salesRep.toLowerCase().includes(q) ||
+        fmtDate(o.orderDate).includes(q) ||
+        `${fmtDate(o.runStart)} - ${fmtDate(o.runEnd)}`.toLowerCase().includes(q);
+
+      const itemMatches = (it) =>
+        !q ||
+        it.channel?.toLowerCase().includes(q) ||
+        it.placement?.toLowerCase().includes(q) ||
+        `${fmtDate(it.runStart)} - ${fmtDate(it.runEnd)}`.toLowerCase().includes(q) ||
+        it.units?.toLowerCase().includes(q);
+
+      for (const o of this.orders) {
+        // Flatten all items under this order (across packages)
+        const allItems = (o.packages || []).flatMap(p => (p.items || []));
+        const filteredItems = allItems.filter(itemMatches);
+
+        const showOrder = orderMatches(o) || filteredItems.length > 0;
+        if (!showOrder) continue;
+
+        rows.push({ type: 'order', order: o });
+
+        if (o.expanded) {
+          // Level 3 header
+          rows.push({ type: 'detailHeader', orderId: o.id });
+          // Level 4 data rows
+          filteredItems.forEach(it => rows.push({ type: 'detailItem', orderId: o.id, item: it }));
+        }
+      }
+
+      return rows;
+    },
+
+    getPaginatedData: function() {
+      const all = this.getVisibleRows();
+      const start = (this.currentPage - 1) * this.rowsPerPage;
+      const end = start + this.rowsPerPage;
+      return { data: all.slice(start, end), total: all.length };
+    },
+
+    getTotalPages: function() {
+      const total = this.getVisibleRows().length;
+      return Math.max(1, Math.ceil(total / this.rowsPerPage));
+    },
+
+    applyRender: function() {
+      const { data, total } = this.getPaginatedData();
+      if (this.currentPage > this.getTotalPages()) this.currentPage = this.getTotalPages();
+      this.renderTable(data);
+      this.updateRecordCount(total, data.length);
+      this.renderPagination(total);
+      this.renderSalesSummary(); // NEW
+    },
+
+    // NEW: Sales Summary
+    renderSalesSummary: function() {
+      const firstEl = this.elements.salesFirstDate;
+      const lastEl  = this.elements.salesLastDate;
+      const totalEl = this.elements.salesTotal;
+      const activeEl= this.elements.salesActive;
+      if (!firstEl || !lastEl || !totalEl || !activeEl) return;
+
+      const orders = Array.isArray(this.orders) ? this.orders : [];
+      if (!orders.length) {
+        firstEl.textContent = '—';
+        lastEl.textContent = '—';
+        totalEl.textContent = '—';
+        activeEl.textContent = '—';
+        return;
+      }
+
+      const today = new Date();
+      let first = null, last = null, total = 0, active = 0;
+
+      for (const o of orders) {
+        // Dates
+        const od = o?.orderDate ? new Date(o.orderDate) : null;
+        const rs = o?.runStart ? new Date(o.runStart) : null;
+        const re = o?.runEnd ? new Date(o.runEnd) : null;
+
+        if (od && !isNaN(od.getTime())) {
+          if (!first || od < first) first = od;
+          if (!last  || od > last)  last  = od;
+        }
+
+        // Totals
+        const orderTotal = Number(o?.orderTotal || 0);
+        total += orderTotal;
+
+        // Active window (inclusive)
+        if (rs && re && !isNaN(rs.getTime()) && !isNaN(re.getTime())) {
+          const inWindow = rs <= today && today <= re;
+          if (inWindow) active += orderTotal;
+        }
+      }
+
+      firstEl.textContent  = first ? fmtDate(first.toISOString()) : '—';
+      lastEl.textContent   = last  ? fmtDate(last.toISOString())  : '—';
+      totalEl.textContent  = fmtCurrency(total);
+      activeEl.textContent = fmtCurrency(active);
+    },
+
+    renderTable: function(rows) {
+      const tbody = this.elements.campaignTableBody;
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (rows.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="6" class="px-6 py-4 text-center text-gray-500">No sales orders found</td>';
+        tbody.appendChild(tr);
+        return;
+      }
+
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+
+        if (r.type === 'order') {
+          const o = r.order;
+          tr.className = 'hover:bg-gray-50 row-group';
+          tr.innerHTML = `
+    <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-700 border-r border-[var(--divider)]">
+      <button data-action="toggle" data-type="order" data-order-id="${o.id}" class="mr-3 w-4 h-4 inline-flex items-center justify-center rounded border border-[var(--border-strong)] bg-white" title="${o.expanded ? 'Collapse' : 'Expand'}">
+        ${o.expanded ? '&minus;' : '+'}
+      </button>
+      ${fmtDate(o.orderDate)}
+    </td>
+    <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-700 border-r border-[var(--divider)]">${o.id}</td>
+    <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-700 border-r border-[var(--divider)]">${o.salesRep}</td>
+    <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-700 border-r border-[var(--divider)]">${fmtDate(o.runStart)} - ${fmtDate(o.runEnd)}</td>
+    <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-700 border-r border-[var(--divider)]">${fmtCurrency(o.orderTotal)}</td>
+    <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-700">${fmtCurrency(o.amountDue)}</td>
+  `;
+        }
+        else if (r.type === 'detailHeader') {
+          tr.className = 'row-subhead';  // gray background applied to the whole row
+          tr.innerHTML = `
+            <td colspan="6" class="px-6 py-0">  <!-- padding creates gray gutters -->
+              <table class="min-w-full table-fixed border border-gray-200 rounded-md overflow-hidden">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th style="width:15%" class="text-xs font-semibold text-gray-900 uppercase tracking-wider"><div class="px-3 py-1 whitespace-nowrap text-left">Channel</div></th>
+                    <th style="width:18%" class="text-xs font-semibold text-gray-900 uppercase tracking-wider"><div class="px-3 py-1 whitespace-nowrap text-left">Placement</div></th>
+                    <th style="width:24%" class="text-xs font-semibold text-gray-900 uppercase tracking-wider"><div class="px-3 py-1 whitespace-nowrap text-left">Run Dates</div></th>
+                    <th style="width:15%" class="text-xs font-semibold text-gray-900 uppercase tracking-wider"><div class="px-3 py-1 whitespace-nowrap text-left">Units</div></th>
+                    <th style="width:9%" class="text-xs font-semibold text-gray-900 uppercase tracking-wider"><div class="px-3 py-1 whitespace-nowrap text-left">Sales Price</div></th>
+                    <th style="width:9%" class="text-xs font-semibold text-gray-900 uppercase tracking-wider"><div class="px-3 py-1 whitespace-nowrap text-left">Discount</div></th>
+                    <th style="width:10%" class="text-xs font-semibold text-gray-900 uppercase tracking-wider"><div class="px-3 py-1 whitespace-nowrap text-left">Net Total</div></th>
+                  </tr>
+                </thead>
+              </table>
+            </td>
+          `;
+        }
+        else if (r.type === 'detailItem') {
+          const it = r.item;
+          tr.className = '';
+          tr.innerHTML = `
+            <td colspan="6" class="px-6 py-0 bg-[var(--tree-subhead-bg)]"> <!-- gutters -->
+              <table class="min-w-full table-fixed border-b border-[var(--divider)] rounded-md bg-white">
+                <tbody>
+                  <tr>
+                    <td style="width:15%" class="px-3 py-1 text-xs text-gray-600 border-r border-[var(--divider)] whitespace-nowrap">${it.channel || ''}</td>
+                    <td style="width:18%" class="px-3 py-1 text-xs text-gray-600 border-r border-[var(--divider)] whitespace-nowrap">${it.placement || ''}</td>
+                    <td style="width:24%" class="px-3 py-1 text-xs text-gray-600 border-r border-[var(--divider)] whitespace-nowrap">${fmtDate(it.runStart)} - ${fmtDate(it.runEnd)}</td>
+                    <td style="width:15%" class="px-3 py-1 text-xs text-gray-600 border-r border-[var(--divider)] whitespace-nowrap">${it.units || ''}</td>
+                    <td style="width:9%"  class="px-3 py-1 text-xs text-gray-600 border-r border-[var(--divider)] whitespace-nowrap">${fmtCurrency(it.salesPrice)}</td>
+                    <td style="width:9%"  class="px-3 py-1 text-xs text-gray-600 border-r border-[var(--divider)] whitespace-nowrap">${fmtCurrency(it.discount)}</td>
+                     <td style="width:10%" class="px-3 py-1 text-xs text-gray-600 whitespace-nowrap">${fmtCurrency(it.netTotal)}</td>
+                   </tr>
+                </tbody>
+              </table>
+            </td>
+          `;
+        }
+
+        tbody.appendChild(tr);
+      });
+    },
+
+    updateRecordCount: function(totalRows, showingRows) {
+      this.elements.recordCount && (this.elements.recordCount.textContent = `${showingRows} of ${totalRows} rows showing`);
+    },
+
+    renderPagination: function(totalItems) {
+      const pager = this.elements.pagination;
+      if (!pager) return;
+
+      if (totalItems <= this.rowsPerPage) {
+        pager.style.display = 'none';
+        return;
+      }
+      pager.style.display = 'flex';
+
+      const totalPages = this.getTotalPages();
+      const buttons = [];
+      const prevDisabled = this.currentPage === 1;
+      buttons.push(`<button data-action="prev" class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md${prevDisabled ? ' opacity-50 cursor-not-allowed' : ''}" ${prevDisabled ? 'disabled' : ''}>&lt;</button>`);
+
+      const maxButtons = 5;
+      let start = Math.max(1, this.currentPage - Math.floor(maxButtons / 2));
+      let end = Math.min(totalPages, start + maxButtons - 1);
+      if (end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
+
+      for (let p = start; p <= end; p++) {
+        const active = (p === this.currentPage) ? 'bg-gray-200 font-medium' : '';
+        buttons.push(`<button class="px-2 py-1 ${active} text-gray-700 hover:bg-gray-200 rounded-md">${p}</button>`);
+      }
+
+      const nextDisabled = this.currentPage === totalPages;
+      buttons.push(`<button data-action="next" class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md${nextDisabled ? ' opacity-50 cursor-not-allowed' : ''}" ${nextDisabled ? 'disabled' : ''}>&gt;</button>`);
+      pager.innerHTML = buttons.join('');
+    }
+  };
+
+  app.init();
+});
+
+// Helpers
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return `${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}/${d.getFullYear()}`;
+}
+function fmtCurrency(n) {
+  const num = Number(n || 0);
+  return num.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+  </script>
+
+  <!-- Data binding script for advertiser info -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load advertiser data for the header
+      try {
+        const selectedData = localStorage.getItem('adv_selected_data');
+        if (selectedData) {
+          const advertiser = JSON.parse(selectedData);
+          
+          // Bind advertiser data to header elements
+          const nameEl = document.querySelector('[data-bind="adv.name"]');
+          const accountEl = document.querySelector('[data-bind="adv.account"]');
+          const idEl = document.querySelector('[data-bind="adv.id"]');
+          
+          if (nameEl) nameEl.textContent = advertiser.name || 'Unknown Advertiser';
+          if (accountEl) accountEl.textContent = advertiser.account || '—';
+          if (idEl) idEl.textContent = advertiser.id || '—';
+        }
+      } catch (e) {
+        console.warn('Failed to load advertiser data:', e);
+      }
+    });
+  </script>
+  <script src="./assets/sidebar.js" defer></script>
+</body>
+</html>

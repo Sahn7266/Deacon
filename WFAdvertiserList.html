@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beacon</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./assets/toast.css">
+  <script src="./assets/toast.js" defer></script>
+  <link rel="stylesheet" href="./assets/loading.css">
+  <script src="./assets/loading.js" defer></script>
+  <style>
+    body { font-family: 'apple-system', 'Segoe UI', 'Roboto', 'Inter', sans-serif; }
+
+    /* Prevent placeholder/text flicker during collapse */
+    .is-collapsing,
+    .is-collapsing::placeholder {
+      color: transparent !important;
+      caret-color: transparent !important;
+    }
+
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border-radius: 0.375rem;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      height: 40px;
+      width: 50px;
+      overflow: hidden;
+    }
+
+    .search-wrapper.expanded {
+      width: 300px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 5px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease;
+    }
+
+    .search-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #666;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 8px 40px 8px 40px;
+      font-size: 14px;
+      color: #333;
+      opacity: 0;
+      transition: opacity 0.2s ease 0.1s;
+    }
+
+    .search-input::placeholder {
+      color: #999;
+    }
+
+    .search-wrapper.expanded .search-input {
+      opacity: 1;
+      background-color: white;
+      height: 80%;
+      border: #c5c4c4 1px solid;
+      border-radius: .375rem;
+    }
+
+    .clear-button {
+      position: absolute;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      z-index: 2;
+    }
+
+    .clear-button svg {
+      width: 100%;
+      height: 100%;
+      fill: #666;
+    }
+
+    .clear-button:hover svg {
+      fill: #333;
+    }
+
+    .clear-button.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Prevent wrapping in filter dropdown items */
+    #ownerMenu button,
+    #stateMenu button,
+    #menuDropdown a {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      max-width: 18rem;
+    }
+
+    /* Minimal accessible tooltip */
+    .has-tooltip { position: relative; }
+    .has-tooltip[data-tooltip] { outline: none; }
+
+    .has-tooltip[data-tooltip]::after{
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      background: #111827;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.2;
+      display: inline-block;
+      box-sizing: border-box;
+      min-width: 80px;
+      max-width: 300px;
+      white-space: nowrap;
+      word-break: normal;
+      overflow-wrap: break-word;
+      text-align: left;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      z-index: 9998;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .12s ease, transform .12s ease;
+    }
+    
+    .has-tooltip[data-tooltip]::before{
+      content: "";
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(0);
+      border-width: 6px;
+      border-style: solid;
+      border-color: #111827 transparent transparent transparent;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity .12s ease, transform .12s ease;
+      pointer-events: none;
+    }
+
+    .has-tooltip:hover[data-tooltip]::after,
+    .has-tooltip:focus-visible[data-tooltip]::after,
+    .has-tooltip:focus[data-tooltip]::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .has-tooltip:hover[data-tooltip]::before,
+    .has-tooltip:focus-visible[data-tooltip]::before,
+    .has-tooltip:focus[data-tooltip]::before {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    .has-tooltip.tooltip-left[data-tooltip]::after {
+      left: 0;
+      right: auto;
+      transform: translateX(0) translateY(0);
+    }
+    .has-tooltip.tooltip-left[data-tooltip]::before {
+      left: 12px;
+      right: auto;
+      transform: translateX(0) translateY(-2px);
+    }
+
+    .has-tooltip.tooltip-right[data-tooltip]::after {
+      left: auto;
+      right: 0;
+      transform: translateX(0) translateY(0);
+    }
+    .has-tooltip.tooltip-right[data-tooltip]::before {
+      left: auto;
+      right: 12px;
+      transform: translateX(0) translateY(-2px);
+    }
+
+    .has-tooltip:focus-visible { box-shadow: 0 0 0 3px rgba(59,130,246,0.18); border-radius: 6px; }
+  </style>
+</head>
+
+<body class="bg-gray-100 font-inter">
+  <div class="flex h-screen flex-col">
+    <!-- Header -->
+    <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
+      <div class="flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-3">
+          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+        </div>
+
+        <nav class="flex items-center gap-3 ml-auto">
+            <h3 class="text-base text-white" style="font-size: 1.5rem; padding-right: 15px;">
+            Advertisers
+            </h3>
+          <span class="text-white select-none">|</span>
+
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notificationButton" class="p-2 rounded-md  text-white relative" title="Notifications" aria-label="View notifications" onmouseover="this.style.backgroundColor=''" onmouseout="this.style.backgroundColor=''" >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+              <div class="p-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                  <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                </div>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div id="notificationList">
+                  <!-- Sample items -->
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">Campaign Performance Alert</p>
+                        <p class="text-xs text-gray-500 mt-1">"Summer Sale" exceeded budget by 15%</p>
+                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">New Advertiser Added</p>
+                        <p class="text-xs text-gray-500 mt-1">Stallion Services LLC onboarded</p>
+                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="true">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-700">Account Sync Complete</p>
+                        <p class="text-xs text-gray-500 mt-1">CRM sync finished for 12 accounts</p>
+                        <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waffle Menu -->
+          <div class="relative">
+            <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+              </svg>
+            </button>
+            <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+      <main class="flex-1 overflow-y-auto p-6">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+
+          <div class="p-2 border-b border-gray-200 flex items-center space-x-4">
+            <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
+              <img src="./assets/Advertisers.png" alt="Advertisers Logo" style="size: 20px; border-radius: 10px; padding-left: 5px;" />
+            </div>
+            <h1 class="text-xl" style="font-size: 1.75rem;">Advertisers</h1>
+            <div class="flex-1"></div>
+          </div>
+
+          <!-- Table Toolbar -->
+          <div class="p-6">
+            <div class="mb-4">
+              <div class="flex items-center space-x-3 bg-gray-200 border border-gray-300 rounded-md">
+                <button id="createBtn" class="flex items-center h-10 px-3 rounded-md hover:bg-gray-50 transition" title="Create New Advertiser">
+                  <span class="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-gray-400 mr-2">
+                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                  </span>
+                  <span class="text-sm font-medium text-gray-700">New Advertiser</span>
+                </button>
+
+                <div id="pipeBeforeFilters" class="h-6 border-l border-gray-400 mx-1"></div>
+
+                <div id="filtersGroup" class="flex items-center space-x-2">
+                  <div class="flex items-center px-2 h-10 rounded-md">
+                    <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01.293.707l-6.707 8.707V21l-4-2v-4.586L2.707 6.707A1 1 0 013 6V4z"></path>
+                    </svg>
+                    <div class="relative">
+                      <button id="stateChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition" data-filter="state" title="State filter">
+                        <span id="stateChipLabel">Active</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/></svg>
+                      </button>
+                      <div id="stateMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto">
+                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="All">All</button>
+                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Active">Active</button>
+                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Inactive">Inactive</button>
+                      </div>
+                    </div>
+
+                    <div class="relative">
+                      <button id="ownerChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition" data-filter="owner" title="Ownership filter">
+                        <span id="ownerChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/></svg>
+                      </button>
+                      <div id="ownerMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto">
+                        </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="h-6 border-l border-gray-400 mx-1"></div>
+
+                <div class="relative">
+                  <div class="search-container">
+                    <div class="search-wrapper" id="searchWrapper" style="height:40px;">
+                      <button id="searchToggle" class="search-icon" aria-label="Open search" type="button">
+                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                      </button>
+                      <input type="text" id="searchInput" class="search-input" placeholder="Enter ID, Account #, or Name" autocomplete="off" aria-label="Search advertisers" />
+                      <button id="searchClear" class="clear-button" aria-label="Clear search" type="button">
+                        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Advertiser Table -->
+            <div class="overflow-x-auto border border-gray-300 rounded-md">
+              <table id="advertiserTable" class="min-w-full divide-y divide-gray-200 rounded-md overflow-hidden">
+                <thead class="bg-gray-200">
+                  <tr>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-3 space-x-2" data-sort-key="id" aria-label="Sort by ID">
+                        <span>ID</span><span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-3 space-x-2" data-sort-key="name" aria-label="Sort by Name">
+                        <span>Name</span><span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-3 space-x-2" data-sort-key="account" aria-label="Sort by Account">
+                        <span>Account #</span><span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-3 space-x-2" data-sort-key="state" aria-label="Sort by State">
+                        <span>State</span><span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-3 space-x-2" data-sort-key="campaigns" aria-label="Sort by Campaigns">
+                        <span>Campaigns</span><span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-3 space-x-2" data-sort-key="adGroups" aria-label="Sort by Ad Groups">
+                        <span>Ad Groups</span><span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                      </button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="advertiserTableBody" class="bg-white divide-y divide-gray-200">
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-4 flex items-center justify-between text-xs text-gray-500">
+              <span id="recordCount">15 of 300 showing</span>
+              <div id="pagination" class="flex space-x-2">
+                <button class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md">&lt;</button>
+                <button class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md">1</button>
+                <button class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md">2</button>
+                <button class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md">3</button>
+                <button class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md">4</button>
+                <button class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md">&gt;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="createAdvertiserModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 relative">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900">Create New Advertiser</h2>
+        <button-type id="closeModalX" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div>
+          <label for="accountNumber" class="block text-sm font-medium text-gray-700 mb-2">
+            Account Number <span class="text-red-500" id="accountRequiredAsterisk">*</span>
+          </label>
+          <div class="flex items-center space-x-2">
+            <input 
+              type="text" 
+              id="accountNumber" 
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter account number"
+            />
+            <button 
+              id="lookupBtn" 
+              class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors"
+              title="Lookup account"
+            >
+              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <p id="accountDupError" class="mt-2 text-sm text-red-600 hidden" role="alert" aria-live="assertive">
+            An advertiser with this Account # already exists.
+          </p>
+        </div>
+
+        <div class="flex items-center">
+          <input 
+            type="checkbox" 
+            id="noCrmAccount" 
+            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label for="noCrmAccount" class="ml-2 text-sm text-gray-700">
+            Advertiser is Not Connected to a CRM Account
+          </label>
+        </div>
+
+        <div>
+          <label for="advertiserName" class="block text-sm font-medium text-gray-700 mb-2">
+            Name <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="advertiserName" 
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100"
+            placeholder="Enter advertiser name"
+            disabled
+          />
+          <p id="nameDupError" class="mt-2 text-sm text-red-600 hidden" role="alert" aria-live="assertive">
+            An advertiser with this Name already exists.
+          </p>
+          <div id="crmAccountDisplay" class="hidden mt-1 text-xs text-gray-500">
+            CRM Account: <span id="crmAccountName"></span>
+          </div>
+        </div>
+
+        <div id="platformsContainer" class="">
+          <hr class="my-4 border-gray-200" />
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Platforms <span class="text-red-500">*</span>
+          </label>
+
+          <div>
+           <div class="space-y-2">
+             <div class="flex items-center">
+               <input 
+                 type="checkbox" 
+                 id="platformGCM" 
+                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+               />
+               <label for="platformGCM" class="ml-2 text-sm text-gray-700">Google Campaign Manager (GCM)</label>
+             </div>
+             <div class="flex items-center">
+               <input 
+                 type="checkbox" 
+                 id="platformTradeDesk" 
+                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+               />
+               <label for="platformTradeDesk" class="ml-2 text-sm text-gray-700">Trade Desk</label>
+             </div>
+             <div class="flex items-center">
+               <input 
+                 type="checkbox" 
+                 id="platformDV360" 
+                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+               />
+               <label for="platformDV360" class="ml-2 text-sm text-gray-700">DV360</label>
+             </div>
+           </div>
+         </div>
+         </div>
+       </div>
+
+      <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+        <div class="flex items-center justify-between w-full">
+          <div class="text-sm text-gray-600">
+            <label class="flex items-center space-x-2">
+              <input id="platformToggle" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded" />
+              <span class="text-sm text-gray-700">Enable Platforms (P2)</span>
+            </label>
+          </div>
+          <div class="flex items-center space-x-3">
+        <button 
+          id="cancelModalBtn" 
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button 
+          id="createAdvertiserBtn" 
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          disabled
+        >
+          Create
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="accountLookupModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">Select an account to connect to this advertiser:</h3>
+        <button-type id="closeLookupX" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-4 border-b border-gray-200">
+        <input 
+          type="text" 
+          id="lookupSearch" 
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Search account number or name"
+        />
+      </div>
+
+      <div class="flex-1 overflow-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 sticky top-0">
+            <tr>
+              <th class="text-left py-3 px-4 text-sm font-medium text-gray-700">Account Number</th>
+              <th class="text-left py-3 px-4 text-sm font-medium text-gray-700">Account Name</th>
+            </tr>
+          </thead>
+          <tbody id="lookupResults" class="divide-y divide-gray-200">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 p-4 border-t border-gray-200">
+        <button 
+          id="cancelLookupBtn" 
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button 
+          id="selectAccountBtn" 
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          disabled
+        >
+          Select
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    // === CONFIGURATION AND CONSTANTS ===
+    const CONFIG = {
+      STORAGE_KEYS: {
+        DATA: 'adv_list_data',
+        STATE_FILTER: 'adv_list_state',
+        OWNER_FILTER: 'adv_list_owner'
+      },
+      PAGINATION: {
+        DEFAULT_ROWS: 15,
+        MAX_ROWS: 200
+      },
+      CURRENT_USER: 'David DeHerrera',
+      PERMISSIONS: {
+        CREATE: true
+      }
+    };
+
+    // === SAMPLE DATA ===
+    const DEFAULT_ADVERTISERS = [
+      { id: 'ADV000746', name: 'Stallion Services', account: '653789', status: 'Active', campaign: '6', adGroup: '6', owner: 'David DeHerrera' },
+      { id: 'ADV000845', name: 'Drywall Services', account: '378956', status: 'Active', campaign: '5', adGroup: '7', owner: 'Matt Hunter' },
+      { id: 'ADV000390', name: 'Tennis Pros', account: '005248', status: 'Active', campaign: '1', adGroup: '9', owner: 'Sam Ahn' },
+      { id: 'ADV000123', name: 'Stallion Welding', account: '123456', status: 'Inactive', campaign: '3', adGroup: '2', owner: 'David DeHerrera' },
+      { id: 'ADV000456', name: 'Hunter Water Sports', account: '456789', status: 'Active', campaign: '6', adGroup: '4', owner: 'Matt Hunter' },
+      { id: 'ADV000892', name: 'TechCorp Solutions', account: '789123', status: 'Active', campaign: '1', adGroup: '5', owner: 'David Yi' },
+      { id: 'ADV000567', name: 'Global Marketing Inc', account: '234567', status: 'Inactive', campaign: '4', adGroup: '8', owner: 'Frank Rosenstern' },
+      { id: 'ADV000234', name: 'Digital Dynamics', account: '890234', status: 'Active', campaign: '1', adGroup: '1', owner: 'Alex Thompson' },
+      { id: 'ADV000678', name: 'Creative Agency Pro', account: '345678', status: 'Active', campaign: '2', adGroup: '3', owner: 'Kevin Brown' },
+      { id: 'ADV000345', name: 'NextGen Advertising', account: '901345', status: 'Active', campaign: '3', adGroup: '7', owner: 'Sophia Lewis' },
+      { id: 'ADV000789', name: 'Brand Builders LLC', account: '456789', status: 'Inactive', campaign: '4', adGroup: '9', owner: 'Laura Mitchell' },
+      { id: 'ADV000012', name: 'Metro Media Group', account: '123012', status: 'Active', campaign: '25', adGroup: '5', owner: 'David DeHerrera' },
+      { id: 'ADV000901', name: 'Sunrise Communications', account: '678901', status: 'Active', campaign: '5', adGroup: '2', owner: 'Matt Hunter' },
+      { id: 'ADV000445', name: 'Pinnacle Marketing', account: '234445', status: 'Active', campaign: '6', adGroup: '8', owner: 'Sam Ahn' },
+      { id: 'ADV000667', name: 'Innovate Digital', account: '789667', status: 'Inactive', campaign: '7', adGroup: '6', owner: 'Kevin Brown' },
+      { id: 'ADV000778', name: 'Apex Advertisers', account: '345778', status: 'Active', campaign: '8', adGroup: '4', owner: 'David Yi' },
+      { id: 'ADV000556', name: 'Strategic Solutions', account: '901556', status: 'Active', campaign: '7', adGroup: '6', owner: 'Frank Rosenstern' },
+      { id: 'ADV000334', name: 'Creative Collective', account: '456334', status: 'Active', campaign: '8', adGroup: '8', owner: 'Alex Thompson' },
+      { id: 'ADV000889', name: 'Digital Pioneers', account: '123889', status: 'Inactive', campaign: '9', adGroup: '1', owner: 'Sophia Lewis' },
+      { id: 'ADV000112', name: 'Fusion Media Works', account: '678112', status: 'Active', campaign: '3', adGroup: '5', owner: 'Laura Mitchell' }
+    ];
+
+    const SAMPLE_CRM_ACCOUNTS = [
+      { accountNumber: '987654', accountName: 'BlueSky Technologies' },
+      { accountNumber: '246810', accountName: 'Horizon Business Solutions' },
+      { accountNumber: '135792', accountName: 'RedRock Consulting Group' },
+      { accountNumber: '864207', accountName: 'Silverline Communications' },
+      { accountNumber: '159753', accountName: 'GreenField Marketing Agency' },
+      { accountNumber: '753159', accountName: 'Northstar Digital Ventures' },
+      { accountNumber: '951357', accountName: 'Blackstone Media Corp' },
+      { accountNumber: '147258', accountName: 'Goldmine Software Solutions' },
+      { accountNumber: '369741', accountName: 'Whitehouse Analytics LLC' },
+      { accountNumber: '258147', accountName: 'Crystal Clear Communications' }
+    ];
+
+    // === MAIN APPLICATION ===
+    let app = null;
+
+    // === APPLICATION INITIALIZATION ===
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, initializing...');
+      
+      try {
+        app = {
+          advertisers: [],
+          currentPage: 1,
+          rowsPerPage: CONFIG.PAGINATION.DEFAULT_ROWS,
+          filters: { state: 'Active', owner: 'All' },
+          searchQuery: '',
+          elements: {},
+          selectedAccount: null,
+          searchExpanded: false,
+
+          init: function() {
+            console.log('Initializing app...');
+            this.loadAdvertisers();
+            this.cacheElements();
+            this.loadFilters();
+            this.initEventListeners();
+            this.refreshOwnerMenu();
+            this.applyFiltersAndRender();
+            this.handlePermissions();
+            console.log('App initialized successfully');
+          },
+
+          loadAdvertisers: function() {
+            try {
+              const stored = localStorage.getItem(CONFIG.STORAGE_KEYS.DATA);
+              if (stored) {
+                this.advertisers = JSON.parse(stored);
+                console.log('Loaded', this.advertisers.length, 'advertisers from storage');
+              } else {
+                this.advertisers = [...DEFAULT_ADVERTISERS];
+                this.saveAdvertisers(); // Persist default data to local storage
+                console.log('Using default advertisers and saving to local storage');
+              }
+            } catch (e) {
+              console.warn('Failed to load advertisers:', e);
+              this.advertisers = [...DEFAULT_ADVERTISERS];
+              this.saveAdvertisers();
+            }
+          },
+
+          saveAdvertisers: function() {
+            try {
+              localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(this.advertisers));
+            } catch (e) {
+              console.warn('Failed to save advertisers:', e);
+            }
+          },
+
+          loadFilters: function() {
+            this.filters.state = localStorage.getItem(CONFIG.STORAGE_KEYS.STATE_FILTER) || 'Active';
+            this.filters.owner = localStorage.getItem(CONFIG.STORAGE_KEYS.OWNER_FILTER) || 'All';
+          },
+
+          saveFilter: function(type, value) {
+            this.filters[type] = value;
+            const key = type === 'state' ? CONFIG.STORAGE_KEYS.STATE_FILTER : CONFIG.STORAGE_KEYS.OWNER_FILTER;
+            try {
+              localStorage.setItem(key, value);
+            } catch (e) {
+              console.warn('Failed to save filter:', e);
+            }
+          },
+
+          cacheElements: function() {
+              const elementIds = [
+                'menuButton', 'menuDropdown', 'notificationButton', 'notificationDropdown',
+                'platformToggle', 'platformsContainer',
+                'createBtn', 'stateChip', 'stateChipLabel', 'stateMenu', 'ownerChip', 'ownerChipLabel', 'ownerMenu',
+                'searchWrapper', 'searchToggle', 'searchInput', 'searchClear', 'filtersGroup',
+                'advertiserTableBody', 'recordCount', 'pagination',
+                'createAdvertiserModal', 'accountNumber', 'noCrmAccount', 'advertiserName', 'createAdvertiserBtn',
+                'closeModalX', 'cancelModalBtn', 'nameDupError'
+              ];
+
+            for (let i = 0; i < elementIds.length; i++) {
+              const id = elementIds[i];
+              this.elements[id] = document.getElementById(id);
+              if (!this.elements[id] && ['advertiserTableBody', 'recordCount'].indexOf(id) !== -1) {
+                console.error('Critical element missing:', id);
+              }
+            }
+          },
+
+          initEventListeners: function() {
+              const self = this;
+
+            // Platform toggle shows/hides platform checkbox block and triggers validation
+            if (this.elements.platformToggle) {
+              this.elements.platformToggle.addEventListener('change', function() {
+                const enabled = self.elements.platformToggle.checked;
+                if (self.elements.platformsContainer) {
+                  if (enabled) {
+                    self.elements.platformsContainer.classList.remove('hidden');
+                  } else {
+                    // hide and clear platform selections
+                    self.elements.platformsContainer.classList.add('hidden');
+                    const pids = ['platformGCM','platformTradeDesk','platformDV360'];
+                    pids.forEach(function(pid){
+                      const cb = document.getElementById(pid);
+                      if (cb) cb.checked = false;
+                    });
+                  }
+                }
+                self.validateForm();
+              });
+            }
+
+            // Ensure platform checkbox changes re-run validation so Create enables/disables immediately
+            ['platformGCM','platformTradeDesk','platformDV360'].forEach(function(pid){
+              const cb = document.getElementById(pid);
+              if (cb) cb.addEventListener('change', function(){ self.validateForm(); });
+            });
+
+            // Menu dropdown
+            if (this.elements.menuButton) {
+              this.elements.menuButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                self.elements.menuDropdown.classList.toggle('hidden');
+              });
+            }
+
+            // Notifications dropdown
+            if (this.elements.notificationButton) {
+              this.elements.notificationButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (self.elements.notificationDropdown) {
+                  self.elements.notificationDropdown.classList.toggle('hidden');
+                }
+                // hide other dropdowns
+                if (self.elements.menuDropdown) self.elements.menuDropdown.classList.add('hidden');
+                if (self.elements.stateMenu) self.elements.stateMenu.classList.add('hidden');
+                if (self.elements.ownerMenu) self.elements.ownerMenu.classList.add('hidden');
+              });
+            }
+
+            // mark all read + notification item click (delegated)
+            const markAllBtn = document.getElementById('markAllReadBtn');
+            const notificationList = document.getElementById('notificationList');
+            if (markAllBtn) {
+              markAllBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (!notificationList) return;
+                const items = notificationList.querySelectorAll('.notification-item');
+                items.forEach(function(it) { it.dataset.read = 'true'; it.classList.remove('bg-blue-50'); });
+                const dot = document.getElementById('notificationDot');
+                if (dot) dot.style.display = 'none';
+              });
+            }
+            if (notificationList) {
+              notificationList.addEventListener('click', function(e) {
+                const item = e.target.closest('.notification-item');
+                if (!item) return;
+                // mark single notification read
+                item.dataset.read = 'true';
+                item.classList.remove('bg-blue-50');
+                // hide dot if none unread
+                const anyUnread = !!notificationList.querySelector('.notification-item[data-read="false"]');
+                const dot = document.getElementById('notificationDot');
+                if (dot) dot.style.display = anyUnread ? '' : 'none';
+              });
+            }
+
+            // Create button
+            if (this.elements.createBtn) {
+              this.elements.createBtn.addEventListener('click', function() {
+                self.showCreateModal();
+              });
+            }
+
+            // State filter
+            if (this.elements.stateChip) {
+              this.elements.stateChip.addEventListener('click', function(e) {
+                e.stopPropagation();
+                self.elements.stateMenu.classList.toggle('hidden');
+                if (self.elements.ownerMenu) {
+                  self.elements.ownerMenu.classList.add('hidden');
+                }
+              });
+            }
+
+            if (this.elements.stateMenu) {
+              this.elements.stateMenu.addEventListener('click', function(e) {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                
+                const value = btn.dataset.value;
+                if (self.elements.stateChipLabel) {
+                  self.elements.stateChipLabel.textContent = value;
+                }
+                self.saveFilter('state', value);
+                self.currentPage = 1;
+                self.closeAllDropdowns();
+                self.applyFiltersAndRender();
+              });
+            }
+
+            // Owner filter
+            if (this.elements.ownerChip) {
+              this.elements.ownerChip.addEventListener('click', function(e) {
+                e.stopPropagation();
+                self.elements.ownerMenu.classList.toggle('hidden');
+                if (self.elements.stateMenu) {
+                  self.elements.stateMenu.classList.add('hidden');
+                }
+              });
+            }
+
+            if (this.elements.ownerMenu) {
+              this.elements.ownerMenu.addEventListener('click', function(e) {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                
+                const value = btn.dataset.value;
+                if (self.elements.ownerChipLabel) {
+                  self.elements.ownerChipLabel.textContent = value;
+                }
+                self.saveFilter('owner', value);
+                self.currentPage = 1;
+                self.closeAllDropdowns();
+                self.applyFiltersAndRender();
+              });
+            }
+
+            // Search
+            if (this.elements.searchToggle) {
+              this.elements.searchToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (!self.searchExpanded) {
+                  self.elements.searchWrapper.classList.add('expanded');
+                  self.searchExpanded = true;
+                  setTimeout(function() {
+                    if (self.elements.searchInput) {
+                      self.elements.searchInput.focus();
+                    }
+                  }, 100);
+                }
+              });
+            }
+
+            // prevent clicks inside search area from bubbling to document click
+            if (this.elements.searchWrapper) {
+              this.elements.searchWrapper.addEventListener('mousedown', function(e) { e.stopPropagation(); });
+              this.elements.searchWrapper.addEventListener('click', function(e) { e.stopPropagation(); });
+            }
+
+            if (this.elements.searchInput) {
+              this.elements.searchInput.addEventListener('input', function(e) {
+                self.searchQuery = e.target.value;
+                self.updateSearchState();
+                self.currentPage = 1;
+                self.applyFiltersAndRender();
+              });
+              // collapse search on blur only when empty (with small delay to allow clicks)
+              this.elements.searchInput.addEventListener('blur', function() {
+                setTimeout(function() {
+                  if (!self.searchQuery.trim() && self.searchExpanded) {
+                    if (self.elements.searchWrapper) {
+                      self.elements.searchWrapper.classList.remove('expanded');
+                    }
+                    self.searchExpanded = false;
+                    self.updateSearchState();
+                  }
+                }, 120);
+              });
+            }
+
+            if (this.elements.searchClear) {
+              this.elements.searchClear.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (self.elements.searchInput) {
+                  self.elements.searchInput.value = '';
+                }
+                self.searchQuery = '';
+                self.updateSearchState();
+                self.currentPage = 1;
+                self.applyFiltersAndRender();
+              });
+            }
+
+            // Table clicks
+            if (this.elements.advertiserTableBody) {
+              this.elements.advertiserTableBody.addEventListener('click', function(e) {
+                const link = e.target.closest('a[data-adv-id]');
+                if (link) {
+                  e.preventDefault();
+                  self.navigateToAdvertiser(link.dataset.advId);
+                  return;
+                }
+
+                const tr = e.target.closest('tr[data-adv-id]');
+                if (tr) {
+                  self.navigateToAdvertiser(tr.dataset.advId);
+                }
+              });
+            }
+
+            // Pagination
+            if (this.elements.pagination) {
+              this.elements.pagination.addEventListener('click', function(e) {
+                const btn = e.target.closest('button');
+                if (!btn || btn.disabled) return;
+
+                const action = btn.dataset.action;
+                const totalPages = self.getTotalPages();
+
+                if (action === 'prev' && self.currentPage > 1) {
+                  self.currentPage--;
+                } else if (action === 'next' && self.currentPage < totalPages) {
+                  self.currentPage++;
+                } else {
+                  const pageNum = parseInt(btn.textContent, 10);
+                  if (!isNaN(pageNum)) {
+                    self.currentPage = pageNum;
+                  }
+                }
+
+                self.applyFiltersAndRender();
+              });
+            }
+
+            // Modal events
+            if (this.elements.closeModalX) {
+              this.elements.closeModalX.addEventListener('click', function() {
+                self.hideCreateModal();
+              });
+            }
+
+            if (this.elements.cancelModalBtn) {
+              this.elements.cancelModalBtn.addEventListener('click', function() {
+                self.hideCreateModal();
+              });
+            }
+
+            if (this.elements.noCrmAccount) {
+              this.elements.noCrmAccount.addEventListener('change', function(e) {
+                self.handleNoCrmAccountChange(e.target.checked);
+              });
+            }
+
+            if (this.elements.accountNumber) {
+              this.elements.accountNumber.addEventListener('input', function() {
+                self.selectedAccount = null;
+// clear CRM display and keep advertiserName editable state consistent
+const crmDisplay = document.getElementById('crmAccountDisplay');
+if (crmDisplay) crmDisplay.classList.add('hidden');
+const nameDup = document.getElementById('nameDupError');
+if (nameDup) nameDup.classList.add('hidden');
+// allow editing name normally (do not force disabled state here)
+if (self.elements.advertiserName) {
+self.elements.advertiserName.disabled = true;
+self.elements.advertiserName.classList.add('bg-gray-100');
+// do not clear advertiserName automatically; keep user's typed value if any
+}
+                  self.validateForm();
+
+                  // keep lookup search in sync so typing in the Create modal filters the lookup immediately
+                  const lookupSearch = document.getElementById('lookupSearch');
+                  const accountLookupModal = document.getElementById('accountLookupModal');
+                  if (lookupSearch) {
+                    lookupSearch.value = this.value || '';
+                    // trigger the same filtering handler used by the lookup input
+                    lookupSearch.dispatchEvent(new Event('input', { bubbles: true }));
+                  }
+                  // if lookup modal is not open, no-op beyond setting the search value (so when opened it'll be prefilled)
+                });
+              }
+
+            if (this.elements.advertiserName) {
+              this.elements.advertiserName.addEventListener('input', function() {
+// hide name duplicate error while typing
+const nameDup = document.getElementById('nameDupError');
+if (nameDup) nameDup.classList.add('hidden');
+                self.validateForm();
+
+                // also allow advertiser name to pre-fill the lookup box for name-based search
+                const lookupSearch = document.getElementById('lookupSearch');
+                if (lookupSearch && (!document.getElementById('accountLookupModal') || !document.getElementById('accountLookupModal').classList.contains('hidden'))) {
+                  // only overwrite lookup when modal is open; otherwise leave accountNumber primary
+                  lookupSearch.value = this.value || '';
+                  lookupSearch.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+              });
+            }
+
+            // Account lookup / "Verify" wiring
+            (function() {
+              const lookupBtn = document.getElementById('lookupBtn');
+              const accountLookupModal = document.getElementById('accountLookupModal');
+              const closeLookupX = document.getElementById('closeLookupX');
+              const cancelLookupBtn = document.getElementById('cancelLookupBtn');
+              const lookupSearch = document.getElementById('lookupSearch');
+              const lookupResults = document.getElementById('lookupResults');
+              const selectAccountBtn = document.getElementById('selectAccountBtn');
+
+              function closeLookup() {
+                if (accountLookupModal) {
+                  accountLookupModal.classList.add('hidden');
+                  document.body.style.overflow = 'auto';
+                }
+              }
+
+              function renderLookup(list) {
+                if (!lookupResults) return;
+                lookupResults.innerHTML = '';
+                (list || []).forEach(acc => {
+                  const tr = document.createElement('tr');
+                  tr.className = 'cursor-pointer hover:bg-gray-50';
+                  tr.dataset.accountNumber = acc.accountNumber;
+                  tr.dataset.accountName = acc.accountName;
+                  tr.innerHTML = '<td class="py-2 px-4">' + acc.accountNumber + '</td>' +
+                                 '<td class="py-2 px-4">' + acc.accountName + '</td>';
+                  tr.addEventListener('click', function() {
+                    const prev = lookupResults.querySelector('tr.selected');
+                    if (prev) prev.classList.remove('bg-blue-50','selected');
+                    tr.classList.add('bg-blue-50','selected');
+                    if (selectAccountBtn) selectAccountBtn.disabled = false;
+                  });
+                  lookupResults.appendChild(tr);
+                });
+              }
+
+              if (lookupBtn) {
+                lookupBtn.addEventListener('click', function() {
+                  if (accountLookupModal) {
+                    accountLookupModal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+
+                    // Prefill the lookup input from whatever the user has typed in the Create modal
+                    const accVal = (document.getElementById('accountNumber') && document.getElementById('accountNumber').value) || '';
+                    const nameVal = (document.getElementById('advertiserName') && document.getElementById('advertiserName').value) || '';
+                    const initial = accVal.trim() || nameVal.trim() || '';
+                    if (lookupSearch) {
+                      lookupSearch.value = initial;
+                      lookupSearch.dispatchEvent(new Event('input', { bubbles: true }));
+                    } else {
+                      renderLookup(SAMPLE_CRM_ACCOUNTS);
+                    }
+                    if (selectAccountBtn) selectAccountBtn.disabled = true;
+                  }
+                });
+              }
+
+              if (closeLookupX) closeLookupX.addEventListener('click', closeLookup);
+              if (cancelLookupBtn) cancelLookupBtn.addEventListener('click', closeLookup);
+
+              if (lookupSearch) {
+                lookupSearch.addEventListener('input', function() {
+                  const q = (this.value || '').trim().toLowerCase();
+                  const filtered = SAMPLE_CRM_ACCOUNTS.filter(a =>
+                    a.accountNumber.toLowerCase().includes(q) || a.accountName.toLowerCase().includes(q)
+                  );
+                  renderLookup(filtered);
+                });
+              }
+
+              if (selectAccountBtn) {
+                selectAccountBtn.addEventListener('click', function() {
+                  const sel = lookupResults ? lookupResults.querySelector('tr.selected') : null;
+                  if (!sel) return;
+                  const accNum = sel.dataset.accountNumber;
+                  const accName = sel.dataset.accountName;
+
+                  self.selectedAccount = { accountNumber: accNum, accountName: accName };
+
+                  if (self.elements.accountNumber) {
+                    self.elements.accountNumber.value = accNum;
+                    self.elements.accountNumber.disabled = true;
+                    self.elements.accountNumber.classList.add('bg-gray-100');
+                  }
+// populate name field from the selected CRM record and enable editing
+if (self.elements.advertiserName) {
+self.elements.advertiserName.value = accName || '';
+self.elements.advertiserName.disabled = false;
+self.elements.advertiserName.classList.remove('bg-gray-100');
+}
+// show CRM display
+                  const crmDisplay = document.getElementById('crmAccountDisplay');
+                  if (crmDisplay) {
+                    crmDisplay.classList.remove('hidden');
+                    const nameEl = document.getElementById('crmAccountName');
+                    if (nameEl) nameEl.textContent = accName;
+                  }
+// hide any prior duplicate messages and revalidate (dedupe checks both account and name)
+const accDup = document.getElementById('accountDupError');
+if (accDup) accDup.classList.add('hidden');
+const nameDup = document.getElementById('nameDupError');
+if (nameDup) nameDup.classList.add('hidden');
+self.validateForm();
+
+                  closeLookup();
+                });
+              }
+
+            })();
+            
+            if (this.elements.createAdvertiserBtn) {
+              this.elements.createAdvertiserBtn.addEventListener('click', function() {
+                self.handleCreateAdvertiser();
+              });
+            }
+
+            // Close dropdowns on document click
+            document.addEventListener('click', function() {
+              self.closeAllDropdowns();
+            });
+
+            // Set initial filter labels
+            if (this.elements.stateChipLabel) {
+              this.elements.stateChipLabel.textContent = this.filters.state;
+            }
+            if (this.elements.ownerChipLabel) {
+              this.elements.ownerChipLabel.textContent = this.filters.owner;
+            }
+
+            
+          },
+
+          closeAllDropdowns: function() {
+            if (this.elements.menuDropdown) this.elements.menuDropdown.classList.add('hidden');
+            if (this.elements.stateMenu) this.elements.stateMenu.classList.add('hidden');
+            if (this.elements.ownerMenu) this.elements.ownerMenu.classList.add('hidden');
+            if (this.elements.notificationDropdown) this.elements.notificationDropdown.classList.add('hidden');
+            // collapse search when no text present
+            if (this.searchExpanded && !this.searchQuery.trim()) {
+              if (this.elements.searchWrapper) {
+                this.elements.searchWrapper.classList.remove('expanded');
+              }
+              this.searchExpanded = false;
+              this.updateSearchState();
+            }
+          },
+
+          updateSearchState: function() {
+            const isSearchActive = this.searchQuery.trim().length > 0;
+            
+            if (this.elements.searchClear) {
+              if (isSearchActive) {
+                this.elements.searchClear.classList.add('visible');
+              } else {
+                this.elements.searchClear.classList.remove('visible');
+              }
+            }
+
+            if (this.elements.filtersGroup) {
+              if (isSearchActive) {
+                this.elements.filtersGroup.classList.add('opacity-50', 'pointer-events-none');
+              } else {
+                this.elements.filtersGroup.classList.remove('opacity-50', 'pointer-events-none');
+              }
+            }
+          },
+
+          refreshOwnerMenu: function() {
+            if (!this.elements.ownerMenu) return;
+
+            const owners = [];
+            for (let i = 0; i < this.advertisers.length; i++) {
+              const owner = this.advertisers[i].owner;
+              if (owner && owners.indexOf(owner) === -1) {
+                owners.push(owner);
+              }
+            }
+            owners.sort();
+
+            const menuItems = ['All', 'My Advertisers'].concat(owners);
+            
+            this.elements.ownerMenu.innerHTML = '';
+            for (let i = 0; i < menuItems.length; i++) {
+              const owner = menuItems[i];
+              const btn = document.createElement('button');
+              btn.className = 'block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100';
+              btn.textContent = owner;
+              btn.dataset.value = owner;
+              this.elements.ownerMenu.appendChild(btn);
+            }
+          },
+
+          getFilteredAdvertisers: function() {
+            let filtered = [];
+            for (let i = 0; i < this.advertisers.length; i++) {
+              filtered.push(this.advertisers[i]);
+            }
+
+            if (this.searchQuery.trim()) {
+              const query = this.searchQuery.toLowerCase();
+              const searchFiltered = [];
+              for (let i = 0; i < filtered.length; i++) {
+                const adv = filtered[i];
+                if ((adv.id && adv.id.toLowerCase() === query) ||
+                    (adv.account && adv.account.toLowerCase().indexOf(query) !== -1) ||
+                    (adv.name && adv.name.toLowerCase().indexOf(query) !== -1)) {
+                  searchFiltered.push(adv);
+                }
+              }
+              filtered = searchFiltered;
+            } else {
+              // Apply filters only when search is not active
+              if (this.filters.state !== 'All') {
+                const stateFiltered = [];
+                for (let i = 0; i < filtered.length; i++) {
+                  const adv = filtered[i];
+                  if ((adv.status || '').toLowerCase() === this.filters.state.toLowerCase()) {
+                    stateFiltered.push(adv);
+                  }
+                }
+                filtered = stateFiltered;
+              }
+
+              if (this.filters.owner === 'My Advertisers') {
+                const ownerFiltered = [];
+                for (let i = 0; i < filtered.length; i++) {
+                  const adv = filtered[i];
+                  if ((adv.owner || '') === CONFIG.CURRENT_USER) {
+                    ownerFiltered.push(adv);
+                  }
+                }
+                filtered = ownerFiltered;
+              } else if (this.filters.owner !== 'All') {
+                const ownerFiltered = [];
+                for (let i = 0; i < filtered.length; i++) {
+                  const adv = filtered[i];
+                  if ((adv.owner || '') === this.filters.owner) {
+                    ownerFiltered.push(adv);
+                  }
+                }
+                filtered = ownerFiltered;
+              }
+            }
+
+            return filtered;
+          },
+
+          getPaginatedData: function() {
+            const filtered = this.getFilteredAdvertisers();
+            const start = (this.currentPage - 1) * this.rowsPerPage;
+            const end = start + this.rowsPerPage;
+            const data = [];
+            for (let i = start; i < end && i < filtered.length; i++) {
+              data.push(filtered[i]);
+            }
+            return {
+              data: data,
+              total: filtered.length
+            };
+          },
+
+          getTotalPages: function() {
+            const total = this.getFilteredAdvertisers().length;
+            return Math.max(1, Math.ceil(total / this.rowsPerPage));
+          },
+
+          applyFiltersAndRender: function() {
+            console.log('Rendering with filters...');
+            const result = this.getPaginatedData();
+            const totalPages = this.getTotalPages();
+            
+            if (this.currentPage > totalPages) this.currentPage = totalPages;
+            if (this.currentPage < 1) this.currentPage = 1;
+            
+            this.renderTable(result.data);
+            this.updateRecordCount(result.total, result.data.length);
+            this.renderPagination(result.total);
+          },
+
+          renderTable: function(data) {
+            if (!this.elements.advertiserTableBody) {
+              console.error('Table body not found');
+              return;
+            }
+
+            this.elements.advertiserTableBody.innerHTML = '';
+            
+            if (data.length === 0) {
+              const tr = document.createElement('tr');
+              tr.innerHTML = '<td colspan="6" class="px-6 py-2 text-center text-gray-500">No advertisers found</td>';
+              this.elements.advertiserTableBody.appendChild(tr);
+              return;
+            }
+            
+            for (let i = 0; i < data.length; i++) {
+              const adv = data[i];
+              const tr = document.createElement('tr');
+              tr.dataset.advId = adv.id || '';
+              tr.innerHTML = 
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.id || '') + '</td>' +
+                '<td class="px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">' +
+                  '<a href="./WFAdvertiserDetails.html" data-adv-id="' + (adv.id || '') + '" class="text-blue-600 hover:underline">' + (adv.name || '') + '</a>' +
+                '</td>' +
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.account || '') + '</td>' +
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.status || '') + '</td>' +
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.campaign || '') + '</td>' +
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.adGroup || '') + '</td>';
+              this.elements.advertiserTableBody.appendChild(tr);
+            }
+          },
+
+          updateRecordCount: function(filteredTotal, showingCount) {
+            if (this.elements.recordCount) {
+              this.elements.recordCount.textContent = showingCount + ' of ' + filteredTotal + ' showing';
+            }
+          },
+
+          renderPagination: function(totalItems) {
+            if (!this.elements.pagination) return;
+
+            if (totalItems <= this.rowsPerPage) {
+              this.elements.pagination.style.display = 'none';
+              return;
+            }
+
+            this.elements.pagination.style.display = 'flex';
+            const totalPages = this.getTotalPages();
+
+            const buttons = [];
+            buttons.push('<button data-action="prev" class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md"' + 
+                        (this.currentPage === 1 ? ' disabled' : '') + '>&lt;</button>');
+
+            const maxButtons = 5;
+            let start = Math.max(1, this.currentPage - Math.floor(maxButtons / 2));
+            let end = Math.min(totalPages, start + maxButtons - 1);
+            
+            if (end - start + 1 < maxButtons) {
+              start = Math.max(1, end - maxButtons + 1);
+            }
+
+            for (let p = start; p <= end; p++) {
+              const activeClass = (p === this.currentPage) ? 'bg-gray-200 font-medium' : '';
+              buttons.push('<button class="px-2 py-1 ' + activeClass + ' text-gray-700 hover:bg-gray-200 rounded-md">' + p + '</button>');
+            }
+
+            buttons.push('<button data-action="next" class="px-2 py-1 text-gray-700 hover:bg-gray-200 rounded-md"' + 
+                        (this.currentPage === totalPages ? ' disabled' : '') + '>&gt;</button>');
+
+            this.elements.pagination.innerHTML = buttons.join('');
+          },
+
+          navigateToAdvertiser: function(id) {
+            try {
+              localStorage.setItem('adv_selected_id', id);
+              for (let i = 0; i < this.advertisers.length; i++) {
+                if (String(this.advertisers[i].id) === String(id)) {
+                  localStorage.setItem('adv_selected_data', JSON.stringify(this.advertisers[i]));
+                  break;
+                }
+              }
+            } catch (e) {
+              console.warn('Failed to save selected advertiser:', e);
+            }
+            window.location.href = './WFAdvertiserDetails.html';
+          },
+
+          showCreateModal: function() {
+            if (this.elements.createAdvertiserModal) {
+              this.elements.createAdvertiserModal.classList.remove('hidden');
+              document.body.style.overflow = 'hidden';
+              this.resetCreateForm();
+            }
+          },
+
+          hideCreateModal: function() {
+            if (this.elements.createAdvertiserModal) {
+              this.elements.createAdvertiserModal.classList.add('hidden');
+              document.body.style.overflow = 'auto';
+            }
+          },
+
+          resetCreateForm: function() {
+            if (this.elements.accountNumber) this.elements.accountNumber.value = '';
+            if (this.elements.advertiserName) this.elements.advertiserName.value = '';
+            if (this.elements.noCrmAccount) this.elements.noCrmAccount.checked = false;
+            this.selectedAccount = null;
+            
+            // ensure platform toggle is reset and platform options hidden by default
+            if (this.elements.platformToggle) this.elements.platformToggle.checked = false;
+            if (this.elements.platformsContainer) this.elements.platformsContainer.classList.add('hidden');
+            
+            if (this.elements.accountNumber) {
+              this.elements.accountNumber.disabled = false;
+              this.elements.accountNumber.classList.remove('bg-gray-100');
+            }
+            if (this.elements.advertiserName) {
+              this.elements.advertiserName.disabled = true;
+              this.elements.advertiserName.classList.add('bg-gray-100');
+            }
+            
+            const crmDisplay = document.getElementById('crmAccountDisplay');
+            if (crmDisplay) crmDisplay.classList.add('hidden');
+            
+            const dupError = document.getElementById('accountDupError');
+            if (dupError) dupError.classList.add('hidden');
+            
+            this.validateForm();
+          },
+
+          handleNoCrmAccountChange: function(checked) {
+            if (checked) {
+              if (this.elements.accountNumber) {
+                this.elements.accountNumber.disabled = true;
+                this.elements.accountNumber.classList.add('bg-gray-100');
+              }
+              if (this.elements.advertiserName) {
+                this.elements.advertiserName.disabled = false;
+                this.elements.advertiserName.classList.remove('bg-gray-100');
+                this.elements.advertiserName.focus();
+              }
+              this.selectedAccount = null;
+              if (this.elements.accountNumber) this.elements.accountNumber.value = '';
+            } else {
+              if (this.elements.accountNumber) {
+                this.elements.accountNumber.disabled = false;
+                this.elements.accountNumber.classList.remove('bg-gray-100');
+              }
+              if (this.elements.advertiserName) {
+                this.elements.advertiserName.disabled = true;
+                this.elements.advertiserName.classList.add('bg-gray-100');
+                this.elements.advertiserName.value = '';
+              }
+            }
+            this.validateForm();
+          },
+
+          validateForm: function() {
+            // account present if typed or a selected CRM account exists
+            const hasAccount = (this.elements.accountNumber && this.elements.accountNumber.value.trim().length > 0) || !!this.selectedAccount;
+            // name present if typed OR a selected CRM account exists (selectedAccount supplies a name)
+            const hasName = (this.elements.advertiserName && this.elements.advertiserName.value.trim().length > 0) || !!this.selectedAccount;
+            const noCrm = this.elements.noCrmAccount && this.elements.noCrmAccount.checked;
+            
+            // Check if at least one platform is selected — but only when platforms are enabled
+            const platformsEnabled = this.elements.platformToggle ? this.elements.platformToggle.checked : true;
+            const platformGCM = document.getElementById('platformGCM');
+            const platformTradeDesk = document.getElementById('platformTradeDesk');
+            const platformDV360 = document.getElementById('platformDV360');
+            const hasPlatform = (platformGCM && platformGCM.checked) || 
+                                (platformTradeDesk && platformTradeDesk.checked) || 
+                                (platformDV360 && platformDV360.checked);
+
+            // Duplicate checks:
+            // - If not "noCrm" and there is an account (typed or selected), dedupe by account number.
+            // - If name present (typed or selected) check duplicate name.
+            let accountDup = false;
+            let nameDup = false;
+            const accToCheck = this.selectedAccount ? this.selectedAccount.accountNumber :
+                               (this.elements.accountNumber ? this.elements.accountNumber.value.trim() : '');
+            const nameToCheck = this.selectedAccount ? this.selectedAccount.accountName :
+                                (this.elements.advertiserName ? this.elements.advertiserName.value.trim() : '');
+
+            if (!noCrm && accToCheck) {
+              accountDup = this.isDuplicateAccount(accToCheck);
+            }
+            if (nameToCheck) {
+              nameDup = this.isDuplicateName(nameToCheck);
+            }
+
+            const accDupEl = document.getElementById('accountDupError');
+            if (accDupEl) {
+              if (accountDup) accDupEl.classList.remove('hidden'); else accDupEl.classList.add('hidden');
+            }
+            const nameDupEl = document.getElementById('nameDupError');
+            if (nameDupEl) {
+              if (nameDup) nameDupEl.classList.remove('hidden'); else nameDupEl.classList.add('hidden');
+            }
+
+            const platformRequirementMet = platformsEnabled ? hasPlatform : true;
+
+            // validity:
+            // - If noCrm: name required & name must not duplicate
+            // - If not noCrm: account AND name required, and neither accountDup nor nameDup should be true.
+            let isValid = false;
+            if (noCrm) {
+              isValid = hasName && !nameDup && platformRequirementMet;
+            } else {
+              isValid = hasName && hasAccount && !accountDup && !nameDup && platformRequirementMet;
+           
+            }
+
+            if (this.elements.createAdvertiserBtn) {
+              this.elements.createAdvertiserBtn.disabled = !isValid;
+            }
+          },
+
+          isDuplicateAccount: function(accountNumber) {
+            if (!accountNumber) return false;
+            const normalized = String(accountNumber).trim();
+            for (let i = 0; i < this.advertisers.length; i++) {
+              if (this.advertisers[i].account && String(this.advertisers[i].account).trim() === normalized) {
+                return true;
+              }
+            }
+            return false;
+          },
+
+isDuplicateName: function(name) {
+if (!name) return false;
+const normalized = String(name).trim().toLowerCase();
+for (let i = 0; i < this.advertisers.length; i++) {
+if (this.advertisers[i].name && String(this.advertisers[i].name).trim().toLowerCase() === normalized) {
+return true;
+}
+}
+return false;
+},
+
+          handleCreateAdvertiser: function() {
+            if (!this.elements.createAdvertiserBtn || this.elements.createAdvertiserBtn.disabled) return;
+
+            const accToCheck = this.selectedAccount ? this.selectedAccount.accountNumber : 
+                              (this.elements.accountNumber ? this.elements.accountNumber.value.trim() : '');
+            const noCrm = this.elements.noCrmAccount && this.elements.noCrmAccount.checked;
+            
+            if (!noCrm && this.isDuplicateAccount(accToCheck)) {
+              return;
+            }
+
+            // Get platform selections (but ignore if platforms are disabled)
+            const platformsEnabled = this.elements.platformToggle ? this.elements.platformToggle.checked : true;
+            const platformGCM = document.getElementById('platformGCM');
+            const platformTradeDesk = document.getElementById('platformTradeDesk');
+            const platformDV360 = document.getElementById('platformDV360');
+
+            // Build a draft advertiser and save as a draft (do NOT add to main list yet)
+            const draftAdvertiser = {
+              id: 'ADV' + String(Date.now()).slice(-6),
+              name: this.elements.advertiserName ? this.elements.advertiserName.value.trim() : '',
+              account: this.selectedAccount ? this.selectedAccount.accountNumber : 
+                      (noCrm ? '' : (this.elements.accountNumber ? this.elements.accountNumber.value.trim() : '')),
+              status: 'Active',
+              campaign: '',
+              adGroup: '',
+              owner: CONFIG.CURRENT_USER,
+              platforms: {
+                gcm: platformsEnabled ? (platformGCM ? platformGCM.checked : false) : false,
+                tradeDesk: platformsEnabled ? (platformTradeDesk ? platformTradeDesk.checked : false) : false,
+                dv360: platformsEnabled ? (platformDV360 ? platformDV360.checked : false) : false
+              },
+              _draft: true
+            };
+
+            // Persist draft so WFAdvertiserCreate.html can load it
+            try {
+              localStorage.setItem('adv_draft', JSON.stringify(draftAdvertiser));
+              localStorage.setItem('adv_selected_id', draftAdvertiser.id);
+              localStorage.setItem('adv_selected_data', JSON.stringify(draftAdvertiser));
+            } catch (e) {
+              console.warn('Failed to save advertiser draft:', e);
+            }
+
+            this.hideCreateModal();
+            if (typeof showToast === 'function') {
+              showToast('Advertiser draft saved. Complete creation on the details page.', 2500);
+            }
+
+            // Redirect to create page so user can finalize (create) there
+            setTimeout(function() {
+              window.location.href = './WFAdvertiserCreate.html';
+            }, 300);
+           },
+
+          handlePermissions: function() {
+            if (!CONFIG.PERMISSIONS.CREATE && this.elements.createBtn) {
+              this.elements.createBtn.style.display = 'none';
+              const pipeEl = document.getElementById('pipeBeforeFilters');
+              if (pipeEl) pipeEl.style.display = 'none';
+            }
+          }
+        };
+
+        app.init();
+
+        
+      } catch (error) {
+        console.error('Failed to initialize app:', error);
+        const tableBody = document.getElementById('advertiserTableBody');
+        if (tableBody) {
+          tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-2 text-center text-red-600">Error loading advertisers. Check console for details.</td></tr>';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
