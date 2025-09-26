@@ -951,16 +951,19 @@
               tr.className = 'row-group';
             } else {
               const c = r.campaign;
-              tr.className = 'hover:bg-gray-50';
-              tr.innerHTML = `
-                <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.id || ''}</td>
-                <td class="px-6 py-1 whitespace-nowrap text-sm font-medium border-r border-default">
-                  <a href="#" class="text-blue-600 hover:underline">${c.name || ''}</a>
-                </td>
-                <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
-                <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
-                <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums">${c.adGroups ?? 0}</td>
-              `;
+
+tr.className = 'hover:bg-gray-50';
+tr.innerHTML = `
+  <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.id || ''}</td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm font-medium border-r border-default">
+    <a href="./CampaignDetails.html?campaignId=${encodeURIComponent(c.id)}&campaignName=${encodeURIComponent(c.name)}" class="text-blue-600 hover:underline">
+      ${c.name || ''}
+    </a>
+  </td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums">${c.adGroups ?? 0}</td>
+`;
             }
 
             this.elements.campaignTableBody.appendChild(tr);
@@ -1030,6 +1033,11 @@
         console.warn('Failed to load advertiser data:', e);
       }
     });
+
+
+
+
+
   </script>
 </body>
 </html>
