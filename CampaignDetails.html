@@ -180,10 +180,39 @@
       </a>
     </li>
     <li>
-      <a href="./AdvertiserCampaigns.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
-        <span data-link-label>Campaigns</span>
-      </a>
+      <div class="flex items-center w-full">
+        <!-- Campaigns link (clickable, navigates to AdvertiserCampaigns.html) -->
+        <a href="./AdvertiserCampaigns.html"
+          data-nav-link
+          class="flex items-center flex-1 px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md focus:outline-none transition"
+          style="min-width:0;"
+        >
+          <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
+          <span data-link-label>Campaigns</span>
+        </a>
+        <!-- Accordion arrow button (only toggles submenu) -->
+        <button
+          type="button"
+          id="campaignsAccordionBtn"
+          class="ml-1 p-1 rounded hover:bg-gray-100 focus:outline-none transition"
+          aria-expanded="true"
+          aria-controls="campaignsSubMenu"
+          tabindex="0"
+          style="height:32px;width:32px;display:flex;align-items:center;justify-content:center;"
+        >
+          <svg id="campaignsAccordionIcon" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+      <!-- Sub-tab for Campaign Details, collapsible -->
+      <ul id="campaignsSubMenu" class="ml-8 mt-1 space-y-1" style="display: block;">
+        <li>
+          <a href="./CampaignDetails.html" class="flex items-center px-1 py-2 text-xs text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-md">
+            <span class="ml-8">Campaign Details</span>
+          </a>
+        </li>
+      </ul>
     </li>
     <li>
       <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
@@ -1001,5 +1030,30 @@
 
   </script>
   <script src="./assets/sidebar.js" defer></script>
+
+  <!-- Add this script just before </body> -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const btn = document.getElementById('campaignsAccordionBtn');
+  const submenu = document.getElementById('campaignsSubMenu');
+  const icon = document.getElementById('campaignsAccordionIcon');
+
+  if (btn && submenu && icon) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      submenu.style.display = expanded ? 'none' : 'block';
+      icon.style.transform = expanded ? 'rotate(-90deg)' : 'rotate(0deg)';
+    });
+
+    // Optional: Set initial state (expanded)
+    btn.setAttribute('aria-expanded', 'true');
+    submenu.style.display = 'block';
+    icon.style.transform = 'rotate(0deg)';
+  }
+});
+</script>
 </body>
 </html>
