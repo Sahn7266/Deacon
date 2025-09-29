@@ -142,7 +142,7 @@
     </header>
 
     <!-- Body -->
-    <div class="flex flex-1 overflow-hidden">
+    <div class="flex flex-1 overflow-hidden relative">
       <!-- Sidebar -->
       <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
   <div class="flex items-center justify-between pb-4 border-b border-gray-200">
@@ -240,118 +240,80 @@
             <hr class="border-gray-300 mp-4 p-2">
 
             <!-- Two-column cards -->
-            <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-6">
               <!-- General -->
               <section class="space-y-2">
                 <div class="flex items-center justify-between">
-                  <h1 id="campaignTitle" class="text-2xl font-semibold text-gray-900 mx-2">Loading Campaign...</h1>
-
-                  <div class="flex items-center gap-2">
-                    <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                      <svg viewBox="0 0 24 24" height="16" width="16">
-                        <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
-                      </svg>
-                      Edit
-                    </button>
-                    <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
-                    <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+                  <div class="mx-2">
+                    <h1 class="text-2xl font-semibold text-gray-900">CAMPAIGN DETAILS</h1>
+                    <div id="campaignTitle" class="text-sm text-gray-500 mt-0.5">Loading Campaign...</div>
                   </div>
                 </div>
-
-                <div id="generalCard" class="p-4 border border-gray-200 rounded-md">
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
-                    <label for="companyName" class="text-sm font-semibold text-gray-600">Company Name:</label>
-                    <div class="md:col-span-2">
-                      <input id="companyName" type="text" data-bind="adv.name" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                    </div>
-
-                    <label for="accountDisplay" class="text-sm font-semibold text-gray-600">Account #:</label>
-                    <div class="md:col-span-2 flex items-center gap-2">
-                      <span id="accountDisplay" data-bind="adv.account" class="hidden text-sm text-gray-900 rounded px-0 py-1">—</span>
-                      <button id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline">Select Account</button>
-                    </div>
-
-                    <!-- FIXED: Use 'state' consistently -->
-                    <label for="advertiserState" class="text-sm font-semibold text-gray-600">State:</label>
-                    <div class="md:col-span-2">
-                      <select id="advertiserState" data-bind="adv.state" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                      </select>
-                    </div>
-
-                    <label for="advertiserWebsite" class="text-sm font-semibold text-gray-600">Website:</label>
-                    <div class="md:col-span-2">
-                      <input id="advertiserWebsite" type="text" data-bind="adv.website" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <!-- Team -->
-              <section class="space-y-2">
-                <div class="flex items-center justify-between">
-                  <h1 class="text-2xl font-semibold text-gray-900 mx-2">TEAM</h1>
-                  <div class="relative">
-                    <button id="teamStateChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 bg-gray-50 border border-gray-300 hover:bg-gray-100 transition" data-filter="state" aria-haspopup="menu" aria-expanded="false">
-                      <span id="teamStateChipLabel">Active</span>
-                      <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/></svg>
-                    </button>
-                    <div id="teamStateMenu" class="hidden absolute right-0 mt-2 min-w-40 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto" role="menu" tabindex="-1">
-                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="All" role="menuitem">All</button>
-                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Active" role="menuitem">Active</button>
-                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Inactive" role="menuitem">Inactive</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="p-4 border border-gray-200 rounded-md">
-                  <table class="w-full text-sm table-fixed">
-                    <colgroup>
-                      <col style="width:44%">
-                      <col style="width:36%">
-                      <col style="width:20%">
-                    </colgroup>
-                    <thead>
-                      <tr class="border-b border-gray-300">
-                        <th class="text-left py-2 text-gray-600 font-semibold">Name</th>
-                        <th class="text-left py-2 text-gray-600 font-semibold">Role</th>
-                        <th class="text-left py-2 text-gray-600 font-semibold">State</th>
-                      </tr>
-                    </thead>
-                    <tbody id="teamTableBody">
-                      <tr class="border-b border-gray-100" data-state="active">
-                        <td class="py-2 text-gray-900">Matt Hunter</td>
-                        <td class="py-2 text-gray-500">Account Manager</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
-                      </tr>
-                      <tr class="border-b border-gray-100" data-state="active">
-                        <td class="py-2 text-gray-900">David DeHerrera</td>
-                        <td class="py-2 text-gray-500">Campaign Specialist</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
-                      </tr>
-                      <tr class="border-b border-gray-100" data-state="inactive">
-                        <td class="py-2 text-gray-900">Hailey Golden</td>
-                        <td class="py-2 text-gray-500">Campaign Manager</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
-                      </tr>
-                      <tr class="border-b border-gray-100" data-state="active">
-                        <td class="py-2 text-gray-900">Sam Ahn</td>
-                        <td class="py-2 text-gray-500">Sales Representative</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
-                      </tr>
-                      <tr data-state="inactive">
-                        <td class="py-2 text-gray-900">Trevor White</td>
-                        <td class="py-2 text-gray-500">Partnership Sales</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            </div>
+                 <div id="generalCard" class="p-4 border border-gray-200 rounded-md">
+                   <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
+                     <label for="companyName" class="text-sm font-semibold text-gray-600">Company Name:</label>
+                     <div class="md:col-span-2">
+                       <input id="companyName" type="text" data-bind="adv.name" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                     </div>
+                     <label for="accountDisplay" class="text-sm font-semibold text-gray-600">Account #:</label>
+                     <div class="md:col-span-2 flex items-center gap-2">
+                       <span id="accountDisplay" data-bind="adv.account" class="hidden text-sm text-gray-900 rounded px-0 py-1">—</span>
+                       <button id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline">Select Account</button>
+                     </div>
+                     <label for="advertiserState" class="text-sm font-semibold text-gray-600">State:</label>
+                     <div class="md:col-span-2">
+                       <select id="advertiserState" data-bind="adv.state" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                         <option value="Active">Active</option>
+                         <option value="Inactive">Inactive</option>
+                       </select>
+                     </div>
+                     <label for="advertiserWebsite" class="text-sm font-semibold text-gray-600">Website:</label>
+                     <div class="md:col-span-2">
+                       <input id="advertiserWebsite" type="text" data-bind="adv.website" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                     </div>
+                   </div>
+                 </div>
+               </section>
+             </div>
           </div>
         </div>
+
+        <!-- Right Sidebar Drawer (moved inside body container, now under header) -->
+        <div id="rightDrawer"
+          class="absolute top-0 right-0 w-80 max-w-full h-full bg-white shadow-lg z-30 transform translate-x-full transition-transform duration-300 ease-in-out border-l border-gray-200 flex flex-col">
+          <div class="flex items-center justify-between p-4 border-b">
+            <h2 class="text-lg font-semibold text-gray-800">Tools</h2>
+            <button id="rightDrawerClose" class="text-gray-600 hover:text-gray-900">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <div class="p-4 flex-1 overflow-y-auto">
+            <ul class="space-y-3">
+              <li>
+                <a href="#" class="flex items-center text-sm text-gray-700 hover:text-blue-600">
+                  <img src="./assets/svgs/AdGroups.svg" class="w-5 h-5 mr-2" /> Extra Tool
+                </a>
+              </li>
+              <li>
+                <a href="#" class="flex items-center text-sm text-gray-700 hover:text-blue-600">
+                  <img src="./assets/svgs/Blueprint.svg" class="w-5 h-5 mr-2" /> Settings
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Toggle Button (now positioned relative to body, not screen) -->
+        <button id="rightDrawerToggleButton"
+          class="absolute top-1/2 -translate-y-1/2 bg-white border border-gray-300 rounded-l-md shadow-lg p-2 z-40 hover:bg-blue-50 transition-colors duration-300"
+          title="Toggle Tools Panel"
+          style="right:0;">
+          <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path id="rightDrawerArrowPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
       </main>
     </div>
   </div>
@@ -753,43 +715,6 @@
 
   <!-- Account Lookup Modal -->
   <div id="accountLookupModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] overflow-auto">
-      <div class="flex items-center justify-between p-4 border-b border-gray-200">
-        <h2 class="text-lg font-semibold text-gray-900">Account Lookup</h2>
-        <button type="button" id="closeLookupX" class="text-gray-400 hover:text-gray-600 transition-colors" title="Close">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-
-      <div class="p-4">
-        <div class="mb-4">
-          <input type="text" id="lookupSearch" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search by account number or name...">
-        </div>
-        
-        <div class="max-h-96 overflow-y-auto">
-          <table class="w-full text-sm">
-            <thead class="bg-gray-50 sticky top-0">
-              <tr>
-                <th class="text-left py-2 px-4 font-medium text-gray-700">Account #</th>
-                <th class="text-left py-2 px-4 font-medium text-gray-700">Account Name</th>
-              </tr>
-            </thead>
-            <tbody id="lookupResults" class="divide-y divide-gray-200">
-              <!-- Results populated by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-end space-x-3 p-4 border-t border-gray-200">
-        <button type="button" id="cancelLookupBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
-        <button type="button" id="selectAccountBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50" disabled>Select</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Right Sidebar Drawer -->
 <div id="rightDrawer" class="fixed top-0 right-0 w-80 max-w-full h-full bg-white shadow-lg z-50 transform translate-x-full transition-transform duration-300 ease-in-out border-l border-gray-200 flex flex-col">
   <div class="flex items-center justify-between p-4 border-b">
@@ -1034,24 +959,21 @@
   <!-- Add this script just before </body> -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const btn = document.getElementById('campaignsAccordionBtn');
-  const submenu = document.getElementById('campaignsSubMenu');
-  const icon = document.getElementById('campaignsAccordionIcon');
-
-  if (btn && submenu && icon) {
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', String(!expanded));
-      submenu.style.display = expanded ? 'none' : 'block';
-      icon.style.transform = expanded ? 'rotate(-90deg)' : 'rotate(0deg)';
-    });
-
-    // Optional: Set initial state (expanded)
-    btn.setAttribute('aria-expanded', 'true');
-    submenu.style.display = 'block';
-    icon.style.transform = 'rotate(0deg)';
+  // Highlight "Campaign Details" sub-tab if on CampaignDetails.html
+  const path = window.location.pathname;
+  if (path.endsWith('CampaignDetails.html')) {
+    // Highlight Campaign Details sub-tab
+    const campaignDetailsLink = document.querySelector('a[href="./CampaignDetails.html"]');
+    if (campaignDetailsLink) {
+      campaignDetailsLink.classList.add('bg-blue-50', 'text-blue-700', 'font-medium');
+      campaignDetailsLink.classList.remove('text-gray-600');
+    }
+    // Remove highlight from Details tab
+    const detailsLink = document.querySelector('a[href="./WFAdvertiserDetails.html"]');
+    if (detailsLink) {
+      detailsLink.classList.remove('bg-blue-50', 'text-blue-700', 'font-medium');
+      detailsLink.classList.add('text-gray-700');
+    }
   }
 });
 </script>
