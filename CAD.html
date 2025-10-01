@@ -242,117 +242,194 @@
       </div>
 
       <!-- DSP Campaigns -->
-      <div class="space-y-10">
-
-        <!-- Example DSP Campaign -->
-        <div>
-          <h2 class="text-lg font-bold text-blue-700 mb-2">The Trade Desk – Brand Awareness 2025</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
-            <div><strong>DSP Campaign Name:</strong> Brand Awareness 2025</div>
-            <div><strong>Number of Ad Groups:</strong> 1</div>
-            <div><strong>Template:</strong> Programmatic Display</div>
-            <div><strong>DSP Impressions:</strong> 800,000</div>
-          </div>
-
-          <!-- Ad Group -->
-          <div class="border border-gray-200 rounded p-4 bg-gray-50">
-            <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 1.1</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div><strong>Tactic:</strong> Persona</div>
-              <div><strong>Content Category:</strong> Persona</div>
-              <div><strong>MV Classification:</strong> Programmatic Display</div>
-              <div><strong>Audience:</strong> 1 and 2</div>
-              <div><strong>GeoTarget:</strong> U.S.</div>
-              <div><strong>Start Date:</strong> 12/20/2024</div>
-              <div><strong>End Date:</strong> 12/19/2025</div>
-              <div><strong>Impressions:</strong> 800,000</div>
-              <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/" class="text-blue-600 underline">micfood.com/our-segments</a></div>
-              <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">sbm9v</code></div>
-              <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/?utm_source=programmatic</code></div>
-            </div>
-          </div>
+      <section id="dspCampaigns" class="bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-gray-800">DSP Campaigns</h2>
+          <span class="text-xs text-gray-500">4 Active</span>
         </div>
 
-       <!-- 🟩 Simpli.fi -->
-<div>
-  <h2 class="text-lg font-bold text-green-700 mb-2">Simpli.fi – Brand Awareness 2025</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
-    <div><strong>DSP Campaign Name:</strong> Brand Awareness 2025</div>
-    <div><strong>Number of Ad Groups:</strong> 2</div>
-    <div><strong>Template:</strong> Programmatic Display</div>
-    <div><strong>DSP Impressions:</strong> 500,000</div>
-  </div>
+        <!-- Campaign List Header -->
+        <div class="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[11px] font-semibold tracking-wide text-gray-500 border-b bg-gray-50">
+          <div class="col-span-4">Campaign</div>
+          <div class="col-span-2">DSP</div>
+            <div class="col-span-2">Template</div>
+          <div class="col-span-2 text-right">Impressions</div>
+          <div class="col-span-2 text-center">Ad Groups</div>
+        </div>
 
-  <!-- Ad Group 2.1 -->
-  <div class="border border-gray-200 rounded p-4 bg-gray-50 mb-6">
-    <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 2.1</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-      <div><strong>Tactic:</strong> Company Targeting</div>
-      <div><strong>Content Category:</strong> Company Targeting</div>
-      <div><strong>MV Classification:</strong> Programmatic Display</div>
-      <div><strong>GeoTarget:</strong> U.S.</div>
-      <div><strong>Start Date:</strong> 12/20/2024</div>
-      <div><strong>End Date:</strong> 12/19/2025</div>
-      <div><strong>Impressions:</strong> 250,000</div>
-      <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/k-12/" class="text-blue-600 underline">micfood.com/k-12</a></div>
-      <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">426771</code></div>
-      <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/k-12/?utm_source=programmatic</code></div>
-    </div>
-  </div>
+        <div class="divide-y" id="campaignList">
 
-  <!-- Ad Group 2.2 -->
-  <div class="border border-gray-200 rounded p-4 bg-gray-50">
-    <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 2.2</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-      <div><strong>Tactic:</strong> Company Targeting</div>
-      <div><strong>Content Category:</strong> Company Targeting</div>
-      <div><strong>MV Classification:</strong> Programmatic Display</div>
-      <div><strong>GeoTarget:</strong> U.S.</div>
-      <div><strong>Start Date:</strong> 12/20/2024</div>
-      <div><strong>End Date:</strong> 12/19/2025</div>
-      <div><strong>Impressions:</strong> 250,000</div>
-      <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/restaurants-catering/" class="text-blue-600 underline">micfood.com/restaurants-catering</a></div>
-      <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">426773</code></div>
-      <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/restaurants-catering/?utm_source=programmatic</code></div>
-    </div>
-  </div>
-</div>
+          <!-- Campaign Row: TTD -->
+          <div class="campaign-row" data-campaign>
+            <button type="button" class="w-full flex flex-col md:grid md:grid-cols-12 gap-2 px-4 py-3 text-left hover:bg-blue-50/40 transition">
+              <div class="flex items-start gap-2 col-span-4">
+                <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-600 bg-white" data-caret>+</span>
+                <div>
+                  <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
+                  <p class="text-[11px] text-gray-500">The Trade Desk</p>
+                </div>
+              </div>
+              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">The Trade Desk</div>
+              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Programmatic Display</div>
+              <div class="col-span-2 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">800,000</div>
+              <div class="col-span-2 hidden md:flex items-center justify-center text-xs font-medium text-gray-700">1</div>
+            </button>
 
+            <!-- Ad Groups Panel -->
+            <div class="adgroups-panel hidden bg-gray-50/60 px-6 pb-6 pt-4">
+              <div class="text-[11px] font-semibold text-gray-500 tracking-wide mb-3">AD GROUPS</div>
+              <div class="space-y-3">
 
-<!-- 🟥 StackAdapt -->
-<div>
-  <h2 class="text-lg font-bold text-red-700 mb-2">StackAdapt – Brand Awareness 2025</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
-    <div><strong>DSP Campaign Name:</strong> Brand Awareness 2025</div>
-    <div><strong>Number of Ad Groups:</strong> 1</div>
-    <div><strong>Template:</strong> Programmatic Display</div>
-    <div><strong>DSP Impressions:</strong> 200,000</div>
-  </div>
+                <!-- Ad Group -->
+                <div class="rounded border border-gray-200 bg-white">
+                  <div class="px-3 py-2 flex flex-wrap gap-x-6 gap-y-1 text-[11px]">
+                    <div class="min-w-[140px]">
+                      <p class="font-semibold text-gray-700">Programmatic Display Placement 1.1</p>
+                      <p class="text-[10px] text-gray-500 mt-0.5">ID: <span class="font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded">sbm9v</span></p>
+                    </div>
+                    <div><span class="block text-gray-500">Tactic</span><span class="font-medium text-gray-800">Persona</span></div>
+                    <div><span class="block text-gray-500">Audience</span><span class="font-medium text-gray-800">1 and 2</span></div>
+                    <div><span class="block text-gray-500">Geo</span><span class="font-medium text-gray-800">U.S.</span></div>
+                    <div><span class="block text-gray-500">Dates</span><span class="font-medium text-gray-800">12/20/24 – 12/19/25</span></div>
+                    <div><span class="block text-gray-500">Impr.</span><span class="font-medium text-gray-800">800,000</span></div>
+                    <div class="flex-1 min-w-[200px]">
+                      <span class="block text-gray-500">Landing</span>
+                      <a href="https://micfood.com/our-segments/" target="_blank" class="text-blue-600 hover:underline text-[11px] break-all">micfood.com/our-segments</a>
+                    </div>
+                  </div>
+                  <div class="px-3 pb-3">
+                    <div class="bg-gray-100/70 rounded px-2 py-2 text-[10px] font-mono text-gray-600 break-all">
+                      https://micfood.com/our-segments/?utm_source=programmatic
+                    </div>
+                  </div>
+                </div>
 
-  <!-- Ad Group 3.1 -->
-  <div class="border border-gray-200 rounded p-4 bg-gray-50">
-    <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 3.1</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-      <div><strong>Tactic:</strong> Data Onboarding</div>
-      <div><strong>Content Category:</strong> Data Onboarding</div>
-      <div><strong>MV Classification:</strong> Programmatic Display</div>
-      <div><strong>Audience:</strong> e-mails</div>
-      <div><strong>GeoTarget:</strong> U.S.</div>
-      <div><strong>Start Date:</strong> 12/20/2024</div>
-      <div><strong>End Date:</strong> 12/19/2025</div>
-      <div><strong>Impressions:</strong> 200,000</div>
-      <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/" class="text-blue-600 underline">micfood.com/our-segments</a></div>
-      <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">177131</code></div>
-      <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/?utm_source=programmatic</code></div>
-    </div>
-  </div>
-</div>
+              </div>
+            </div>
+          </div>
 
+          <!-- Campaign Row: Simpli.fi -->
+          <div class="campaign-row" data-campaign>
+            <button type="button" class="w-full flex flex-col md:grid md:grid-cols-12 gap-2 px-4 py-3 text-left hover:bg-green-50/40 transition">
+              <div class="flex items-start gap-2 col-span-4">
+                <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-600 bg-white" data-caret>+</span>
+                <div>
+                  <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
+                  <p class="text-[11px] text-gray-500">Simpli.fi</p>
+                </div>
+              </div>
+              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Simpli.fi</div>
+              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Programmatic Display</div>
+              <div class="col-span-2 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">500,000</div>
+              <div class="col-span-2 hidden md:flex items-center justify-center text-xs font-medium text-gray-700">2</div>
+            </button>
 
-      </div>
-    </div>
-  </div>
-</main>
+            <div class="adgroups-panel hidden bg-gray-50/60 px-6 pb-6 pt-4">
+              <div class="text-[11px] font-semibold text-gray-500 tracking-wide mb-3">AD GROUPS</div>
+              <div class="space-y-3">
+
+                <!-- Ad Group 2.1 -->
+                <div class="rounded border border-gray-200 bg-white">
+                  <div class="px-3 py-2 flex flex-wrap gap-x-6 gap-y-1 text-[11px]">
+                    <div class="min-w-[140px]">
+                      <p class="font-semibold text-gray-700">Placement 2.1 – K-12</p>
+                      <p class="text-[10px] text-gray-500 mt-0.5">ID: <span class="font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded">426771</span></p>
+                    </div>
+                    <div><span class="block text-gray-500">Tactic</span><span class="font-medium text-gray-800">Company Targeting</span></div>
+                    <div><span class="block text-gray-500">Geo</span><span class="font-medium text-gray-800">U.S.</span></div>
+                    <div><span class="block text-gray-500">Dates</span><span class="font-medium text-gray-800">12/20/24 – 12/19/25</span></div>
+                    <div><span class="block text-gray-500">Impr.</span><span class="font-medium text-gray-800">250,000</span></div>
+                    <div class="flex-1 min-w-[200px]">
+                      <span class="block text-gray-500">Landing</span>
+                      <a href="https://micfood.com/our-segments/k-12/" target="_blank" class="text-blue-600 hover:underline text-[11px] break-all">micfood.com/k-12</a>
+                    </div>
+                  </div>
+                  <div class="px-3 pb-3">
+                    <div class="bg-gray-100/70 rounded px-2 py-2 text-[10px] font-mono text-gray-600 break-all">
+                      https://micfood.com/our-segments/k-12/?utm_source=programmatic
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Ad Group 2.2 -->
+                <div class="rounded border border-gray-200 bg-white">
+                  <div class="px-3 py-2 flex flex-wrap gap-x-6 gap-y-1 text-[11px]">
+                    <div class="min-w-[140px]">
+                      <p class="font-semibold text-gray-700">Placement 2.2 – Foodservice</p>
+                      <p class="text-[10px] text-gray-500 mt-0.5">ID: <span class="font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded">426773</span></p>
+                    </div>
+                    <div><span class="block text-gray-500">Tactic</span><span class="font-medium text-gray-800">Company Targeting</span></div>
+                    <div><span class="block text-gray-500">Geo</span><span class="font-medium text-gray-800">U.S.</span></div>
+                    <div><span class="block text-gray-500">Dates</span><span class="font-medium text-gray-800">12/20/24 – 12/19/25</span></div>
+                    <div><span class="block text-gray-500">Impr.</span><span class="font-medium text-gray-800">250,000</span></div>
+                    <div class="flex-1 min-w-[200px]">
+                      <span class="block text-gray-500">Landing</span>
+                      <a href="https://micfood.com/our-segments/restaurants-catering/" target="_blank" class="text-blue-600 hover:underline text-[11px] break-all">
+                        micfood.com/restaurants-catering
+                      </a>
+                    </div>
+                  </div>
+                  <div class="px-3 pb-3">
+                    <div class="bg-gray-100/70 rounded px-2 py-2 text-[10px] font-mono text-gray-600 break-all">
+                      https://micfood.com/our-segments/restaurants-catering/?utm_source=programmatic
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Campaign Row: StackAdapt -->
+          <div class="campaign-row" data-campaign>
+            <button type="button" class="w-full flex flex-col md:grid md:grid-cols-12 gap-2 px-4 py-3 text-left hover:bg-rose-50/50 transition">
+              <div class="flex items-start gap-2 col-span-4">
+                <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-600 bg-white" data-caret>+</span>
+                <div>
+                  <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
+                  <p class="text-[11px] text-gray-500">StackAdapt</p>
+                </div>
+              </div>
+              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">StackAdapt</div>
+              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Programmatic Display</div>
+              <div class="col-span-2 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">200,000</div>
+              <div class="col-span-2 hidden md:flex items-center justify-center text-xs font-medium text-gray-700">1</div>
+            </button>
+
+            <div class="adgroups-panel hidden bg-gray-50/60 px-6 pb-6 pt-4">
+              <div class="text-[11px] font-semibold text-gray-500 tracking-wide mb-3">AD GROUPS</div>
+              <div class="space-y-3">
+
+                <!-- Ad Group 3.1 -->
+                <div class="rounded border border-gray-200 bg-white">
+                  <div class="px-3 py-2 flex flex-wrap gap-x-6 gap-y-1 text-[11px]">
+                    <div class="min-w-[140px]">
+                      <p class="font-semibold text-gray-700">Placement 3.1 – CRM Onboarding</p>
+                      <p class="text-[10px] text-gray-500 mt-0.5">ID: <span class="font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded">177131</span></p>
+                    </div>
+                    <div><span class="block text-gray-500">Tactic</span><span class="font-medium text-gray-800">Data Onboarding</span></div>
+                    <div><span class="block text-gray-500">Audience</span><span class="font-medium text-gray-800">e-mails</span></div>
+                    <div><span class="block text-gray-500">Geo</span><span class="font-medium text-gray-800">U.S.</span></div>
+                    <div><span class="block text-gray-500">Dates</span><span class="font-medium text-gray-800">12/20/24 – 12/19/25</span></div>
+                    <div><span class="block text-gray-500">Impr.</span><span class="font-medium text-gray-800">200,000</span></div>
+                    <div class="flex-1 min-w-[200px]">
+                      <span class="block text-gray-500">Landing</span>
+                      <a href="https://micfood.com/our-segments/" target="_blank" class="text-blue-600 hover:underline text-[11px] break-all">micfood.com/our-segments</a>
+                    </div>
+                  </div>
+                  <div class="px-3 pb-3">
+                    <div class="bg-gray-100/70 rounded px-2 py-2 text-[10px] font-mono text-gray-600 break-all">
+                      https://micfood.com/our-segments/?utm_source=programmatic
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
     </div>
   </div>
 
@@ -936,5 +1013,47 @@
   });
   </script>
   <script src="./assets/sidebar.js" defer></script>
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const campaigns = document.querySelectorAll('#campaignList [data-campaign]');
+  campaigns.forEach(camp => {
+    const btn   = camp.querySelector('button');
+    const panel = camp.querySelector('.adgroups-panel');
+    const caret = camp.querySelector('[data-caret]');
+    if (!btn || !panel) return;
+
+    btn.addEventListener('click', () => {
+      const isOpen = !panel.classList.contains('hidden');
+
+      // Single-open accordion behavior (remove this block to allow multiple open)
+      if (!isOpen) {
+        document.querySelectorAll('#campaignList .adgroups-panel').forEach(p => {
+          if (p !== panel) {
+            p.classList.add('hidden');
+            const ct = p.parentElement.querySelector('[data-caret]');
+            if (ct) ct.textContent = '+';
+          }
+        });
+      }
+
+      if (isOpen) {
+        panel.classList.add('hidden');
+        if (caret) caret.textContent = '+';
+      } else {
+        panel.classList.remove('hidden');
+        if (caret) caret.textContent = '–';
+      }
+    });
+  });
+
+  // OPTIONAL: open first campaign by default
+  const first = document.querySelector('#campaignList [data-campaign] .adgroups-panel');
+  const firstCaret = first?.parentElement?.querySelector('[data-caret]');
+  if (first && firstCaret) {
+    first.classList.remove('hidden');
+    firstCaret.textContent = '–';
+  }
+});
+</script>
 </body>
 </html>
