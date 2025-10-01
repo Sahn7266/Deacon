@@ -2,39 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Beacon - CAD Overview</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Beacon - Details</title>
+
+  <!-- Tailwind (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Toast assets (single source of truth) -->
+  <link rel="stylesheet" href="./assets/toast.css">
+  <script src="./assets/toast.js" defer></script>
+
+  <!-- REMOVE OR COMMENT OUT THIS LINE: -->
+  <script src="./assets/notifications.js"></script>
+  <link rel="stylesheet" href="./assets/loading.css">
+  <script src="./assets/loading.js" defer></script>
+
   <style>
-    body { font-family: system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif; }
-    /* Layout */
-    #appShell { height: 100vh; }
-    header { height:56px; }
-    /* Sidebar */
-    #sidebar { width:240px; transition:width .25s ease; }
-    #sidebar.collapsed { width:64px !important; }
-    #sidebar.collapsed [data-link-label],
-    #sidebar.collapsed #campaignsAccordionBtn,
-    #sidebar.collapsed #campaignsSubMenu {
-      display:none !important;
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
+    .table-fixed { table-layout: fixed; } td, th { white-space: nowrap; }
+
+    /* Read-only inputs look like text */
+    input[aria-readonly="true"] {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      caret-color: transparent;
     }
-    #sidebar.collapsed a[data-nav-link] {
-      justify-content:center;
-      padding-left:.5rem;
-      padding-right:.5rem;
+    input[aria-readonly="true"]:focus { border: none !important; outline: none !important; box-shadow: none !important; }
+    input[aria-readonly="true"]::-moz-focus-inner { border: 0 !important; }
+    
+    /* Read-only select styling */
+    select[aria-readonly="true"] {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      caret-color: transparent;
+      appearance: none;
+      pointer-events: none;
     }
-    #sidebar.collapsed a[data-nav-link] img { margin-right:0; }
-    #campaignsAccordionIcon { transition: transform .2s ease; }
-    /* Right drawer */
-    #rightDrawer { transition: transform .3s ease-in-out; width:320px; }
-    #rightDrawer.right-drawer-closed { transform: translateX(calc(100% - 40px)); }
-    #rightDrawer.right-drawer-open { transform: translateX(0); }
-    /* Scrollbars (optional) */
-    ::-webkit-scrollbar { width:8px; }
-    ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:4px; }
-    ::-webkit-scrollbar-thumb:hover { background:#94a3b8; }
+    select[aria-readonly="true"]:focus { border: none !important; outline: none !important; box-shadow: none !important; }
   </style>
+</head>
+
 <body class="bg-gray-100">
   <div class="flex h-screen flex-col">
     <!-- Header -->
@@ -131,7 +142,7 @@
     </header>
 
     <!-- Body -->
-    <div class="flex flex-1 overflow-hidden relative">
+    <div class="flex flex-1 overflow-hidden">
       <!-- Sidebar -->
       <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
   <div class="flex items-center justify-between pb-4 border-b border-gray-200">
@@ -151,7 +162,9 @@
 
   <ul class="space-y-1 mt-4">
     <li>
-      <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+      <!-- Was highlighted; remove highlight classes -->
+      <a href="./WFAdvertiserDetails.html" data-nav-link
+         class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
         <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
         <span data-link-label>Details</span>
       </a>
@@ -169,94 +182,69 @@
       </a>
     </li>
     <li>
-      <div class="flex items-center w-full">
-        <a href="./AdvertiserCampaigns.html"
-          data-nav-link
-          class="flex items-center flex-1 px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md focus:outline-none transition"
-          style="min-width:0;">
-          <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
-          <span data-link-label>Campaigns</span>
-        </a>
-        <button
-          type="button"
-          id="campaignsAccordionBtn"
-          class="ml-1 p-1 rounded hover:bg-gray-100 focus:outline-none transition"
-          aria-expanded="true"
-          aria-controls="campaignsSubMenu"
-          tabindex="0"
-          style="height:32px;width:32px;display:flex;align-items:center;justify-content:center;">
-          <svg id="campaignsAccordionIcon" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      </div>
-      <ul id="campaignsSubMenu" class="ml-8 mt-1 space-y-1">
-        <li>
-          <a href="./CampaignDetails.html" class="flex items-center px-2 py-1 rounded-md text-xs text-gray-600 hover:text-blue-700 hover:bg-blue-50 transition">
-            <span>Campaign Details</span>
-          </a>
-        </li>
-      </ul>
-    </li>
-    <li>
-      <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
-        <span data-link-label>Ad Groups</span>
+      <a href="./AdvertiserCampaigns.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
+        <span data-link-label>Campaigns</span>
       </a>
     </li>
     <li>
-      <a href="./CAD.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Blueprint.svg" alt="CAD Overview" class="w-6 h-6 mr-2" />
-        <span data-link-label>CAD Overview</span>
+      <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
+        <span data-link-label>Ad Groups</span>
+      </a>
+    </li>
+    <!-- CAD (added) -->
+    <li>
+      <!-- Add highlight here -->
+      <a href="./CAD.html" data-nav-link
+         class="flex items-center px-1 py-2 text-sm text-blue-700 bg-blue-50 font-medium rounded-md">
+        <img src="./assets/svgs/Blueprint.svg" class="w-6 h-6 mr-2" alt="CAD">
+        <span data-link-label>CAD</span>
       </a>
     </li>
   </ul>
 </nav>
 
-      <!-- Main Content -->
 <main class="flex-1 overflow-y-auto p-6">
-  <div class="app-card rounded-lg shadow-lg overflow-hidden bg-white">
-
-    <!-- Header -->
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h1 class="text-xl font-bold text-gray-800">CAD Overview – MIC Food</h1>
+  <div class="bg-white rounded-lg shadow-sm">
+    <div class="p-4 border-b border-gray-200">
+      <h1 class="text-2xl font-semibold text-gray-900">CAD – MIC Food</h1>
     </div>
 
-    <!-- Body -->
-    <div class="px-6 py-6 space-y-10">
+    <div class="p-4 space-y-8">
 
-      <!-- 🔷 Account Summary -->
+      <!-- Account Info -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-gray-50 p-4 rounded shadow-sm">
+        <div class="bg-gray-50 p-4 rounded border">
           <p class="text-xs text-gray-500">Account Number</p>
           <p class="text-lg font-semibold text-gray-800">102346</p>
         </div>
-        <div class="bg-gray-50 p-4 rounded shadow-sm">
+        <div class="bg-gray-50 p-4 rounded border">
           <p class="text-xs text-gray-500">Account Name</p>
           <p class="text-lg font-semibold text-gray-800">MIC Food</p>
         </div>
-        <div class="bg-gray-50 p-4 rounded shadow-sm">
+        <div class="bg-gray-50 p-4 rounded border">
           <p class="text-xs text-gray-500">Number of DSP Campaigns</p>
           <p class="text-lg font-semibold text-gray-800">4</p>
         </div>
-        <div class="bg-gray-50 p-4 rounded shadow-sm">
+        <div class="bg-gray-50 p-4 rounded border">
           <p class="text-xs text-gray-500">Total Invoice Impressions</p>
           <p class="text-lg font-semibold text-gray-800">1,600,000</p>
         </div>
-        <div class="bg-gray-50 p-4 rounded shadow-sm">
+        <div class="bg-gray-50 p-4 rounded border">
           <p class="text-xs text-gray-500">Total Impressions</p>
           <p class="text-lg font-semibold text-gray-800">1,600,000</p>
         </div>
-        <div class="bg-gray-50 p-4 rounded shadow-sm">
+        <div class="bg-gray-50 p-4 rounded border">
           <p class="text-xs text-gray-500">Impressions Remaining</p>
-          <p class="text-lg font-semibold text-gray-800">-</p>
+          <p class="text-lg font-semibold text-gray-800">0</p>
         </div>
       </div>
 
-      <!-- 🔷 DSP Campaigns -->
+      <!-- DSP Campaigns -->
       <div class="space-y-10">
 
-        <!-- 🟦 The Trade Desk -->
+        <!-- Example DSP Campaign -->
         <div>
           <h2 class="text-lg font-bold text-blue-700 mb-2">The Trade Desk – Brand Awareness 2025</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
@@ -266,7 +254,7 @@
             <div><strong>DSP Impressions:</strong> 800,000</div>
           </div>
 
-          <!-- Ad Group 1 -->
+          <!-- Ad Group -->
           <div class="border border-gray-200 rounded p-4 bg-gray-50">
             <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 1.1</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -285,184 +273,668 @@
           </div>
         </div>
 
-        <!-- 🟩 Simpli.fi -->
-        <div>
-          <h2 class="text-lg font-bold text-green-700 mb-2">Simpli.fi – Brand Awareness 2025</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
-            <div><strong>DSP Campaign Name:</strong> Brand Awareness 2025</div>
-            <div><strong>Number of Ad Groups:</strong> 2</div>
-            <div><strong>Template:</strong> Programmatic Display</div>
-            <div><strong>DSP Impressions:</strong> 500,000</div>
-          </div>
+       <!-- 🟩 Simpli.fi -->
+<div>
+  <h2 class="text-lg font-bold text-green-700 mb-2">Simpli.fi – Brand Awareness 2025</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
+    <div><strong>DSP Campaign Name:</strong> Brand Awareness 2025</div>
+    <div><strong>Number of Ad Groups:</strong> 2</div>
+    <div><strong>Template:</strong> Programmatic Display</div>
+    <div><strong>DSP Impressions:</strong> 500,000</div>
+  </div>
 
-          <!-- Ad Group 2.1 -->
-          <div class="border border-gray-200 rounded p-4 bg-gray-50 mb-6">
-            <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 2.1</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div><strong>Tactic:</strong> Company Targeting</div>
-              <div><strong>Content Category:</strong> Company Targeting</div>
-              <div><strong>MV Classification:</strong> Programmatic Display</div>
-              <div><strong>GeoTarget:</strong> U.S.</div>
-              <div><strong>Start Date:</strong> 12/20/2024</div>
-              <div><strong>End Date:</strong> 12/19/2025</div>
-              <div><strong>Impressions:</strong> 250,000</div>
-              <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/k-12/" class="text-blue-600 underline">micfood.com/k-12</a></div>
-              <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">426771</code></div>
-              <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/k-12/?utm_source=programmatic</code></div>
-            </div>
-          </div>
+  <!-- Ad Group 2.1 -->
+  <div class="border border-gray-200 rounded p-4 bg-gray-50 mb-6">
+    <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 2.1</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div><strong>Tactic:</strong> Company Targeting</div>
+      <div><strong>Content Category:</strong> Company Targeting</div>
+      <div><strong>MV Classification:</strong> Programmatic Display</div>
+      <div><strong>GeoTarget:</strong> U.S.</div>
+      <div><strong>Start Date:</strong> 12/20/2024</div>
+      <div><strong>End Date:</strong> 12/19/2025</div>
+      <div><strong>Impressions:</strong> 250,000</div>
+      <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/k-12/" class="text-blue-600 underline">micfood.com/k-12</a></div>
+      <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">426771</code></div>
+      <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/k-12/?utm_source=programmatic</code></div>
+    </div>
+  </div>
 
-          <!-- Ad Group 2.2 -->
-          <div class="border border-gray-200 rounded p-4 bg-gray-50">
-            <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 2.2</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div><strong>Tactic:</strong> Company Targeting</div>
-              <div><strong>Content Category:</strong> Company Targeting</div>
-              <div><strong>MV Classification:</strong> Programmatic Display</div>
-              <div><strong>GeoTarget:</strong> U.S.</div>
-              <div><strong>Start Date:</strong> 12/20/2024</div>
-              <div><strong>End Date:</strong> 12/19/2025</div>
-              <div><strong>Impressions:</strong> 250,000</div>
-              <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/restaurants-catering/" class="text-blue-600 underline">micfood.com/restaurants-catering</a></div>
-              <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">426773</code></div>
-              <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/restaurants-catering/?utm_source=programmatic</code></div>
-            </div>
-          </div>
-        </div>
+  <!-- Ad Group 2.2 -->
+  <div class="border border-gray-200 rounded p-4 bg-gray-50">
+    <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 2.2</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div><strong>Tactic:</strong> Company Targeting</div>
+      <div><strong>Content Category:</strong> Company Targeting</div>
+      <div><strong>MV Classification:</strong> Programmatic Display</div>
+      <div><strong>GeoTarget:</strong> U.S.</div>
+      <div><strong>Start Date:</strong> 12/20/2024</div>
+      <div><strong>End Date:</strong> 12/19/2025</div>
+      <div><strong>Impressions:</strong> 250,000</div>
+      <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/restaurants-catering/" class="text-blue-600 underline">micfood.com/restaurants-catering</a></div>
+      <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">426773</code></div>
+      <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/restaurants-catering/?utm_source=programmatic</code></div>
+    </div>
+  </div>
+</div>
 
-        <!-- 🟥 StackAdapt -->
-        <div>
-          <h2 class="text-lg font-bold text-red-700 mb-2">StackAdapt – Brand Awareness 2025</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
-            <div><strong>DSP Campaign Name:</strong> Brand Awareness 2025</div>
-            <div><strong>Number of Ad Groups:</strong> 1</div>
-            <div><strong>Template:</strong> Programmatic Display</div>
-            <div><strong>DSP Impressions:</strong> 200,000</div>
-          </div>
 
-          <!-- Ad Group 3.1 -->
-          <div class="border border-gray-200 rounded p-4 bg-gray-50">
-            <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 3.1</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div><strong>Tactic:</strong> Data Onboarding</div>
-              <div><strong>Content Category:</strong> Data Onboarding</div>
-              <div><strong>MV Classification:</strong> Programmatic Display</div>
-              <div><strong>Audience:</strong> e-mails</div>
-              <div><strong>GeoTarget:</strong> U.S.</div>
-              <div><strong>Start Date:</strong> 12/20/2024</div>
-              <div><strong>End Date:</strong> 12/19/2025</div>
-              <div><strong>Impressions:</strong> 200,000</div>
-              <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/" class="text-blue-600 underline">micfood.com/our-segments</a></div>
-              <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">177131</code></div>
-              <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/?utm_source=programmatic</code></div>
-            </div>
-          </div>
-        </div>
+<!-- 🟥 StackAdapt -->
+<div>
+  <h2 class="text-lg font-bold text-red-700 mb-2">StackAdapt – Brand Awareness 2025</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
+    <div><strong>DSP Campaign Name:</strong> Brand Awareness 2025</div>
+    <div><strong>Number of Ad Groups:</strong> 1</div>
+    <div><strong>Template:</strong> Programmatic Display</div>
+    <div><strong>DSP Impressions:</strong> 200,000</div>
+  </div>
+
+  <!-- Ad Group 3.1 -->
+  <div class="border border-gray-200 rounded p-4 bg-gray-50">
+    <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 3.1</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div><strong>Tactic:</strong> Data Onboarding</div>
+      <div><strong>Content Category:</strong> Data Onboarding</div>
+      <div><strong>MV Classification:</strong> Programmatic Display</div>
+      <div><strong>Audience:</strong> e-mails</div>
+      <div><strong>GeoTarget:</strong> U.S.</div>
+      <div><strong>Start Date:</strong> 12/20/2024</div>
+      <div><strong>End Date:</strong> 12/19/2025</div>
+      <div><strong>Impressions:</strong> 200,000</div>
+      <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/" class="text-blue-600 underline">micfood.com/our-segments</a></div>
+      <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">177131</code></div>
+      <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/?utm_source=programmatic</code></div>
+    </div>
+  </div>
+</div>
+
 
       </div>
     </div>
   </div>
 </main>
+    </div>
+  </div>
 
+  <!-- Waffle menu toggle -->
   <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Sidebar collapse
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const iconCollapse = document.getElementById('iconCollapse');
-    const iconExpand = document.getElementById('iconExpand');
-    function setCollapsed(c) {
-      sidebar.classList.toggle('collapsed', c);
-      sidebarToggle.setAttribute('aria-expanded', String(!c));
-      iconCollapse.classList.toggle('hidden', c);
-      iconExpand.classList.toggle('hidden', !c);
-    }
-    sidebarToggle?.addEventListener('click', () => setCollapsed(!sidebar.classList.contains('collapsed')));
-
-    // Campaigns accordion
-    const accordionBtn = document.getElementById('campaignsAccordionBtn');
-    const campaignsSubMenu = document.getElementById('campaignsSubMenu');
-    const campaignsAccordionIcon = document.getElementById('campaignsAccordionIcon');
-    let accordionOpen = false;
-    function setAccordion(open) {
-      accordionOpen = open;
-      campaignsSubMenu?.classList.toggle('hidden', !open);
-      accordionBtn?.setAttribute('aria-expanded', String(open));
-      if (campaignsAccordionIcon) campaignsAccordionIcon.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
-    }
-    accordionBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (sidebar.classList.contains('collapsed')) return;
-      setAccordion(!accordionOpen);
-    });
-
-    // Highlight logic
-    const path = window.location.pathname;
-    const isCampaignDetails = path.endsWith('CampaignDetails.html');
-    const isCampaignsList   = path.endsWith('AdvertiserCampaigns.html');
-    const isCAD             = path.endsWith('CAD.html');
-
-    const campaignsMain       = document.querySelector('a[href="./AdvertiserCampaigns.html"]');
-    const campaignsDetailsSub = document.querySelector('a[href="./CampaignDetails.html"]');
-    const cadMain             = document.querySelector('a[href="./CAD.html"]');
-
-    function addHl(el) {
-      el?.classList.add('bg-blue-50','text-blue-700','font-medium');
-      el?.classList.remove('text-gray-700','text-gray-600');
-    }
-    function clearHighlights() {
-      document.querySelectorAll('#sidebar a[data-nav-link], #campaignsSubMenu a').forEach(a => {
-        a.classList.remove('bg-blue-50','text-blue-700','font-medium');
-        if (!a.classList.contains('text-gray-600')) a.classList.add('text-gray-700');
+    const menuButton = document.getElementById('menuButton');
+    const menuDropdown = document.getElementById('menuDropdown');
+    if (menuButton && menuDropdown) {
+      menuButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menuDropdown.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (event) => {
+        if (!menuButton.contains(event.target) && !menuDropdown.contains(event.target)) {
+          menuDropdown.classList.add('hidden');
+        }
       });
     }
-    clearHighlights();
+  </script>
 
-    if (isCampaignDetails) {
-      addHl(campaignsMain);
-      setAccordion(true);
-      addHl(campaignsDetailsSub);
-    } else if (isCampaignsList) {
-      addHl(campaignsMain);
-      setAccordion(false);
-    } else if (isCAD) {
-      addHl(cadMain);
-      setAccordion(false);
+  <!-- Details page data-binding -->
+  <script>
+    (function() {
+      const STORAGE_KEY_DATA = 'adv_list_data';
+
+      function loadAdvertisersFromStorage() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_DATA);
+          return raw ? JSON.parse(raw) : [];
+        } catch { return []; }
+      }
+
+      function bindAll(key, value, fallback = '—') {
+        const nodes = document.querySelectorAll(`[data-bind="${key}"]`);
+        const text = (value != null && String(value).trim() !== '') ? value : fallback;
+        nodes.forEach(el => {
+          if (el.tagName === 'INPUT' || el.tagName === 'SELECT') {
+            el.value = text;
+            el.setAttribute('data-original', text);
+          } else {
+            el.textContent = text;
+            if (key === 'adv.account') {
+              const accountDisplay = document.getElementById('accountDisplay');
+              const accountLookupBtn = document.getElementById('accountLookupBtn');
+              if (accountDisplay && accountLookupBtn) {
+                if (text && text !== '—' && text !== 'N/A') {
+                  accountDisplay.classList.remove('hidden');
+                  accountLookupBtn.classList.add('hidden');
+                } else {
+                  accountDisplay.classList.add('hidden');
+                  accountLookupBtn.classList.remove('hidden');
+                }
+              }
+            }
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        let adv = null;
+        try {
+          const rawObj = localStorage.getItem('adv_selected_data');
+          if (rawObj) adv = JSON.parse(rawObj);
+        } catch {}
+
+        const selectedId = localStorage.getItem('adv_selected_id');
+        if (!adv && selectedId) {
+          const advertisers = loadAdvertisersFromStorage();
+          adv = advertisers.find(a => String(a.id) === String(selectedId)) || null;
+        }
+        if (!adv) {
+          const advertisers = loadAdvertisersFromStorage();
+          adv = (advertisers && advertisers.length) ? advertisers[0] : null;
+        }
+
+        if (adv) {
+          // MIGRATION: Handle both 'status' and 'state' fields for backward compatibility
+          if (adv.status && !adv.state) {
+            adv.state = adv.status;
+          }
+          
+          bindAll('adv.name', adv.name, 'No advertiser found');
+          bindAll('adv.id', adv.id, '');
+          bindAll('adv.account', adv.account, 'N/A');
+          bindAll('adv.state', adv.state, 'N/A');     // ✓ use state field
+          bindAll('adv.website', adv.website, 'N/A');
+        } else {
+          bindAll('adv.name', 'No advertiser found', 'No advertiser found');
+          bindAll('adv.id', '', '');
+          bindAll('adv.account', 'N/A', 'N/A');
+          bindAll('adv.state', 'N/A', 'N/A');
+          bindAll('adv.website', 'N/A', 'N/A');
+        }
+
+        // Expose for other modules if needed
+        window.bindAll = bindAll;
+      });
+    })();
+  </script>
+
+  <!-- Team filter -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const chip = document.getElementById('teamStateChip');
+      const menu = document.getElementById('teamStateMenu');
+      const label = document.getElementById('teamStateChipLabel');
+      const tbody = document.getElementById('teamTableBody');
+      if (!chip || !menu || !label || !tbody) return;
+
+      const closeMenu = () => { menu.classList.add('hidden'); chip.setAttribute('aria-expanded', 'false'); };
+
+      chip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = menu.classList.toggle('hidden');
+        chip.setAttribute('aria-expanded', String(!open));
+        if (!open) { menu.setAttribute('tabindex','-1'); menu.focus(); }
+      });
+
+      document.addEventListener('click', closeMenu);
+
+      menu.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { closeMenu(); chip.focus(); }
+      });
+
+      menu.addEventListener('click', (e) => {
+        const btn = e.target.closest('button'); if (!btn) return;
+        const value = btn.dataset.value;
+        label.textContent = value;
+
+        tbody.querySelectorAll('tr').forEach(row => {
+          const rowState = (row.getAttribute('data-state') || '').toLowerCase().trim();
+          let show = true;
+          if (value === 'Active') show = rowState === 'active';
+          else if (value === 'Inactive') show = rowState === 'inactive';
+          else show = true;
+          row.style.display = show ? '' : 'none';
+        });
+
+        closeMenu();
+      });
+
+      // Default view = Active
+      label.textContent = 'Active';
+      tbody.querySelectorAll('tr').forEach(row => {
+        const rowState = (row.getAttribute('data-state') || '').toLowerCase().trim();
+        row.style.display = rowState === 'active' ? '' : 'none';
+      });
+    });
+  </script>
+
+  <!-- Account # display toggle -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const accountDisplay = document.getElementById('accountDisplay');
+      const accountLookupBtn = document.getElementById('accountLookupBtn');
+      if (!accountDisplay || !accountLookupBtn) return;
+
+      function updateAccountDisplay() {
+        const val = (accountDisplay.textContent || '').trim();
+        const has = !!val && val !== '—' && val !== 'N/A';
+        accountDisplay.classList.toggle('hidden', !has);
+        accountLookupBtn.classList.toggle('hidden', has);
+      }
+
+      // initialize after bind
+      setTimeout(updateAccountDisplay, 100);
+      const obs = new MutationObserver(updateAccountDisplay);
+      obs.observe(accountDisplay, { childList: true, subtree: true });
+    });
+  </script>
+
+
+
+  <!-- General Edit/Save/Cancel behavior -->
+  <script>
+    (function () {
+      const STORAGE_KEY_DATA = 'adv_list_data';
+      const SELECTED_ID_KEY  = 'adv_selected_id';
+      const SELECTED_DATA_KEY= 'adv_selected_data';
+
+      const editableSelectors = ['#companyName', '#advertiserState', '#advertiserWebsite'];
+
+      const btnEdit   = document.getElementById('editGeneralBtn');
+      const btnSave   = document.getElementById('saveGeneralBtn');
+      const btnCancel = document.getElementById('cancelGeneralBtn');
+
+      let editing = false;
+      let snapshot = null;
+      let dirty = false;
+
+      function qInputs() {
+        return editableSelectors.map(s => document.querySelector(s)).filter(Boolean);
+      }
+      function getValues() {
+        const map = {};
+        qInputs().forEach(i => { map[i.id] = i.value ?? ''; });
+        return map;
+      }
+      function setValues(vals) {
+        qInputs().forEach(i => { if (vals.hasOwnProperty(i.id)) i.value = vals[i.id]; });
+      }
+      function shallowEqual(a,b){
+        const ka = Object.keys(a), kb = Object.keys(b);
+        if (ka.length !== kb.length) return false;
+        for (const k of ka) if ((a[k] ?? '') !== (b[k] ?? '')) return false;
+        return true;
+      }
+
+      function applyViewStyle(input) {
+        input.readOnly = true;
+        input.setAttribute('aria-readonly','true');
+        input.tabIndex = -1;
+        
+        if (input.tagName === 'SELECT') {
+          // For select elements in read-only mode
+          ['border','rounded','px-3','py-2','focus:outline-none','focus:bg-white','focus:border-blue-300','bg-white','w-full','text-gray-900']
+            .forEach(c => input.classList.remove(c));
+          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight']
+            .forEach(c => input.classList.add(c));
+          input.style.pointerEvents = 'none';
+          input.style.appearance = 'none';
+        } else {
+          // For input elements
+          ['border','rounded','px-3','py-2','focus:outline-none','focus:bg-white','focus:border-blue-300','bg-white','w-full','text-gray-900']
+            .forEach(c => input.classList.remove(c));
+          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight']
+            .forEach(c => input.classList.add(c));
+        }
+      }
+
+      function applyEditStyle(input) {
+        input.readOnly = false;
+        input.removeAttribute('aria-readonly');
+        input.tabIndex = 0;
+        
+        if (input.tagName === 'SELECT') {
+          // For select elements in edit mode
+          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight'].forEach(c => input.classList.remove(c));
+          ['bg-white','border','border-gray-300','rounded','px-3','py-2','text-gray-900','w-full','focus:outline-none','focus:bg-white','focus:border-blue-300'].forEach(c => input.classList.add(c));
+          input.style.pointerEvents = '';
+          input.style.appearance = '';
+        } else {
+          // For input elements
+          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight'].forEach(c => input.classList.remove(c));
+          ['bg-white','border','border-gray-300','rounded','px-3','py-2','text-gray-900','w-full','focus:outline-none','focus:bg-white','focus:border-blue-300'].forEach(c => input.classList.add(c));
+        }
+      }
+
+      function setMode(isEditing) {
+        editing = isEditing;
+        const inputs = qInputs();
+        inputs.forEach(i => isEditing ? applyEditStyle(i) : applyViewStyle(i));
+        btnEdit?.classList.toggle('hidden', isEditing);
+        btnSave?.classList.toggle('hidden', !isEditing);
+        btnCancel?.classList.toggle('hidden', !isEditing);
+
+        if (isEditing) {
+          snapshot = getValues();
+          dirty = false;
+          inputs.forEach(i => i.addEventListener('input', onDirty));
+          inputs.forEach(i => i.addEventListener('change', onDirty)); // For select elements
+          inputs[0]?.focus();
+        } else {
+          snapshot = null;
+          dirty = false;
+          inputs.forEach(i => i.removeEventListener('input', onDirty));
+          inputs.forEach(i => i.removeEventListener('change', onDirty));
+        }
+      }
+
+      function onDirty() {
+        if (!editing || !snapshot) return;
+        dirty = !shallowEqual(snapshot, getValues());
+      }
+
+      function saveAll() {
+        const selectedId = localStorage.getItem(SELECTED_ID_KEY);
+        if (!selectedId) {
+          showToast({ message: 'No advertiser selected.', type: 'error' });
+          return false;
+        }
+        try {
+          const vals = getValues();
+          const advertisers = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA) || '[]');
+          const idx = advertisers.findIndex(a => String(a.id) === String(selectedId));
+          if (idx === -1) {
+            showToast({ message: 'Advertiser not found in storage.', type: 'error' });
+            return false;
+          }
+
+          // Map inputs → adv fields
+          advertisers[idx].name    = vals.companyName?.trim() || '';
+          advertisers[idx].state   = vals.advertiserState?.trim() || '';   // ✓ use state field
+          advertisers[idx].website = vals.advertiserWebsite?.trim() || '';
+
+          localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(advertisers));
+          localStorage.setItem(SELECTED_DATA_KEY, JSON.stringify(advertisers[idx]));
+
+          // Rebind view
+          if (typeof window.bindAll === 'function') {
+            bindAll('adv.name', advertisers[idx].name, 'No advertiser found');
+            bindAll('adv.state', advertisers[idx].state, 'N/A');
+            bindAll('adv.website', advertisers[idx].website, 'N/A');
+          }
+
+          return true;
+        } catch (e) {
+          console.error(e);
+          showToast({ message: 'Save failed. Check console.', type: 'error' });
+          return false;
+        }
+      }
+
+      function beforeUnloadHandler(e){
+        if (dirty) {
+          e.preventDefault();
+          e.returnValue = '';
+          return '';
+        }
+      }
+      function navGuard(e){
+        if (!dirty) return;
+        const a = e.target.closest('a,button,[role="link"]');
+        if (!a) return;
+        if (a === btnSave || a === btnCancel || a === btnEdit) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const wantsSave = confirm('You have unsaved changes. Save now?\n\nOK = Save  |  Cancel = Discard');
+        if (wantsSave) {
+          const ok = saveAll();
+          if (ok) {
+            dirty = false;
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            document.removeEventListener('click', navGuard, true);
+            showToast({ message: 'Saved successfully.', type: 'success' });
+            if (a.tagName === 'A' && a.href) window.location.href = a.href; else a.click?.();
+          }
+        } else {
+          setValues(snapshot || {});
+          dirty = false;
+          window.removeEventListener('beforeunload', beforeUnloadHandler);
+          document.removeEventListener('click', navGuard, true);
+          if (a.tagName === 'A' && a.href) window.location.href = a.href; else a.click?.();
+        }
+      }
+
+      // Simple toast function for compatibility
+      function showToast(options) {
+        const message = typeof options === 'string' ? options : options.message;
+        const type = options.type || 'info';
+        
+        if (window.toast && typeof window.toast.success === 'function') {
+          if (type === 'success') window.toast.success(message);
+          else if (type === 'error') window.toast.error(message);
+          else if (type === 'warning') window.toast.warning(message);
+          else window.toast.info(message);
+        } else {
+          console.log('TOAST:', type.toUpperCase(), message);
+        }
+      }
+
+      btnEdit?.addEventListener('click', () => {
+        setMode(true);
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+        document.addEventListener('click', navGuard, true);
+      });
+      btnCancel?.addEventListener('click', () => {
+        if (snapshot) setValues(snapshot);
+        dirty = false;
+        window.removeEventListener('beforeunload', beforeUnloadHandler);
+        document.removeEventListener('click', navGuard, true);
+        setMode(false);
+      });
+      btnSave?.addEventListener('click', () => {
+        if (!dirty) {
+          showToast({ message: 'No changes to save.', type: 'warning' });
+          setMode(false);
+          window.removeEventListener('beforeunload', beforeUnloadHandler);
+          document.removeEventListener('click', navGuard, true);
+          return;
+        }
+        const ok = saveAll();
+        if (ok) {
+          dirty = false;
+          window.removeEventListener('beforeunload', beforeUnloadHandler);
+          document.removeEventListener('click', navGuard, true);
+          setMode(false);
+          showToast({ message: 'Data saved successfully.', type: 'success' });
+        }
+      });
+
+      // Initialize to view mode
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => { qInputs().forEach(applyViewStyle); }, 50);
+      });
+    })();
+  </script>
+
+  <!-- Account Lookup Modal -->
+  <div id="accountLookupModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] overflow-auto">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Account Lookup</h2>
+        <button type="button" id="closeLookupX" class="text-gray-400 hover:text-gray-600 transition-colors" title="Close">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-4">
+        <div class="mb-4">
+          <input type="text" id="lookupSearch" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search by account number or name...">
+        </div>
+        
+        <div class="max-h-96 overflow-y-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-50 sticky top-0">
+              <tr>
+                <th class="text-left py-2 px-4 font-medium text-gray-700">Account #</th>
+                <th class="text-left py-2 px-4 font-medium text-gray-700">Account Name</th>
+              </tr>
+            </thead>
+            <tbody id="lookupResults" class="divide-y divide-gray-200">
+              <!-- Results populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 p-4 border-t border-gray-200">
+        <button type="button" id="cancelLookupBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+        <button type="button" id="selectAccountBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50" disabled>Select</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Lookup Logic -->
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Sample CRM accounts (same as other pages)
+    const SAMPLE_CRM_ACCOUNTS = [
+      { accountNumber: '12345', accountName: 'Acme Corporation' },
+      { accountNumber: '67890', accountName: 'Global Tech Solutions' },
+      { accountNumber: '11111', accountName: 'Sunrise Marketing' },
+      { accountNumber: '22222', accountName: 'Metro Retail Group' },
+      { accountNumber: '33333', accountName: 'Advanced Systems Inc' }
+    ];
+
+    const accountLookupBtn = document.getElementById('accountLookupBtn');
+    const accountLookupModal = document.getElementById('accountLookupModal');
+    const closeLookupX = document.getElementById('closeLookupX');
+    const cancelLookupBtn = document.getElementById('cancelLookupBtn');
+    const lookupSearch = document.getElementById('lookupSearch');
+    const lookupResults = document.getElementById('lookupResults');
+    const selectAccountBtn = document.getElementById('selectAccountBtn');
+
+    if (!accountLookupBtn || !accountLookupModal) return;
+
+    function closeLookupModal() {
+      accountLookupModal.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+      if (lookupSearch) lookupSearch.value = '';
+      if (selectAccountBtn) selectAccountBtn.disabled = true;
     }
 
-    // Right drawer
-    const drawer = document.getElementById('rightDrawer');
-    const toggleBtn = document.getElementById('rightDrawerToggleButton');
-    const closeBtn = document.getElementById('rightDrawerClose');
-    const arrowPath = document.getElementById('rightDrawerArrowPath');
-    const PATH_LEFT  = 'M15 19l-7-7 7-7';
-    const PATH_RIGHT = 'M9 5l7 7-7 7';
-
-    function isOpen() { return drawer.classList.contains('right-drawer-open'); }
-    function openDrawer() {
-      drawer.classList.remove('right-drawer-closed');
-      drawer.classList.add('right-drawer-open');
-      arrowPath?.setAttribute('d', PATH_RIGHT);
+    function renderResults(accounts) {
+      if (!lookupResults) return;
+      lookupResults.innerHTML = '';
+      
+      accounts.forEach(account => {
+        const tr = document.createElement('tr');
+        tr.className = 'cursor-pointer hover:bg-gray-50';
+        tr.dataset.accountNumber = account.accountNumber;
+        tr.dataset.accountName = account.accountName;
+        tr.innerHTML = `
+          <td class="py-2 px-4">${account.accountNumber}</td>
+          <td class="py-2 px-4">${account.accountName}</td>
+        `;
+        
+        tr.addEventListener('click', function() {
+          const prev = lookupResults.querySelector('tr.selected');
+          if (prev) prev.classList.remove('bg-blue-50', 'selected');
+          tr.classList.add('bg-blue-50', 'selected');
+          if (selectAccountBtn) selectAccountBtn.disabled = false;
+        });
+        
+        lookupResults.appendChild(tr);
+      });
     }
-    function closeDrawer() {
-      drawer.classList.remove('right-drawer-open');
-      drawer.classList.add('right-drawer-closed');
-      arrowPath?.setAttribute('d', PATH_LEFT);
-    }
-    function toggleDrawer() { isOpen() ? closeDrawer() : openDrawer(); }
-    toggleBtn?.addEventListener('click', toggleDrawer);
-    closeBtn?.addEventListener('click', closeDrawer);
-    closeDrawer(); // start closed
 
-    // Placeholder: populate example values (replace with real data binding)
-    document.getElementById('acctNumber').textContent = '102346';
-    document.getElementById('acctName').textContent   = 'MIC Food';
-    document.getElementById('dspCount').textContent   = '4';
-    document.getElementById('invoiceImps').textContent= '1,600,000';
-    document.getElementById('totalImps').textContent  = '1,600,000';
-    document.getElementById('accountNameHeader').textContent = 'MIC Food';
+    // Open modal
+    accountLookupBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      accountLookupModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      renderResults(SAMPLE_CRM_ACCOUNTS);
+      if (lookupSearch) lookupSearch.focus();
+    });
+
+    // Close modal handlers
+    if (closeLookupX) closeLookupX.addEventListener('click', closeLookupModal);
+    if (cancelLookupBtn) cancelLookupBtn.addEventListener('click', closeLookupModal);
+
+    // Search functionality
+    if (lookupSearch) {
+      lookupSearch.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const filtered = SAMPLE_CRM_ACCOUNTS.filter(account => 
+          account.accountNumber.toLowerCase().includes(query) ||
+          account.accountName.toLowerCase().includes(query)
+        );
+        renderResults(filtered);
+      });
+    }
+
+    // Select account
+    if (selectAccountBtn) {
+      selectAccountBtn.addEventListener('click', function() {
+        const selected = lookupResults ? lookupResults.querySelector('tr.selected') : null;
+        if (!selected) return;
+
+        const accountNumber = selected.dataset.accountNumber;
+        const accountName = selected.dataset.accountName;
+
+        // Update the display
+        const accountDisplay = document.getElementById('accountDisplay');
+        if (accountDisplay) {
+          accountDisplay.textContent = accountNumber;
+          accountDisplay.classList.remove('hidden');
+        }
+        
+        if (accountLookupBtn) {
+          accountLookupBtn.classList.add('hidden');
+        }
+
+        // Update the data in localStorage
+        try {
+          const selectedId = localStorage.getItem('adv_selected_id');
+          if (selectedId) {
+            const advertisers = JSON.parse(localStorage.getItem('adv_list_data') || '[]');
+            const advIndex = advertisers.findIndex(a => String(a.id) === String(selectedId));
+            
+            if (advIndex !== -1) {
+              advertisers[advIndex].account = accountNumber;
+              localStorage.setItem('adv_list_data', JSON.stringify(advertisers));
+              localStorage.setItem('adv_selected_data', JSON.stringify(advertisers[advIndex]));
+              
+              // Update data binding if available
+              if (typeof window.bindAll === 'function') {
+                window.bindAll('adv.account', accountNumber, 'N/A');
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Error updating account in storage:', e);
+        }
+
+        closeLookupModal();
+        
+        // Show success toast if available
+        if (window.toast && typeof window.toast.success === 'function') {
+          window.toast.success('Account updated successfully');
+        }
+      });
+    }
+
+    // Close on outside click
+    accountLookupModal.addEventListener('click', function(e) {
+      if (e.target === accountLookupModal) {
+        closeLookupModal();
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !accountLookupModal.classList.contains('hidden')) {
+        closeLookupModal();
+      }
+    });
   });
   </script>
+  <script src="./assets/sidebar.js" defer></script>
 </body>
 </html>
-
