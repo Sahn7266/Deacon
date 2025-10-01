@@ -43,20 +43,95 @@
       pointer-events: none;
     }
     select[aria-readonly="true"]:focus { border: none !important; outline: none !important; box-shadow: none !important; }
-  </style>
-</head>
 
-<body class="bg-gray-100">
+    /* Right drawer attached handle */
+    #rightDrawer {
+      transition: transform 0.3s ease-in-out;
+      width: 320px;
+    }
+    #rightDrawer.right-drawer-closed {
+      transform: translateX(calc(100% - 40px)); /* keep 40px handle visible */
+    }
+    #rightDrawer.right-drawer-open {
+      transform: translateX(0);
+    }
+
+    /* Sidebar normalization to match other pages */
+    #sidebar {
+      width:240px !important;
+      padding: 0.75rem 0.5rem 1rem 0.5rem;
+      transition: width .25s ease;
+    }
+    #sidebar .sidebar-header {
+      padding: 0 0.25rem 0.75rem 0.25rem;
+      border-bottom: 1px solid #e5e7eb;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:.5rem;
+    }
+    #sidebar .sidebar-header h2 {
+      font-size:0.875rem;
+      font-weight:600;
+      line-height:1.1rem;
+      margin:0;
+    }
+    #sidebar .sidebar-header img {
+      width:32px;
+      height:32px;
+      border-radius:9999px;
+    }
+    #sidebar ul.nav-root { margin-top:.75rem; display:flex; flex-direction:column; gap:2px; }
+    #sidebar a[data-nav-link] {
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      padding: .5rem .5rem;
+      font-size: .75rem;
+      line-height:1rem;
+      border-radius:.375rem;
+      color:#374151;
+      transition: background-color .15s, color .15s;
+      font-weight:500;
+    }
+    #sidebar a[data-nav-link]:hover { background:#eff6ff; }
+    #sidebar a[data-nav-link].bg-blue-50 { font-weight:600; }
+    #sidebar a[data-nav-link] img { width:20px; height:20px; margin:0; }
+
+    /* Campaigns accordion submenu */
+    #campaignsSubMenu a {
+      font-size:.65rem;
+      padding:.35rem .5rem .35rem 1.75rem;
+      gap:.4rem;
+    }
+
+    /* Collapsed (icon-only) */
+    #sidebar.collapsed { width:64px !important; }
+    #sidebar.collapsed [data-link-label],
+    #sidebar.collapsed #campaignsAccordionBtn,
+    #sidebar.collapsed #campaignsSubMenu {
+      display:none !important;
+    }
+    #sidebar.collapsed a[data-nav-link] {
+      justify-content:center;
+      padding:.5rem;
+    }
+
+    /* Caret icon rotate */
+    #campaignsAccordionIcon { transition: transform .2s ease; }
+  </style>
+</head> <!-- ADDED: properly close head -->
+<body class="bg-gray-100"> <!-- ensure body starts after </head> -->
   <div class="flex h-screen flex-col">
     <!-- Header -->
     <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
       <div class="flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-3">
-          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-8 w-auto" /> <!-- Optionally reduce to h-8 for consistency -->
         </div>
 
         <nav class="flex items-center gap-3 ml-auto">
-            <a href="./index.html" class="text-base text-white hover:text-blue-100" style="font-size: 1.5rem; padding-right: 15px;" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
+            <a href="./index.html" class="text-sm font-medium text-white hover:text-blue-100 px-3 py-2" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
             Advertisers
             </a>
           <span class="text-white select-none">|</span>
@@ -144,80 +219,83 @@
     <!-- Body -->
     <div class="flex flex-1 overflow-hidden relative">
       <!-- Sidebar -->
-      <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
-  <div class="flex items-center justify-between pb-4 border-b border-gray-200">
-    <div class="flex items-center gap-3">
-      <img src="./assets/advertiser.png" alt="Advertiser" class="w-9 h-9 rounded-full" data-sidebar-avatar />
-      <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Advertiser</h2>
+      <nav id="sidebar" class="bg-white border-r border-gray-200 h-full flex flex-col overflow-y-auto">
+  <div class="sidebar-header">
+    <div class="flex items-center gap-2">
+      <img src="./assets/advertiser.png" alt="Advertiser" data-sidebar-avatar>
+      <h2 data-sidebar-header>Advertiser</h2>
     </div>
-    <button id="sidebarToggle" class="p-1 rounded hover:bg-gray-100" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse/Expand">
-      <svg id="iconCollapse" class="w-5 h-5 text-gray-900" viewBox="0 0 26 26" fill="currentColor">
-        <path fill="#000000" d="M21.5 11.5h-8.793l3.035-3.035a.5.5 0 10-.707-.707l-3.888 3.888a.518.518 0 00-.109.163.505.505 0 000 .382.518.518 0 00.109.163l3.888 3.888a.5.5 0 00.707-.707L12.707 12.5H21.5a.5.5 0 000-1zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z"></path>
+    <button id="sidebarToggle"
+            class="p-1 rounded hover:bg-gray-100 focus:outline-none"
+            aria-label="Toggle sidebar"
+            aria-expanded="true"
+            title="Collapse / Expand">
+      <svg id="iconCollapse" class="w-4 h-4 text-gray-700" viewBox="0 0 26 26" fill="currentColor">
+        <path d="M21.5 11.5h-8.793l3.035-3.035a.5.5 0 10-.707-.707l-3.888 3.888a.518.518 0 00-.109.163.505.505 0 000 .382.518.518 0 00.109.163l3.888 3.888a.5.5 0 00.707-.707L12.707 12.5H21.5a.5.5 0 000-1zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z"/>
       </svg>
-      <svg id="iconExpand" class="w-5 h-5 text-gray-900 hidden" viewBox="0 0 26 26" fill="currentColor">
-        <path fill="#000000" d="M21.962 12.191a.505.505 0 000-.382.518.518 0 00-.109-.163l-3.888-3.888a.5.5 0 10-.707.707l3.035 3.035H11.5a.5.5 0 000 1h8.793l-3.035 3.035a.5.5 0 10.707.707l3.888-3.888a.518.518 0 00.109-.163zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z"></path>
+      <svg id="iconExpand" class="w-4 h-4 text-gray-700 hidden" viewBox="0 0 26 26" fill="currentColor">
+        <path d="M21.962 12.191a.505.505 0 000-.382.518.518 0 00-.109-.163l-3.888-3.888a.5.5 0 10-.707.707l3.035 3.035H11.5a.5.5 0 000 1h8.793l-3.035 3.035a.5.5 0 10.707.707l3.888-3.888a.518.518 0 00.109-.163zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z"/>
       </svg>
     </button>
   </div>
 
-  <ul class="space-y-1 mt-4">
+  <ul class="nav-root">
     <li>
-      <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+      <a href="./WFAdvertiserDetails.html" data-nav-link>
+        <img src="./assets/svgs/Details.svg" alt="">
         <span data-link-label>Details</span>
       </a>
     </li>
     <li>
-      <a href="./AdvertiserSalesOrder.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
+      <a href="./AdvertiserSalesOrder.html" data-nav-link>
+        <img src="./assets/svgs/SalesOrderExpense.svg" alt="">
         <span data-link-label>Sales Orders</span>
       </a>
     </li>
     <li>
-      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+      <a href="./WFAdvertiserConnections.html" data-nav-link>
+        <img src="./assets/svgs/Blueprint.svg" alt="">
         <span data-link-label>Connections (P2)</span>
       </a>
     </li>
+
     <li>
       <div class="flex items-center w-full">
-        <!-- Campaigns link (clickable, navigates to AdvertiserCampaigns.html) -->
-        <a href="./AdvertiserCampaigns.html"
-          data-nav-link
-          class="flex items-center flex-1 px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md focus:outline-none transition"
-          style="min-width:0;"
-        >
-          <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
+        <a href="./AdvertiserCampaigns.html" data-nav-link class="flex-1" title="Campaigns">
+          <img src="./assets/svgs/CampaignsSchedules.svg" alt="">
           <span data-link-label>Campaigns</span>
         </a>
-        <!-- Accordion arrow button (only toggles submenu) -->
-        <button
-          type="button"
-          id="campaignsAccordionBtn"
-          class="ml-1 p-1 rounded hover:bg-gray-100 focus:outline-none transition"
-          aria-expanded="true"
-          aria-controls="campaignsSubMenu"
-          tabindex="0"
-          style="height:32px;width:32px;display:flex;align-items:center;justify-content:center;"
-        >
-          <svg id="campaignsAccordionIcon" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        <button id="campaignsAccordionBtn"
+                class="p-1 rounded hover:bg-gray-100 focus:outline-none"
+                aria-expanded="false"
+                aria-controls="campaignsSubMenu"
+                title="Toggle campaign submenu">
+          <svg id="campaignsAccordionIcon" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
           </svg>
         </button>
       </div>
-      <!-- Sub-tab for Campaign Details, collapsible -->
-      <ul id="campaignsSubMenu" class="ml-8 mt-1 space-y-1" style="display: block;">
+      <ul id="campaignsSubMenu" class="space-y-1 mt-1 hidden">
         <li>
-          <a href="./CampaignDetails.html" class="flex items-center px-1 py-2 text-xs text-gray-600 hover:text-blue-700 hover:bg-blue-50 rounded-md">
-            <span class="ml-8">Campaign Details</span>
+          <a href="./CampaignDetails.html" class="flex items-center rounded-md text-gray-600 hover:text-blue-700 hover:bg-blue-50 transition">
+            <span data-link-label>Campaign Details</span>
           </a>
         </li>
       </ul>
     </li>
+
     <li>
-      <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
+      <a href="./AdvertiserAdGroup.html" data-nav-link>
+        <img src="./assets/svgs/AdGroups.svg" alt="">
         <span data-link-label>Ad Groups</span>
+      </a>
+    </li>
+
+    <li>
+      <a href="./CAD.html" data-nav-link>
+        <img src="./assets/svgs/Blueprint.svg" alt="">
+        <span data-link-label>CAD Overview</span>
       </a>
     </li>
   </ul>
@@ -251,26 +329,36 @@
                 </div>
                  <div id="generalCard" class="p-4 border border-gray-200 rounded-md">
                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
-                     <label for="companyName" class="text-sm font-semibold text-gray-600">Company Name:</label>
+                     <label for="companyName" class="text-sm font-semibold text-gray-600">Campaign Name:</label>
                      <div class="md:col-span-2">
                        <input id="companyName" type="text" data-bind="adv.name" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
                      </div>
-                     <label for="accountDisplay" class="text-sm font-semibold text-gray-600">Account #:</label>
+                     <label for="accountDisplay" class="text-sm font-semibold text-gray-600">Campaign Channel:</label>
                      <div class="md:col-span-2 flex items-center gap-2">
                        <span id="accountDisplay" data-bind="adv.account" class="hidden text-sm text-gray-900 rounded px-0 py-1">—</span>
-                       <button id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline">Select Account</button>
+                       <button id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline">Campaign Budget:</button>
                      </div>
-                     <label for="advertiserState" class="text-sm font-semibold text-gray-600">State:</label>
+                     <label for="advertiserState" class="text-sm font-semibold text-gray-600">Campaign KPI:</label>
                      <div class="md:col-span-2">
                        <select id="advertiserState" data-bind="adv.state" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
                          <option value="Active">Active</option>
                          <option value="Inactive">Inactive</option>
                        </select>
                      </div>
-                     <label for="advertiserWebsite" class="text-sm font-semibold text-gray-600">Website:</label>
+                     <label for="advertiserWebsite" class="text-sm font-semibold text-gray-600">KPI Target:</label>
                      <div class="md:col-span-2">
                        <input id="advertiserWebsite" type="text" data-bind="adv.website" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
                      </div>
+
+                     <label for="accountDisplay" class="text-sm font-semibold text-gray-600">Pacing:</label>
+                     <div class="md:col-span-2">
+                       <span class="text-sm text-gray-900">Campaign Budget:</span>
+                     </div>
+                     <label for="accountDisplay" class="text-sm font-semibold text-gray-600">Flight:</label>
+                     <div class="md:col-span-2">
+                       <span class="text-sm text-gray-900">Pacing ahead UTD:</span>
+                     </div>
+
                    </div>
                  </div>
                </section>
@@ -279,45 +367,39 @@
         </div>
 
         <!-- Right Sidebar Drawer (moved inside body container, now under header) -->
-        <div id="rightDrawer"
-          class="absolute top-0 right-0 w-80 max-w-full h-full bg-white shadow-lg z-30 transform translate-x-full transition-transform duration-300 ease-in-out border-l border-gray-200 flex flex-col">
-          <div class="flex items-center justify-between p-4 border-b">
-            <h2 class="text-lg font-semibold text-gray-800">Tools</h2>
-            <button id="rightDrawerClose" class="text-gray-600 hover:text-gray-900">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-          <div class="p-4 flex-1 overflow-y-auto">
-            <ul class="space-y-3">
-              <li>
-                <a href="#" class="flex items-center text-sm text-gray-700 hover:text-blue-600">
-                  <img src="./assets/svgs/AdGroups.svg" class="w-5 h-5 mr-2" /> Extra Tool
-                </a>
-              </li>
-              <li>
-                <a href="#" class="flex items-center text-sm text-gray-700 hover:text-blue-600">
-                  <img src="./assets/svgs/Blueprint.svg" class="w-5 h-5 mr-2" /> Settings
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
+<div id="rightDrawer"
+  class="fixed right-0 top-[56px] h-[calc(100%-56px)] bg-white shadow-lg z-30 right-drawer-closed border-l border-gray-200 flex flex-col">
+  <!-- Toggle Handle (attached) -->
+  <button id="rightDrawerToggleButton"
+    class="absolute -left-10 top-1/2 -translate-y-1/2 bg-white border border-gray-300 rounded-l-md shadow-md w-10 h-16 flex items-center justify-center hover:bg-blue-50 transition-colors"
+    title="Toggle Tools Panel">
+    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path id="rightDrawerArrowPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+  <div class="flex items-center justify-between p-4 border-b">
+    <h2 class="text-lg font-semibold text-gray-800">Tools</h2>
+  </div>
+  <div class="p-4 flex-1 overflow-y-auto">
+    <ul class="space-y-3">
+      <li>
+        <a href="#" class="flex items-center text-sm text-gray-700 hover:text-blue-600">
+          <img src="./assets/svgs/AdGroups.svg" class="w-5 h-5 mr-2" /> Extra Tool
+        </a>
+      </li>
+      <li>
+        <a href="#" class="flex items-center text-sm text-gray-700 hover:text-blue-600">
+          <img src="./assets/svgs/Blueprint.svg" class="w-5 h-5 mr-2" /> Settings
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+</div>
 
         <!-- Toggle Button (now positioned relative to body, not screen) -->
-        <button id="rightDrawerToggleButton"
-          class="absolute top-1/2 -translate-y-1/2 bg-white border border-gray-300 rounded-l-md shadow-lg p-2 z-40 hover:bg-blue-50 transition-colors duration-300"
-          title="Toggle Tools Panel"
-          style="right:0;">
-          <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path id="rightDrawerArrowPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      </main>
-    </div>
-  </div>
-
+        
   <!-- Waffle menu toggle -->
   <script>
     const menuButton = document.getElementById('menuButton');
@@ -715,41 +797,48 @@
 
   <!-- Account Lookup Modal -->
   <div id="accountLookupModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
-  <!-- Right Sidebar Drawer -->
-<div id="rightDrawer" class="fixed top-0 right-0 w-80 max-w-full h-full bg-white shadow-lg z-50 transform translate-x-full transition-transform duration-300 ease-in-out border-l border-gray-200 flex flex-col">
-  <div class="flex items-center justify-between p-4 border-b">
-    <h2 class="text-lg font-semibold text-gray-800">Tools</h2>
-    <button id="rightDrawerClose" class="text-gray-600 hover:text-gray-900">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
+  <!-- Removed duplicate rightDrawer + floating toggle button here -->
+  <!-- ...rest of modal content (lookup table, etc.) stays intact... -->
   </div>
-  <div class="p-4 flex-1 overflow-y-auto">
-    <ul class="space-y-3">
-      <li>
-        <a href="#" class="flex items-center text-sm text-gray-700 hover:text-blue-600">
-          <img src="./assets/svgs/AdGroups.svg" class="w-5 h-5 mr-2" /> Extra Tool
-        </a>
-      </li>
-      <li>
-        <a href="#" class="flex items-center text-sm text-gray-700 hover:text-blue-600">
-          <img src="./assets/svgs/Blueprint.svg" class="w-5 h-5 mr-2" /> Settings
-        </a>
-      </li>
-    </ul>
-  </div>
-</div>
 
-<!-- Floating Arrow Toggle Button -->
-<button id="rightDrawerToggleButton"
-  class="fixed top-1/2 right-0 transform -translate-y-1/2 bg-white border border-gray-300 rounded-l-md shadow-lg p-2 z-50 hover:bg-blue-50 transition-colors duration-300"
-  title="Toggle Tools Panel">
-  <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path id="rightDrawerArrowPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-  </svg>
-</button>
+  <!-- REPLACE the old drawer script (the one using translate-x-full) with this: -->
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const drawer    = document.getElementById('rightDrawer');
+    const toggleBtn = document.getElementById('rightDrawerToggleButton');
+    const arrowPath = document.getElementById('rightDrawerArrowPath');
 
+    if (!drawer || !toggleBtn || !arrowPath) return;
+
+    const PATH_LEFT  = 'M15 19l-7-7 7-7'; // < (closed state)
+    const PATH_RIGHT = 'M9 5l7 7-7 7';     // > (open state)
+
+    function isOpen() {
+      return drawer.classList.contains('right-drawer-open');
+    }
+    function openDrawer() {
+      drawer.classList.remove('right-drawer-closed');
+      drawer.classList.add('right-drawer-open');
+      arrowPath.setAttribute('d', PATH_RIGHT);
+    }
+    function closeDrawer() {
+      drawer.classList.remove('right-drawer-open');
+      drawer.classList.add('right-drawer-closed');
+      arrowPath.setAttribute('d', PATH_LEFT);
+    }
+    function toggleDrawer() {
+      isOpen() ? closeDrawer() : openDrawer();
+    }
+
+    // Start closed
+    closeDrawer();
+    toggleBtn.addEventListener('click', toggleDrawer);
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && isOpen()) closeDrawer();
+    });
+  });
+  </script>
 
   <!-- Account Lookup Logic -->
   <script>
@@ -958,22 +1047,69 @@
 
   <!-- Add this script just before </body> -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  // Highlight "Campaign Details" sub-tab if on CampaignDetails.html
+document.addEventListener('DOMContentLoaded', () => {
+  const accordionBtn = document.getElementById('campaignsAccordionBtn');
+  const icon = document.getElementById('campaignsAccordionIcon');
+  const subMenu = document.getElementById('campaignsSubMenu');
+
+  function setOpen(open) {
+    if (!subMenu) return;
+    subMenu.classList.toggle('hidden', !open);
+    accordionBtn?.setAttribute('aria-expanded', String(open));
+    if (icon) icon.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
+  }
+
+  // Open if we are on CampaignDetails, otherwise start closed.
+  const onDetails = window.location.pathname.endsWith('CampaignDetails.html');
+  setOpen(onDetails);
+
+  accordionBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const currentlyOpen = !(subMenu?.classList.contains('hidden'));
+    setOpen(!currentlyOpen);
+  });
+
+  // Highlight logic
+  const campaignsMain       = document.querySelector('a[href="./AdvertiserCampaigns.html"]');
+  const campaignsDetailsSub = document.querySelector('a[href="./CampaignDetails.html"]');
+  const detailsMain         = document.querySelector('a[href="./WFAdvertiserDetails.html"]');
+  const adGroupsMain        = document.querySelector('a[href="./AdvertiserAdGroup.html"]');
+  const cadMain             = document.querySelector('a[href="./CAD.html"]');
+
   const path = window.location.pathname;
-  if (path.endsWith('CampaignDetails.html')) {
-    // Highlight Campaign Details sub-tab
-    const campaignDetailsLink = document.querySelector('a[href="./CampaignDetails.html"]');
-    if (campaignDetailsLink) {
-      campaignDetailsLink.classList.add('bg-blue-50', 'text-blue-700', 'font-medium');
-      campaignDetailsLink.classList.remove('text-gray-600');
-    }
-    // Remove highlight from Details tab
-    const detailsLink = document.querySelector('a[href="./WFAdvertiserDetails.html"]');
-    if (detailsLink) {
-      detailsLink.classList.remove('bg-blue-50', 'text-blue-700', 'font-medium');
-      detailsLink.classList.add('text-gray-700');
-    }
+  const isCampaignDetails = path.endsWith('CampaignDetails.html');
+  const isCampaignsList   = path.endsWith('AdvertiserCampaigns.html');
+  const isDetailsPage     = path.endsWith('WFAdvertiserDetails.html');
+  const isAdGroups        = path.endsWith('AdvertiserAdGroup.html');
+  const isCAD             = path.endsWith('CAD.html');
+
+  function addHl(el) {
+    el?.classList.add('bg-blue-50','text-blue-700','font-medium');
+    el?.classList.remove('text-gray-700','text-gray-600');
+  }
+  function clearHighlights() {
+    document.querySelectorAll('#sidebar a[data-nav-link], #campaignsSubMenu a').forEach(a => {
+      a.classList.remove('bg-blue-50','text-blue-700','font-medium');
+      if (!a.classList.contains('text-gray-600')) a.classList.add('text-gray-700');
+    });
+  }
+
+  clearHighlights();
+
+  if (isCampaignDetails) {
+    addHl(campaignsMain);
+    // ensure submenu open
+    document.getElementById('campaignsSubMenu')?.classList.remove('hidden');
+    addHl(campaignsDetailsSub);
+  } else if (isCampaignsList) {
+    addHl(campaignsMain);
+  } else if (isDetailsPage) {
+    addHl(detailsMain);
+  } else if (isAdGroups) {
+    addHl(adGroupsMain);
+  } else if (isCAD) {
+    addHl(cadMain);
   }
 });
 </script>

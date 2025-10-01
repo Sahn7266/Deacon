@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Beacon - CAD Overview</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { font-family: system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif; }
+    /* Layout */
+    #appShell { height: 100vh; }
+    header { height:56px; }
+    /* Sidebar */
+    #sidebar { width:240px; transition:width .25s ease; }
+    #sidebar.collapsed { width:64px !important; }
+    #sidebar.collapsed [data-link-label],
+    #sidebar.collapsed #campaignsAccordionBtn,
+    #sidebar.collapsed #campaignsSubMenu {
+      display:none !important;
+    }
+    #sidebar.collapsed a[data-nav-link] {
+      justify-content:center;
+      padding-left:.5rem;
+      padding-right:.5rem;
+    }
+    #sidebar.collapsed a[data-nav-link] img { margin-right:0; }
+    #campaignsAccordionIcon { transition: transform .2s ease; }
+    /* Right drawer */
+    #rightDrawer { transition: transform .3s ease-in-out; width:320px; }
+    #rightDrawer.right-drawer-closed { transform: translateX(calc(100% - 40px)); }
+    #rightDrawer.right-drawer-open { transform: translateX(0); }
+    /* Scrollbars (optional) */
+    ::-webkit-scrollbar { width:8px; }
+    ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:4px; }
+    ::-webkit-scrollbar-thumb:hover { background:#94a3b8; }
+  </style>
+<body class="bg-gray-100">
+  <div class="flex h-screen flex-col">
+    <!-- Header -->
+    <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
+      <div class="flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-3">
+          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+        </div>
+
+        <nav class="flex items-center gap-3 ml-auto">
+            <a href="./index.html" class="text-base text-white hover:text-blue-100" style="font-size: 1.5rem; padding-right: 15px;" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
+            Advertisers
+            </a>
+          <span class="text-white select-none">|</span>
+
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notificationButton" class="p-2 rounded-md  text-white relative" title="Notifications" aria-label="View notifications" onmouseover="this.style.backgroundColor=''" onmouseout="this.style.backgroundColor=''" >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+              <div class="p-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                  <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                </div>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div id="notificationList">
+                  <!-- Sample items -->
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">Campaign Performance Alert</p>
+                        <p class="text-xs text-gray-500 mt-1">"Summer Sale" exceeded budget by 15%</p>
+                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">New Advertiser Added</p>
+                        <p class="text-xs text-gray-500 mt-1">Stallion Services LLC onboarded</p>
+                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="true">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-700">Account Sync Complete</p>
+                        <p class="text-xs text-gray-500 mt-1">CRM sync finished for 12 accounts</p>
+                        <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waffle Menu -->
+          <div class="relative">
+            <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+              </svg>
+            </button>
+            <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="flex flex-1 overflow-hidden relative">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
+  <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+    <div class="flex items-center gap-3">
+      <img src="./assets/advertiser.png" alt="Advertiser" class="w-9 h-9 rounded-full" data-sidebar-avatar />
+      <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Advertiser</h2>
+    </div>
+    <button id="sidebarToggle" class="p-1 rounded hover:bg-gray-100" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse/Expand">
+      <svg id="iconCollapse" class="w-5 h-5 text-gray-900" viewBox="0 0 26 26" fill="currentColor">
+        <path fill="#000000" d="M21.5 11.5h-8.793l3.035-3.035a.5.5 0 10-.707-.707l-3.888 3.888a.518.518 0 00-.109.163.505.505 0 000 .382.518.518 0 00.109.163l3.888 3.888a.5.5 0 00.707-.707L12.707 12.5H21.5a.5.5 0 000-1zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z"></path>
+      </svg>
+      <svg id="iconExpand" class="w-5 h-5 text-gray-900 hidden" viewBox="0 0 26 26" fill="currentColor">
+        <path fill="#000000" d="M21.962 12.191a.505.505 0 000-.382.518.518 0 00-.109-.163l-3.888-3.888a.5.5 0 10-.707.707l3.035 3.035H11.5a.5.5 0 000 1h8.793l-3.035 3.035a.5.5 0 10.707.707l3.888-3.888a.518.518 0 00.109-.163zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <ul class="space-y-1 mt-4">
+    <li>
+      <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+        <span data-link-label>Details</span>
+      </a>
+    </li>
+    <li>
+      <a href="./AdvertiserSalesOrder.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
+        <span data-link-label>Sales Orders</span>
+      </a>
+    </li>
+    <li>
+      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+        <span data-link-label>Connections (P2)</span>
+      </a>
+    </li>
+    <li>
+      <div class="flex items-center w-full">
+        <a href="./AdvertiserCampaigns.html"
+          data-nav-link
+          class="flex items-center flex-1 px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md focus:outline-none transition"
+          style="min-width:0;">
+          <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
+          <span data-link-label>Campaigns</span>
+        </a>
+        <button
+          type="button"
+          id="campaignsAccordionBtn"
+          class="ml-1 p-1 rounded hover:bg-gray-100 focus:outline-none transition"
+          aria-expanded="true"
+          aria-controls="campaignsSubMenu"
+          tabindex="0"
+          style="height:32px;width:32px;display:flex;align-items:center;justify-content:center;">
+          <svg id="campaignsAccordionIcon" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+      <ul id="campaignsSubMenu" class="ml-8 mt-1 space-y-1">
+        <li>
+          <a href="./CampaignDetails.html" class="flex items-center px-2 py-1 rounded-md text-xs text-gray-600 hover:text-blue-700 hover:bg-blue-50 transition">
+            <span>Campaign Details</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
+        <span data-link-label>Ad Groups</span>
+      </a>
+    </li>
+    <li>
+      <a href="./CAD.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/Blueprint.svg" alt="CAD Overview" class="w-6 h-6 mr-2" />
+        <span data-link-label>CAD Overview</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+      <!-- Main Content -->
+<main class="flex-1 overflow-y-auto p-6">
+  <div class="app-card rounded-lg shadow-lg overflow-hidden bg-white">
+
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h1 class="text-xl font-bold text-gray-800">CAD Overview – MIC Food</h1>
+    </div>
+
+    <!-- Body -->
+    <div class="px-6 py-6 space-y-10">
+
+      <!-- 🔷 Account Summary -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-gray-50 p-4 rounded shadow-sm">
+          <p class="text-xs text-gray-500">Account Number</p>
+          <p class="text-lg font-semibold text-gray-800">102346</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded shadow-sm">
+          <p class="text-xs text-gray-500">Account Name</p>
+          <p class="text-lg font-semibold text-gray-800">MIC Food</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded shadow-sm">
+          <p class="text-xs text-gray-500">Number of DSP Campaigns</p>
+          <p class="text-lg font-semibold text-gray-800">4</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded shadow-sm">
+          <p class="text-xs text-gray-500">Total Invoice Impressions</p>
+          <p class="text-lg font-semibold text-gray-800">1,600,000</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded shadow-sm">
+          <p class="text-xs text-gray-500">Total Impressions</p>
+          <p class="text-lg font-semibold text-gray-800">1,600,000</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded shadow-sm">
+          <p class="text-xs text-gray-500">Impressions Remaining</p>
+          <p class="text-lg font-semibold text-gray-800">-</p>
+        </div>
+      </div>
+
+      <!-- 🔷 DSP Campaigns -->
+      <div class="space-y-10">
+
+        <!-- 🟦 The Trade Desk -->
+        <div>
+          <h2 class="text-lg font-bold text-blue-700 mb-2">The Trade Desk – Brand Awareness 2025</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
+            <div><strong>DSP Campaign Name:</strong> Brand Awareness 2025</div>
+            <div><strong>Number of Ad Groups:</strong> 1</div>
+            <div><strong>Template:</strong> Programmatic Display</div>
+            <div><strong>DSP Impressions:</strong> 800,000</div>
+          </div>
+
+          <!-- Ad Group 1 -->
+          <div class="border border-gray-200 rounded p-4 bg-gray-50">
+            <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 1.1</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div><strong>Tactic:</strong> Persona</div>
+              <div><strong>Content Category:</strong> Persona</div>
+              <div><strong>MV Classification:</strong> Programmatic Display</div>
+              <div><strong>Audience:</strong> 1 and 2</div>
+              <div><strong>GeoTarget:</strong> U.S.</div>
+              <div><strong>Start Date:</strong> 12/20/2024</div>
+              <div><strong>End Date:</strong> 12/19/2025</div>
+              <div><strong>Impressions:</strong> 800,000</div>
+              <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/" class="text-blue-600 underline">micfood.com/our-segments</a></div>
+              <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">sbm9v</code></div>
+              <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/?utm_source=programmatic</code></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🟩 Simpli.fi -->
+        <div>
+          <h2 class="text-lg font-bold text-green-700 mb-2">Simpli.fi – Brand Awareness 2025</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
+            <div><strong>DSP Campaign Name:</strong> Brand Awareness 2025</div>
+            <div><strong>Number of Ad Groups:</strong> 2</div>
+            <div><strong>Template:</strong> Programmatic Display</div>
+            <div><strong>DSP Impressions:</strong> 500,000</div>
+          </div>
+
+          <!-- Ad Group 2.1 -->
+          <div class="border border-gray-200 rounded p-4 bg-gray-50 mb-6">
+            <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 2.1</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div><strong>Tactic:</strong> Company Targeting</div>
+              <div><strong>Content Category:</strong> Company Targeting</div>
+              <div><strong>MV Classification:</strong> Programmatic Display</div>
+              <div><strong>GeoTarget:</strong> U.S.</div>
+              <div><strong>Start Date:</strong> 12/20/2024</div>
+              <div><strong>End Date:</strong> 12/19/2025</div>
+              <div><strong>Impressions:</strong> 250,000</div>
+              <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/k-12/" class="text-blue-600 underline">micfood.com/k-12</a></div>
+              <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">426771</code></div>
+              <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/k-12/?utm_source=programmatic</code></div>
+            </div>
+          </div>
+
+          <!-- Ad Group 2.2 -->
+          <div class="border border-gray-200 rounded p-4 bg-gray-50">
+            <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 2.2</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div><strong>Tactic:</strong> Company Targeting</div>
+              <div><strong>Content Category:</strong> Company Targeting</div>
+              <div><strong>MV Classification:</strong> Programmatic Display</div>
+              <div><strong>GeoTarget:</strong> U.S.</div>
+              <div><strong>Start Date:</strong> 12/20/2024</div>
+              <div><strong>End Date:</strong> 12/19/2025</div>
+              <div><strong>Impressions:</strong> 250,000</div>
+              <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/restaurants-catering/" class="text-blue-600 underline">micfood.com/restaurants-catering</a></div>
+              <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">426773</code></div>
+              <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/restaurants-catering/?utm_source=programmatic</code></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🟥 StackAdapt -->
+        <div>
+          <h2 class="text-lg font-bold text-red-700 mb-2">StackAdapt – Brand Awareness 2025</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm text-gray-700">
+            <div><strong>DSP Campaign Name:</strong> Brand Awareness 2025</div>
+            <div><strong>Number of Ad Groups:</strong> 1</div>
+            <div><strong>Template:</strong> Programmatic Display</div>
+            <div><strong>DSP Impressions:</strong> 200,000</div>
+          </div>
+
+          <!-- Ad Group 3.1 -->
+          <div class="border border-gray-200 rounded p-4 bg-gray-50">
+            <h3 class="font-semibold mb-3">Ad Group: Programmatic Display Placement 3.1</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div><strong>Tactic:</strong> Data Onboarding</div>
+              <div><strong>Content Category:</strong> Data Onboarding</div>
+              <div><strong>MV Classification:</strong> Programmatic Display</div>
+              <div><strong>Audience:</strong> e-mails</div>
+              <div><strong>GeoTarget:</strong> U.S.</div>
+              <div><strong>Start Date:</strong> 12/20/2024</div>
+              <div><strong>End Date:</strong> 12/19/2025</div>
+              <div><strong>Impressions:</strong> 200,000</div>
+              <div><strong>Landing Page:</strong> <a href="https://micfood.com/our-segments/" class="text-blue-600 underline">micfood.com/our-segments</a></div>
+              <div><strong>DSP Ad Group ID:</strong> <code class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">177131</code></div>
+              <div class="md:col-span-2"><strong>UTM Code:</strong> <code class="text-gray-600 text-xs">https://micfood.com/our-segments/?utm_source=programmatic</code></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Sidebar collapse
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const iconCollapse = document.getElementById('iconCollapse');
+    const iconExpand = document.getElementById('iconExpand');
+    function setCollapsed(c) {
+      sidebar.classList.toggle('collapsed', c);
+      sidebarToggle.setAttribute('aria-expanded', String(!c));
+      iconCollapse.classList.toggle('hidden', c);
+      iconExpand.classList.toggle('hidden', !c);
+    }
+    sidebarToggle?.addEventListener('click', () => setCollapsed(!sidebar.classList.contains('collapsed')));
+
+    // Campaigns accordion
+    const accordionBtn = document.getElementById('campaignsAccordionBtn');
+    const campaignsSubMenu = document.getElementById('campaignsSubMenu');
+    const campaignsAccordionIcon = document.getElementById('campaignsAccordionIcon');
+    let accordionOpen = false;
+    function setAccordion(open) {
+      accordionOpen = open;
+      campaignsSubMenu?.classList.toggle('hidden', !open);
+      accordionBtn?.setAttribute('aria-expanded', String(open));
+      if (campaignsAccordionIcon) campaignsAccordionIcon.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
+    }
+    accordionBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (sidebar.classList.contains('collapsed')) return;
+      setAccordion(!accordionOpen);
+    });
+
+    // Highlight logic
+    const path = window.location.pathname;
+    const isCampaignDetails = path.endsWith('CampaignDetails.html');
+    const isCampaignsList   = path.endsWith('AdvertiserCampaigns.html');
+    const isCAD             = path.endsWith('CAD.html');
+
+    const campaignsMain       = document.querySelector('a[href="./AdvertiserCampaigns.html"]');
+    const campaignsDetailsSub = document.querySelector('a[href="./CampaignDetails.html"]');
+    const cadMain             = document.querySelector('a[href="./CAD.html"]');
+
+    function addHl(el) {
+      el?.classList.add('bg-blue-50','text-blue-700','font-medium');
+      el?.classList.remove('text-gray-700','text-gray-600');
+    }
+    function clearHighlights() {
+      document.querySelectorAll('#sidebar a[data-nav-link], #campaignsSubMenu a').forEach(a => {
+        a.classList.remove('bg-blue-50','text-blue-700','font-medium');
+        if (!a.classList.contains('text-gray-600')) a.classList.add('text-gray-700');
+      });
+    }
+    clearHighlights();
+
+    if (isCampaignDetails) {
+      addHl(campaignsMain);
+      setAccordion(true);
+      addHl(campaignsDetailsSub);
+    } else if (isCampaignsList) {
+      addHl(campaignsMain);
+      setAccordion(false);
+    } else if (isCAD) {
+      addHl(cadMain);
+      setAccordion(false);
+    }
+
+    // Right drawer
+    const drawer = document.getElementById('rightDrawer');
+    const toggleBtn = document.getElementById('rightDrawerToggleButton');
+    const closeBtn = document.getElementById('rightDrawerClose');
+    const arrowPath = document.getElementById('rightDrawerArrowPath');
+    const PATH_LEFT  = 'M15 19l-7-7 7-7';
+    const PATH_RIGHT = 'M9 5l7 7-7 7';
+
+    function isOpen() { return drawer.classList.contains('right-drawer-open'); }
+    function openDrawer() {
+      drawer.classList.remove('right-drawer-closed');
+      drawer.classList.add('right-drawer-open');
+      arrowPath?.setAttribute('d', PATH_RIGHT);
+    }
+    function closeDrawer() {
+      drawer.classList.remove('right-drawer-open');
+      drawer.classList.add('right-drawer-closed');
+      arrowPath?.setAttribute('d', PATH_LEFT);
+    }
+    function toggleDrawer() { isOpen() ? closeDrawer() : openDrawer(); }
+    toggleBtn?.addEventListener('click', toggleDrawer);
+    closeBtn?.addEventListener('click', closeDrawer);
+    closeDrawer(); // start closed
+
+    // Placeholder: populate example values (replace with real data binding)
+    document.getElementById('acctNumber').textContent = '102346';
+    document.getElementById('acctName').textContent   = 'MIC Food';
+    document.getElementById('dspCount').textContent   = '4';
+    document.getElementById('invoiceImps').textContent= '1,600,000';
+    document.getElementById('totalImps').textContent  = '1,600,000';
+    document.getElementById('accountNameHeader').textContent = 'MIC Food';
+  });
+  </script>
+</body>
+</html>
+
