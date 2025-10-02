@@ -221,32 +221,66 @@
             <hr class="border-gray-300 mp-4 p-2">
 
       <!-- Account Info -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-gray-50 p-4 rounded border">
-          <p class="text-xs text-gray-500">Account Number</p>
-          <p class="text-lg font-semibold text-gray-800">102346</p>
-        </div>
-        <div class="bg-gray-50 p-4 rounded border">
-          <p class="text-xs text-gray-500">Account Name</p>
-          <p class="text-lg font-semibold text-gray-800">MIC Food</p>
-        </div>
-        <div class="bg-gray-50 p-4 rounded border">
-          <p class="text-xs text-gray-500">Number of DSP Campaigns</p>
-          <p class="text-lg font-semibold text-gray-800">4</p>
-        </div>
-        <div class="bg-gray-50 p-4 rounded border">
-          <p class="text-xs text-gray-500">Total Invoice Impressions</p>
-          <p class="text-lg font-semibold text-gray-800">1,600,000</p>
-        </div>
-        <div class="bg-gray-50 p-4 rounded border">
-          <p class="text-xs text-gray-500">Total Impressions</p>
-          <p class="text-lg font-semibold text-gray-800">1,600,000</p>
-        </div>
-        <div class="bg-gray-50 p-4 rounded border">
-          <p class="text-xs text-gray-500">Impressions Remaining</p>
-          <p class="text-lg font-semibold text-gray-800">0</p>
-        </div>
-      </div>
+<!-- Budget Breakdown -->
+<section class="space-y-4 mt-6">
+  <h2 class="text-xl font-semibold text-gray-800">Budget Breakdown</h2>
+
+  <div class="bg-white shadow rounded-lg border border-gray-200">
+    <div class="p-4 overflow-x-auto">
+      <table class="w-full text-sm text-left text-gray-700 table-auto">
+        <thead>
+          <tr class="border-b border-gray-300 bg-gray-50">
+            <th class="px-4 py-2 font-medium">Product Line</th>
+            <th class="px-4 py-2 font-medium">Reporting Metric</th>
+            <th class="px-4 py-2 font-medium">Invoice Budget</th>
+            <th class="px-4 py-2 font-medium">Allocated Budget</th>
+            <th class="px-4 py-2 font-medium">Remaining</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ✅ Visible rows (filled-out) -->
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-2">Programmatic Display</td>
+            <td class="px-4 py-2">Impressions</td>
+            <td class="px-4 py-2">$1,600,000</td>
+            <td class="px-4 py-2">$1,600,000</td>
+            <td class="px-4 py-2">—</td>
+          </tr>
+        </tbody>
+
+        <!-- 🔽 Hidden section for unfilled rows -->
+        <tbody id="hiddenBudgetRows" class="hidden">
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-2">Association Affinity</td>
+            <td class="px-4 py-2">Impressions</td>
+            <td class="px-4 py-2">—</td>
+            <td class="px-4 py-2">—</td>
+            <td class="px-4 py-2">—</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="px-4 py-2">Programmatic Video</td>
+            <td class="px-4 py-2">Impressions</td>
+            <td class="px-4 py-2">—</td>
+            <td class="px-4 py-2">—</td>
+            <td class="px-4 py-2">—</td>
+          </tr>
+          <!-- Add all other product lines similarly -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Toggle Button -->
+    <div class="px-4 py-2 border-t border-gray-200 text-right">
+      <button
+        id="toggleBudgetRows"
+        class="text-sm text-blue-600 hover:underline"
+        onclick="document.getElementById('hiddenBudgetRows').classList.toggle('hidden'); this.textContent = this.textContent === 'Show All Product Lines' ? 'Hide Extra Rows' : 'Show All Product Lines';"
+      >
+        Show All Product Lines
+      </button>
+    </div>
+  </div>
+</section>
 
       <!-- DSP Campaigns -->
       <section id="dspCampaigns" class="mt-8 bg-white rounded-lg border border-gray-200 shadow-sm">
