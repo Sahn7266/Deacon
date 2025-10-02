@@ -350,7 +350,7 @@
   <div class="col-span-2">Template</div>
   <div class="col-span-1 text-left">Impr.</div>
   <div class="col-span-1 text-center">Ad Grps</div>
-  <div class="col-span-2 text-center">Select</div>
+  <div class="col-span-2 text-center">Status</div>
 </div>
 
         <div class="divide-y" id="campaignList">
@@ -1243,7 +1243,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn || !panel) return;
 
     btn.addEventListener('click', (e) => {
-      // Prevent toggle if editing row (has inputs)
+      // NEW: ignore clicks originating on a checkbox (or its label/future wrapper)
+      if (e.target.closest('input[type="checkbox"]')) return;
+
+      // Prevent toggle if editing row
       if (row.classList.contains('is-editing')) return;
       const isOpen = !panel.classList.contains('hidden');
       if (!isOpen) {
@@ -1262,6 +1265,13 @@ document.addEventListener('DOMContentLoaded', () => {
         panel.classList.remove('hidden');
         if (caret) caret.textContent = '–';
       }
+    });
+
+    // EXTRA SAFETY: stop bubbling from any checkbox inside the row
+    row.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('click', ev => ev.stopPropagation());
+      // Select checkboxes by default
+      cb.checked = true;
     });
   }
 
@@ -1368,6 +1378,9 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">${data.template || '—'}</div>
       <div class="col-span-1 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">${Number(data.impressions).toLocaleString()}</div>
       <div class="col-span-1 hidden md:flex items-center justify-center text-xs font-medium text-gray-700" data-adgroup-count>${data.adGroups.length}</div>
+      <div class="col-span-2 hidden md:flex items-center justify-center">
+        <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" checked>
+      </div>
     `;
 
     // Panel with Ad Group form initially
@@ -1604,6 +1617,11 @@ document.addEventListener('DOMContentLoaded', () => {
         editingCampaignRow = null;
       }
     });
+  });
+
+  // Select all checkboxes by default for static campaign rows
+  document.querySelectorAll('#campaignList input[type="checkbox"]').forEach(cb => {
+    cb.checked = true;
   });
 
 });
