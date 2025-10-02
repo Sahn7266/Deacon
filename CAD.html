@@ -272,7 +272,11 @@
       <button
         id="toggleBudgetRows"
         class="text-sm text-blue-600 hover:underline"
-        onclick="document.getElementById('hiddenBudgetRows').classList.toggle('hidden'); this.textContent = this.textContent === 'Show All Product Lines' ? 'Hide Extra Rows' : 'Show All Product Lines';"
+        onclick="
+          const hiddenRows = document.getElementById('hiddenBudgetRows');
+          hiddenRows.classList.toggle('hidden');
+          this.textContent = hiddenRows.classList.contains('hidden') ? 'Show All Product Lines' : 'Hide Extra Rows';
+        "
       >
         Show All Product Lines
       </button>
@@ -329,51 +333,47 @@
                 <!-- Ad Group -->
                 <div class="rounded border border-gray-200 bg-white">
                   <div class="px-4 py-4 text-[11px] space-y-4">
-                    
-                    <!-- Name / ID -->
                     <div>
-                      <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Ad Group</p>
-                      <p class="mt-0.5 font-semibold text-gray-800">Programmatic Display Placement 1.1: Foodservice/K-12_Persona
-                        <span class="ml-2 font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded align-middle">sbm9v</span>
+                      <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Name</p>
+                      <p class="mt-0.5 font-semibold text-gray-800">
+                        The Trade Desk - Programmatic Display Placement 1.1
+                        <span class="ml-2 font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded align-middle">szbnv9m</span>
                       </p>
                     </div>
-
-                    <!-- Core attributes -->
                     <div class="space-y-3">
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Tactic</p>
-                        <p class="mt-0.5 font-medium text-gray-800">Persona</p>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Tactic</p><p class="mt-0.5 font-medium text-gray-800">Persona</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Content Category</p><p class="mt-0.5 font-medium text-gray-800">Persona</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">MV Classification</p><p class="mt-0.5 font-medium text-gray-800">Programmatic Display</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Audience</p><p class="mt-0.5 font-medium text-gray-800">1 and 2</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Geotarget</p><p class="mt-0.5 font-medium text-gray-800">U.S.</p></div>
+                      <div class="flex gap-8 flex-wrap">
+                        <div>
+                          <p class="text-[10px] font-semibold text-gray-500 uppercase">Start Date</p>
+                          <p class="mt-0.5 font-medium text-gray-800">12/20/2024</p>
+                        </div>
+                        <div>
+                          <p class="text-[10px] font-semibold text-gray-500 uppercase">End Date</p>
+                          <p class="mt-0.5 font-medium text-gray-800">12/19/2025</p>
+                        </div>
                       </div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Impressions</p><p class="mt-0.5 font-medium text-gray-800">800,000</p></div>
                       <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Audience</p>
-                        <p class="mt-0.5 font-medium text-gray-800">1 and 2</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Geo</p>
-                        <p class="mt-0.5 font-medium text-gray-800">U.S.</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Dates</p>
-                        <p class="mt-0.5 font-medium text-gray-800">12/20/24 – 12/19/25</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Impressions</p>
-                        <p class="mt-0.5 font-medium text-gray-800">800,000</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Landing</p>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Landing Page</p>
                         <a href="https://micfood.com/our-segments/" target="_blank" class="mt-0.5 inline-block text-blue-600 hover:underline break-all">
-                          micfood.com/our-segments
+                          https://micfood.com/our-segments/
                         </a>
                       </div>
                       <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">UTM</p>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">DSP Ad Group ID</p>
+                        <p class="mt-0.5 font-mono bg-gray-100 px-2 py-1 rounded text-gray-800 inline-block">szbnv9m</p>
+                      </div>
+                      <div>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">UTM Code</p>
                         <code class="block mt-0.5 bg-gray-100/80 border border-dashed border-gray-300 rounded px-2 py-2 leading-snug break-all text-[10px] text-gray-700">
-                          https://micfood.com/our-segments/?utm_source=programmatic
+                          https://micfood.com/our-segments/?utm_source=programmatic&utm_medium=dsp&utm_campaign=placement1
                         </code>
                       </div>
                     </div>
-
                   </div>
                 </div>
 
@@ -405,38 +405,43 @@
                 <div class="rounded border border-gray-200 bg-white">
                   <div class="px-4 py-4 text-[11px] space-y-4">
                     <div>
-                      <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Ad Group</p>
-                      <p class="mt-0.5 font-semibold text-gray-800">Placement 2.1: K-12_Company Targeting
-                        <span class="ml-2 font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded align-middle">426771</span>
+                      <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Name</p>
+                      <p class="mt-0.5 font-semibold text-gray-800">
+                        Simpli.fi - Programmatic Display Placement 2.1
+                        <span class="ml-2 font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded align-middle">4266771</span>
                       </p>
                     </div>
                     <div class="space-y-3">
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Tactic</p>
-                        <p class="mt-0.5 font-medium text-gray-800">Company Targeting</p>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Tactic</p><p class="mt-0.5 font-medium text-gray-800">Company Targeting</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Content Category</p><p class="mt-0.5 font-medium text-gray-800">Company Targeting</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">MV Classification</p><p class="mt-0.5 font-medium text-gray-800">Programmatic Display</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Audience</p><p class="mt-0.5 font-medium text-gray-800">1</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Geotarget</p><p class="mt-0.5 font-medium text-gray-800">U.S.</p></div>
+                      <div class="flex gap-8 flex-wrap">
+                        <div>
+                          <p class="text-[10px] font-semibold text-gray-500 uppercase">Start Date</p>
+                          <p class="mt-0.5 font-medium text-gray-800">12/20/2024</p>
+                        </div>
+                        <div>
+                          <p class="text-[10px] font-semibold text-gray-500 uppercase">End Date</p>
+                          <p class="mt-0.5 font-medium text-gray-800">12/19/2025</p>
+                        </div>
                       </div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Impressions</p><p class="mt-0.5 font-medium text-gray-800">250,000</p></div>
                       <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Geo</p>
-                        <p class="mt-0.5 font-medium text-gray-800">U.S.</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Dates</p>
-                        <p class="mt-0.5 font-medium text-gray-800">12/20/24 – 12/19/25</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Impressions</p>
-                        <p class="mt-0.5 font-medium text-gray-800">250,000</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Landing</p>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Landing Page</p>
                         <a href="https://micfood.com/our-segments/k-12/" target="_blank" class="mt-0.5 inline-block text-blue-600 hover:underline break-all">
-                          micfood.com/k-12
+                          https://micfood.com/our-segments/k-12/
                         </a>
                       </div>
                       <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">UTM</p>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">DSP Ad Group ID</p>
+                        <p class="mt-0.5 font-mono bg-gray-100 px-2 py-1 rounded text-gray-800 inline-block">4266771</p>
+                      </div>
+                      <div>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">UTM Code</p>
                         <code class="block mt-0.5 bg-gray-100/80 border border-dashed border-gray-300 rounded px-2 py-2 leading-snug break-all text-[10px] text-gray-700">
-                          https://micfood.com/our-segments/k-12/?utm_source=programmatic
+                          https://micfood.com/our-segments/k-12/?utm_source=programmatic&utm_medium=dsp&utm_campaign=placement1
                         </code>
                       </div>
                     </div>
@@ -447,38 +452,43 @@
                 <div class="rounded border border-gray-200 bg-white">
                   <div class="px-4 py-4 text-[11px] space-y-4">
                     <div>
-                      <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Ad Group</p>
-                      <p class="mt-0.5 font-semibold text-gray-800">Placement 2.2: Foodservice_Company Targeting
-                        <span class="ml-2 font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded align-middle">426773</span>
+                      <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Name</p>
+                      <p class="mt-0.5 font-semibold text-gray-800">
+                        Simpli.fi - Programmatic Display Placement 2.2
+                        <span class="ml-2 font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded align-middle">4266773</span>
                       </p>
                     </div>
                     <div class="space-y-3">
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Tactic</p>
-                        <p class="mt-0.5 font-medium text-gray-800">Company Targeting</p>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Tactic</p><p class="mt-0.5 font-medium text-gray-800">Company Targeting</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Content Category</p><p class="mt-0.5 font-medium text-gray-800">Company Targeting</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">MV Classification</p><p class="mt-0.5 font-medium text-gray-800">Programmatic Display</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Audience</p><p class="mt-0.5 font-medium text-gray-800">2</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Geotarget</p><p class="mt-0.5 font-medium text-gray-800">U.S.</p></div>
+                      <div class="flex gap-8 flex-wrap">
+                        <div>
+                          <p class="text-[10px] font-semibold text-gray-500 uppercase">Start Date</p>
+                          <p class="mt-0.5 font-medium text-gray-800">12/20/2024</p>
+                        </div>
+                        <div>
+                          <p class="text-[10px] font-semibold text-gray-500 uppercase">End Date</p>
+                          <p class="mt-0.5 font-medium text-gray-800">12/19/2025</p>
+                        </div>
                       </div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Impressions</p><p class="mt-0.5 font-medium text-gray-800">250,000</p></div>
                       <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Geo</p>
-                        <p class="mt-0.5 font-medium text-gray-800">U.S.</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Dates</p>
-                        <p class="mt-0.5 font-medium text-gray-800">12/20/24 – 12/19/25</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Impressions</p>
-                        <p class="mt-0.5 font-medium text-gray-800">250,000</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Landing</p>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Landing Page</p>
                         <a href="https://micfood.com/our-segments/restaurants-catering/" target="_blank" class="mt-0.5 inline-block text-blue-600 hover:underline break-all">
-                          micfood.com/restaurants-catering
+                          https://micfood.com/our-segments/restaurants-catering/
                         </a>
                       </div>
                       <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">UTM</p>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">DSP Ad Group ID</p>
+                        <p class="mt-0.5 font-mono bg-gray-100 px-2 py-1 rounded text-gray-800 inline-block">4266773</p>
+                      </div>
+                      <div>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">UTM Code</p>
                         <code class="block mt-0.5 bg-gray-100/80 border border-dashed border-gray-300 rounded px-2 py-2 leading-snug break-all text-[10px] text-gray-700">
-                          https://micfood.com/our-segments/restaurants-catering/?utm_source=programmatic
+                          https://micfood.com/our-segments/restaurants-catering/?utm_source=programmatic&utm_medium=...
                         </code>
                       </div>
                     </div>
@@ -513,42 +523,43 @@
                 <div class="rounded border border-gray-200 bg-white">
                   <div class="px-4 py-4 text-[11px] space-y-4">
                     <div>
-                      <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Ad Group</p>
-                      <p class="mt-0.5 font-semibold text-gray-800">Placement 3.1: Foodservice/K-12_CRM Onboarding
-                        <span class="ml-2 font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded align-middle">177131</span>
+                      <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Name</p>
+                      <p class="mt-0.5 font-semibold text-gray-800">
+                        StackAdapt - Programmatic Display Placement 3.1
+                        <span class="ml-2 font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded align-middle">1777131</span>
                       </p>
                     </div>
                     <div class="space-y-3">
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Tactic</p>
-                        <p class="mt-0.5 font-medium text-gray-800">Data Onboarding</p>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Tactic</p><p class="mt-0.5 font-medium text-gray-800">Data Onboarding</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Content Category</p><p class="mt-0.5 font-medium text-gray-800">Data Onboarding</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">MV Classification</p><p class="mt-0.5 font-medium text-gray-800">Programmatic Display</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Audience</p><p class="mt-0.5 font-medium text-gray-800">e-mails</p></div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Geotarget</p><p class="mt-0.5 font-medium text-gray-800">U.S.</p></div>
+                      <div class="flex gap-8 flex-wrap">
+                        <div>
+                          <p class="text-[10px] font-semibold text-gray-500 uppercase">Start Date</p>
+                          <p class="mt-0.5 font-medium text-gray-800">12/20/2024</p>
+                        </div>
+                        <div>
+                          <p class="text-[10px] font-semibold text-gray-500 uppercase">End Date</p>
+                          <p class="mt-0.5 font-medium text-gray-800">12/19/2025</p>
+                        </div>
                       </div>
+                      <div><p class="text-[10px] font-semibold text-gray-500 uppercase">Impressions</p><p class="mt-0.5 font-medium text-gray-800">200,000</p></div>
                       <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Audience</p>
-                        <p class="mt-0.5 font-medium text-gray-800">e-mails</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Geo</p>
-                        <p class="mt-0.5 font-medium text-gray-800">U.S.</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Dates</p>
-                        <p class="mt-0.5 font-medium text-gray-800">12/20/24 – 12/19/25</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Impressions</p>
-                        <p class="mt-0.5 font-medium text-gray-800">200,000</p>
-                      </div>
-                      <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Landing</p>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">Landing Page</p>
                         <a href="https://micfood.com/our-segments/" target="_blank" class="mt-0.5 inline-block text-blue-600 hover:underline break-all">
-                          micfood.com/our-segments
+                          https://micfood.com/our-segments/
                         </a>
                       </div>
                       <div>
-                        <p class="text-[10px] font-semibold text-gray-500 uppercase">UTM</p>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">DSP Ad Group ID</p>
+                        <p class="mt-0.5 font-mono bg-gray-100 px-2 py-1 rounded text-gray-800 inline-block">1777131</p>
+                      </div>
+                      <div>
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase">UTM Code</p>
                         <code class="block mt-0.5 bg-gray-100/80 border border-dashed border-gray-300 rounded px-2 py-2 leading-snug break-all text-[10px] text-gray-700">
-                          https://micfood.com/our-segments/?utm_source=programmatic
+                          https://micfood.com/our-segments/?utm_source=programmatic&utm_medium=...
                         </code>
                       </div>
                     </div>
