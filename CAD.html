@@ -250,9 +250,9 @@
 
         <!-- Campaign List Header -->
         <div class="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[11px] font-semibold tracking-wide text-gray-500 border-b bg-gray-50">
-          <div class="col-span-4">Campaign</div>
           <div class="col-span-2">DSP</div>
-            <div class="col-span-2">Template</div>
+          <div class="col-span-4">Campaign</div>
+          <div class="col-span-2">Template</div>
           <div class="col-span-2 text-right">Impressions</div>
           <div class="col-span-2 text-center">Ad Groups</div>
         </div>
@@ -262,16 +262,20 @@
           <!-- Campaign Row: TTD -->
           <div class="campaign-row" data-campaign>
             <button type="button" class="w-full flex flex-col md:grid md:grid-cols-12 gap-2 px-4 py-3 text-left hover:bg-blue-50/40 transition">
-              <div class="flex items-start gap-2 col-span-4">
+              <!-- DSP -->
+              <div class="flex items-start gap-2 col-span-2">
                 <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-600 bg-white" data-caret>+</span>
-                <div>
-                  <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
-                  <p class="text-[11px] text-gray-500">The Trade Desk</p>
-                </div>
+                <p class="text-sm font-medium text-gray-800">The Trade Desk</p>
               </div>
-              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">The Trade Desk</div>
+              <!-- Campaign -->
+              <div class="col-span-4 flex items-start">
+                <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
+              </div>
+              <!-- Template -->
               <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Programmatic Display</div>
+              <!-- Impressions -->
               <div class="col-span-2 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">800,000</div>
+              <!-- Ad Groups -->
               <div class="col-span-2 hidden md:flex items-center justify-center text-xs font-medium text-gray-700">1</div>
             </button>
 
@@ -338,16 +342,20 @@
           <!-- Campaign Row: Simpli.fi -->
           <div class="campaign-row" data-campaign>
             <button type="button" class="w-full flex flex-col md:grid md:grid-cols-12 gap-2 px-4 py-3 text-left hover:bg-green-50/40 transition">
-              <div class="flex items-start gap-2 col-span-4">
+              <!-- DSP -->
+              <div class="flex items-start gap-2 col-span-2">
                 <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-600 bg-white" data-caret>+</span>
-                <div>
-                  <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
-                  <p class="text-[11px] text-gray-500">Simpli.fi</p>
-                </div>
+                <p class="text-sm font-medium text-gray-800">Simpli.fi</p>
               </div>
-              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Simpli.fi</div>
+              <!-- Campaign -->
+              <div class="col-span-4 flex items-start">
+                <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
+              </div>
+              <!-- Template -->
               <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Programmatic Display</div>
+              <!-- Impressions -->
               <div class="col-span-2 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">500,000</div>
+              <!-- Ad Groups -->
               <div class="col-span-2 hidden md:flex items-center justify-center text-xs font-medium text-gray-700">2</div>
             </button>
 
@@ -446,16 +454,20 @@
           <!-- Campaign Row: StackAdapt -->
           <div class="campaign-row" data-campaign>
             <button type="button" class="w-full flex flex-col md:grid md:grid-cols-12 gap-2 px-4 py-3 text-left hover:bg-rose-50/50 transition">
-              <div class="flex items-start gap-2 col-span-4">
+              <!-- DSP -->
+              <div class="flex items-start gap-2 col-span-2">
                 <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-600 bg-white" data-caret>+</span>
-                <div>
-                  <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
-                  <p class="text-[11px] text-gray-500">StackAdapt</p>
-                </div>
+                <p class="text-sm font-medium text-gray-800">StackAdapt</p>
               </div>
-              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">StackAdapt</div>
+              <!-- Campaign -->
+              <div class="col-span-4 flex items-start">
+                <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
+              </div>
+              <!-- Template -->
               <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Programmatic Display</div>
+              <!-- Impressions -->
               <div class="col-span-2 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">200,000</div>
+              <!-- Ad Groups -->
               <div class="col-span-2 hidden md:flex items-center justify-center text-xs font-medium text-gray-700">1</div>
             </button>
 
