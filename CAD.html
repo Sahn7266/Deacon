@@ -570,10 +570,17 @@
             </div>
           </div>
 
+          <!-- Add Campaign Row (moved inside campaignList) -->
+          <div id="addCampaignContainer" class="bg-gray-50">
+            <div class="px-4 py-3 text-center">
+              <button id="addCampaignBtn" type="button"
+                class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline">
+                + Add Campaign
+              </button>
+            </div>
+          </div>
         </div>
-      </section>
-    </div>
-  </div>
+
 
   <!-- Waffle menu toggle -->
   <script>
@@ -1157,16 +1164,21 @@
   <script src="./assets/sidebar.js" defer></script>
   <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const campaigns = document.querySelectorAll('#campaignList [data-campaign]');
-  campaigns.forEach(camp => {
-    const btn   = camp.querySelector('button');
-    const panel = camp.querySelector('.adgroups-panel');
-    const caret = camp.querySelector('[data-caret]');
+
+  const campaignListEl = document.getElementById('campaignList');
+  const addBtn = document.getElementById('addCampaignBtn');
+
+  // Re-wire static rows (original expand logic)
+  function wireExpand(row) {
+    const btn   = row.querySelector('button[data-campaign-row]');
+    const panel = row.querySelector('.adgroups-panel');
+    const caret = row.querySelector('[data-caret]');
     if (!btn || !panel) return;
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      // Prevent toggle if editing row (has inputs)
+      if (row.classList.contains('is-editing')) return;
       const isOpen = !panel.classList.contains('hidden');
-
       if (!isOpen) {
         document.querySelectorAll('#campaignList .adgroups-panel').forEach(p => {
           if (p !== panel) {
@@ -1176,7 +1188,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       }
-
       if (isOpen) {
         panel.classList.add('hidden');
         if (caret) caret.textContent = '+';
@@ -1185,7 +1196,349 @@ document.addEventListener('DOMContentLoaded', () => {
         if (caret) caret.textContent = '–';
       }
     });
+  }
+
+  // Tag existing static buttons so wireExpand works
+  document.querySelectorAll('#campaignList [data-campaign] > button:not([data-campaign-row])')
+    .forEach(b => b.setAttribute('data-campaign-row',''));
+
+  document.querySelectorAll('#campaignList [data-campaign]').forEach(wireExpand);
+
+  // Utility
+  function el(tag, cls='', html='') {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html) e.innerHTML = html;
+    return e;
+  }
+
+  function input(name, placeholder='', extra='') {
+    return `<input data-field="${name}" type="text" placeholder="${placeholder}"
+             class="w-full px-2 py-1 border border-gray-300 rounded text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500 ${extra}">`;
+  }
+
+  function dateInput(name) {
+    return `<input data-field="${name}" type="date"
+             class="w-full px-2 py-1 border border-gray-300 rounded text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500">`;
+  }
+
+  function numberInput(name, placeholder='') {
+    return `<input data-field="${name}" type="number" min="0" placeholder="${placeholder}"
+             class="w-full px-2 py-1 border border-gray-300 rounded text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500">`;
+  }
+
+  let editingCampaignRow = null;
+
+  function cancelEditingRow(row) {
+    row.remove();
+    editingCampaignRow = null;
+  }
+
+  function createEditingCampaignRow() {
+    const wrapper = el('div','campaign-row is-editing border-t bg-white','');
+    wrapper.setAttribute('data-campaign','');
+    const formBtn = el('div','w-full flex flex-col md:grid md:grid-cols-12 gap-2 px-4 py-3');
+
+    formBtn.innerHTML = `
+      <div class="flex items-start gap-2 col-span-2">
+        <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-400 bg-gray-50">+</span>
+        <div class="flex-1">${input('dsp','DSP')}</div>
+      </div>
+      <div class="col-span-3">${input('campaignName','Campaign Name')}</div>
+      <div class="col-span-3 hidden md:flex">${input('gcmCampaignName','GCM Campaign')}</div>
+      <div class="col-span-2 hidden md:flex">${input('template','Template')}</div>
+      <div class="col-span-1 hidden md:flex">${numberInput('impressions','Impr.')}</div>
+      <div class="col-span-1 hidden md:flex items-center justify-center">
+        <span class="text-[11px] text-gray-400" data-field-static="adGroupCount">0</span>
+      </div>
+      <div class="col-span-12 flex gap-3 pt-2 pl-7 md:pl-0">
+        <button type="button" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs" data-action="save-campaign">Save Campaign</button>
+        <button type="button" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded text-xs" data-action="cancel-campaign">Cancel</button>
+      </div>
+    `;
+
+    // Panel placeholder (hidden until row saved)
+    const panel = el('div','adgroups-panel hidden bg-gray-50/60 px-6 pb-6 pt-4');
+    panel.innerHTML = `<div class="text-[11px] font-semibold text-gray-500 tracking-wide mb-3">AD GROUPS (Save campaign first)</div>`;
+
+    wrapper.appendChild(formBtn);
+    wrapper.appendChild(panel);
+    return wrapper;
+  }
+
+  function validateCampaignInputs(row) {
+    const required = ['dsp','campaignName','impressions'];
+    let ok = true;
+    required.forEach(f => {
+      const inp = row.querySelector(`[data-field="${f}"]`);
+      if (!inp) return;
+      const val = (inp.value || '').trim();
+      const fail = !val || (f === 'impressions' && isNaN(Number(val)));
+      inp.classList.toggle('border-red-500', fail);
+      if (fail) ok = false;
+    });
+    return ok;
+  }
+
+  function buildSavedCampaignRow(data) {
+    const row = el('div','campaign-row','');
+    row.setAttribute('data-campaign','');
+    row.dataset.campaignId = data.id;
+
+    const btn = el('button','w-full flex flex-col md:grid md:grid-cols-12 gap-2 px-4 py-3 text-left hover:bg-blue-50/40 transition','');
+    btn.setAttribute('type','button');
+    btn.setAttribute('data-campaign-row','');
+
+    btn.innerHTML = `
+      <div class="flex items-start gap-2 col-span-2">
+        <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-600 bg-white" data-caret>+</span>
+        <p class="text-sm font-medium text-gray-800">${data.dsp}</p>
+      </div>
+      <div class="col-span-3 flex items-start">
+        <p class="text-sm font-medium text-gray-800">${data.campaignName}</p>
+      </div>
+      <div class="col-span-3 hidden md:flex items-center text-xs text-gray-700">${data.gcmCampaignName || data.campaignName}</div>
+      <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">${data.template || '—'}</div>
+      <div class="col-span-1 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">${Number(data.impressions).toLocaleString()}</div>
+      <div class="col-span-1 hidden md:flex items-center justify-center text-xs font-medium text-gray-700" data-adgroup-count>${data.adGroups.length}</div>
+    `;
+
+    // Panel with Ad Group form initially
+    const panel = el('div','adgroups-panel hidden bg-gray-50/60 px-6 pb-6 pt-4','');
+    panel.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-[11px] font-semibold text-gray-500 tracking-wide">AD GROUPS</div>
+        <button type="button" class="text-[11px] text-blue-600 hover:underline" data-action="add-adgroup">+ Add Ad Group</button>
+      </div>
+      <div class="space-y-3" data-adgroup-container>
+        <!-- Initial empty prompt -->
+        <div class="text-[11px] text-gray-500" data-empty-msg>No ad groups yet. Click "Add Ad Group".</div>
+      </div>
+    `;
+
+    row.appendChild(btn);
+    row.appendChild(panel);
+    wireExpand(row);
+    wirePanel(panel, row);
+    return row;
+  }
+
+  function wirePanel(panel, campaignRow) {
+    panel.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action="add-adgroup"]');
+      if (btn) {
+        e.preventDefault();
+        addAdGroupForm(panel, campaignRow);
+      }
+    });
+  }
+
+  function addAdGroupForm(panel, campaignRow) {
+    const container = panel.querySelector('[data-adgroup-container]');
+    const emptyMsg = panel.querySelector('[data-empty-msg]');
+    if (emptyMsg) emptyMsg.remove();
+
+    // Only allow one unsaved form at a time per campaign
+    if (container.querySelector('.adgroup-form')) return;
+
+    const form = el('div','rounded border border-gray-300 bg-white p-4 adgroup-form','');
+    form.innerHTML = `
+      <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 text-[11px]">
+        <div class="sm:col-span-3">
+          <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Name</p>
+          ${input('name','Ad Group Name','mt-0.5')}
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">Tactic</p>
+          ${input('tactic','Tactic','mt-0.5')}
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">Content Category</p>
+          ${input('contentCategory','Content Category','mt-0.5')}
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">MV Classification</p>
+          ${input('mvClassification','Classification','mt-0.5')}
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">Audience</p>
+          ${input('audience','Audience','mt-0.5')}
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">Geotarget</p>
+          ${input('geotarget','Geotarget','mt-0.5')}
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">Start Date</p>
+          ${dateInput('startDate')}
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">End Date</p>
+          ${dateInput('endDate')}
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">Impressions</p>
+          ${numberInput('impressions','0')}
+        </div>
+        <div class="sm:col-span-2">
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">Landing Page</p>
+          ${input('landingPage','https://...','mt-0.5')}
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">DSP Ad Group ID</p>
+          ${input('dspId','ID','mt-0.5')}
+        </div>
+        <div class="sm:col-span-3">
+          <p class="text-[10px] font-semibold text-gray-500 uppercase">UTM Code</p>
+          <textarea data-field="utm" rows="2"
+            class="mt-0.5 w-full px-2 py-1 border border-gray-300 rounded text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+            placeholder="https://..."></textarea>
+        </div>
+      </div>
+      <div class="flex gap-3 mt-4">
+        <button type="button" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs" data-action="save-adgroup">Save Ad Group</button>
+        <button type="button" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded text-xs" data-action="cancel-adgroup">Cancel</button>
+      </div>
+    `;
+
+    container.appendChild(form);
+
+    form.addEventListener('click', (e) => {
+      const save = e.target.closest('[data-action="save-adgroup"]');
+      const cancel = e.target.closest('[data-action="cancel-adgroup"]');
+
+      if (cancel) {
+        form.remove();
+        if (!container.children.length) {
+          container.innerHTML = `<div class="text-[11px] text-gray-500" data-empty-msg>No ad groups yet. Click "Add Ad Group".</div>`;
+        }
+      }
+
+      if (save) {
+        if (!validateAdGroup(form)) return;
+        const data = extractAdGroupData(form);
+        const card = renderAdGroupCard(data);
+        form.replaceWith(card);
+        updateAdGroupCount(campaignRow);
+      }
+    });
+  }
+
+  function validateAdGroup(form) {
+    const req = ['name','startDate','endDate','impressions'];
+    let ok = true;
+    req.forEach(f => {
+      const inp = form.querySelector(`[data-field="${f}"]`);
+      if (!inp) return;
+      const val = (inp.value || '').trim();
+      const fail = !val || (f === 'impressions' && isNaN(Number(val)));
+      inp.classList.toggle('border-red-500', fail);
+      if (fail) ok = false;
+    });
+    return ok;
+  }
+
+  function extractAdGroupData(form) {
+    const data = {};
+    form.querySelectorAll('[data-field]').forEach(i => {
+      data[i.getAttribute('data-field')] = i.value.trim();
+    });
+    return data;
+  }
+
+  function renderAdGroupCard(d) {
+    const card = el('div','rounded border border-gray-200 bg-white','');
+    card.innerHTML = `
+      <div class="px-4 py-4 text-[11px] space-y-4">
+        <div>
+          <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Name</p>
+          <p class="mt-0.5 font-semibold text-gray-800">
+            ${d.name || '—'}
+            ${d.dspId ? `<span class="ml-2 font-mono bg-amber-100 text-amber-800 px-1 py-0.5 rounded align-middle">${d.dspId}</span>`:''}
+          </p>
+        </div>
+        <div class="space-y-3">
+          ${pair('Tactic', d.tactic)}
+          ${pair('Content Category', d.contentCategory)}
+          ${pair('MV Classification', d.mvClassification)}
+          ${pair('Audience', d.audience)}
+          ${pair('Geotarget', d.geotarget)}
+          <div class="flex gap-8 flex-wrap">
+            ${smallPair('Start Date', d.startDate)}
+            ${smallPair('End Date', d.endDate)}
+          </div>
+          ${pair('Impressions', d.impressions ? Number(d.impressions).toLocaleString() : '—')}
+          <div>
+            <p class="text-[10px] font-semibold text-gray-500 uppercase">Landing Page</p>
+            ${d.landingPage ? `<a href="${d.landingPage}" target="_blank" class="mt-0.5 inline-block text-blue-600 hover:underline break-all">${d.landingPage}</a>`:'<p class="mt-0.5 text-gray-800">—</p>'}
+          </div>
+          ${d.dspId ? pair('DSP Ad Group ID', `<span class="font-mono bg-gray-100 px-2 py-1 rounded inline-block">${d.dspId}</span>`) : ''}
+          <div>
+            <p class="text-[10px] font-semibold text-gray-500 uppercase">UTM Code</p>
+            <code class="block mt-0.5 bg-gray-100/80 border border-dashed border-gray-300 rounded px-2 py-2 leading-snug break-all text-[10px] text-gray-700">
+              ${d.utm || '—'}
+            </code>
+          </div>
+        </div>
+      </div>
+    `;
+    return card;
+  }
+
+  function pair(label, val) {
+    return `<div>
+      <p class="text-[10px] font-semibold text-gray-500 uppercase">${label}</p>
+      <p class="mt-0.5 font-medium text-gray-800">${val && val !== '' ? val : '—'}</p>
+    </div>`;
+  }
+  function smallPair(label, val) {
+    return `<div>
+      <p class="text-[10px] font-semibold text-gray-500 uppercase">${label}</p>
+      <p class="mt-0.5 font-medium text-gray-800">${val && val !== '' ? val : '—'}</p>
+    </div>`;
+  }
+
+  function updateAdGroupCount(campaignRow) {
+    const countEl = campaignRow.querySelector('[data-adgroup-count]');
+    const panel = campaignRow.querySelector('.adgroups-panel');
+    if (countEl && panel) {
+      const num = panel.querySelectorAll('[data-adgroup-container] > .rounded').length;
+      countEl.textContent = num;
+    }
+  }
+
+  // Add Campaign button handler
+  addBtn?.addEventListener('click', () => {
+    if (editingCampaignRow) {
+      editingCampaignRow.scrollIntoView({ behavior:'smooth', block:'center' });
+      return;
+    }
+    const newRow = createEditingCampaignRow();
+    campaignListEl.insertBefore(newRow, document.getElementById('addCampaignContainer'));
+    editingCampaignRow = newRow;
+
+    newRow.addEventListener('click', (e) => {
+      const save = e.target.closest('[data-action="save-campaign"]');
+      const cancel = e.target.closest('[data-action="cancel-campaign"]');
+      if (cancel) {
+        cancelEditingRow(newRow);
+      }
+      if (save) {
+        if (!validateCampaignInputs(newRow)) return;
+        const data = {};
+        newRow.querySelectorAll('[data-field]').forEach(inp => {
+          data[inp.getAttribute('data-field')] = inp.value.trim();
+        });
+        data.id = 'cmp-' + Date.now();
+        data.gcmCampaignName = data.gcmCampaignName || data.campaignName;
+        data.adGroups = []; // start empty
+        const saved = buildSavedCampaignRow(data);
+        newRow.replaceWith(saved);
+        editingCampaignRow = null;
+      }
+    });
   });
+
 });
 </script>
 </body>
