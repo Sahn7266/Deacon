@@ -343,14 +343,15 @@
         </div>
 
         <!-- Campaign List Header -->
-        <div class="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[11px] font-semibold tracking-wide text-gray-500 border-b bg-gray-50">
-          <div class="col-span-2">DSP</div>
-          <div class="col-span-3">Campaign</div>
-          <div class="col-span-3">GCM Campaign</div>
-          <div class="col-span-2">Template</div>
-          <div class="col-span-1 text-right">Impr.</div>
-          <div class="col-span-1 text-center">Ad Grps</div>
-        </div>
+<div class="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[11px] font-semibold tracking-wide text-gray-500 border-b bg-gray-50">
+  <div class="col-span-2">DSP</div>
+  <div class="col-span-2">Campaign</div>
+  <div class="col-span-2">GCM Campaign</div>
+  <div class="col-span-2">Template</div>
+  <div class="col-span-1 text-left">Impr.</div>
+  <div class="col-span-1 text-center">Ad Grps</div>
+  <div class="col-span-2 text-center">Select</div>
+</div>
 
         <div class="divide-y" id="campaignList">
 
@@ -363,17 +364,22 @@
                 <p class="text-sm font-medium text-gray-800">The Trade Desk</p>
               </div>
               <!-- Campaign -->
-              <div class="col-span-3 flex items-start">
+              <div class="col-span-2 flex items-start">
                 <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
               </div>
               <!-- GCM Campaign -->
-              <div class="col-span-3 hidden md:flex items-center text-xs text-gray-700">Brand Awareness 2025</div>
+              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Brand Awareness 2025</div>
               <!-- Template -->
               <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Programmatic Display</div>
               <!-- Impressions -->
-              <div class="col-span-1 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">800,000</div>
-              <!-- Ad Groups -->
+                <div class="col-span-1 hidden md:flex items-center justify-start text-xs font-medium text-gray-800">800,000</div>
+                <!-- Ad Groups -->
               <div class="col-span-1 hidden md:flex items-center justify-center text-xs font-medium text-gray-700">1</div>
+              <!-- Checkbox Column -->
+              <div class="col-span-2 hidden md:flex items-center justify-center">
+              <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            </div>
+
             </button>
 
             <!-- Ad Groups Panel -->
@@ -439,13 +445,18 @@
                 <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-600 bg-white" data-caret>+</span>
                 <p class="text-sm font-medium text-gray-800">Simpli.fi</p>
               </div>
-              <div class="col-span-3 flex items-start">
+              <div class="col-span-2 flex items-start">
                 <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
               </div>
-              <div class="col-span-3 hidden md:flex items-center text-xs text-gray-700">Brand Awareness 2025</div>
+              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Brand Awareness 2025</div>
               <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Programmatic Display</div>
-              <div class="col-span-1 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">500,000</div>
+              <div class="col-span-1 hidden md:flex items-center justify-start text-xs font-medium text-gray-800">500,000</div>
               <div class="col-span-1 hidden md:flex items-center justify-center text-xs font-medium text-gray-700">2</div>
+              <!-- Checkbox Column -->
+            <div class="col-span-2 hidden md:flex items-center justify-center">
+            <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            </div>
+
             </button>
 
             <div class="adgroups-panel hidden bg-gray-50/60 px-6 pb-6 pt-4">
@@ -557,13 +568,18 @@
                 <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-600 bg-white" data-caret>+</span>
                 <p class="text-sm font-medium text-gray-800">StackAdapt</p>
               </div>
-              <div class="col-span-3 flex items-start">
+              <div class="col-span-2 flex items-start">
                 <p class="text-sm font-medium text-gray-800">Brand Awareness 2025</p>
               </div>
-              <div class="col-span-3 hidden md:flex items-center text-xs text-gray-700">Brand Awareness 2025</div>
+              <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Brand Awareness 2025</div>
               <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">Programmatic Display</div>
-              <div class="col-span-1 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">200,000</div>
+              <div class="col-span-1 hidden md:flex items-center justify-start text-xs font-medium text-gray-800">200,000</div>
               <div class="col-span-1 hidden md:flex items-center justify-center text-xs font-medium text-gray-700">1</div>
+              <!-- Checkbox Column -->
+            <div class="col-span-2 hidden md:flex items-center justify-center">
+              <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            </div>
+
             </button>
 
             <div class="adgroups-panel hidden bg-gray-50/60 px-6 pb-6 pt-4">
