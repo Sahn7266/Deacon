@@ -43,6 +43,26 @@
       pointer-events: none;
     }
     select[aria-readonly="true"]:focus { border: none !important; outline: none !important; box-shadow: none !important; }
+
+    #rightSidebar {
+  transition: width .25s ease, transform .25s ease;
+}
+#rightSidebar.collapsed {
+  width:0 !important;
+  min-width:0 !important;
+  padding:0 !important;
+  border-left:0 !important;
+  overflow:hidden !important;
+}
+#rightSidebar.collapsed > * {
+  opacity:0;
+  pointer-events:none;
+}
+    /* Optional: let main area reclaim space smoothly */
+    .layout-with-right {
+      display:flex;
+      width:100%;
+    }
   </style>
 </head>
 
@@ -142,7 +162,8 @@
     </header>
 
     <!-- Body -->
-    <div class="flex flex-1 overflow-hidden">
+    <div class="flex h-screen overflow-hidden">
+
       <!-- Sidebar -->
       <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
   <div class="flex items-center justify-between pb-4 border-b border-gray-200">
@@ -205,7 +226,7 @@
   </ul>
 </nav>
 
-<main class="flex-1 overflow-y-auto p-6">
+<main class="flex-1 overflow-y-auto p-6 pr-10">
         <div class="bg-white rounded-lg shadow-sm">
           <div class="p-4 border-b border-gray-200">
             <div class="flex items-start gap-4 mb-3">
@@ -647,7 +668,41 @@
             </div>
           </div>
         </div>
+        </section>
+      </main>
 
+        <!-- ✅ RIGHT SIDEBAR -->
+<aside id="rightSidebar" class="relative flex-shrink-0 w-64 bg-white border-l border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out collapsed">
+    <div class="flex items-center justify-between p-4 border-b border-gray-200">
+      <h2 class="text-base font-semibold text-gray-800">Right Panel</h2>
+      <button id="rightSidebarToggle"
+              class="p-1 rounded hover:bg-gray-100 flex items-center justify-center"
+              aria-label="Collapse right sidebar"
+              aria-expanded="true"
+              title="Collapse Panel">
+        <!-- Open (collapse) icon -->
+        <svg id="rsIconCollapse" class="w-5 h-5 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M12.75 4.75a.75.75 0 00-1.06 0L7.44 9l4.25 4.25a.75.75 0 001.06-1.06L9.56 9l3.19-3.19a.75.75 0 000-1.06z"/>
+        </svg>
+        <!-- Closed (expand) icon -->
+        <svg id="rsIconExpand" class="w-5 h-5 text-gray-700 hidden" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M7.25 15.25a.75.75 0 001.06 0L12.56 11 8.31 6.75a.75.75 0 10-1.06 1.06L10.44 11l-3.19 3.19a.75.75 0 000 1.06z"/>
+        </svg>
+      </button>
+    </div>
+    <ul class="mt-4 space-y-2 px-4">
+      <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Right Item 1</a></li>
+      <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Right Item 2</a></li>
+    </ul>
+  </aside>
+
+  <!-- Reopen button OUTSIDE the sidebar -->
+  <button id="rightSidebarReopen"
+          class="fixed top-1/2 -translate-y-1/2 right-0 z-40 bg-white border border-gray-300 border-r-0 rounded-l px-2 py-3 shadow text-xs font-medium text-gray-600 hover:bg-blue-50"
+           aria-label="Expand right sidebar"
+           title="Expand Panel">
+    |||
+  </button>
 
   <!-- Waffle menu toggle -->
   <script>
@@ -1269,6 +1324,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // EXTRA SAFETY: stop bubbling from any checkbox inside the row
     row.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+
+
+
       cb.addEventListener('click', ev => ev.stopPropagation());
       // Select checkboxes by default
       cb.checked = true;
@@ -1624,6 +1682,50 @@ document.addEventListener('DOMContentLoaded', () => {
     cb.checked = true;
   });
 
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar   = document.getElementById('rightSidebar');
+  const toggleBtn = document.getElementById('rightSidebarToggle');
+  const reopenBtn = document.getElementById('rightSidebarReopen');
+  const iconCollapse = document.getElementById('rsIconCollapse');
+  const iconExpand   = document.getElementById('rsIconExpand');
+
+  if (!sidebar || !toggleBtn || !reopenBtn) return;
+
+  function setState(collapsed) {
+    if (collapsed) {
+      sidebar.classList.add('collapsed');
+      reopenBtn.classList.remove('hidden');
+      toggleBtn.setAttribute('aria-expanded','false');
+      toggleBtn.setAttribute('aria-label','Expand right sidebar');
+      toggleBtn.title = 'Expand Panel';
+      iconCollapse.classList.add('hidden');
+      iconExpand.classList.remove('hidden');
+    } else {
+      sidebar.classList.remove('collapsed');
+      reopenBtn.classList.add('hidden');
+      toggleBtn.setAttribute('aria-expanded','true');
+      toggleBtn.setAttribute('aria-label','Collapse right sidebar');
+      toggleBtn.title = 'Collapse Panel';
+      iconCollapse.classList.remove('hidden');
+      iconExpand.classList.add('hidden');
+    }
+  }
+
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setState(!sidebar.classList.contains('collapsed'));
+  });
+
+  reopenBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setState(false);
+  });
+
+  // Start collapsed
+  setState(true);
 });
 </script>
 </body>
