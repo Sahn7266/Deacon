@@ -1755,4 +1755,64 @@ document.addEventListener('DOMContentLoaded', () => {
   setState(true);
 });
 
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Right sidebar change tracking functionality
+  function addChangeRecord(type, description) {
+    const rightSidebarList = document.querySelector('#rightSidebar ul');
+    if (!rightSidebarList) return;
+
+    // Always use fixed label "New Update"
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `<a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">New Update</a>`;
+
+    // Add to the top of the list
+    rightSidebarList.insertBefore(listItem, rightSidebarList.firstChild);
+
+    console.log(`Change record added: New Update`);
+  }
+
+  // Track changes made during this session
+  let sessionChanges = [];
+
+  // Track campaign creation
+  const campaignListEl = document.getElementById('campaignList');
+  if (campaignListEl) {
+    campaignListEl.addEventListener('click', (e) => {
+      const saveBtn = e.target.closest('[data-action="save-campaign"]');
+      if (saveBtn) {
+        const campaignRow = saveBtn.closest('.campaign-row');
+        if (campaignRow && campaignRow.classList.contains('is-editing')) {
+          sessionChanges.push({ type: 'Create Campaign', timestamp: Date.now() });
+        }
+      }
+    });
+
+    // Track ad group creation
+    campaignListEl.addEventListener('click', (e) => {
+      const saveAdGroupBtn = e.target.closest('[data-action="save-adgroup"]');
+      if (saveAdGroupBtn) {
+        sessionChanges.push({ type: 'Create Ad Group', timestamp: Date.now() });
+      }
+    });
+  }
+
+  // When main Save button is clicked, add all session changes to sidebar
+  const mainSaveBtn = document.getElementById('mainSaveBtn');
+  if (mainSaveBtn) {
+    mainSaveBtn.addEventListener('click', () => {
+      sessionChanges.forEach(change => {
+        addChangeRecord(change.type, '');
+      });
+      sessionChanges = [];
+      console.log('All session changes have been saved to the change log.');
+    });
+  }
+
+  window.addChangeRecord = addChangeRecord;
+});
+
+
+
+
 </script>
