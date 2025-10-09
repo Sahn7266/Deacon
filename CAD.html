@@ -707,6 +707,7 @@
       <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Create Campaign 10/09/2025</a></li>
       <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Update Ad Group 10/15/2025</a></li>
       <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Update Impressions 10/20/2025</a></li>
+      <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Original</a></li>
     </ul>
   </aside>
 
@@ -1758,37 +1759,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   // Right sidebar change tracking functionality
-  function addChangeRecord(type, description) {
+  function addChangeRecord(type) {
     const rightSidebarList = document.querySelector('#rightSidebar ul');
     if (!rightSidebarList) return;
 
-    // Always use fixed label "New Update"
-    const listItem = document.createElement('li');
-    listItem.innerHTML = `<a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">New Update</a>`;
+    let label;
+    switch (type) {
+      case 'Create Campaign':
+        label = 'Create Campaign Update';
+        break;
+      case 'Create Ad Group':
+        label = 'Create Ad Group Update';
+        break;
+      default:
+        label = (type ? type + ' Update' : 'Update');
+    }
 
-    // Add to the top of the list
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `
+      <a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">
+        ${label}
+      </a>
+    `;
+
     rightSidebarList.insertBefore(listItem, rightSidebarList.firstChild);
 
-    console.log(`Change record added: New Update`);
+    console.log(`Change record added: ${label}`);
   }
 
   // Track changes made during this session
   let sessionChanges = [];
 
-  // Track campaign creation
   const campaignListEl = document.getElementById('campaignList');
   if (campaignListEl) {
+    // Track campaign creation (when the inline campaign Save Campaign button is pressed)
     campaignListEl.addEventListener('click', (e) => {
-      const saveBtn = e.target.closest('[data-action="save-campaign"]');
-      if (saveBtn) {
-        const campaignRow = saveBtn.closest('.campaign-row');
+      const saveCampaignBtn = e.target.closest('[data-action="save-campaign"]');
+      if (saveCampaignBtn) {
+        const campaignRow = saveCampaignBtn.closest('.campaign-row');
         if (campaignRow && campaignRow.classList.contains('is-editing')) {
           sessionChanges.push({ type: 'Create Campaign', timestamp: Date.now() });
         }
       }
     });
 
-    // Track ad group creation
+    // Track ad group creation (when Save Ad Group button pressed)
     campaignListEl.addEventListener('click', (e) => {
       const saveAdGroupBtn = e.target.closest('[data-action="save-adgroup"]');
       if (saveAdGroupBtn) {
@@ -1797,19 +1812,465 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // When main Save button is clicked, add all session changes to sidebar
+  // Commit queued changes to sidebar when main Save pressed
   const mainSaveBtn = document.getElementById('mainSaveBtn');
   if (mainSaveBtn) {
     mainSaveBtn.addEventListener('click', () => {
-      sessionChanges.forEach(change => {
-        addChangeRecord(change.type, '');
-      });
+      if (!sessionChanges.length) {
+        console.log('No new campaign/ad group changes this session.');
+        return;
+      }
+      sessionChanges.forEach(change => addChangeRecord(change.type));
       sessionChanges = [];
-      console.log('All session changes have been saved to the change log.');
+      console.log('Session changes flushed to change log.');
     });
   }
 
   window.addChangeRecord = addChangeRecord;
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Store original state when page loads
+  let originalCampaignsHTML = '';
+  
+  // Capture original campaigns HTML after DOM is ready
+  setTimeout(() => {
+    const campaignList = document.getElementById('campaignList');
+    if (campaignList) {
+      originalCampaignsHTML = campaignList.innerHTML;
+    }
+  }, 100);
+
+  // Handle "Original" click in right sidebar
+  document.addEventListener('click', (e) => {
+    const originalLink = e.target.closest('a');
+    if (originalLink && originalLink.textContent.trim() === 'Original') {
+      e.preventDefault();
+      
+      // Confirm with user before resetting
+      if (confirm('Are you sure you want to reset all changes? This will remove any campaigns or ad groups you\'ve added and cannot be undone.')) {
+        resetToOriginal();
+      }
+    }
+  });
+
+  function resetToOriginal() {
+    const campaignList = document.getElementById('campaignList');
+    if (!campaignList || !originalCampaignsHTML) return;
+
+    // Reset campaigns to original state
+    campaignList.innerHTML = originalCampaignsHTML;
+
+    // Re-wire all the event handlers for the restored content
+    rewireEventHandlers();
+
+    // Clear session changes
+    if (window.sessionChanges) {
+      window.sessionChanges = [];
+    }
+
+    // Reset any editing state
+    if (window.editingCampaignRow) {
+      window.editingCampaignRow = null;
+    }
+
+    // Show success message
+    if (window.toast && typeof window.toast.success === 'function') {
+      window.toast.success('Page reset to original state');
+    } else {
+      alert('Page reset to original state');
+    }
+
+    console.log('CAD page reset to original state');
+  }
+
+  function rewireEventHandlers() {
+    // Re-wire expand/collapse for campaign rows
+    document.querySelectorAll('#campaignList [data-campaign]').forEach(row => {
+      const btn = row.querySelector('button[data-campaign-row]');
+      const panel = row.querySelector('.adgroups-panel');
+      const caret = row.querySelector('[data-caret]');
+      
+      if (!btn || !panel) return;
+
+      // Remove any existing listeners by cloning the button
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+
+      newBtn.addEventListener('click', (e) => {
+        if (e.target.closest('input[type="checkbox"]')) return;
+        if (row.classList.contains('is-editing')) return;
+        
+        const isOpen = !panel.classList.contains('hidden');
+        if (!isOpen) {
+          document.querySelectorAll('#campaignList .adgroups-panel').forEach(p => {
+            if (p !== panel) {
+              p.classList.add('hidden');
+              const ct = p.parentElement.querySelector('[data-caret]');
+              if (ct) ct.textContent = '+';
+            }
+          });
+        }
+        if (isOpen) { 
+          panel.classList.add('hidden'); 
+          if (caret) caret.textContent = '+'; 
+        } else { 
+          panel.classList.remove('hidden'); 
+          if (caret) caret.textContent = '–'; 
+        }
+      });
+
+      // Re-wire checkbox click prevention
+      row.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('click', ev => ev.stopPropagation());
+      });
+    });
+
+    // Re-wire the "Add Campaign" button
+    const addBtn = document.getElementById('addCampaignBtn');
+    if (addBtn) {
+      // Remove existing listeners by cloning
+      const newAddBtn = addBtn.cloneNode(true);
+      addBtn.parentNode.replaceChild(newAddBtn, addBtn);
+      
+      // Re-attach the add campaign functionality
+      // (You'll need to move your existing addCampaignBtn logic into a reusable function)
+      wireAddCampaignButton(newAddBtn);
+    }
+
+    // Set all checkboxes to checked (original state)
+    document.querySelectorAll('#campaignList input[type="checkbox"]').forEach(cb => {
+      cb.checked = true;
+    });
+  }
+
+  function wireAddCampaignButton(addBtn) {
+    // Move your existing add campaign logic here
+    addBtn.addEventListener('click', () => {
+      if (window.editingCampaignRow) {
+        window.editingCampaignRow.scrollIntoView({ behavior:'smooth', block:'center' });
+        return;
+      }
+      
+      // Your existing campaign creation logic goes here
+      // (This should be the same as what you have in your current addCampaignBtn event listener)
+    });
+  }
+
+  // Expose functions globally for use by other scripts
+  window.resetToOriginal = resetToOriginal;
+});
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Versioning system - stores snapshots of the page state
+  let versionHistory = [];
+  let originalCampaignsHTML = '';
+  let sessionChanges = [];
+
+  // Capture original campaigns HTML after DOM is ready
+  setTimeout(() => {
+    const campaignList = document.getElementById('campaignList');
+    if (campaignList) {
+      originalCampaignsHTML = campaignList.innerHTML;
+      // Add "Original" as the base version
+      versionHistory.push({
+        id: 'original',
+        label: 'Original',
+        timestamp: Date.now(),
+        html: originalCampaignsHTML
+      });
+    }
+  }, 100);
+
+  // Right sidebar change tracking functionality
+  function addChangeRecord(type, html) {
+    const rightSidebarList = document.querySelector('#rightSidebar ul');
+    if (!rightSidebarList) return;
+
+    // Get current date in MM/DD/YYYY format
+    const now = new Date();
+    const dateStr = `${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')}/${now.getFullYear()}`;
+
+    let label;
+    switch (type) {
+      case 'Create Campaign':
+        label = `Create Campaign ${dateStr}`;
+        break;
+      case 'Create Ad Group':
+        label = `Create Ad Group ${dateStr}`;
+        break;
+      default:
+        label = `${type} ${dateStr}`;
+    }
+
+    // Create version record
+    const versionId = `version-${Date.now()}`;
+    const version = {
+      id: versionId,
+      label: label,
+      timestamp: Date.now(),
+      html: html
+    };
+
+    // Add to version history
+    versionHistory.push(version);
+
+    // Create list item with data attribute for version ID
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `
+      <a href="#" data-version-id="${versionId}" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">
+        ${label}
+      </a>
+    `;
+
+    // Insert at the top (after Original, which should stay at bottom)
+    const originalItem = rightSidebarList.querySelector('a[data-version-id="original"]')?.parentElement;
+    if (originalItem) {
+      rightSidebarList.insertBefore(listItem, originalItem);
+    } else {
+      rightSidebarList.insertBefore(listItem, rightSidebarList.firstChild);
+    }
+
+    console.log(`Change record added: ${label}`);
+  }
+
+  // Track changes made during this session
+  const campaignListEl = document.getElementById('campaignList');
+  if (campaignListEl) {
+    // Track campaign creation (when the inline campaign Save Campaign button is pressed)
+    campaignListEl.addEventListener('click', (e) => {
+      const saveCampaignBtn = e.target.closest('[data-action="save-campaign"]');
+      if (saveCampaignBtn) {
+        const campaignRow = saveCampaignBtn.closest('.campaign-row');
+        if (campaignRow && campaignRow.classList.contains('is-editing')) {
+          sessionChanges.push({ type: 'Create Campaign', timestamp: Date.now() });
+        }
+      }
+    });
+
+    // Track ad group creation (when Save Ad Group button pressed)
+    campaignListEl.addEventListener('click', (e) => {
+      const saveAdGroupBtn = e.target.closest('[data-action="save-adgroup"]');
+      if (saveAdGroupBtn) {
+        sessionChanges.push({ type: 'Create Ad Group', timestamp: Date.now() });
+      }
+    });
+  }
+
+  // Commit queued changes to sidebar when main Save pressed
+  const mainSaveBtn = document.getElementById('mainSaveBtn');
+  if (mainSaveBtn) {
+    mainSaveBtn.addEventListener('click', () => {
+      if (!sessionChanges.length) {
+        console.log('No new campaign/ad group changes this session.');
+        return;
+      }
+
+      // Capture current state
+      const campaignList = document.getElementById('campaignList');
+      const currentHTML = campaignList ? campaignList.innerHTML : '';
+
+      // Add each session change as a version
+      sessionChanges.forEach(change => {
+        addChangeRecord(change.type, currentHTML);
+      });
+
+      sessionChanges = [];
+      console.log('Session changes flushed to change log.');
+    });
+  }
+
+  // Handle version restoration from right sidebar clicks
+  document.addEventListener('click', (e) => {
+    const versionLink = e.target.closest('a[data-version-id]');
+    if (versionLink) {
+      e.preventDefault();
+      const versionId = versionLink.getAttribute('data-version-id');
+      restoreVersion(versionId);
+    }
+  });
+
+  function restoreVersion(versionId) {
+    const version = versionHistory.find(v => v.id === versionId);
+    if (!version) {
+      console.error('Version not found:', versionId);
+      return;
+    }
+
+    const campaignList = document.getElementById('campaignList');
+    if (!campaignList) return;
+
+    // Confirm with user before restoring (except for Original)
+    if (versionId !== 'original') {
+      if (!confirm(`Are you sure you want to restore to "${version.label}"? This will replace the current state.`)) {
+        return;
+      }
+    }
+
+    // Restore the HTML state
+    campaignList.innerHTML = version.html;
+
+    // Re-wire all the event handlers for the restored content
+    rewireEventHandlers();
+
+    // Clear session changes since we're now at a different state
+    sessionChanges = [];
+
+    // Reset any editing state
+    if (window.editingCampaignRow) {
+      window.editingCampaignRow = null;
+    }
+
+    // Show success message
+    const message = versionId === 'original' ? 
+      'Page reset to original state' : 
+      `Restored to "${version.label}"`;
+
+    if (window.toast && typeof window.toast.success === 'function') {
+      window.toast.success(message);
+    } else {
+      alert(message);
+    }
+
+    console.log(`Restored to version: ${version.label}`);
+  }
+
+  function rewireEventHandlers() {
+    // Re-wire expand/collapse for campaign rows
+    document.querySelectorAll('#campaignList [data-campaign]').forEach(row => {
+      const btn = row.querySelector('button[data-campaign-row]');
+      const panel = row.querySelector('.adgroups-panel');
+      const caret = row.querySelector('[data-caret]');
+      
+      if (!btn || !panel) return;
+
+      // Remove any existing listeners by cloning the button
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+
+      newBtn.addEventListener('click', (e) => {
+        if (e.target.closest('input[type="checkbox"]')) return;
+        if (row.classList.contains('is-editing')) return;
+        
+        const isOpen = !panel.classList.contains('hidden');
+        if (!isOpen) {
+          document.querySelectorAll('#campaignList .adgroups-panel').forEach(p => {
+            if (p !== panel) {
+              p.classList.add('hidden');
+              const ct = p.parentElement.querySelector('[data-caret]');
+              if (ct) ct.textContent = '+';
+            }
+          });
+        }
+        if (isOpen) { 
+          panel.classList.add('hidden'); 
+          if (caret) caret.textContent = '+'; 
+        } else { 
+          panel.classList.remove('hidden'); 
+          if (caret) caret.textContent = '–'; 
+        }
+      });
+
+      // Re-wire checkbox click prevention
+      row.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('click', ev => ev.stopPropagation());
+      });
+
+      // Re-wire ad groups panel functionality
+      const adGroupsPanel = row.querySelector('.adgroups-panel');
+      if (adGroupsPanel) {
+        wirePanel(adGroupsPanel, row);
+      }
+    });
+
+    // Re-wire the "Add Campaign" button
+    const addBtn = document.getElementById('addCampaignBtn');
+    if (addBtn) {
+      // Remove existing listeners by cloning
+      const newAddBtn = addBtn.cloneNode(true);
+      addBtn.parentNode.replaceChild(newAddBtn, addBtn);
+      
+      // Re-attach the add campaign functionality
+      wireAddCampaignButton(newAddBtn);
+    }
+
+    // Set all checkboxes to checked (original state)
+    document.querySelectorAll('#campaignList input[type="checkbox"]').forEach(cb => {
+      cb.checked = true;
+    });
+  }
+
+  function wirePanel(panel, campaignRow) {
+    panel.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action="add-adgroup"]');
+      if (btn) {
+        e.preventDefault();
+        addAdGroupForm(panel, campaignRow);
+      }
+    });
+  }
+
+  function wireAddCampaignButton(addBtn) {
+    addBtn.addEventListener('click', () => {
+      if (window.editingCampaignRow) {
+        window.editingCampaignRow.scrollIntoView({ behavior:'smooth', block:'center' });
+        return;
+      }
+      
+      // Create new campaign editing row
+      const newRow = createEditingCampaignRow();
+      const campaignListEl = document.getElementById('campaignList');
+      campaignListEl.insertBefore(newRow, document.getElementById('addCampaignContainer'));
+      window.editingCampaignRow = newRow;
+
+      // Wire up save/cancel handlers
+      newRow.addEventListener('click', (e) => {
+        const save = e.target.closest('[data-action="save-campaign"]');
+        const cancel = e.target.closest('[data-action="cancel-campaign"]');
+        if (cancel) {
+          cancelEditingRow(newRow);
+        }
+        if (save) {
+          if (!validateCampaignInputs(newRow)) return;
+          const data = {};
+          newRow.querySelectorAll('[data-field]').forEach(inp => {
+            if (inp.type === 'checkbox') return;
+            data[inp.getAttribute('data-field')] = inp.value.trim();
+          });
+          const activeEl = newRow.querySelector('[data-field="isActive"]');
+          data.status = activeEl && activeEl.checked ? 'Active' : 'Paused';
+          data.id = 'cmp-' + Date.now();
+          data.gcmCampaignName = data.gcmCampaignName || data.campaignName;
+          data.adGroups = [];
+          const saved = buildSavedCampaignRow(data);
+          newRow.replaceWith(saved);
+          window.editingCampaignRow = null;
+        }
+      });
+    });
+  }
+
+  // Initialize Original version link
+  setTimeout(() => {
+    const rightSidebarList = document.querySelector('#rightSidebar ul');
+    if (rightSidebarList) {
+      // Update existing "Original" link to have version ID
+      const originalLink = rightSidebarList.querySelector('a');
+      if (originalLink && originalLink.textContent.trim() === 'Original') {
+        originalLink.setAttribute('data-version-id', 'original');
+      }
+    }
+  }, 200);
+
+  // Expose functions globally for use by other scripts
+  window.addChangeRecord = addChangeRecord;
+  window.restoreVersion = restoreVersion;
+  window.versionHistory = versionHistory;
 });
 
 
