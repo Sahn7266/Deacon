@@ -669,12 +669,25 @@
           </div>
         </div>
         </section>
+        <!-- Action buttons moved outside <main>. Place this right AFTER </main> and BEFORE the right sidebar (or after the flex container) -->
+        
+        <div class="w-full py-4 bg-white border-t border-gray-200 flex justify-center gap-3">
+          <button type="button" id="mainCancelBtn"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+            Cancel
+          </button>
+          <button type="button" id="mainSaveBtn"
+            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+            Save
+          </button>
+        </div>
+
       </main>
 
         <!-- ✅ RIGHT SIDEBAR -->
 <aside id="rightSidebar" class="relative flex-shrink-0 w-64 bg-white border-l border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out collapsed">
     <div class="flex items-center justify-between p-4 border-b border-gray-200">
-      <h2 class="text-base font-semibold text-gray-800">Right Panel</h2>
+      <h2 class="text-base font-semibold text-gray-800">Change Form</h2>
       <button id="rightSidebarToggle"
               class="p-1 rounded hover:bg-gray-100 flex items-center justify-center"
               aria-label="Collapse right sidebar"
@@ -691,8 +704,9 @@
       </button>
     </div>
     <ul class="mt-4 space-y-2 px-4">
-      <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Right Item 1</a></li>
-      <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Right Item 2</a></li>
+      <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Create Campaign 10/09/2025</a></li>
+      <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Update Ad Group 10/15/2025</a></li>
+      <li><a href="#" class="block px-3 py-2 rounded hover:bg-blue-50 text-sm text-gray-700">Update Impressions 10/20/2025</a></li>
     </ul>
   </aside>
 
@@ -1298,10 +1312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn || !panel) return;
 
     btn.addEventListener('click', (e) => {
-      // NEW: ignore clicks originating on a checkbox (or its label/future wrapper)
       if (e.target.closest('input[type="checkbox"]')) return;
-
-      // Prevent toggle if editing row
       if (row.classList.contains('is-editing')) return;
       const isOpen = !panel.classList.contains('hidden');
       if (!isOpen) {
@@ -1313,23 +1324,12 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       }
-      if (isOpen) {
-        panel.classList.add('hidden');
-        if (caret) caret.textContent = '+';
-      } else {
-        panel.classList.remove('hidden');
-        if (caret) caret.textContent = '–';
-      }
+      if (isOpen) { panel.classList.add('hidden'); if (caret) caret.textContent = '+'; }
+      else { panel.classList.remove('hidden'); if (caret) caret.textContent = '–'; }
     });
 
-    // EXTRA SAFETY: stop bubbling from any checkbox inside the row
     row.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-
-
-
       cb.addEventListener('click', ev => ev.stopPropagation());
-      // Select checkboxes by default
-      cb.checked = true;
     });
   }
 
@@ -1375,27 +1375,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const formBtn = el('div','w-full flex flex-col md:grid md:grid-cols-12 gap-2 px-4 py-3');
 
     formBtn.innerHTML = `
+      <!-- DSP (col-span-2) -->
       <div class="flex items-start gap-2 col-span-2">
         <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-400 bg-gray-50">+</span>
         <div class="flex-1">${input('dsp','DSP')}</div>
       </div>
-      <div class="col-span-3">${input('campaignName','Campaign Name')}</div>
-      <div class="col-span-3 hidden md:flex">${input('gcmCampaignName','GCM Campaign')}</div>
+      <!-- Campaign (col-span-2) -->
+      <div class="col-span-2">${input('campaignName','Campaign Name')}</div>
+      <!-- GCM Campaign (col-span-2) -->
+      <div class="col-span-2 hidden md:flex">${input('gcmCampaignName','GCM Campaign')}</div>
+      <!-- Template (col-span-2) -->
       <div class="col-span-2 hidden md:flex">${input('template','Template')}</div>
+      <!-- Impr. (col-span-1) -->
       <div class="col-span-1 hidden md:flex">${numberInput('impressions','Impr.')}</div>
+      <!-- Ad Grps (col-span-1) -->
       <div class="col-span-1 hidden md:flex items-center justify-center">
         <span class="text-[11px] text-gray-400" data-field-static="adGroupCount">0</span>
       </div>
+      <!-- Active Checkbox (col-span-2) -->
+      <div class="col-span-2 hidden md:flex items-center justify-center">
+        <input type="checkbox" data-field="isActive"
+               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+               aria-label="Active status" checked>
+      </div>
+      <!-- Action buttons -->
       <div class="col-span-12 flex gap-3 pt-2 pl-7 md:pl-0">
         <button type="button" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs" data-action="save-campaign">Save Campaign</button>
         <button type="button" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded text-xs" data-action="cancel-campaign">Cancel</button>
       </div>
     `;
 
-    // Panel placeholder (hidden until row saved)
     const panel = el('div','adgroups-panel hidden bg-gray-50/60 px-6 pb-6 pt-4');
     panel.innerHTML = `<div class="text-[11px] font-semibold text-gray-500 tracking-wide mb-3">AD GROUPS (Save campaign first)</div>`;
-
     wrapper.appendChild(formBtn);
     wrapper.appendChild(panel);
     return wrapper;
@@ -1420,28 +1431,39 @@ document.addEventListener('DOMContentLoaded', () => {
     row.setAttribute('data-campaign','');
     row.dataset.campaignId = data.id;
 
+    const isActive = (data.status || 'Active') === 'Active';
+
     const btn = el('button','w-full flex flex-col md:grid md:grid-cols-12 gap-2 px-4 py-3 text-left hover:bg-blue-50/40 transition','');
-    btn.setAttribute('type','button');
+    btn.type = 'button';
     btn.setAttribute('data-campaign-row','');
 
     btn.innerHTML = `
+      <!-- DSP -->
       <div class="flex items-start gap-2 col-span-2">
         <span class="inline-flex mt-0.5 h-5 w-5 items-center justify-center rounded border border-gray-300 text-[10px] font-semibold text-gray-600 bg-white" data-caret>+</span>
         <p class="text-sm font-medium text-gray-800">${data.dsp}</p>
       </div>
-      <div class="col-span-3 flex items-start">
+      <!-- Campaign -->
+      <div class="col-span-2 flex items-start">
         <p class="text-sm font-medium text-gray-800">${data.campaignName}</p>
       </div>
-      <div class="col-span-3 hidden md:flex items-center text-xs text-gray-700">${data.gcmCampaignName || data.campaignName}</div>
+      <!-- GCM Campaign -->
+      <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">${data.gcmCampaignName || data.campaignName}</div>
+      <!-- Template -->
       <div class="col-span-2 hidden md:flex items-center text-xs text-gray-700">${data.template || '—'}</div>
-      <div class="col-span-1 hidden md:flex items-center justify-end text-xs font-medium text-gray-800">${Number(data.impressions).toLocaleString()}</div>
+      <!-- Impr. -->
+      <div class="col-span-1 hidden md:flex items-center justify-start text-xs font-medium text-gray-800">${Number(data.impressions).toLocaleString()}</div>
+      <!-- Ad Groups -->
       <div class="col-span-1 hidden md:flex items-center justify-center text-xs font-medium text-gray-700" data-adgroup-count>${data.adGroups.length}</div>
+      <!-- Status (checkbox) -->
       <div class="col-span-2 hidden md:flex items-center justify-center">
-        <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" checked>
+        <input type="checkbox" data-active-toggle
+               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+               aria-label="Active status"
+               ${isActive ? 'checked' : ''}>
       </div>
     `;
 
-    // Panel with Ad Group form initially
     const panel = el('div','adgroups-panel hidden bg-gray-50/60 px-6 pb-6 pt-4','');
     panel.innerHTML = `
       <div class="flex items-center justify-between mb-3">
@@ -1449,15 +1471,17 @@ document.addEventListener('DOMContentLoaded', () => {
         <button type="button" class="text-[11px] text-blue-600 hover:underline" data-action="add-adgroup">+ Add Ad Group</button>
       </div>
       <div class="space-y-3" data-adgroup-container>
-        <!-- Initial empty prompt -->
         <div class="text-[11px] text-gray-500" data-empty-msg>No ad groups yet. Click "Add Ad Group".</div>
       </div>
     `;
 
     row.appendChild(btn);
     row.appendChild(panel);
+
+    // Wire expand + panel
     wireExpand(row);
     wirePanel(panel, row);
+
     return row;
   }
 
@@ -1665,11 +1689,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!validateCampaignInputs(newRow)) return;
         const data = {};
         newRow.querySelectorAll('[data-field]').forEach(inp => {
+          if (inp.type === 'checkbox') return; // skip here, handle separately
           data[inp.getAttribute('data-field')] = inp.value.trim();
         });
+        const activeEl = newRow.querySelector('[data-field="isActive"]');
+        data.status = activeEl && activeEl.checked ? 'Active' : 'Paused';
         data.id = 'cmp-' + Date.now();
         data.gcmCampaignName = data.gcmCampaignName || data.campaignName;
-        data.adGroups = []; // start empty
+        data.adGroups = [];
         const saved = buildSavedCampaignRow(data);
         newRow.replaceWith(saved);
         editingCampaignRow = null;
@@ -1727,6 +1754,5 @@ document.addEventListener('DOMContentLoaded', () => {
   // Start collapsed
   setState(true);
 });
+
 </script>
-</body>
-</html>
