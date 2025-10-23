@@ -222,7 +222,7 @@
             <!-- Single-column campaign details card -->
             <section class="space-y-6">
               <div class="flex items-center justify-between">
-              <h1 class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGN DETAILS</h1>
+              <h1 class="text-2xl font-semibold text-gray-900 mx-2">AD GROUP DETAILS</h1>
               <div class="flex items-center gap-2">
                 <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                 <svg viewBox="0 0 24 24" height="16" width="16">
@@ -235,79 +235,52 @@
               </div>
               </div>
 
-              <!-- View / Edit Fields -->
-              <div class="space-y-5">
+<!-- Ad Group Name -->
+<div>
+  <label class="block text-sm font-medium text-gray-700">Ad Group Name</label>
+  <span id="adGroupName" class="block mt-1 text-gray-800">Loading...</span>
 
-              <!-- Campaign Name -->
-              <div>
-                <label for="companyName" class="block text-sm font-medium text-gray-700">Campaign Name</label>
-                <span id="displayCompanyName" class="block mt-1 text-gray-800">Madison, AL - Programmatic Display</span>
-                <input id="companyName" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+</div>
 
-              <!-- Channel -->
-              <div>
-                <label for="campaignChannel" class="block text-sm font-medium text-gray-700">Campaign Channel</label>
-                <span id="displayCampaignChannel" class="block mt-1 text-gray-800">Programmatic Display</span>
-                <input id="campaignChannel" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+<!-- Campaign -->
+<div>
+  <label class="block text-sm font-medium text-gray-700">Campaign</label>
+  <span class="block mt-1 text-gray-800">Madison, AL - Programmatic Display</span>
+</div>
 
-              <!-- KPI -->
-              <div>
-                <label for="campaignKPI" class="block text-sm font-medium text-gray-700">Campaign KPI</label>
-                <span id="displayCampaignKPI" class="block mt-1 text-gray-800">CTR</span>
-                <input id="campaignKPI" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+<!-- Budget Allocation -->
+<div>
+  <label class="block text-sm font-medium text-gray-700">Budget Allocation</label>
+  <span class="block mt-1 text-gray-800">$150,000</span>
+</div>
 
-              <!-- KPI Target -->
-              <div>
-                <label for="campaignKPITarget" class="block text-sm font-medium text-gray-700">KPI Target</label>
-                <span id="displayCampaignKPITarget" class="block mt-1 text-gray-800">2.50%</span>
-                <input id="campaignKPITarget" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+<!-- Bid Strategy -->
+<div>
+  <label class="block text-sm font-medium text-gray-700">Bid Strategy</label>
+  <span class="block mt-1 text-gray-800">Target CPA</span>
+</div>
 
-              <!-- Pacing -->
-              <div>
-                <label for="campaignPacing" class="block text-sm font-medium text-gray-700">Campaign Pacing</label>
-                <span id="displayCampaignPacing" class="block mt-1 text-gray-800">Even</span>
-                <input id="campaignPacing" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+<hr class="border-gray-300" />
 
-              <!-- Flight -->
-              <div>
-                <label for="campaignFlight" class="block text-sm font-medium text-gray-700">Campaign Flight</label>
-                <span id="displayCampaignFlight" class="block mt-1 text-gray-800">04/14/2025 → 05/25/2025</span>
-                <input id="campaignFlight" type="text" placeholder="MM/DD/YYYY → MM/DD/YYYY" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+<h2 class="text-lg font-semibold text-gray-900">Creative & Targeting</h2>
 
-              <!-- Budget (static display only) -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Total Budget</label>
-                <span class="block mt-1 text-gray-800">$124,664</span>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Daily Budget</label>
-                <span class="block mt-1 text-gray-800">$4,890</span>
-              </div>
+<!-- Creative Format -->
+<div>
+  <label class="block text-sm font-medium text-gray-700">Creative Format</label>
+  <span class="block mt-1 text-gray-800">Display Banner</span>
+</div>
 
-              <!-- Targeting Section -->
-              <hr class="border-gray-300" />
-              <h2 class="text-lg font-semibold text-gray-900">Targeting</h2>
+<!-- Targeting Refinements -->
+<div>
+  <label class="block text-sm font-medium text-gray-700">Targeting Refinements</label>
+  <span class="block mt-1 text-gray-800">Job Title: IT Manager, Director</span>
+</div>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Target Audience</label>
-                <span class="block mt-1 text-gray-800">IT Decision Makers, 35-55</span>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Geographic Targeting</label>
-                <span class="block mt-1 text-gray-800">Madison, AL (60 miles surrounding)</span>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Device Targeting</label>
-                <span class="block mt-1 text-gray-800">Desktop, Mobile</span>
-              </div>
-
-              </div>
+<!-- Placement Settings -->
+<div>
+  <label class="block text-sm font-medium text-gray-700">Placement Settings</label>
+  <span class="block mt-1 text-gray-800">Business Publications</span>
+</div>
             </section>
 
                       <script>
@@ -1013,6 +986,28 @@
       campaignsLink.classList.add('text-blue-700', 'bg-blue-50', 'font-medium');
     }
   });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const current = window.location.pathname.split('/').pop();
+  document.querySelectorAll('#sidebar a[data-nav-link]').forEach(link => {
+    if (link.getAttribute('href') === current) {
+      link.classList.add('text-blue-700', 'bg-blue-50', 'font-medium');
+    } else {
+      link.classList.remove('text-blue-700', 'bg-blue-50', 'font-medium');
+    }
+  });
+});
+
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const adGroupName = params.get('name');
+    if (adGroupName) {
+      document.getElementById('adGroupName').textContent = decodeURIComponent(adGroupName);
+    }
+  });
+
 
 
 

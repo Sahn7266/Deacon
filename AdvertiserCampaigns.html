@@ -425,6 +425,11 @@
                         <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
                       </button>
                     </th>
+
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+  <span class="px-6 py-2 block">Actions</span>
+</th>
+
                   </tr>
                 </thead>
                 <tbody id="campaignTableBody" class="divide-y">
@@ -939,21 +944,23 @@
             const tr = document.createElement('tr');
 
             if (r.type === 'group') {
-              tr.innerHTML = `
-                <td class="px-3 py-1 text-sm font-semibold border-r border-default">
-                  <button data-action="toggle-group" data-group-id="${r.groupId}" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
-                    ${r.expanded ? '&minus;' : '+'}
-                  </button>
-                </td>
-                <td colspan="4" class="px-3 py-1 text-sm font-semibold border-r border-default">
-                  Campaign Group: ${r.name}
-                  <button class="ml-2 align-middle" title="Edit Group" data-action="edit-group" data-group-id="${r.groupId}">
-                    <svg class="inline w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                    </svg>
-                  </button>
-                </td>
-              `;
+             tr.innerHTML = `
+  <td class="px-3 py-1 text-sm font-semibold border-r border-default bg-gray-100">
+    <button data-action="toggle-group" data-group-id="${r.groupId}" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
+      ${r.expanded ? '&minus;' : '+'}
+    </button>
+  </td>
+  <td colspan="4" class="px-3 py-1 text-sm font-semibold border-r border-default bg-gray-100">
+    Campaign Group: ${r.name}
+    <button class="ml-2 align-middle" title="Edit Group" data-action="edit-group" data-group-id="${r.groupId}">
+      <svg class="inline w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+      </svg>
+    </button>
+  </td>
+  <td class="bg-gray-100 border-default border-r"></td>
+`;
+;
               tr.className = 'row-group';
             } else {
               const c = r.campaign;
@@ -968,8 +975,12 @@ tr.innerHTML = `
   </td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
-  <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums">${c.adGroups ?? 0}</td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums border-r border-default">${c.adGroups ?? 0}</td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm text-center">
+    <a href="#" class="text-blue-600 hover:underline">Export</a>
+  </td>
 `;
+;
             }
 
             this.elements.campaignTableBody.appendChild(tr);

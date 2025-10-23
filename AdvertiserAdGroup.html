@@ -773,9 +773,9 @@
             tr.className = 'hover:bg-gray-50';
             tr.innerHTML = `
               <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.id || ''}</td>
-              <td class="px-6 py-1 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
-                <a href="#" class="text-blue-600 hover:underline">${ag.name || ''}</a>
-              </td>
+<td class="px-6 py-1 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
+  <a href="./AdGroupDetails.html?name=${encodeURIComponent(ag.name || '')}" class="text-blue-600 hover:underline">${ag.name || ''}</a>
+</td>
               <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.dsp || ''}</td>
               <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ''}</td>
               <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900">${ag.campaign || ''}</td>
