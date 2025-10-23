@@ -163,7 +163,8 @@
 
   <ul class="space-y-1 mt-4">
     <li>
-      <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
+<li>
+  <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
         <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
         <span data-link-label>Details</span>
       </a>
@@ -231,44 +232,152 @@
                       </svg>
                       Edit
                       </button>
-                      <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
-                      <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
-                      </div>
-                    </div>
-
-                    <div id="generalCard" class="p-4 border border-gray-200 rounded-md">
-                      <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
-                      <label for="companyName" class="text-sm font-semibold text-gray-600">Campaign Name:</label>
-                      <div class="md:col-span-2">
-                        <input id="companyName" type="text" data-bind="adv.name" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                        <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
+                        <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+                        </div>
                       </div>
 
-                      <label for="campaignChannel" class="text-sm font-semibold text-gray-600">Campaign Channel:</label>
-                      <div class="md:col-span-2">
-                        <input id="campaignChannel" type="text" data-bind="adv.account" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                      <div id="generalCard" class="p-4 border border-gray-200 rounded-md">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
+
+                        <!-- Campaign Name -->
+                        <label for="companyName" class="text-sm font-semibold text-gray-600">Campaign Name:</label>
+                        <div class="md:col-span-2">
+                          <span id="displayCompanyName" class="text-sm text-gray-900" data-bind="adv.name">Loading…</span>
+                          <input id="companyName" type="text" data-bind="adv.name" value="Loading…" class="hidden text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                        </div>
+                        
+
+                        <!-- Campaign Channel -->
+                        <label for="campaignChannel" class="text-sm font-semibold text-gray-600">Campaign Channel:</label>
+                        <div class="md:col-span-2">
+                          <span id="displayCampaignChannel" class="text-sm text-gray-900">Programmatic Display</span>
+                          <input id="campaignChannel" type="text" value="Programmatic Display" class="hidden text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                        </div>
+
+                        <!-- Campaign KPI -->
+                        <label for="campaignKPI" class="text-sm font-semibold text-gray-600">Campaign KPI:</label>
+                        <div class="md:col-span-2">
+                          <span id="displayCampaignKPI" class="text-sm text-gray-900">Active</span>
+                          <input id="campaignKPI" type="text" value="Active" class="hidden text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                        </div>
+
+                        <!-- KPI Target -->
+                        <label for="campaignKPITarget" class="text-sm font-semibold text-gray-600">KPI Target:</label>
+                        <div class="md:col-span-2">
+                          <span id="displayCampaignKPITarget" class="text-sm text-gray-900">N/A</span>
+                          <input id="campaignKPITarget" type="text" value="N/A" class="hidden text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                        </div>
+
+                        <!-- Pacing -->
+                        <label for="campaignPacing" class="text-sm font-semibold text-gray-600">Pacing:</label>
+                        <div class="md:col-span-2">
+                          <span id="displayCampaignPacing" class="text-sm text-gray-900">Pacing ahead</span>
+                          <input id="campaignPacing" type="text" value="Pacing ahead" class="hidden text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                        </div>
+
+                        <!-- Flight -->
+                        <label for="campaignFlight" class="text-sm font-semibold text-gray-600">Flight:</label>
+                        <div class="md:col-span-2">
+                          <span id="displayCampaignFlight" class="text-sm text-gray-900">11/01/2025 - 10/31/2026</span>
+                          <input id="campaignFlight" type="text" value="11/01/2025 - 10/31/2026" class="hidden text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
+                        </div>
+
+                        </div>
                       </div>
 
-                      <label for="campaignKPI" class="text-sm font-semibold text-gray-600">Campaign KPI:</label>
-                      <div class="md:col-span-2">
-                        <input id="campaignKPI" type="text" data-bind="adv.kpi" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                      </div>
+                      <script>
+                        (function() {
+                        const pairs = [
+                          { span: 'displayCompanyName', input: 'companyName' },
+                          { span: 'displayCampaignChannel', input: 'campaignChannel' },
+                          { span: 'displayCampaignKPI', input: 'campaignKPI' },
+                          { span: 'displayCampaignKPITarget', input: 'campaignKPITarget' },
+                          { span: 'displayCampaignPacing', input: 'campaignPacing' },
+                          { span: 'displayCampaignFlight', input: 'campaignFlight' }
+                        ];
 
-                      <label for="campaignKPITarget" class="text-sm font-semibold text-gray-600">KPI Target:</label>
-                      <div class="md:col-span-2">
-                        <input id="campaignKPITarget" type="text" data-bind="adv.kpiTarget" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                      </div>
+                        const btnEdit   = document.getElementById('editGeneralBtn');
+                        const btnSave   = document.getElementById('saveGeneralBtn');
+                        const btnCancel = document.getElementById('cancelGeneralBtn');
 
-                      <label for="campaignPacing" class="text-sm font-semibold text-gray-600">Pacing:</label>
-                      <div class="md:col-span-2">
-                        <input id="campaignPacing" type="text" data-bind="adv.pacing" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                      </div>
+                        let snapshot = null;
+                        let inlineEditing = false;
 
-                      <label for="campaignFlight" class="text-sm font-semibold text-gray-600">Flight:</label>
-                      <div class="md:col-span-2">
-                        <input id="campaignFlight" type="text" data-bind="adv.flight" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                      </div>
-                      </div>
-                    </div>
+                        function showInputs() {
+                          pairs.forEach(p => {
+                          const span = document.getElementById(p.span);
+                          const input = document.getElementById(p.input);
+                          if (!span || !input) return;
+                          input.classList.remove('hidden');
+                          span.classList.add('hidden');
+                          input.value = span.textContent.trim();
+                          });
+                        }
+                        function showSpans() {
+                          pairs.forEach(p => {
+                          const span = document.getElementById(p.span);
+                          const input = document.getElementById(p.input);
+                          if (!span || !input) return;
+                          span.textContent = input.value.trim() || '—';
+                          input.classList.add('hidden');
+                          span.classList.remove('hidden');
+                          });
+                        }
+
+                        function currentValues() {
+                          const obj = {};
+                          pairs.forEach(p => {
+                          const input = document.getElementById(p.input);
+                          if (input) obj[p.input] = input.value.trim();
+                          });
+                          return obj;
+                        }
+                        function shallowEqual(a,b){
+                          const ka = Object.keys(a), kb = Object.keys(b);
+                          if (ka.length !== kb.length) return false;
+                          for (const k of ka) if (a[k] !== b[k]) return false;
+                          return true;
+                        }
+
+                        btnEdit?.addEventListener('click', () => {
+                          // Start inline editing for these campaign fields
+                          inlineEditing = true;
+                          snapshot = currentValues();
+                          showInputs();
+                        });
+
+                        btnCancel?.addEventListener('click', () => {
+                          if (!inlineEditing) return;
+                          // Revert
+                          pairs.forEach(p => {
+                          const input = document.getElementById(p.input);
+                          if (input && snapshot && snapshot[p.input] != null) {
+                            input.value = snapshot[p.input];
+                          }
+                          });
+                          showSpans();
+                          inlineEditing = false;
+                          snapshot = null;
+                        });
+
+                        btnSave?.addEventListener('click', () => {
+                          if (!inlineEditing) return;
+                          const now = currentValues();
+                          if (snapshot && shallowEqual(snapshot, now)) {
+                          // No change
+                          showSpans();
+                          inlineEditing = false;
+                          snapshot = null;
+                          return;
+                          }
+                          // Commit to spans
+                          showSpans();
+                          inlineEditing = false;
+                          snapshot = null;
+                        });
+                        })();
+                      </script>
                     </section>
                   </div>
                   </div>
@@ -861,6 +970,25 @@
     document.body.style.zoom = '100%';
   });
 
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const current = window.location.pathname.split('/').pop();
+    document.querySelectorAll('#sidebar a[data-nav-link]').forEach(link => {
+      if (link.getAttribute('href') === current) {
+        link.classList.add('text-blue-700', 'bg-blue-50', 'font-medium');
+      } else {
+        link.classList.remove('text-blue-700', 'bg-blue-50', 'font-medium');
+      }
+    });
+  });
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const campaignsLink = document.querySelector('#sidebar a[href="./AdvertiserCampaigns.html"]');
+    if (campaignsLink) {
+      campaignsLink.classList.add('text-blue-700', 'bg-blue-50', 'font-medium');
+    }
+  });
 
 
 
