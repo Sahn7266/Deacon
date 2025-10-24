@@ -237,27 +237,26 @@
 
 <!-- Ad Group Name -->
 <div>
-  <label class="block text-sm font-medium text-gray-700">Ad Group Name</label>
-  <span id="adGroupName" class="block mt-1 text-gray-800">Loading...</span>
-
+  <label for="adGroupNameInput" class="block text-sm font-medium text-gray-700">Ad Group Name</label>
+  <input id="adGroupNameInput" data-bind="name" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
 </div>
 
 <!-- Campaign -->
 <div>
-  <label class="block text-sm font-medium text-gray-700">Campaign</label>
-  <span class="block mt-1 text-gray-800">Madison, AL - Programmatic Display</span>
+  <label for="campaignName" class="block text-sm font-medium text-gray-700">Campaign</label>
+  <input id="campaignName" data-bind="campaign" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
 </div>
 
 <!-- Budget Allocation -->
 <div>
-  <label class="block text-sm font-medium text-gray-700">Budget Allocation</label>
-  <span class="block mt-1 text-gray-800">$150,000</span>
+  <label for="budgetAllocation" class="block text-sm font-medium text-gray-700">Budget Allocation</label>
+  <input id="budgetAllocation" data-bind="budget" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
 </div>
 
 <!-- Bid Strategy -->
 <div>
-  <label class="block text-sm font-medium text-gray-700">Bid Strategy</label>
-  <span class="block mt-1 text-gray-800">Target CPA</span>
+  <label for="bidStrategy" class="block text-sm font-medium text-gray-700">Bid Strategy</label>
+  <input id="bidStrategy" data-bind="bidStrategy" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
 </div>
 
 <hr class="border-gray-300" />
@@ -266,20 +265,20 @@
 
 <!-- Creative Format -->
 <div>
-  <label class="block text-sm font-medium text-gray-700">Creative Format</label>
-  <span class="block mt-1 text-gray-800">Display Banner</span>
+  <label for="creativeFormat" class="block text-sm font-medium text-gray-700">Creative Format</label>
+  <input id="creativeFormat" data-bind="creativeFormat" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
 </div>
 
 <!-- Targeting Refinements -->
 <div>
-  <label class="block text-sm font-medium text-gray-700">Targeting Refinements</label>
-  <span class="block mt-1 text-gray-800">Job Title: IT Manager, Director</span>
+  <label for="targetingRefinements" class="block text-sm font-medium text-gray-700">Targeting Refinements</label>
+  <input id="targetingRefinements" data-bind="targetingRefinements" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
 </div>
 
 <!-- Placement Settings -->
 <div>
-  <label class="block text-sm font-medium text-gray-700">Placement Settings</label>
-  <span class="block mt-1 text-gray-800">Business Publications</span>
+  <label for="placementSettings" class="block text-sm font-medium text-gray-700">Placement Settings</label>
+  <input id="placementSettings" data-bind="placementSettings" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
 </div>
             </section>
 
@@ -559,7 +558,17 @@
       const SELECTED_ID_KEY  = 'adv_selected_id';
       const SELECTED_DATA_KEY= 'adv_selected_data';
 
-      const editableSelectors = ['#companyName', '#advertiserState', '#advertiserWebsite'];
+const editableSelectors = [
+  '#adGroupNameInput',
+  '#campaignName',
+  '#budgetAllocation',
+  '#bidStrategy',
+  '#creativeFormat',
+  '#targetingRefinements',
+  '#placementSettings'
+];
+
+
 
       const btnEdit   = document.getElementById('editGeneralBtn');
       const btnSave   = document.getElementById('saveGeneralBtn');
@@ -1008,9 +1017,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+document.addEventListener('DOMContentLoaded', function () {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  if (!id) return;
+
+  const adgroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+  const adGroup = adgroups.find(ag => ag.id === id);
+
+  if (!adGroup) {
+    console.warn('Ad group not found');
+    return;
+  }
+
+  const fields = [
+    'name', 'campaign', 'budget', 'bidStrategy',
+    'creativeFormat', 'targetingRefinements', 'placementSettings'
+  ];
+
+  fields.forEach(key => {
+    const el = document.querySelector(`[data-bind="${key}"]`);
+    if (el) el.value = adGroup[key] || '';
+  });
+});
 
 
 
+
+
+  
   </script>
   <script src="./assets/sidebar.js" defer></script>
 </body>

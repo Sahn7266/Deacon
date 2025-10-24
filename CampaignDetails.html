@@ -280,32 +280,44 @@
                 <input id="campaignFlight" type="text" placeholder="MM/DD/YYYY → MM/DD/YYYY" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
               </div>
 
-              <!-- Budget (static display only) -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Total Budget</label>
-                <span class="block mt-1 text-gray-800">$124,664</span>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Daily Budget</label>
-                <span class="block mt-1 text-gray-800">$4,890</span>
-              </div>
+<!-- Total Budget -->
+<div>
+  <label for="campaignTotalBudget" class="block text-sm font-medium text-gray-700">Total Budget</label>
+  <span id="displayCampaignTotalBudget" class="block mt-1 text-gray-800">N/A</span>
+  <input id="campaignTotalBudget" type="number" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
+</div>
 
-              <!-- Targeting Section -->
-              <hr class="border-gray-300" />
-              <h2 class="text-lg font-semibold text-gray-900">Targeting</h2>
+<!-- Daily Budget -->
+<div>
+  <label for="campaignDailyBudget" class="block text-sm font-medium text-gray-700">Daily Budget</label>
+  <span id="displayCampaignDailyBudget" class="block mt-1 text-gray-800">N/A</span>
+  <input id="campaignDailyBudget" type="number" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
+</div>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Target Audience</label>
-                <span class="block mt-1 text-gray-800">IT Decision Makers, 35-55</span>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Geographic Targeting</label>
-                <span class="block mt-1 text-gray-800">Madison, AL (60 miles surrounding)</span>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Device Targeting</label>
-                <span class="block mt-1 text-gray-800">Desktop, Mobile</span>
-              </div>
+<!-- Targeting Section -->
+<hr class="border-gray-300" />
+<h2 class="text-lg font-semibold text-gray-900">Targeting</h2>
+
+<!-- Target Audience -->
+<div>
+  <label for="targetAudience" class="block text-sm font-medium text-gray-700">Target Audience</label>
+  <span id="displayTargetAudience" class="block mt-1 text-gray-800">N/A</span>
+  <input id="targetAudience" type="text" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
+</div>
+
+<!-- Geographic Targeting -->
+<div>
+  <label for="geoTargeting" class="block text-sm font-medium text-gray-700">Geographic Targeting</label>
+  <span id="displayGeoTargeting" class="block mt-1 text-gray-800">N/A</span>
+  <input id="geoTargeting" type="text" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
+</div>
+
+<!-- Device Targeting -->
+<div>
+  <label for="deviceTargeting" class="block text-sm font-medium text-gray-700">Device Targeting</label>
+  <span id="displayDeviceTargeting" class="block mt-1 text-gray-800">N/A</span>
+  <input id="deviceTargeting" type="text" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
+</div>
 
               </div>
             </section>
@@ -313,13 +325,23 @@
                       <script>
                         (function() {
                         const pairs = [
-                          { span: 'displayCompanyName', input: 'companyName' },
-                          { span: 'displayCampaignChannel', input: 'campaignChannel' },
-                          { span: 'displayCampaignKPI', input: 'campaignKPI' },
-                          { span: 'displayCampaignKPITarget', input: 'campaignKPITarget' },
-                          { span: 'displayCampaignPacing', input: 'campaignPacing' },
-                          { span: 'displayCampaignFlight', input: 'campaignFlight' }
-                        ];
+  { span: 'displayCompanyName', input: 'companyName' },
+  { span: 'displayCampaignChannel', input: 'campaignChannel' },
+  { span: 'displayCampaignKPI', input: 'campaignKPI' },
+  { span: 'displayCampaignKPITarget', input: 'campaignKPITarget' },
+  { span: 'displayCampaignPacing', input: 'campaignPacing' },
+  { span: 'displayCampaignFlight', input: 'campaignFlight' },
+  { span: 'displayCampaignAdvertiser', input: 'campaignAdvertiser' },
+  { span: 'displayCampaignObjective', input: 'campaignObjective' },
+  { span: 'displayCampaignStartDate', input: 'campaignStartDate' },
+  { span: 'displayCampaignEndDate', input: 'campaignEndDate' },
+  { span: 'displayCampaignTotalBudget', input: 'campaignTotalBudget' },
+  { span: 'displayCampaignDailyBudget', input: 'campaignDailyBudget' },
+  { span: 'displayTargetAudience', input: 'targetAudience' },
+  { span: 'displayGeoTargeting', input: 'geoTargeting' },
+  { span: 'displayDeviceTargeting', input: 'deviceTargeting' }
+];
+
 
                         const btnEdit   = document.getElementById('editGeneralBtn');
                         const btnSave   = document.getElementById('saveGeneralBtn');
@@ -1014,6 +1036,70 @@
     }
   });
 
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const campaignId = urlParams.get('campaignId');
+
+  if (!campaignId) return;
+
+  const groups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
+  let campaign = null;
+
+  for (const group of groups) {
+    campaign = group.campaigns.find(c => c.id === campaignId);
+    if (campaign) break;
+  }
+
+  if (!campaign) return;
+
+  const safeSet = (id, value, isCurrency = false) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.textContent = isCurrency ? `$${Number(value).toLocaleString()}` : (value || 'N/A');
+    }
+  };
+
+  const safeInput = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = value || '';
+    }
+  };
+
+  // Set text content display spans
+  safeSet('displayCompanyName', campaign.name);
+  safeSet('displayCampaignChannel', campaign.channel);
+  safeSet('displayCampaignKPI', campaign.kpi);
+  safeSet('displayCampaignKPITarget', campaign.kpiTarget);
+  safeSet('displayCampaignPacing', campaign.pacing);
+  safeSet('displayCampaignFlight', `${campaign.startDate} → ${campaign.endDate}`);
+  safeSet('displayCampaignAdvertiser', campaign.advertiser);
+  safeSet('displayCampaignObjective', campaign.objective);
+  safeSet('displayCampaignStartDate', campaign.startDate);
+  safeSet('displayCampaignEndDate', campaign.endDate);
+  safeSet('displayCampaignTotalBudget', campaign.totalBudget, true);
+  safeSet('displayCampaignDailyBudget', campaign.dailyBudget, true);
+  safeSet('displayTargetAudience', campaign.targetAudience);
+  safeSet('displayGeoTargeting', campaign.geoTargeting);
+  safeSet('displayDeviceTargeting', campaign.deviceTargeting);
+
+  // Set editable inputs
+  safeInput('companyName', campaign.name);
+  safeInput('campaignChannel', campaign.channel);
+  safeInput('campaignKPI', campaign.kpi);
+  safeInput('campaignKPITarget', campaign.kpiTarget);
+  safeInput('campaignPacing', campaign.pacing);
+  safeInput('campaignFlight', `${campaign.startDate} → ${campaign.endDate}`);
+  safeInput('campaignAdvertiser', campaign.advertiser);
+  safeInput('campaignObjective', campaign.objective);
+  safeInput('campaignStartDate', campaign.startDate);
+  safeInput('campaignEndDate', campaign.endDate);
+  safeInput('campaignTotalBudget', campaign.totalBudget);
+  safeInput('campaignDailyBudget', campaign.dailyBudget);
+  safeInput('targetAudience', campaign.targetAudience);
+  safeInput('geoTargeting', campaign.geoTargeting);
+  safeInput('deviceTargeting', campaign.deviceTargeting);
+});
 
 
   </script>

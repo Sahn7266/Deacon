@@ -478,6 +478,46 @@
   <!-- Toast Container -->
   <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
+
+<!-- Create Campaign Modal -->
+<div id="createCampaignModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative">
+    <button id="closeCampaignModal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Create New Campaign</h2>
+
+    <form id="createCampaignForm" class="space-y-6 overflow-y-auto max-h-[75vh] pr-2">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div><label class="block text-sm font-medium text-gray-700">Campaign Name<input type="text" id="campaignName" class="mt-1 w-full border border-gray-300 rounded px-3 py-2" required></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">Channel<input type="text" id="campaignChannel" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">KPI<input type="text" id="campaignKPI" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">KPI Target<input type="text" id="campaignKPITarget" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">Pacing<input type="text" id="campaignPacing" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">Flight (Start → End)<input type="text" id="campaignFlight" class="mt-1 w-full border border-gray-300 rounded px-3 py-2" placeholder="MM/DD/YYYY → MM/DD/YYYY"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">Advertiser<input type="text" id="campaignAdvertiser" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">Objective<input type="text" id="campaignObjective" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">Start Date<input type="date" id="campaignStartDate" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">End Date<input type="date" id="campaignEndDate" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">Total Budget<input type="number" id="campaignTotalBudget" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">Daily Budget<input type="number" id="campaignDailyBudget" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div class="sm:col-span-2"><label class="block text-sm font-medium text-gray-700">Target Audience<input type="text" id="targetAudience" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">Geographic Targeting<input type="text" id="geoTargeting" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+        <div><label class="block text-sm font-medium text-gray-700">Device Targeting<input type="text" id="deviceTargeting" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4">
+        <button type="button" id="cancelCampaignModal" class="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-100">Cancel</button>
+        <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
   <script>
     // === CONFIGURATION ===
     const CONFIG = {
@@ -635,11 +675,15 @@
           }
 
           // Create button
-          if (this.elements.createBtn) {
-            this.elements.createBtn.addEventListener('click', function() {
-              if (typeof showToast === 'function') showToast('Create Campaign functionality to be implemented');
-            });
-          }
+if (this.elements.createBtn) {
+  this.elements.createBtn.addEventListener('click', () => {
+    const modal = document.getElementById('createCampaignModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+  });
+}
 
           // State filter
           if (this.elements.stateChip) {
@@ -976,9 +1020,10 @@ tr.innerHTML = `
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums border-r border-default">${c.adGroups ?? 0}</td>
-  <td class="px-6 py-1 whitespace-nowrap text-sm text-center">
-    <a href="#" class="text-blue-600 hover:underline">Export</a>
-  </td>
+<td class="px-6 py-1 whitespace-nowrap text-sm text-center flex gap-3 justify-center items-center">
+  <a href="#" class="text-blue-600 hover:underline">Export</a>
+  <button class="text-red-600 hover:underline delete-campaign" data-id="${c.id}">Delete</button>
+</td>
 `;
 ;
             }
@@ -1051,6 +1096,83 @@ tr.innerHTML = `
       }
     });
 
+
+// Delete campaign handler
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.delete-campaign');
+  if (!btn) return;
+
+  const campaignId = btn.dataset.id;
+  if (!campaignId) return;
+
+  if (!confirm(`Are you sure you want to delete Campaign ID "${campaignId}"?`)) return;
+
+  app.groups.forEach(group => {
+    group.campaigns = group.campaigns.filter(c => c.id !== campaignId);
+  });
+
+  app.saveGroups?.();
+  app.applyFiltersAndRender?.();
+});
+
+// Show / hide modal handlers
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('createCampaignBtn')?.addEventListener('click', () => {
+    document.getElementById('createCampaignModal')?.classList.remove('hidden');
+  });
+
+  document.getElementById('closeCampaignModal')?.addEventListener('click', () => {
+    document.getElementById('createCampaignModal')?.classList.add('hidden');
+  });
+
+  document.getElementById('cancelCampaignModal')?.addEventListener('click', () => {
+    document.getElementById('createCampaignModal')?.classList.add('hidden');
+  });
+});
+
+// Create campaign logic
+document.getElementById('createCampaignForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const campaign = {
+    id: 'CAM-' + Date.now(),
+    name: document.getElementById('campaignName')?.value || '',
+    advertiser: document.getElementById('campaignAdvertiser')?.value || '',
+    objective: document.getElementById('campaignObjective')?.value || '',
+    startDate: document.getElementById('campaignStartDate')?.value || '',
+    endDate: document.getElementById('campaignEndDate')?.value || '',
+    totalBudget: document.getElementById('campaignTotalBudget')?.value || '0',
+    dailyBudget: document.getElementById('campaignDailyBudget')?.value || '0',
+    targetAudience: document.getElementById('targetAudience')?.value || '',
+    geoTargeting: document.getElementById('geoTargeting')?.value || '',
+    deviceTargeting: document.getElementById('deviceTargeting')?.value || '',
+    channel: document.getElementById('campaignChannel')?.value || '',
+    kpi: document.getElementById('campaignKPI')?.value || '',
+    kpiTarget: document.getElementById('campaignKPITarget')?.value || '',
+    pacing: document.getElementById('campaignPacing')?.value || '',
+    flight: document.getElementById('campaignFlight')?.value || '',
+    state: 'Active',
+    dsp: 'DV360',
+    adGroups: 0
+  };
+
+  const raw = localStorage.getItem('campaign_tree_groups');
+  let groups = raw ? JSON.parse(raw) : [];
+
+  if (!groups.length) {
+    groups.push({ id: 'DEFAULT', name: 'Ungrouped', expanded: true, campaigns: [] });
+  }
+
+  groups[0].campaigns.unshift(campaign);
+  localStorage.setItem('campaign_tree_groups', JSON.stringify(groups));
+
+  app.groups = groups;
+  app.saveGroups?.();
+  app.applyFiltersAndRender?.();
+
+  this.reset();
+  document.getElementById('createCampaignModal')?.classList.add('hidden');
+});
 
 
 
