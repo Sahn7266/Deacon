@@ -122,71 +122,94 @@
     } catch { return ts; }
   }
 
-  // Drawer rendering (expect container existing on Campaigns list page)
-  function renderDrawer({campaignId, advertiserName, advertiserAccount}){
-    console.log('📂 Opening drawer for campaign:', campaignId);
-    const drawer = document.getElementById('auditDrawer');
-    if (!drawer) return;
-    const list = drawer.querySelector('[data-audit-list]');
-    const notes = drawer.querySelector('[data-audit-notes]');
-    const ctx = drawer.querySelector('[data-audit-context]');
-    if (ctx) {
-      ctx.textContent = `${advertiserName || 'Advertiser'} (${advertiserAccount || 'Account N/A'})`;
-    }
+function renderDrawer({ campaignId, advertiserName, advertiserAccount }) {
+  const drawer = document.getElementById('auditDrawer');
+  if (!drawer) return;
 
-    const entries = getCampaignAudit(campaignId);
-    if (notes) notes.value = loadNotes(campaignId);
+  const list = drawer.querySelector('[data-audit-list]');
+  const notes = drawer.querySelector('[data-audit-notes]');
+  const ctx = drawer.querySelector('[data-audit-context]');
 
-    if (!list) return;
-    list.innerHTML = '';
+  if (ctx) {
+    ctx.textContent = `${advertiserName || 'Advertiser'} (${advertiserAccount || 'Account N/A'})`;
+  }
 
-    if (!entries.length){
-      list.innerHTML = '<p class="text-sm text-gray-500 py-2">No logged actions yet.</p>';
-      return;
-    }
+  const entries = getCampaignAudit(campaignId);
+  if (notes) notes.value = loadNotes(campaignId);
+  if (!list) return;
 
-    // Group by entityId
-    const grouped = {};
-    entries.forEach(e=>{
-      const key = e.entityType + '|' + e.entityId;
-      if (!grouped[key]) grouped[key] = { meta: e, items: [] };
-      grouped[key].items.push(e);
-    });
+  list.innerHTML = '';
 
-    Object.values(grouped).forEach(group=>{
-      const entityHeading = document.createElement('div');
-      const title = group.meta.entityType === 'campaign' ? 'Campaign' : 'Ad Group';
-      entityHeading.className = 'mt-4 mb-1 text-xs font-semibold text-gray-600 uppercase';
-      entityHeading.textContent = `${title} (${group.meta.entityId})`;
-      list.appendChild(entityHeading);
+  if (!entries.length) {
+    list.innerHTML = '<p class="text-sm text-gray-500 py-2 italic">No logged actions yet.</p>';
+    return;
+  }
 
-      const ul = document.createElement('ul');
-      ul.className = 'space-y-1';
-      group.items.forEach(e=>{
-        const li = document.createElement('li');
-        li.className = 'border border-gray-200 rounded-md p-2 bg-white';
-        const label = getFieldLabel(e.field);
-        let line = `<div class="flex items-center justify-between">
-          <span class="text-xs font-medium ${
-            e.action==='create' ? 'text-green-600' : 'text-blue-600'
-          }">${e.action.toUpperCase()}</span>
-          <span class="text-[10px] text-gray-400">${formatTimestamp(e.ts)}</span>
+  // Group logs by entity (campaign/adgroup)
+  const grouped = {};
+  entries.forEach(e => {
+    const key = `${e.entityType}-${e.entityId}`;
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(e);
+  });
+
+  Object.entries(grouped).forEach(([groupKey, groupItems]) => {
+    const [entityType, entityId] = groupKey.split('-');
+
+    const section = document.createElement('div');
+    section.className = 'mb-2 border border-gray-300 rounded-md overflow-hidden';
+
+    const header = document.createElement('button');
+    header.className = 'w-full text-left px-4 py-2 bg-gray-100 font-semibold text-sm uppercase hover:bg-gray-200 flex justify-between items-center';
+    header.innerHTML = `
+      ${entityType.toUpperCase()} (${entityId})
+      <span class="accordion-icon transform transition-transform">&#9662;</span>
+    `;
+
+    const body = document.createElement('div');
+    body.className = 'px-4 py-2 hidden bg-white';
+
+    const ul = document.createElement('ul');
+    ul.className = 'space-y-1 text-sm text-gray-800';
+
+    groupItems.forEach(e => {
+      const li = document.createElement('li');
+      li.className = 'border border-gray-200 rounded px-3 py-2 bg-white';
+
+      const label = getFieldLabel(e.field);
+      const ts = formatTimestamp(e.ts);
+      let content = `
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium ${e.action === 'create' ? 'text-green-600' : 'text-blue-600'}">${e.action.toUpperCase()}</span>
+          <span class="text-[10px] text-gray-400">${ts}</span>
         </div>
         <div class="mt-1 text-xs text-gray-700">
           <span class="font-semibold">${label}:</span> `;
-        if (e.action === 'edit' && e.oldValue !== undefined){
-          line += `<span class="text-gray-500 line-through mr-1">${e.oldValue || '—'}</span>
-                   <span class="text-gray-900">→ ${e.newValue || '—'}</span>`;
-        } else {
-          line += `<span class="text-gray-900">${e.newValue || '—'}</span>`;
-        }
-        line += `</div>`;
-        li.innerHTML = line;
-        ul.appendChild(li);
-      });
-      list.appendChild(ul);
+
+      if (e.action === 'edit' && e.oldValue !== undefined) {
+        content += `<span class="text-gray-500 line-through mr-1">${e.oldValue || '—'}</span>
+                    <span class="text-gray-900">→ ${e.newValue || '—'}</span>`;
+      } else {
+        content += `<span class="text-gray-900">${e.newValue || '—'}</span>`;
+      }
+      content += `</div>`;
+
+      li.innerHTML = content;
+      ul.appendChild(li);
     });
-  }
+
+    body.appendChild(ul);
+    section.appendChild(header);
+    section.appendChild(body);
+    list.appendChild(section);
+
+    header.addEventListener('click', () => {
+      const isHidden = body.classList.contains('hidden');
+      body.classList.toggle('hidden', !isHidden);
+      header.querySelector('.accordion-icon').style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+  });
+}
 
   function openDrawer(opts){
     const drawer = document.getElementById('auditDrawer');
