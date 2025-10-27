@@ -1325,10 +1325,59 @@ document.addEventListener('DOMContentLoaded', function () {
       advertiserName: advName,
       advertiserAccount: advAccount
     });
+    renderAuditDrawer(campaignId);
   });
 });
 
 
+function renderAuditDrawer(campaignId) {
+  const container = document.getElementById('auditDrawerBody');
+  container.innerHTML = '';
+
+  const logs = JSON.parse(localStorage.getItem('audit_log_v1') || '[]')
+  .filter(log => log.campaignId === campaignId && ['campaign', 'adgroup'].includes(log.entityType));
+
+
+  if (logs.length === 0) {
+    container.innerHTML = '<p class="text-sm italic text-gray-500 px-4 py-2">No logged actions yet.</p>';
+    return;
+  }
+
+  logs.forEach(log => {
+    const section = document.createElement('div');
+    section.className = 'border-t border-gray-300 px-4 py-3';
+
+    const header = document.createElement('div');
+    header.className = 'font-semibold text-sm text-gray-800';
+    header.textContent = `${log.action.toUpperCase()} → ${log.entityType}`;
+    section.appendChild(header);
+
+    const list = document.createElement('ul');
+    list.className = 'text-xs text-gray-700 mt-1 space-y-1';
+
+    if (log.action === 'edit') {
+      const before = log.before || {};
+      const after = log.after || {};
+      Object.keys(after).forEach(key => {
+        if (before[key] !== after[key]) {
+          const li = document.createElement('li');
+          li.textContent = `${key}: ${before[key] || '—'} → ${after[key]}`;
+          list.appendChild(li);
+        }
+      });
+    } else if (log.action === 'create') {
+      const data = log.data || {};
+      Object.entries(data).forEach(([key, value]) => {
+        const li = document.createElement('li');
+        li.textContent = `${key}: ${value}`;
+        list.appendChild(li);
+      });
+    }
+
+    section.appendChild(list);
+    container.appendChild(section);
+  });
+}
 
 
 

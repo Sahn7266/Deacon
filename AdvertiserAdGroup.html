@@ -10,6 +10,7 @@
   <script src="./assets/notifications.js"></script>
   <script src="./assets/toast.js" defer></script>
   <script src="./assets/sidebar.js" defer></script>
+  <script src="./assets/audit.js" defer></script>
   <link rel="stylesheet" href="./assets/theme.css"><!-- ADD -->
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
@@ -965,7 +966,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const adGroup = {
       id: 'AG' + Date.now(),
       name: form.adGroupName.value.trim(),
-      campaign: form.adGroupCampaign.value.trim(),
+      campaign: getQueryParam('campaignId'),
       budget: form.adGroupBudget.value.trim(),
       bidStrategy: form.adGroupBidStrategy.value.trim(),
       creativeFormat: form.creativeFormat.value.trim(),
@@ -976,9 +977,62 @@ document.addEventListener('DOMContentLoaded', () => {
       source: 'custom'
     };
 
+      // ✅ Log Ad Group Creation to Audit
+audit.recordCreate({
+  campaignId: adGroup.campaign, // Associates it with the correct campaign's export drawer
+  entityType: 'adgroup',
+  entityId: adGroup.id,
+  data: {
+    adGroupName: adGroup.name,
+    budgetAllocation: adGroup.budget,
+    bidStrategy: adGroup.bidStrategy,
+    creativeFormat: adGroup.creativeFormat,
+    targetingRefinements: adGroup.targetingRefinements,
+    placementSettings: adGroup.placementSettings
+  }
+});
+console.log('✔️ Audit logged for Ad Group:', adGroup.id);
+
+
     let groups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-    groups.push(adGroup);
-    localStorage.setItem('adgroups_data_v1', JSON.stringify(groups));
+const existingIndex = groups.findIndex(g => g.id === adGroup.id);
+
+if (existingIndex !== -1) {
+  // === Audit Edit Tracking ===
+  const originalAdGroup = JSON.parse(JSON.stringify(groups[existingIndex]));
+
+  audit.recordEdit({
+    campaignId: adGroup.campaign,
+    entityType: 'adgroup',
+    entityId: adGroup.id,
+    before: originalAdGroup,
+    after: adGroup
+  });
+  console.log('✏️ Audit logged for Ad Group edit:', adGroup.id);
+
+  groups[existingIndex] = adGroup;
+} else {
+  // === Audit Create Tracking ===
+  audit.recordCreate({
+    campaignId: adGroup.campaign,
+    entityType: 'adgroup',
+    entityId: adGroup.id,
+    data: {
+      adGroupName: adGroup.name,
+      budgetAllocation: adGroup.budget,
+      bidStrategy: adGroup.bidStrategy,
+      creativeFormat: adGroup.creativeFormat,
+      targetingRefinements: adGroup.targetingRefinements,
+      placementSettings: adGroup.placementSettings
+    }
+  });
+  console.log('✔️ Audit logged for Ad Group:', adGroup.id);
+
+  groups.push(adGroup);
+}
+
+localStorage.setItem('adgroups_data_v1', JSON.stringify(groups));
+
 
     modal.classList.add('hidden');
 
@@ -1004,6 +1058,31 @@ function deleteAdGroup(id) {
     app.applyFiltersAndRender();
   }
 }
+
+function getQueryParam(key) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(key);
+}
+
+
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const campaignSelect = document.getElementById('adGroupCampaign');
+    if (!campaignSelect) return;
+
+    const campaignGroups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
+
+    campaignGroups.forEach(group => {
+      group.campaigns.forEach(campaign => {
+        const opt = document.createElement('option');
+        opt.value = campaign.id;
+        opt.textContent = campaign.name;
+        campaignSelect.appendChild(opt);
+      });
+    });
+  });
+
 
 
 
