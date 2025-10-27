@@ -966,7 +966,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const adGroup = {
       id: 'AG' + Date.now(),
       name: form.adGroupName.value.trim(),
-      campaign: getQueryParam('campaignId'),
+      campaign: form.adGroupCampaign.value,
+
       budget: form.adGroupBudget.value.trim(),
       bidStrategy: form.adGroupBidStrategy.value.trim(),
       creativeFormat: form.creativeFormat.value.trim(),
