@@ -110,6 +110,10 @@
       visibility: visible;
     }
   </style>
+
+<script src="./assets/audit.js" defer></script>
+
+
 </head>
 
 <body class="font-inter"><!-- removed bg-gray-100 -->
@@ -518,6 +522,32 @@
 </div>
 
 
+
+<!-- AUDIT DRAWER -->
+<div id="auditDrawer" class="fixed inset-0 z-50 flex justify-end transition transform translate-x-full bg-black bg-opacity-30">
+  <div class="relative w-full max-w-md bg-white shadow-lg p-6 overflow-y-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold text-gray-900">Manual Entry Log</h2>
+      <button data-close-drawer class="text-gray-500 hover:text-gray-700">
+        ✕
+      </button>
+    </div>
+    <div class="text-sm text-gray-600 mb-2" data-audit-context></div>
+    <div data-audit-list class="space-y-2 mb-4"></div>
+
+    <div class="mt-4">
+      <label for="customInstructions" class="block text-sm font-medium text-gray-700">Custom Instructions</label>
+      <textarea id="customInstructions" rows="4" data-audit-notes class="mt-1 block w-full border border-gray-300 rounded-md p-2 text-sm text-gray-900"></textarea>
+    </div>
+
+    <div class="mt-4 flex justify-between">
+      <button data-clear class="bg-red-100 text-red-700 px-4 py-2 text-sm rounded-md hover:bg-red-200">Clear</button>
+      <button disabled class="bg-blue-600 text-white px-4 py-2 text-sm rounded-md opacity-80 cursor-not-allowed">Export (Coming Soon)</button>
+    </div>
+  </div>
+</div>
+
+
   <script>
     // === CONFIGURATION ===
     const CONFIG = {
@@ -624,6 +654,39 @@
         saveGroups: function() {
           try {
             localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(this.groups));
+            try {
+const latestGroup = this.groups.at(-1);
+const campaign = latestGroup?.campaign; // this is the real campaign object
+  if (campaign && campaign.id) {
+  audit.recordCreate({
+    campaignId: campaign.id,
+    entityType: 'campaign',
+    entityId: campaign.id,
+    data: {
+      companyName: campaign.name,
+      campaignChannel: campaign.channel,
+      campaignKPI: campaign.kpi,
+      campaignKPITarget: campaign.kpiTarget,
+      campaignPacing: campaign.pacing,
+      campaignFlight: campaign.flight,
+      campaignAdvertiser: campaign.advertiser,
+      campaignObjective: campaign.objective,
+      campaignStartDate: campaign.startDate,
+      campaignEndDate: campaign.endDate,
+      campaignTotalBudget: campaign.totalBudget,
+      campaignDailyBudget: campaign.dailyBudget,
+      targetAudience: campaign.audience,
+      geoTargeting: campaign.geo,
+      deviceTargeting: campaign.device
+    }
+  });
+
+  console.log('✔️ Audit logged for campaign:', campaign.id);
+}
+} catch (e) {
+  console.warn('Failed to log audit creation:', e);
+}
+
           } catch (e) {
             console.warn('Failed to save groups:', e);
           }
@@ -965,6 +1028,23 @@ if (this.elements.createBtn) {
           const group = this.groups.find(g => g.id === this.editingGroupId);
           if (!group) return;
 
+          // === Track Edit Audit ===
+const originalData = { ...group };
+const updatedData = { ...group, name: newName };
+
+try {
+  audit.recordEdit({
+    campaignId: group.id,
+    entityType: 'campaign',
+    entityId: group.id,
+    before: originalData,
+    after: updatedData
+  });
+} catch (err) {
+  console.warn('Audit edit failed:', err);
+}
+
+          
           group.name = newName;
           this.saveGroups();
           this.applyFiltersAndRender();
@@ -1020,12 +1100,32 @@ tr.innerHTML = `
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums border-r border-default">${c.adGroups ?? 0}</td>
-<td class="px-6 py-1 whitespace-nowrap text-sm text-center flex gap-3 justify-center items-center">
-  <a href="#" class="text-blue-600 hover:underline">Export</a>
-  <button class="text-red-600 hover:underline delete-campaign" data-id="${c.id}">Delete</button>
-</td>
 `;
-;
+const tdActions = document.createElement('td');
+tdActions.className = 'px-6 py-1 whitespace-nowrap text-sm text-center flex gap-3 justify-center items-center';
+
+// Create Export link dynamically
+const exportLink = document.createElement('a');
+exportLink.href = '#';
+exportLink.className = 'text-blue-600 hover:underline export-btn';
+exportLink.textContent = 'Export';
+
+const advData = JSON.parse(localStorage.getItem('adv_selected_data') || '{}');
+exportLink.dataset.export = true;
+exportLink.dataset.campaignId = c.id;
+exportLink.dataset.advName = advData.name || 'Unknown Advertiser';
+exportLink.dataset.advAccount = advData.account || '—';
+
+// Create Delete button
+const deleteBtn = document.createElement('button');
+deleteBtn.className = 'text-red-600 hover:underline delete-campaign';
+deleteBtn.dataset.id = c.id;
+deleteBtn.textContent = 'Delete';
+
+// Add both to Actions column
+tdActions.appendChild(exportLink);
+tdActions.appendChild(deleteBtn);
+tr.appendChild(tdActions);
             }
 
             this.elements.campaignTableBody.appendChild(tr);
@@ -1164,6 +1264,34 @@ document.getElementById('createCampaignForm').addEventListener('submit', functio
   }
 
   groups[0].campaigns.unshift(campaign);
+
+// Log creation to audit
+audit.recordCreate({
+  campaignId: campaign.id,
+  entityType: 'campaign',
+  entityId: campaign.id,
+  data: {
+    companyName: campaign.name,
+    campaignChannel: campaign.channel,
+    campaignKPI: campaign.kpi,
+    campaignKPITarget: campaign.kpiTarget,
+    campaignPacing: campaign.pacing,
+    campaignFlight: campaign.flight,
+    campaignAdvertiser: campaign.advertiser,
+    campaignObjective: campaign.objective,
+    campaignStartDate: campaign.startDate,
+    campaignEndDate: campaign.endDate,
+    campaignTotalBudget: campaign.totalBudget,
+    campaignDailyBudget: campaign.dailyBudget,
+    targetAudience: campaign.targetAudience,
+    geoTargeting: campaign.geoTargeting,
+    deviceTargeting: campaign.deviceTargeting
+  }
+});
+console.log('✔️ Audit log created for:', campaign.id);
+
+
+
   localStorage.setItem('campaign_tree_groups', JSON.stringify(groups));
 
   app.groups = groups;
@@ -1173,6 +1301,34 @@ document.getElementById('createCampaignForm').addEventListener('submit', functio
   this.reset();
   document.getElementById('createCampaignModal')?.classList.add('hidden');
 });
+
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('click', function (e) {
+    const exportBtn = e.target.closest('[data-export]');
+    if (!exportBtn) return;
+
+    e.preventDefault();
+    const campaignId = exportBtn.dataset.campaignId;
+    const advName = exportBtn.dataset.advName;
+    const advAccount = exportBtn.dataset.advAccount;
+
+    if (!campaignId) {
+      alert("Missing campaign ID for audit drawer.");
+      return;
+    }
+
+    audit.openDrawer({
+      campaignId,
+      advertiserName: advName,
+      advertiserAccount: advAccount
+    });
+  });
+});
+
+
 
 
 
