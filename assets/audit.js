@@ -265,7 +265,7 @@
       list.appendChild(entityHeading);
 
       const ul = document.createElement('ul');
-      ul.className = 'space-y-1';
+      ul.className = 'space-y-0.5';
       
       // Process each field
       Object.keys(group.fields).forEach(fieldName => {
@@ -281,8 +281,8 @@
           // Add red border if the field has been edited
           const hasEdits = editEntries.length > 0;
           li.className = hasEdits ? 
-            'border border-red-400 rounded-md p-2 bg-white' : 
-            'border border-gray-200 rounded-md p-2 bg-white';
+            'border border-red-400 rounded-md px-3 py-1 bg-white' : 
+            'border border-gray-200 rounded-md px-3 py-1 bg-white';
           
           // Get the latest timestamp for the checkbox area
           const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
@@ -292,28 +292,29 @@
             editEntries[editEntries.length - 1].newValue : 
             createEntry.newValue;
           
-          let line = `<div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-gray-800">${label}:</span>
-            <div class="flex items-center gap-2">
-              <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
-              <input type="checkbox" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
-            </div>
-          </div>
-          <div class="mt-1 text-xs text-gray-700">
-            <span class="text-gray-900">${currentValue || '—'}</span>
-          </div>`;
+          // Build single line format: "Field Label: Field Value [Previous: Previous Value] Timestamp [✓]"
+          let line = `<div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1 text-xs flex-grow min-w-0">
+              <span class="font-semibold text-gray-800 whitespace-nowrap">${label}:</span>
+              <span class="text-gray-900 truncate">${currentValue || '—'}</span>`;
           
-          // Add previous value line if there are edits
+          // Add previous value if there are edits
           if (editEntries.length > 0) {
             // Find what the previous value was before the latest edit
             const latestEdit = editEntries[editEntries.length - 1];
             const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue : 
               (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : createEntry.newValue);
             
-            line += `<div class="mt-1 text-xs text-gray-700">
-              <span class="font-semibold">Previous:</span> <span class="text-gray-900">${previousValue || '—'}</span>
-            </div>`;
+            line += `<span class="font-semibold text-gray-600 ml-2 whitespace-nowrap">Previous:</span>
+                     <span class="text-gray-600 truncate">${previousValue || '—'}</span>`;
           }
+          
+          line += `</div>
+            <div class="flex items-center gap-2 whitespace-nowrap">
+              <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
+              <input type="checkbox" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
+            </div>
+          </div>`;
           
           li.innerHTML = line;
           ul.appendChild(li);
