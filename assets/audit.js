@@ -2,7 +2,8 @@
   const AUDIT_KEY = 'audit_log_v1';
   const NOTES_PREFIX = 'manual_export_notes_';
   const FIELD_LABELS = {
-    companyName: 'Campaign Name',
+    campaignName: 'Campaign Name',
+    companyName: 'Campaign Name', // Keep both for backward compatibility
     campaignChannel: 'Channel',
     campaignKPI: 'KPI',
     campaignKPITarget: 'KPI Target',
@@ -122,94 +123,134 @@
     } catch { return ts; }
   }
 
-function renderDrawer({ campaignId, advertiserName, advertiserAccount }) {
-  const drawer = document.getElementById('auditDrawer');
-  if (!drawer) return;
+  // Drawer rendering (expect container existing on Campaigns list page)
+  function renderDrawer({campaignId, advertiserName, advertiserAccount}){
+    console.log('📂 Opening drawer for campaign:', campaignId);
+    const drawer = document.getElementById('auditDrawer');
+    if (!drawer) return;
+    const list = drawer.querySelector('[data-audit-list]');
+    const notes = drawer.querySelector('[data-audit-notes]');
+    const ctx = drawer.querySelector('[data-audit-context]');
+    if (ctx) {
+      ctx.textContent = `${advertiserName || 'Advertiser'} (${advertiserAccount || 'Account N/A'})`;
+    }
 
-  const list = drawer.querySelector('[data-audit-list]');
-  const notes = drawer.querySelector('[data-audit-notes]');
-  const ctx = drawer.querySelector('[data-audit-context]');
+    const entries = getCampaignAudit(campaignId);
+    if (notes) notes.value = loadNotes(campaignId);
 
-  if (ctx) {
-    ctx.textContent = `${advertiserName || 'Advertiser'} (${advertiserAccount || 'Account N/A'})`;
-  }
+    if (!list) return;
+    list.innerHTML = '';
 
-  const entries = getCampaignAudit(campaignId);
-  if (notes) notes.value = loadNotes(campaignId);
-  if (!list) return;
+    if (!entries.length){
+      list.innerHTML = '<p class="text-sm text-gray-500 py-2">No logged actions yet.</p>';
+      return;
+    }
 
-  list.innerHTML = '';
-
-  if (!entries.length) {
-    list.innerHTML = '<p class="text-sm text-gray-500 py-2 italic">No logged actions yet.</p>';
-    return;
-  }
-
-  // Group logs by entity (campaign/adgroup)
-  const grouped = {};
-  entries.forEach(e => {
-    const key = `${e.entityType}-${e.entityId}`;
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(e);
-  });
-
-  Object.entries(grouped).forEach(([groupKey, groupItems]) => {
-    const [entityType, entityId] = groupKey.split('-');
-
-    const section = document.createElement('div');
-    section.className = 'mb-2 border border-gray-300 rounded-md overflow-hidden';
-
-    const header = document.createElement('button');
-    header.className = 'w-full text-left px-4 py-2 bg-gray-100 font-semibold text-sm uppercase hover:bg-gray-200 flex justify-between items-center';
-    header.innerHTML = `
-      ${entityType.toUpperCase()} (${entityId})
-      <span class="accordion-icon transform transition-transform">&#9662;</span>
+    // Add select all/deselect all toggle at the top
+    const toggleContainer = document.createElement('div');
+    toggleContainer.className = 'mb-3 flex justify-end items-center gap-2';
+    toggleContainer.innerHTML = `
+      <span id="toggleLabel" class="text-xs text-gray-600">Deselect All</span>
+      <button id="selectAllToggle" class="w-4 h-4 border-2 border-gray-400 rounded bg-blue-600 flex items-center justify-center hover:border-gray-500 transition-colors" title="Toggle all checkboxes">
+        <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+      </button>
     `;
+    list.appendChild(toggleContainer);
 
-    const body = document.createElement('div');
-    body.className = 'px-4 py-2 hidden bg-white';
-
-    const ul = document.createElement('ul');
-    ul.className = 'space-y-1 text-sm text-gray-800';
-
-    groupItems.forEach(e => {
-      const li = document.createElement('li');
-      li.className = 'border border-gray-200 rounded px-3 py-2 bg-white';
-
-      const label = getFieldLabel(e.field);
-      const ts = formatTimestamp(e.ts);
-      let content = `
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-medium ${e.action === 'create' ? 'text-green-600' : 'text-blue-600'}">${e.action.toUpperCase()}</span>
-          <span class="text-[10px] text-gray-400">${ts}</span>
-        </div>
-        <div class="mt-1 text-xs text-gray-700">
-          <span class="font-semibold">${label}:</span> `;
-
-      if (e.action === 'edit' && e.oldValue !== undefined) {
-        content += `<span class="text-gray-500 line-through mr-1">${e.oldValue || '—'}</span>
-                    <span class="text-gray-900">→ ${e.newValue || '—'}</span>`;
-      } else {
-        content += `<span class="text-gray-900">${e.newValue || '—'}</span>`;
-      }
-      content += `</div>`;
-
-      li.innerHTML = content;
-      ul.appendChild(li);
+    // Group by entityId and then by field
+    const grouped = {};
+    entries.forEach(e=>{
+      const entityKey = e.entityType + '|' + e.entityId;
+      if (!grouped[entityKey]) grouped[entityKey] = { meta: e, fields: {} };
+      
+      const fieldKey = e.field;
+      if (!grouped[entityKey].fields[fieldKey]) grouped[entityKey].fields[fieldKey] = [];
+      grouped[entityKey].fields[fieldKey].push(e);
     });
 
-    body.appendChild(ul);
-    section.appendChild(header);
-    section.appendChild(body);
-    list.appendChild(section);
+    Object.values(grouped).forEach(group=>{
+      const entityHeading = document.createElement('div');
+      const title = group.meta.entityType === 'campaign' ? 'Campaign' : 'Ad Group';
+      entityHeading.className = 'mt-4 mb-1 text-xs font-semibold text-gray-600 uppercase';
+      entityHeading.textContent = `${title} (${group.meta.entityId})`;
+      list.appendChild(entityHeading);
 
-    header.addEventListener('click', () => {
-      const isHidden = body.classList.contains('hidden');
-      body.classList.toggle('hidden', !isHidden);
-      header.querySelector('.accordion-icon').style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+      const ul = document.createElement('ul');
+      ul.className = 'space-y-1';
+      
+      // Process each field
+      Object.keys(group.fields).forEach(fieldName => {
+        const fieldEntries = group.fields[fieldName];
+        const label = getFieldLabel(fieldName);
+        
+        // Find the original create entry and any edit entries
+        const createEntry = fieldEntries.find(e => e.action === 'create');
+        const editEntries = fieldEntries.filter(e => e.action === 'edit').sort((a,b) => new Date(a.ts) - new Date(b.ts));
+        
+        if (createEntry) {
+          const li = document.createElement('li');
+          li.className = 'border border-gray-200 rounded-md p-2 bg-white';
+          
+          // Get the latest timestamp for the checkbox area
+          const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
+          
+          let line = `<div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-gray-800">${label}:</span>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
+              <input type="checkbox" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
+            </div>
+          </div>
+          <div class="mt-1 text-xs text-gray-700">
+            <span class="text-gray-900">${createEntry.newValue || '—'}</span>
+          </div>`;
+          
+          // Add edit line if there are edits
+          if (editEntries.length > 0) {
+            const latestEdit = editEntries[editEntries.length - 1];
+            line += `<div class="mt-1 text-xs text-gray-700">
+              <span class="font-semibold">Edit:</span> <span class="text-gray-900">${latestEdit.newValue || '—'}</span>
+            </div>`;
+          }
+          
+          li.innerHTML = line;
+          ul.appendChild(li);
+        }
+      });
+      
+      list.appendChild(ul);
     });
-  });
-}
+
+    // Add toggle functionality
+    const toggleBtn = document.getElementById('selectAllToggle');
+    const toggleLabel = document.getElementById('toggleLabel');
+    if (toggleBtn && toggleLabel) {
+      toggleBtn.addEventListener('click', function() {
+        const checkboxes = list.querySelectorAll('input[type="checkbox"]:not(#selectAllToggle)');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        
+        // Toggle all checkboxes to opposite state
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        
+        // Update toggle button appearance and label text
+        if (allChecked) {
+          // Going to unchecked state
+          this.classList.remove('bg-blue-600');
+          this.classList.add('bg-white');
+          this.querySelector('svg').classList.add('hidden');
+          toggleLabel.textContent = 'Select All';
+        } else {
+          // Going to checked state
+          this.classList.remove('bg-white');
+          this.classList.add('bg-blue-600');
+          this.querySelector('svg').classList.remove('hidden');
+          toggleLabel.textContent = 'Deselect All';
+        }
+      });
+    }
+  }
 
   function openDrawer(opts){
     const drawer = document.getElementById('auditDrawer');
