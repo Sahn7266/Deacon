@@ -2,7 +2,8 @@
   const AUDIT_KEY = 'audit_log_v1';
   const NOTES_PREFIX = 'manual_export_notes_';
   const FIELD_LABELS = {
-    companyName: 'Campaign Name',
+    campaignName: 'Campaign Name',
+    companyName: 'Campaign Name', // Keep both for backward compatibility
     campaignChannel: 'Channel',
     campaignKPI: 'KPI',
     campaignKPITarget: 'KPI Target',
@@ -145,12 +146,28 @@
       return;
     }
 
-    // Group by entityId
+    // Add select all/deselect all toggle at the top
+    const toggleContainer = document.createElement('div');
+    toggleContainer.className = 'mb-3 flex justify-end items-center gap-2';
+    toggleContainer.innerHTML = `
+      <span id="toggleLabel" class="text-xs text-gray-600">Deselect All</span>
+      <button id="selectAllToggle" class="w-4 h-4 border-2 border-gray-400 rounded bg-blue-600 flex items-center justify-center hover:border-gray-500 transition-colors" title="Toggle all checkboxes">
+        <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+    `;
+    list.appendChild(toggleContainer);
+
+    // Group by entityId and then by field
     const grouped = {};
     entries.forEach(e=>{
-      const key = e.entityType + '|' + e.entityId;
-      if (!grouped[key]) grouped[key] = { meta: e, items: [] };
-      grouped[key].items.push(e);
+      const entityKey = e.entityType + '|' + e.entityId;
+      if (!grouped[entityKey]) grouped[entityKey] = { meta: e, fields: {} };
+      
+      const fieldKey = e.field;
+      if (!grouped[entityKey].fields[fieldKey]) grouped[entityKey].fields[fieldKey] = [];
+      grouped[entityKey].fields[fieldKey].push(e);
     });
 
     Object.values(grouped).forEach(group=>{
@@ -162,30 +179,77 @@
 
       const ul = document.createElement('ul');
       ul.className = 'space-y-1';
-      group.items.forEach(e=>{
-        const li = document.createElement('li');
-        li.className = 'border border-gray-200 rounded-md p-2 bg-white';
-        const label = getFieldLabel(e.field);
-        let line = `<div class="flex items-center justify-between">
-          <span class="text-xs font-medium ${
-            e.action==='create' ? 'text-green-600' : 'text-blue-600'
-          }">${e.action.toUpperCase()}</span>
-          <span class="text-[10px] text-gray-400">${formatTimestamp(e.ts)}</span>
-        </div>
-        <div class="mt-1 text-xs text-gray-700">
-          <span class="font-semibold">${label}:</span> `;
-        if (e.action === 'edit' && e.oldValue !== undefined){
-          line += `<span class="text-gray-500 line-through mr-1">${e.oldValue || '—'}</span>
-                   <span class="text-gray-900">→ ${e.newValue || '—'}</span>`;
-        } else {
-          line += `<span class="text-gray-900">${e.newValue || '—'}</span>`;
+      
+      // Process each field
+      Object.keys(group.fields).forEach(fieldName => {
+        const fieldEntries = group.fields[fieldName];
+        const label = getFieldLabel(fieldName);
+        
+        // Find the original create entry and any edit entries
+        const createEntry = fieldEntries.find(e => e.action === 'create');
+        const editEntries = fieldEntries.filter(e => e.action === 'edit').sort((a,b) => new Date(a.ts) - new Date(b.ts));
+        
+        if (createEntry) {
+          const li = document.createElement('li');
+          li.className = 'border border-gray-200 rounded-md p-2 bg-white';
+          
+          // Get the latest timestamp for the checkbox area
+          const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
+          
+          let line = `<div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-gray-800">${label}:</span>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
+              <input type="checkbox" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
+            </div>
+          </div>
+          <div class="mt-1 text-xs text-gray-700">
+            <span class="text-gray-900">${createEntry.newValue || '—'}</span>
+          </div>`;
+          
+          // Add edit line if there are edits
+          if (editEntries.length > 0) {
+            const latestEdit = editEntries[editEntries.length - 1];
+            line += `<div class="mt-1 text-xs text-gray-700">
+              <span class="font-semibold">Edit:</span> <span class="text-gray-900">${latestEdit.newValue || '—'}</span>
+            </div>`;
+          }
+          
+          li.innerHTML = line;
+          ul.appendChild(li);
         }
-        line += `</div>`;
-        li.innerHTML = line;
-        ul.appendChild(li);
       });
+      
       list.appendChild(ul);
     });
+
+    // Add toggle functionality
+    const toggleBtn = document.getElementById('selectAllToggle');
+    const toggleLabel = document.getElementById('toggleLabel');
+    if (toggleBtn && toggleLabel) {
+      toggleBtn.addEventListener('click', function() {
+        const checkboxes = list.querySelectorAll('input[type="checkbox"]:not(#selectAllToggle)');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        
+        // Toggle all checkboxes to opposite state
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        
+        // Update toggle button appearance and label text
+        if (allChecked) {
+          // Going to unchecked state
+          this.classList.remove('bg-blue-600');
+          this.classList.add('bg-white');
+          this.querySelector('svg').classList.add('hidden');
+          toggleLabel.textContent = 'Select All';
+        } else {
+          // Going to checked state
+          this.classList.remove('bg-white');
+          this.classList.add('bg-blue-600');
+          this.querySelector('svg').classList.remove('hidden');
+          toggleLabel.textContent = 'Deselect All';
+        }
+      });
+    }
   }
 
   function openDrawer(opts){

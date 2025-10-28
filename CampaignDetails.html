@@ -15,6 +15,7 @@
 
   <!-- REMOVE OR COMMENT OUT THIS LINE: -->
   <script src="./assets/notifications.js"></script>
+  <script src="./assets/audit.js" defer></script>
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
 
@@ -240,9 +241,9 @@
 
               <!-- Campaign Name -->
               <div>
-                <label for="companyName" class="block text-sm font-medium text-gray-700">Campaign Name</label>
-                <span id="displayCompanyName" class="block mt-1 text-gray-800">Madison, AL - Programmatic Display</span>
-                <input id="companyName" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
+                <label for="campaignName" class="block text-sm font-medium text-gray-700">Campaign Name</label>
+                <span id="displayCampaignName" class="block mt-1 text-gray-800">Madison, AL - Programmatic Display</span>
+                <input id="campaignName" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
               </div>
 
               <!-- Channel -->
@@ -325,7 +326,7 @@
                       <script>
                         (function() {
                         const pairs = [
-  { span: 'displayCompanyName', input: 'companyName' },
+  { span: 'displayCampaignName', input: 'campaignName' },
   { span: 'displayCampaignChannel', input: 'campaignChannel' },
   { span: 'displayCampaignKPI', input: 'campaignKPI' },
   { span: 'displayCampaignKPITarget', input: 'campaignKPITarget' },
@@ -417,6 +418,67 @@
                           snapshot = null;
                           return;
                           }
+
+                          // === AUDIT TRACKING ===
+                          // Get campaign ID from URL params
+                          const urlParams = new URLSearchParams(window.location.search);
+                          const campaignId = urlParams.get('campaignId');
+                          
+                          if (campaignId && snapshot && window.audit) {
+                            try {
+                              window.audit.recordEdit({
+                                campaignId: campaignId,
+                                entityType: 'campaign',
+                                entityId: campaignId,
+                                before: snapshot,
+                                after: now
+                              });
+                            } catch (e) {
+                              console.warn('Failed to record audit edit:', e);
+                            }
+                          }
+
+                          // === SAVE CAMPAIGN DATA ===
+                          // Update the actual campaign data in storage
+                          if (campaignId) {
+                            try {
+                              const groups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
+                              let campaignFound = false;
+                              
+                              for (const group of groups) {
+                                const campaign = group.campaigns.find(c => c.id === campaignId);
+                                if (campaign) {
+                                  // Map the field values to campaign properties
+                                  if (now.campaignName !== undefined) campaign.name = now.campaignName;
+                                  if (now.campaignChannel !== undefined) campaign.channel = now.campaignChannel;
+                                  if (now.campaignKPI !== undefined) campaign.kpi = now.campaignKPI;
+                                  if (now.campaignKPITarget !== undefined) campaign.kpiTarget = now.campaignKPITarget;
+                                  if (now.campaignPacing !== undefined) campaign.pacing = now.campaignPacing;
+                                  if (now.campaignFlight !== undefined) campaign.flight = now.campaignFlight;
+                                  if (now.campaignAdvertiser !== undefined) campaign.advertiser = now.campaignAdvertiser;
+                                  if (now.campaignObjective !== undefined) campaign.objective = now.campaignObjective;
+                                  if (now.campaignStartDate !== undefined) campaign.startDate = now.campaignStartDate;
+                                  if (now.campaignEndDate !== undefined) campaign.endDate = now.campaignEndDate;
+                                  if (now.campaignTotalBudget !== undefined) campaign.totalBudget = now.campaignTotalBudget;
+                                  if (now.campaignDailyBudget !== undefined) campaign.dailyBudget = now.campaignDailyBudget;
+                                  if (now.targetAudience !== undefined) campaign.targetAudience = now.targetAudience;
+                                  if (now.geoTargeting !== undefined) campaign.geoTargeting = now.geoTargeting;
+                                  if (now.deviceTargeting !== undefined) campaign.deviceTargeting = now.deviceTargeting;
+                                  
+                                  campaignFound = true;
+                                  break;
+                                }
+                              }
+                              
+                              if (campaignFound) {
+                                localStorage.setItem('campaign_tree_groups', JSON.stringify(groups));
+                                console.log('Campaign data updated successfully');
+                              }
+                            } catch (e) {
+                              console.warn('Failed to update campaign data:', e);
+                            }
+                          }
+
                           // Commit to spans
                           showSpans();
                           inlineEditing = false;
@@ -608,7 +670,7 @@
       const SELECTED_ID_KEY  = 'adv_selected_id';
       const SELECTED_DATA_KEY= 'adv_selected_data';
 
-      const editableSelectors = ['#companyName', '#advertiserState', '#advertiserWebsite'];
+      const editableSelectors = ['#advertiserState', '#advertiserWebsite'];
 
       const btnEdit   = document.getElementById('editGeneralBtn');
       const btnSave   = document.getElementById('saveGeneralBtn');
@@ -719,7 +781,6 @@
           }
 
           // Map inputs → adv fields
-          advertisers[idx].name    = vals.companyName?.trim() || '';
           advertisers[idx].state   = vals.advertiserState?.trim() || '';   // ✓ use state field
           advertisers[idx].website = vals.advertiserWebsite?.trim() || '';
 
@@ -1067,7 +1128,7 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   // Set text content display spans
-  safeSet('displayCompanyName', campaign.name);
+  safeSet('displayCampaignName', campaign.name);
   safeSet('displayCampaignChannel', campaign.channel);
   safeSet('displayCampaignKPI', campaign.kpi);
   safeSet('displayCampaignKPITarget', campaign.kpiTarget);
@@ -1084,7 +1145,7 @@ window.addEventListener('DOMContentLoaded', () => {
   safeSet('displayDeviceTargeting', campaign.deviceTargeting);
 
   // Set editable inputs
-  safeInput('companyName', campaign.name);
+  safeInput('campaignName', campaign.name);
   safeInput('campaignChannel', campaign.channel);
   safeInput('campaignKPI', campaign.kpi);
   safeInput('campaignKPITarget', campaign.kpiTarget);
