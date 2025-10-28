@@ -105,13 +105,75 @@
   }
 
   function clearCampaignEdits(campaignId){
-    // Remove only edit actions, keep create actions
+    // Get current campaign data to use latest values
+    const groups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
+    let currentCampaign = null;
+    
+    for (const group of groups) {
+      const campaign = group.campaigns.find(c => c.id === campaignId);
+      if (campaign) {
+        currentCampaign = campaign;
+        break;
+      }
+    }
+    
+    if (!currentCampaign) {
+      // If no campaign found, just remove edit entries
+      const allEntries = loadRaw();
+      const filtered = allEntries.filter(e => {
+        if (e.campaignId !== campaignId) return true;
+        return e.action === 'create';
+      });
+      saveRaw(filtered);
+      return;
+    }
+    
+    // Remove all entries for this campaign (both create and edit)
     const allEntries = loadRaw();
-    const filtered = allEntries.filter(e => {
-      if (e.campaignId !== campaignId) return true; // Keep entries for other campaigns
-      return e.action === 'create'; // Keep only create actions for this campaign
+    const otherCampaignEntries = allEntries.filter(e => e.campaignId !== campaignId);
+    
+    // Create new create entries with current values
+    const ts = new Date().toISOString();
+    const newCreateEntries = [];
+    
+    // Map current campaign data to audit fields with current values
+    const currentData = {
+      campaignName: currentCampaign.name,
+      campaignChannel: currentCampaign.channel,
+      campaignKPI: currentCampaign.kpi,
+      campaignKPITarget: currentCampaign.kpiTarget,
+      campaignPacing: currentCampaign.pacing,
+      campaignAdvertiser: currentCampaign.advertiser,
+      campaignObjective: currentCampaign.objective,
+      campaignStartDate: currentCampaign.startDate,
+      campaignEndDate: currentCampaign.endDate,
+      campaignTotalBudget: currentCampaign.totalBudget,
+      campaignDailyBudget: currentCampaign.dailyBudget,
+      targetAudience: currentCampaign.targetAudience,
+      geoTargeting: currentCampaign.geoTargeting,
+      deviceTargeting: currentCampaign.deviceTargeting
+    };
+    
+    // Create new audit entries with current values
+    Object.entries(currentData).forEach(([field, value]) => {
+      if (value != null && String(value).trim() !== '') {
+        newCreateEntries.push({
+          id: uuid(),
+          ts,
+          campaignId,
+          entityType: 'campaign',
+          entityId: campaignId,
+          action: 'create',
+          field,
+          newValue: String(value).trim(),
+          user: 'localUser'
+        });
+      }
     });
-    saveRaw(filtered);
+    
+    // Combine other campaigns' entries with new create entries
+    const updatedEntries = [...otherCampaignEntries, ...newCreateEntries];
+    saveRaw(updatedEntries);
   }
 
   function getFieldLabel(field){
@@ -279,6 +341,8 @@
     if (!drawer) return;
     drawer.classList.remove('translate-x-full');
     drawer.dataset.campaignId = opts.campaignId;
+    drawer.dataset.advName = opts.advertiserName || '';
+    drawer.dataset.advAccount = opts.advertiserAccount || '';
     renderDrawer(opts);
   }
   function closeDrawer(){
