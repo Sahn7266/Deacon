@@ -663,7 +663,7 @@ const campaign = latestGroup?.campaign; // this is the real campaign object
     entityType: 'campaign',
     entityId: campaign.id,
     data: {
-      companyName: campaign.name,
+      campaignName: campaign.name,
       campaignChannel: campaign.channel,
       campaignKPI: campaign.kpi,
       campaignKPITarget: campaign.kpiTarget,
@@ -1271,7 +1271,7 @@ audit.recordCreate({
   entityType: 'campaign',
   entityId: campaign.id,
   data: {
-    companyName: campaign.name,
+    campaignName: campaign.name,
     campaignChannel: campaign.channel,
     campaignKPI: campaign.kpi,
     campaignKPITarget: campaign.kpiTarget,
