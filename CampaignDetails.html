@@ -358,7 +358,21 @@
                           if (!span || !input) return;
                           input.classList.remove('hidden');
                           span.classList.add('hidden');
-                          input.value = span.textContent.trim();
+                          
+                          let value = span.textContent.trim();
+                          
+                          // For number inputs (budget fields), extract numeric value or leave empty
+                          if (input.type === 'number') {
+                            // Remove currency symbols, commas, and extract numbers
+                            const numMatch = value.match(/[\d,]+/);
+                            if (numMatch && value !== 'N/A' && value !== '—') {
+                              value = numMatch[0].replace(/,/g, '');
+                            } else {
+                              value = ''; // Leave empty if N/A or no valid number
+                            }
+                          }
+                          
+                          input.value = value;
                           });
                         }
                         function showSpans() {

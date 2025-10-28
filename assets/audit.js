@@ -21,7 +21,6 @@
 
     // Ad Group
     adGroupNameInput: 'Ad Group Name',
-    campaignName: 'Campaign',
     budgetAllocation: 'Budget Allocation',
     bidStrategy: 'Bid Strategy',
     creativeFormat: 'Creative Format',
@@ -191,7 +190,11 @@
         
         if (createEntry) {
           const li = document.createElement('li');
-          li.className = 'border border-gray-200 rounded-md p-2 bg-white';
+          // Add red border if the field has been edited
+          const hasEdits = editEntries.length > 0;
+          li.className = hasEdits ? 
+            'border border-red-400 rounded-md p-2 bg-white' : 
+            'border border-gray-200 rounded-md p-2 bg-white';
           
           // Get the latest timestamp for the checkbox area
           const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
