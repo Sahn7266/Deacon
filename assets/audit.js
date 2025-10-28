@@ -219,7 +219,7 @@
     const notes = drawer.querySelector('[data-audit-notes]');
     const ctx = drawer.querySelector('[data-audit-context]');
     if (ctx) {
-      ctx.textContent = `${advertiserName || 'Advertiser'} (${advertiserAccount || 'Account N/A'})`;
+      ctx.textContent = `Manual Entry Log: ${advertiserName || 'Advertiser'} (${advertiserAccount || 'Account N/A'})`;
     }
 
     const entries = getCampaignAudit(campaignId);
@@ -260,7 +260,8 @@
     Object.values(grouped).forEach(group=>{
       const entityHeading = document.createElement('div');
       const title = group.meta.entityType === 'campaign' ? 'Campaign' : 'Ad Group';
-      entityHeading.className = 'mt-4 mb-1 text-xs font-semibold text-gray-600 uppercase';
+      entityHeading.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-xs font-semibold text-gray-600 uppercase rounded-md';
+      entityHeading.style.backgroundColor = '#d1d5db';
       entityHeading.textContent = `${title} (${group.meta.entityId})`;
       list.appendChild(entityHeading);
 
