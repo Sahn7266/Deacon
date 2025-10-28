@@ -274,11 +274,32 @@
                 <input id="campaignPacing" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
               </div>
 
-              <!-- Flight -->
+              <!-- Advertiser -->
               <div>
-                <label for="campaignFlight" class="block text-sm font-medium text-gray-700">Campaign Flight</label>
-                <span id="displayCampaignFlight" class="block mt-1 text-gray-800">04/14/2025 → 05/25/2025</span>
-                <input id="campaignFlight" type="text" placeholder="MM/DD/YYYY → MM/DD/YYYY" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
+                <label for="campaignAdvertiser" class="block text-sm font-medium text-gray-700">Advertiser</label>
+                <span id="displayCampaignAdvertiser" class="block mt-1 text-gray-800">N/A</span>
+                <input id="campaignAdvertiser" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
+              </div>
+
+              <!-- Objective -->
+              <div>
+                <label for="campaignObjective" class="block text-sm font-medium text-gray-700">Objective</label>
+                <span id="displayCampaignObjective" class="block mt-1 text-gray-800">N/A</span>
+                <input id="campaignObjective" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
+              </div>
+
+              <!-- Start Date -->
+              <div>
+                <label for="campaignStartDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+                <span id="displayCampaignStartDate" class="block mt-1 text-gray-800">N/A</span>
+                <input id="campaignStartDate" type="date" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
+              </div>
+
+              <!-- End Date -->
+              <div>
+                <label for="campaignEndDate" class="block text-sm font-medium text-gray-700">End Date</label>
+                <span id="displayCampaignEndDate" class="block mt-1 text-gray-800">N/A</span>
+                <input id="campaignEndDate" type="date" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
               </div>
 
 <!-- Total Budget -->
@@ -331,7 +352,6 @@
   { span: 'displayCampaignKPI', input: 'campaignKPI' },
   { span: 'displayCampaignKPITarget', input: 'campaignKPITarget' },
   { span: 'displayCampaignPacing', input: 'campaignPacing' },
-  { span: 'displayCampaignFlight', input: 'campaignFlight' },
   { span: 'displayCampaignAdvertiser', input: 'campaignAdvertiser' },
   { span: 'displayCampaignObjective', input: 'campaignObjective' },
   { span: 'displayCampaignStartDate', input: 'campaignStartDate' },
@@ -468,7 +488,6 @@
                                   if (now.campaignKPI !== undefined) campaign.kpi = now.campaignKPI;
                                   if (now.campaignKPITarget !== undefined) campaign.kpiTarget = now.campaignKPITarget;
                                   if (now.campaignPacing !== undefined) campaign.pacing = now.campaignPacing;
-                                  if (now.campaignFlight !== undefined) campaign.flight = now.campaignFlight;
                                   if (now.campaignAdvertiser !== undefined) campaign.advertiser = now.campaignAdvertiser;
                                   if (now.campaignObjective !== undefined) campaign.objective = now.campaignObjective;
                                   if (now.campaignStartDate !== undefined) campaign.startDate = now.campaignStartDate;
@@ -1147,7 +1166,6 @@ window.addEventListener('DOMContentLoaded', () => {
   safeSet('displayCampaignKPI', campaign.kpi);
   safeSet('displayCampaignKPITarget', campaign.kpiTarget);
   safeSet('displayCampaignPacing', campaign.pacing);
-  safeSet('displayCampaignFlight', `${campaign.startDate} → ${campaign.endDate}`);
   safeSet('displayCampaignAdvertiser', campaign.advertiser);
   safeSet('displayCampaignObjective', campaign.objective);
   safeSet('displayCampaignStartDate', campaign.startDate);
@@ -1164,7 +1182,6 @@ window.addEventListener('DOMContentLoaded', () => {
   safeInput('campaignKPI', campaign.kpi);
   safeInput('campaignKPITarget', campaign.kpiTarget);
   safeInput('campaignPacing', campaign.pacing);
-  safeInput('campaignFlight', `${campaign.startDate} → ${campaign.endDate}`);
   safeInput('campaignAdvertiser', campaign.advertiser);
   safeInput('campaignObjective', campaign.objective);
   safeInput('campaignStartDate', campaign.startDate);

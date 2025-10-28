@@ -8,7 +8,6 @@
     campaignKPI: 'KPI',
     campaignKPITarget: 'KPI Target',
     campaignPacing: 'Pacing',
-    campaignFlight: 'Flight',
     campaignAdvertiser: 'Advertiser',
     campaignObjective: 'Objective',
     campaignStartDate: 'Start Date',
@@ -21,6 +20,7 @@
 
     // Ad Group
     adGroupNameInput: 'Ad Group Name',
+    campaignName: 'Campaign',
     budgetAllocation: 'Budget Allocation',
     bidStrategy: 'Bid Strategy',
     creativeFormat: 'Creative Format',

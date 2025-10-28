@@ -501,7 +501,6 @@
         <div><label class="block text-sm font-medium text-gray-700">KPI<input type="text" id="campaignKPI" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
         <div><label class="block text-sm font-medium text-gray-700">KPI Target<input type="text" id="campaignKPITarget" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
         <div><label class="block text-sm font-medium text-gray-700">Pacing<input type="text" id="campaignPacing" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-        <div><label class="block text-sm font-medium text-gray-700">Flight (Start → End)<input type="text" id="campaignFlight" class="mt-1 w-full border border-gray-300 rounded px-3 py-2" placeholder="MM/DD/YYYY → MM/DD/YYYY"></label></div>
         <div><label class="block text-sm font-medium text-gray-700">Advertiser<input type="text" id="campaignAdvertiser" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
         <div><label class="block text-sm font-medium text-gray-700">Objective<input type="text" id="campaignObjective" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
         <div><label class="block text-sm font-medium text-gray-700">Start Date<input type="date" id="campaignStartDate" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
@@ -668,7 +667,6 @@ const campaign = latestGroup?.campaign; // this is the real campaign object
       campaignKPI: campaign.kpi,
       campaignKPITarget: campaign.kpiTarget,
       campaignPacing: campaign.pacing,
-      campaignFlight: campaign.flight,
       campaignAdvertiser: campaign.advertiser,
       campaignObjective: campaign.objective,
       campaignStartDate: campaign.startDate,
@@ -1250,7 +1248,6 @@ document.getElementById('createCampaignForm').addEventListener('submit', functio
     kpi: document.getElementById('campaignKPI')?.value || '',
     kpiTarget: document.getElementById('campaignKPITarget')?.value || '',
     pacing: document.getElementById('campaignPacing')?.value || '',
-    flight: document.getElementById('campaignFlight')?.value || '',
     state: 'Active',
     dsp: 'DV360',
     adGroups: 0
@@ -1276,7 +1273,6 @@ audit.recordCreate({
     campaignKPI: campaign.kpi,
     campaignKPITarget: campaign.kpiTarget,
     campaignPacing: campaign.pacing,
-    campaignFlight: campaign.flight,
     campaignAdvertiser: campaign.advertiser,
     campaignObjective: campaign.objective,
     campaignStartDate: campaign.startDate,
