@@ -104,6 +104,16 @@
     localStorage.removeItem(NOTES_PREFIX + campaignId);
   }
 
+  function clearCampaignEdits(campaignId){
+    // Remove only edit actions, keep create actions
+    const allEntries = loadRaw();
+    const filtered = allEntries.filter(e => {
+      if (e.campaignId !== campaignId) return true; // Keep entries for other campaigns
+      return e.action === 'create'; // Keep only create actions for this campaign
+    });
+    saveRaw(filtered);
+  }
+
   function getFieldLabel(field){
     return FIELD_LABELS[field] || field;
   }
@@ -290,8 +300,8 @@
     clearBtn?.addEventListener('click', ()=>{
       const cid = drawer.dataset.campaignId;
       if (!cid) return;
-      if (!confirm('Clear audit log for this campaign?')) return;
-      clearCampaignAudit(cid);
+      if (!confirm('Clear edit history for this campaign? This will reset the view to show only current values.')) return;
+      clearCampaignEdits(cid);
       renderDrawer({
         campaignId: cid,
         advertiserName: drawer.dataset.advName,
@@ -310,6 +320,7 @@
     recordEdit,
     getCampaignAudit,
     clearCampaignAudit,
+    clearCampaignEdits,
     loadNotes,
     saveNotes,
     openDrawer,
