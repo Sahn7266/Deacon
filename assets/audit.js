@@ -196,6 +196,11 @@
           // Get the latest timestamp for the checkbox area
           const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
           
+          // Determine current value and previous value
+          const currentValue = editEntries.length > 0 ? 
+            editEntries[editEntries.length - 1].newValue : 
+            createEntry.newValue;
+          
           let line = `<div class="flex items-center justify-between">
             <span class="text-xs font-semibold text-gray-800">${label}:</span>
             <div class="flex items-center gap-2">
@@ -204,14 +209,18 @@
             </div>
           </div>
           <div class="mt-1 text-xs text-gray-700">
-            <span class="text-gray-900">${createEntry.newValue || '—'}</span>
+            <span class="text-gray-900">${currentValue || '—'}</span>
           </div>`;
           
-          // Add edit line if there are edits
+          // Add previous value line if there are edits
           if (editEntries.length > 0) {
+            // Find what the previous value was before the latest edit
             const latestEdit = editEntries[editEntries.length - 1];
+            const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue : 
+              (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : createEntry.newValue);
+            
             line += `<div class="mt-1 text-xs text-gray-700">
-              <span class="font-semibold">Edit:</span> <span class="text-gray-900">${latestEdit.newValue || '—'}</span>
+              <span class="font-semibold">Previous:</span> <span class="text-gray-900">${previousValue || '—'}</span>
             </div>`;
           }
           
