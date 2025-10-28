@@ -128,12 +128,28 @@
       return;
     }
     
-    // Remove all entries for this campaign (both create and edit)
+    // Get original campaign create entries to preserve their timestamps
     const allEntries = loadRaw();
-    const otherCampaignEntries = allEntries.filter(e => e.campaignId !== campaignId);
+    const originalCampaignEntries = allEntries.filter(e => 
+      e.campaignId === campaignId && 
+      e.entityType === 'campaign' && 
+      e.action === 'create'
+    );
     
-    // Create new create entries with current values
-    const ts = new Date().toISOString();
+    // Use the earliest campaign create timestamp, or current time if none found
+    const originalTimestamp = originalCampaignEntries.length > 0 
+      ? originalCampaignEntries.sort((a, b) => new Date(a.ts) - new Date(b.ts))[0].ts
+      : new Date().toISOString();
+    
+    // Remove only campaign entries (keep ad group entries)
+    const nonCampaignEntries = allEntries.filter(e => {
+      // Keep entries for other campaigns
+      if (e.campaignId !== campaignId) return true;
+      // Keep ad group entries for this campaign
+      if (e.entityType === 'adgroup') return true;
+      // Remove campaign entries for this campaign
+      return false;
+    });
     const newCreateEntries = [];
     
     // Map current campaign data to audit fields with current values
@@ -159,7 +175,7 @@
       if (value != null && String(value).trim() !== '') {
         newCreateEntries.push({
           id: uuid(),
-          ts,
+          ts: originalTimestamp,
           campaignId,
           entityType: 'campaign',
           entityId: campaignId,
@@ -171,8 +187,8 @@
       }
     });
     
-    // Combine other campaigns' entries with new create entries
-    const updatedEntries = [...otherCampaignEntries, ...newCreateEntries];
+    // Combine non-campaign entries (including ad groups) with new campaign create entries
+    const updatedEntries = [...nonCampaignEntries, ...newCreateEntries];
     saveRaw(updatedEntries);
   }
 
