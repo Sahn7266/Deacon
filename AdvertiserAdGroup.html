@@ -858,10 +858,9 @@
             tr.innerHTML = `
               <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.id || ''}</td>
 <td class="px-6 py-1 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
-  <a href="./AdGroupDetails.html?id=${encodeURIComponent(ag.id)}" class="text-blue-600 hover:underline">
+  <a href="./AdGroupDetails.html?id=${encodeURIComponent(ag.id)}&campaignId=${encodeURIComponent(ag.campaign || '')}" class="text-blue-600 hover:underline">
   ${ag.name || ''}
 </a>
-
 </td>
               <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.dsp || ''}</td>
               <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ''}</td>
@@ -980,11 +979,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // ✅ Log Ad Group Creation to Audit
 audit.recordCreate({
-  campaignId: adGroup.campaign, // Associates it with the correct campaign's export drawer
+  campaignId: adGroup.campaign,
   entityType: 'adgroup',
   entityId: adGroup.id,
   data: {
-    adGroupName: adGroup.name,
+    adGroupNameInput: adGroup.name,
+    campaignName: adGroup.campaign,
     budgetAllocation: adGroup.budget,
     bidStrategy: adGroup.bidStrategy,
     creativeFormat: adGroup.creativeFormat,
@@ -993,7 +993,6 @@ audit.recordCreate({
   }
 });
 console.log('✔️ Audit logged for Ad Group:', adGroup.id);
-
 
     let groups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
 const existingIndex = groups.findIndex(g => g.id === adGroup.id);
@@ -1013,21 +1012,6 @@ if (existingIndex !== -1) {
 
   groups[existingIndex] = adGroup;
 } else {
-  // === Audit Create Tracking ===
-  audit.recordCreate({
-    campaignId: adGroup.campaign,
-    entityType: 'adgroup',
-    entityId: adGroup.id,
-    data: {
-      adGroupName: adGroup.name,
-      budgetAllocation: adGroup.budget,
-      bidStrategy: adGroup.bidStrategy,
-      creativeFormat: adGroup.creativeFormat,
-      targetingRefinements: adGroup.targetingRefinements,
-      placementSettings: adGroup.placementSettings
-    }
-  });
-  console.log('✔️ Audit logged for Ad Group:', adGroup.id);
 
   groups.push(adGroup);
 }

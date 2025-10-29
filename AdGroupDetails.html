@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="./assets/toast.css">
   <script src="./assets/toast.js" defer></script>
 
+
   <!-- REMOVE OR COMMENT OUT THIS LINE: -->
   <script src="./assets/notifications.js"></script>
   <link rel="stylesheet" href="./assets/loading.css">
@@ -366,89 +367,95 @@
                           snapshot = null;
                         });
 
-                        btnSave?.addEventListener('click', () => {
-                          if (!inlineEditing) return;
-                          const now = currentValues();
-                          if (snapshot && shallowEqual(snapshot, now)) {
-                            // No change
-                            showSpans();
-                            inlineEditing = false;
-                            snapshot = null;
-                            return;
-                          }
-                          
-                          // Get URL parameters for ad group and campaign IDs
-                          const urlParams = new URLSearchParams(window.location.search);
-                          const adGroupId = urlParams.get('adGroupId') || urlParams.get('id');
-                          const campaignId = urlParams.get('campaignId');
-                          
-                          if (!adGroupId) {
-                            alert('Ad Group ID not found in URL');
-                            return;
-                          }
-                          
-                          // Save to localStorage and record audit
-                          try {
-                            const adgroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-                            const adGroupIndex = adgroups.findIndex(ag => ag.id === adGroupId);
-                            
-                            if (adGroupIndex === -1) {
-                              console.error('Ad group not found with ID:', adGroupId);
-                              return;
-                            }
-                            
-                            const adGroup = adgroups[adGroupIndex];
-                            
-                            // Record audit before making changes (we'll need campaignId for audit)
-                            // For now, we'll use the adGroupId as campaignId since audit needs it
-                            if (window.audit && snapshot) {
-                              window.audit.recordEdit({
-                                campaignId: adGroup.campaignId || adGroupId, // Use stored campaignId or fallback
-                                entityType: 'adgroup',
-                                entityId: adGroupId,
-                                before: {
-                                  adGroupNameInput: snapshot.adGroupNameInput,
-                                  adGroupCampaign: snapshot.campaignName,
-                                  budgetAllocation: snapshot.budgetAllocation,
-                                  bidStrategy: snapshot.bidStrategy,
-                                  creativeFormat: snapshot.creativeFormat,
-                                  targetingRefinements: snapshot.targetingRefinements,
-                                  placementSettings: snapshot.placementSettings
-                                },
-                                after: {
-                                  adGroupNameInput: now.adGroupNameInput,
-                                  adGroupCampaign: now.campaignName,
-                                  budgetAllocation: now.budgetAllocation,
-                                  bidStrategy: now.bidStrategy,
-                                  creativeFormat: now.creativeFormat,
-                                  targetingRefinements: now.targetingRefinements,
-                                  placementSettings: now.placementSettings
-                                }
-                              });
-                            }
-                            
-                            // Update ad group data
-                            if (now.adGroupNameInput !== undefined) adGroup.name = now.adGroupNameInput;
-                            if (now.campaignName !== undefined) adGroup.campaign = now.campaignName;
-                            if (now.budgetAllocation !== undefined) adGroup.budget = now.budgetAllocation;
-                            if (now.bidStrategy !== undefined) adGroup.bidStrategy = now.bidStrategy;
-                            if (now.creativeFormat !== undefined) adGroup.creativeFormat = now.creativeFormat;
-                            if (now.targetingRefinements !== undefined) adGroup.targetingRefinements = now.targetingRefinements;
-                            if (now.placementSettings !== undefined) adGroup.placementSettings = now.placementSettings;
-                            
-                            // Save back to localStorage
-                            localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroups));
-                            console.log('Ad group saved successfully');
-                          } catch (error) {
-                            console.error('Error saving ad group:', error);
-                          }
-                          
-                          // Commit to spans
-                          showSpans();
-                          inlineEditing = false;
-                          snapshot = null;
-                        });
-                        })();
+btnSave?.addEventListener('click', () => {
+  if (!inlineEditing) return;
+  const now = currentValues();
+  
+  // Check if no changes
+  if (snapshot && shallowEqual(snapshot, now)) {
+    showSpans();
+    inlineEditing = false;
+    snapshot = null;
+    return;
+  }
+
+  // Get URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const adGroupId = urlParams.get('id') || urlParams.get('adGroupId');
+  let campaignId = urlParams.get('campaignId');
+  
+  if (!adGroupId) {
+    alert('Ad Group ID not found in URL');
+    return;
+  }
+  
+  // Load ad group from storage to get campaignId if not in URL
+  try {
+    const adgroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+    const adGroupIndex = adgroups.findIndex(ag => ag.id === adGroupId);
+    
+    if (adGroupIndex === -1) {
+      console.error('Ad group not found with ID:', adGroupId);
+      alert('Error: Ad group not found');
+      return;
+    }
+    
+    const adGroup = adgroups[adGroupIndex];
+    
+    // If campaignId not in URL, try to get it from the ad group's campaign field
+    if (!campaignId && adGroup.campaign) {
+      campaignId = adGroup.campaign;
+      console.log('📋 Using campaignId from ad group data:', campaignId);
+    }
+    
+    // === AUDIT TRACKING ===
+    if (campaignId && snapshot && window.audit) {
+      try {
+        window.audit.recordEdit({
+          campaignId: campaignId,
+          entityType: 'adgroup',
+          entityId: adGroupId,
+          before: snapshot,
+          after: now
+        });
+        console.log('✏️ Audit logged for Ad Group edit:', adGroupId, 'Campaign:', campaignId);
+      } catch (e) {
+        console.warn('Failed to record audit edit:', e);
+      }
+    } else {
+      console.warn('⚠️ Audit NOT logged - missing campaignId or audit system');
+      console.log('campaignId:', campaignId, 'snapshot:', !!snapshot, 'window.audit:', !!window.audit);
+    }
+
+    // === UPDATE AD GROUP DATA ===
+    if (now.adGroupNameInput !== undefined) adGroup.name = now.adGroupNameInput;
+    if (now.campaignName !== undefined) adGroup.campaign = now.campaignName;
+    if (now.budgetAllocation !== undefined) adGroup.budget = now.budgetAllocation;
+    if (now.bidStrategy !== undefined) adGroup.bidStrategy = now.bidStrategy;
+    if (now.creativeFormat !== undefined) adGroup.creativeFormat = now.creativeFormat;
+    if (now.targetingRefinements !== undefined) adGroup.targetingRefinements = now.targetingRefinements;
+    if (now.placementSettings !== undefined) adGroup.placementSettings = now.placementSettings;
+    
+    // Ensure campaignId is stored on the ad group object
+    if (campaignId && !adGroup.campaignId) {
+      adGroup.campaignId = campaignId;
+    }
+
+    // Save back to localStorage
+    localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroups));
+    console.log('✔️ Ad group saved successfully');
+    
+  } catch (error) {
+    console.error('Error saving ad group:', error);
+    alert('Error saving ad group. Check console for details.');
+    return;
+  }
+  
+  // Commit to spans
+  showSpans();
+  inlineEditing = false;
+  snapshot = null;
+});                                              })();
                       </script>
                       
 
@@ -1152,5 +1159,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
   </script>
   <script src="./assets/sidebar.js" defer></script>
+  <script src="./assets/audit.js" defer></script>
+
 </body>
 </html>

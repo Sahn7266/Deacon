@@ -18,14 +18,16 @@
     geoTargeting: 'Geo Targeting',
     deviceTargeting: 'Device Targeting',
 
-    // Ad Group
-    adGroupNameInput: 'Ad Group Name',
-    adGroupCampaign: 'Campaign',
-    budgetAllocation: 'Budget Allocation',
-    bidStrategy: 'Bid Strategy',
-    creativeFormat: 'Creative Format',
-    targetingRefinements: 'Targeting Refinements',
-    placementSettings: 'Placement Settings'
+// Ad Group
+adGroupNameInput: 'Ad Group Name',
+adGroupName: 'Ad Group Name', // Alias for backward compatibility
+adGroupCampaign: 'Campaign',
+campaignName: 'Campaign', // For ad group campaign field
+budgetAllocation: 'Budget Allocation',
+bidStrategy: 'Bid Strategy',
+creativeFormat: 'Creative Format',
+targetingRefinements: 'Targeting Refinements',
+placementSettings: 'Placement Settings'    
   };
 
   function loadRaw(){
@@ -92,11 +94,12 @@
     if (keys.size) saveRaw(log);
   }
 
-  function getCampaignAudit(campaignId){
-    return loadRaw()
-      .filter(e=>e.campaignId === campaignId)
-      .sort((a,b)=> new Date(a.ts)-new Date(b.ts));
-  }
+function getCampaignAudit(campaignId) {
+  // Return both campaign and ad group entries for this campaignId
+  return loadRaw()
+    .filter(e => e.campaignId === campaignId && (e.entityType === 'campaign' || e.entityType === 'adgroup'))
+    .sort((a,b) => new Date(a.ts) - new Date(b.ts));
+}
 
   function clearCampaignAudit(campaignId){
     const rest = loadRaw().filter(e=> e.campaignId !== campaignId);
@@ -233,27 +236,33 @@
       return;
     }
 
-    // Group by entityId and then by field
+    // Group by both entityType and entityId, always render both campaign and ad group sections
     const grouped = {};
-    entries.forEach(e=>{
+    entries.forEach(e => {
       const entityKey = e.entityType + '|' + e.entityId;
-      if (!grouped[entityKey]) grouped[entityKey] = { meta: e, fields: {} };
-      
+      if (!grouped[entityKey]) grouped[entityKey] = { meta: e, fields: {}, entityType: e.entityType, entityId: e.entityId };
       const fieldKey = e.field;
       if (!grouped[entityKey].fields[fieldKey]) grouped[entityKey].fields[fieldKey] = [];
       grouped[entityKey].fields[fieldKey].push(e);
     });
 
-    Object.values(grouped).forEach((group, groupIndex)=>{
+    // Always render campaign section first, then ad group sections
+    const sortedGroups = Object.values(grouped).sort((a, b) => {
+      if (a.entityType === b.entityType) return 0;
+      if (a.entityType === 'campaign') return -1;
+      return 1;
+    });
+
+    sortedGroups.forEach((group, groupIndex) => {
+      const entityType = group.entityType;
+      const entityId = group.entityId;
+      const title = entityType === 'campaign' ? 'Campaign' : 'Ad Group';
+      const sectionId = `${entityType}_${entityId}`;
       const entityHeading = document.createElement('div');
-      const title = group.meta.entityType === 'campaign' ? 'Campaign' : 'Ad Group';
       entityHeading.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-xs font-semibold text-gray-600 uppercase rounded-md flex justify-between items-center';
       entityHeading.style.backgroundColor = '#d1d5db';
-      
-      // Create toggle for this section
-      const sectionId = `${group.meta.entityType}_${group.meta.entityId}`;
       entityHeading.innerHTML = `
-        <span>${title} (${group.meta.entityId})</span>
+        <span>${title} (${entityId})</span>
         <div class="flex items-center gap-2">
           <span id="toggleLabel_${groupIndex}" class="text-xs text-gray-600">Deselect All</span>
           <button id="selectAllToggle_${groupIndex}" data-section-id="${sectionId}" class="w-4 h-4 border-2 border-gray-400 rounded bg-blue-600 flex items-center justify-center hover:border-gray-500 transition-colors" title="Toggle section checkboxes">
@@ -267,78 +276,65 @@
 
       const ul = document.createElement('ul');
       ul.className = 'space-y-0.5';
-      
-      // Process each field
+
+      // Process each field for this entity
       Object.keys(group.fields).forEach(fieldName => {
         const fieldEntries = group.fields[fieldName];
         const label = getFieldLabel(fieldName);
-        
         // Find the original create entry and any edit entries
         const createEntry = fieldEntries.find(e => e.action === 'create');
-        const editEntries = fieldEntries.filter(e => e.action === 'edit').sort((a,b) => new Date(a.ts) - new Date(b.ts));
-        
+        const editEntries = fieldEntries.filter(e => e.action === 'edit').sort((a, b) => new Date(a.ts) - new Date(b.ts));
         if (createEntry) {
           const li = document.createElement('li');
           // Add red border if the field has been edited
           const hasEdits = editEntries.length > 0;
-          li.className = hasEdits ? 
-            'border border-red-400 rounded-md px-3 py-1 bg-white' : 
+          li.className = hasEdits ?
+            'border border-red-400 rounded-md px-3 py-1 bg-white' :
             'border border-gray-200 rounded-md px-3 py-1 bg-white';
-          
           // Get the latest timestamp for the checkbox area
           const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
-          
           // Determine current value and previous value
-          const currentValue = editEntries.length > 0 ? 
-            editEntries[editEntries.length - 1].newValue : 
+          const currentValue = editEntries.length > 0 ?
+            editEntries[editEntries.length - 1].newValue :
             createEntry.newValue;
-          
           // Build single line format: "Field Label: Field Value [Previous: Previous Value] Timestamp [✓]"
           let line = `<div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-1 text-xs flex-grow min-w-0">
               <span class="font-semibold text-gray-800 whitespace-nowrap">${label}:</span>
               <span class="text-gray-900 truncate">${currentValue || '—'}</span>`;
-          
           // Add previous value if there are edits
           if (editEntries.length > 0) {
             // Find what the previous value was before the latest edit
             const latestEdit = editEntries[editEntries.length - 1];
-            const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue : 
+            const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue :
               (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : createEntry.newValue);
-            
             line += `<span class="font-semibold text-gray-600 ml-2 whitespace-nowrap">Previous:</span>
                      <span class="text-gray-600 truncate">${previousValue || '—'}</span>`;
           }
-          
           line += `</div>
             <div class="flex items-center gap-2 whitespace-nowrap">
               <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
               <input type="checkbox" checked data-section-id="${sectionId}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
             </div>
           </div>`;
-          
           li.innerHTML = line;
           ul.appendChild(li);
         }
       });
-      
       list.appendChild(ul);
     });
 
     // Add section-specific toggle functionality
-    Object.values(grouped).forEach((group, groupIndex) => {
+    sortedGroups.forEach((group, groupIndex) => {
       const toggleBtn = document.getElementById(`selectAllToggle_${groupIndex}`);
       const toggleLabel = document.getElementById(`toggleLabel_${groupIndex}`);
-      const sectionId = `${group.meta.entityType}_${group.meta.entityId}`;
-      
+      const sectionId = `${group.entityType}_${group.entityId}`;
       if (toggleBtn && toggleLabel) {
-        toggleBtn.addEventListener('click', function() {
+        toggleBtn.addEventListener('click', function () {
           const sectionCheckboxes = list.querySelectorAll(`input[type="checkbox"][data-section-id="${sectionId}"]`);
           const allChecked = Array.from(sectionCheckboxes).every(cb => cb.checked);
-          
           // Toggle all checkboxes in this section to opposite state
           sectionCheckboxes.forEach(cb => cb.checked = !allChecked);
-          
           // Update toggle button appearance and label text
           if (allChecked) {
             // Going to unchecked state
