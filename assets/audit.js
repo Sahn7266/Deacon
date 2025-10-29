@@ -101,62 +101,70 @@ function getCampaignAudit(campaignId) {
     .sort((a,b) => new Date(a.ts) - new Date(b.ts));
 }
 
-  function clearCampaignAudit(campaignId){
+function clearCampaignAudit(campaignId){
     const rest = loadRaw().filter(e=> e.campaignId !== campaignId);
     saveRaw(rest);
     localStorage.removeItem(NOTES_PREFIX + campaignId);
   }
 
-  function clearCampaignEdits(campaignId){
-    // Get current campaign data to use latest values
-    const groups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
-    let currentCampaign = null;
-    
-    for (const group of groups) {
-      const campaign = group.campaigns.find(c => c.id === campaignId);
-      if (campaign) {
-        currentCampaign = campaign;
-        break;
-      }
+function clearCampaignEdits(campaignId){
+  // Get current campaign data to use latest values
+  const groups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
+  let currentCampaign = null;
+  
+  for (const group of groups) {
+    const campaign = group.campaigns.find(c => c.id === campaignId);
+    if (campaign) {
+      currentCampaign = campaign;
+      break;
     }
-    
-    if (!currentCampaign) {
-      // If no campaign found, just remove edit entries
-      const allEntries = loadRaw();
-      const filtered = allEntries.filter(e => {
-        if (e.campaignId !== campaignId) return true;
-        return e.action === 'create';
-      });
-      saveRaw(filtered);
-      return;
-    }
-    
-    // Get original campaign create entries to preserve their timestamps
+  }
+  
+  // Get current ad groups for this campaign
+  const allAdGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+  const currentAdGroups = allAdGroups.filter(ag => 
+    ag.campaign === campaignId || ag.campaignId === campaignId
+  );
+  
+  if (!currentCampaign && currentAdGroups.length === 0) {
+    // If no campaign or ad groups found, just remove edit entries
     const allEntries = loadRaw();
-    const originalCampaignEntries = allEntries.filter(e => 
-      e.campaignId === campaignId && 
-      e.entityType === 'campaign' && 
-      e.action === 'create'
-    );
-    
-    // Use the earliest campaign create timestamp, or current time if none found
-    const originalTimestamp = originalCampaignEntries.length > 0 
-      ? originalCampaignEntries.sort((a, b) => new Date(a.ts) - new Date(b.ts))[0].ts
-      : new Date().toISOString();
-    
-    // Remove only campaign entries (keep ad group entries)
-    const nonCampaignEntries = allEntries.filter(e => {
-      // Keep entries for other campaigns
+    const filtered = allEntries.filter(e => {
       if (e.campaignId !== campaignId) return true;
-      // Keep ad group entries for this campaign
-      if (e.entityType === 'adgroup') return true;
-      // Remove campaign entries for this campaign
-      return false;
+      return e.action === 'create';
     });
-    const newCreateEntries = [];
-    
-    // Map current campaign data to audit fields with current values
-    const currentData = {
+    saveRaw(filtered);
+    return;
+  }
+  
+  // Get all audit entries
+  const allEntries = loadRaw();
+  
+  // Get original timestamps for campaign
+  const originalCampaignEntries = allEntries.filter(e => 
+    e.campaignId === campaignId && 
+    e.entityType === 'campaign' && 
+    e.action === 'create'
+  );
+  
+  // Use the earliest campaign create timestamp, or current time if none found
+  const originalCampaignTimestamp = originalCampaignEntries.length > 0 
+    ? originalCampaignEntries.sort((a, b) => new Date(a.ts) - new Date(b.ts))[0].ts
+    : new Date().toISOString();
+  
+  // Remove BOTH campaign AND ad group entries for this campaign
+  const nonRelatedEntries = allEntries.filter(e => {
+    // Keep entries for other campaigns
+    if (e.campaignId !== campaignId) return true;
+    // Remove both campaign and ad group entries for this campaign
+    return false;
+  });
+  
+  const newCreateEntries = [];
+  
+  // === RECREATE CAMPAIGN CREATE ENTRIES ===
+  if (currentCampaign) {
+    const currentCampaignData = {
       campaignName: currentCampaign.name,
       campaignChannel: currentCampaign.channel,
       campaignKPI: currentCampaign.kpi,
@@ -173,12 +181,12 @@ function getCampaignAudit(campaignId) {
       deviceTargeting: currentCampaign.deviceTargeting
     };
     
-    // Create new audit entries with current values
-    Object.entries(currentData).forEach(([field, value]) => {
+    // Create new campaign audit entries with current values
+    Object.entries(currentCampaignData).forEach(([field, value]) => {
       if (value != null && String(value).trim() !== '') {
         newCreateEntries.push({
           id: uuid(),
-          ts: originalTimestamp,
+          ts: originalCampaignTimestamp,
           campaignId,
           entityType: 'campaign',
           entityId: campaignId,
@@ -189,12 +197,57 @@ function getCampaignAudit(campaignId) {
         });
       }
     });
-    
-    // Combine non-campaign entries (including ad groups) with new campaign create entries
-    const updatedEntries = [...nonCampaignEntries, ...newCreateEntries];
-    saveRaw(updatedEntries);
   }
-
+  
+  // === RECREATE AD GROUP CREATE ENTRIES ===
+  currentAdGroups.forEach(adGroup => {
+    // Get original timestamp for this ad group
+    const originalAdGroupEntries = allEntries.filter(e => 
+      e.campaignId === campaignId && 
+      e.entityType === 'adgroup' && 
+      e.entityId === adGroup.id &&
+      e.action === 'create'
+    );
+    
+    // Use the earliest ad group create timestamp, or current time if none found
+    const originalAdGroupTimestamp = originalAdGroupEntries.length > 0 
+      ? originalAdGroupEntries.sort((a, b) => new Date(a.ts) - new Date(b.ts))[0].ts
+      : new Date().toISOString();
+    
+    const currentAdGroupData = {
+      adGroupNameInput: adGroup.name,
+      campaignName: adGroup.campaign,
+      budgetAllocation: adGroup.budget,
+      bidStrategy: adGroup.bidStrategy,
+      creativeFormat: adGroup.creativeFormat,
+      targetingRefinements: adGroup.targetingRefinements,
+      placementSettings: adGroup.placementSettings
+    };
+    
+    // Create new ad group audit entries with current values
+    Object.entries(currentAdGroupData).forEach(([field, value]) => {
+      if (value != null && String(value).trim() !== '') {
+        newCreateEntries.push({
+          id: uuid(),
+          ts: originalAdGroupTimestamp,
+          campaignId,
+          entityType: 'adgroup',
+          entityId: adGroup.id,
+          action: 'create',
+          field,
+          newValue: String(value).trim(),
+          user: 'localUser'
+        });
+      }
+    });
+  });
+  
+  // Combine non-related entries with new create entries
+  const updatedEntries = [...nonRelatedEntries, ...newCreateEntries];
+  saveRaw(updatedEntries);
+  
+  console.log(`✔️ Cleared edits for campaign ${campaignId} and ${currentAdGroups.length} ad groups`);
+}
   function getFieldLabel(field){
     return FIELD_LABELS[field] || field;
   }
@@ -297,27 +350,29 @@ function getCampaignAudit(campaignId) {
           const currentValue = editEntries.length > 0 ?
             editEntries[editEntries.length - 1].newValue :
             createEntry.newValue;
-          // Build single line format: "Field Label: Field Value [Previous: Previous Value] Timestamp [✓]"
-          let line = `<div class="flex items-center justify-between gap-2">
-            <div class="flex items-center gap-1 text-xs flex-grow min-w-0">
-              <span class="font-semibold text-gray-800 whitespace-nowrap">${label}:</span>
-              <span class="text-gray-900 truncate">${currentValue || '—'}</span>`;
-          // Add previous value if there are edits
-          if (editEntries.length > 0) {
-            // Find what the previous value was before the latest edit
-            const latestEdit = editEntries[editEntries.length - 1];
-            const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue :
-              (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : createEntry.newValue);
-            line += `<span class="font-semibold text-gray-600 ml-2 whitespace-nowrap">Previous:</span>
-                     <span class="text-gray-600 truncate">${previousValue || '—'}</span>`;
-          }
-          line += `</div>
-            <div class="flex items-center gap-2 whitespace-nowrap">
-              <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
-              <input type="checkbox" checked data-section-id="${sectionId}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
-            </div>
-          </div>`;
-          li.innerHTML = line;
+// Build single line format with full-height vertical separator
+let line = `<div class="flex items-center justify-between gap-2">
+  <div class="flex items-stretch text-xs flex-grow min-w-0" style="gap: 0;">
+    <span class="font-semibold text-gray-800 whitespace-nowrap flex items-center" style="min-width: 140px; background-color: #f3f4f6; padding: 4px 8px; margin: -4px 0 -4px -12px; padding-right: 8px;">${label}:</span>
+    <div style="width: 1px; background-color: #d1d5db; flex-shrink: 0; margin: -4px 0;"></div>    <div class="flex items-center gap-1 flex-grow min-w-0 pl-2">
+      <span class="text-gray-900 truncate">${currentValue || '—'}</span>`;
+// Add previous value if there are edits
+if (editEntries.length > 0) {
+  // Find what the previous value was before the latest edit
+  const latestEdit = editEntries[editEntries.length - 1];
+  const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue :
+    (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : createEntry.newValue);
+  line += `<span class="font-semibold text-gray-600 ml-2 whitespace-nowrap">Previous:</span>
+           <span class="text-gray-600 truncate">${previousValue || '—'}</span>`;
+}
+line += `</div>
+  </div>
+  <div class="flex items-center gap-2 whitespace-nowrap">
+    <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
+    <input type="checkbox" checked data-section-id="${sectionId}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
+  </div>
+</div>`;
+li.innerHTML = line;
           ul.appendChild(li);
         }
       });
