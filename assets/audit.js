@@ -312,7 +312,7 @@ function clearCampaignEdits(campaignId){
       const title = entityType === 'campaign' ? 'Campaign' : 'Ad Group';
       const sectionId = `${entityType}_${entityId}`;
       const entityHeading = document.createElement('div');
-      entityHeading.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-xs font-semibold text-gray-600 uppercase rounded-md flex justify-between items-center';
+      entityHeading.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-xs font-semibold text-gray-600 uppercase rounded-md flex justify-between items-center cursor-pointer hover:opacity-80 transition-opacity';
       entityHeading.style.backgroundColor = '#d1d5db';
       entityHeading.innerHTML = `
         <span>${title} (${entityId})</span>
@@ -377,15 +377,29 @@ li.innerHTML = line;
         }
       });
       list.appendChild(ul);
+      
+      // Add accordion click handler to the heading
+      entityHeading.addEventListener('click', function(e) {
+        // Don't collapse if clicking on the toggle button or its children
+        if (e.target.closest('button')) return;
+        
+        // Toggle the visibility of the fields list
+        if (ul.style.display === 'none') {
+          ul.style.display = '';
+        } else {
+          ul.style.display = 'none';
+        }
+      });
     });
 
-    // Add section-specific toggle functionality
+   // Add section-specific toggle functionality
     sortedGroups.forEach((group, groupIndex) => {
       const toggleBtn = document.getElementById(`selectAllToggle_${groupIndex}`);
       const toggleLabel = document.getElementById(`toggleLabel_${groupIndex}`);
       const sectionId = `${group.entityType}_${group.entityId}`;
       if (toggleBtn && toggleLabel) {
-        toggleBtn.addEventListener('click', function () {
+        toggleBtn.addEventListener('click', function (e) {
+          e.stopPropagation(); // Prevent accordion collapse when clicking toggle button
           const sectionCheckboxes = list.querySelectorAll(`input[type="checkbox"][data-section-id="${sectionId}"]`);
           const allChecked = Array.from(sectionCheckboxes).every(cb => cb.checked);
           // Toggle all checkboxes in this section to opposite state
