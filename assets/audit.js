@@ -20,7 +20,7 @@
 
     // Ad Group
     adGroupNameInput: 'Ad Group Name',
-    campaignName: 'Campaign',
+    adGroupCampaign: 'Campaign',
     budgetAllocation: 'Budget Allocation',
     bidStrategy: 'Bid Strategy',
     creativeFormat: 'Creative Format',

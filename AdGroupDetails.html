@@ -209,7 +209,8 @@
           <div class="p-4 border-b border-gray-200">
             <div class="flex items-start gap-4 mb-3">
               <div class="flex-1">
-                <h1 data-bind="adv.name" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
+                <h1 id="advertiserHeader" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
+
                 <div class="flex justify-between items-center">
                   <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
                   <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
@@ -238,25 +239,29 @@
 <!-- Ad Group Name -->
 <div>
   <label for="adGroupNameInput" class="block text-sm font-medium text-gray-700">Ad Group Name</label>
-  <input id="adGroupNameInput" data-bind="name" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
+  <span id="displayAdGroupName" class="block mt-1 text-gray-800">N/A</span>
+  <input id="adGroupNameInput" data-bind="adGroupName" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
 </div>
 
 <!-- Campaign -->
 <div>
   <label for="campaignName" class="block text-sm font-medium text-gray-700">Campaign</label>
-  <input id="campaignName" data-bind="campaign" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
+  <span id="displayCampaignName" class="block mt-1 text-gray-800">N/A</span>
+  <input id="campaignName" data-bind="campaign" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
 </div>
 
 <!-- Budget Allocation -->
 <div>
   <label for="budgetAllocation" class="block text-sm font-medium text-gray-700">Budget Allocation</label>
-  <input id="budgetAllocation" data-bind="budget" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
+  <span id="displayBudgetAllocation" class="block mt-1 text-gray-800">N/A</span>
+  <input id="budgetAllocation" data-bind="budget" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
 </div>
 
 <!-- Bid Strategy -->
 <div>
   <label for="bidStrategy" class="block text-sm font-medium text-gray-700">Bid Strategy</label>
-  <input id="bidStrategy" data-bind="bidStrategy" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
+  <span id="displayBidStrategy" class="block mt-1 text-gray-800">N/A</span>
+  <input id="bidStrategy" data-bind="bidStrategy" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
 </div>
 
 <hr class="border-gray-300" />
@@ -266,31 +271,35 @@
 <!-- Creative Format -->
 <div>
   <label for="creativeFormat" class="block text-sm font-medium text-gray-700">Creative Format</label>
-  <input id="creativeFormat" data-bind="creativeFormat" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
+  <span id="displayCreativeFormat" class="block mt-1 text-gray-800">N/A</span>
+  <input id="creativeFormat" data-bind="creativeFormat" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
 </div>
 
 <!-- Targeting Refinements -->
 <div>
   <label for="targetingRefinements" class="block text-sm font-medium text-gray-700">Targeting Refinements</label>
-  <input id="targetingRefinements" data-bind="targetingRefinements" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
+  <span id="displayTargetingRefinements" class="block mt-1 text-gray-800">N/A</span>
+  <input id="targetingRefinements" data-bind="targetingRefinements" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
 </div>
 
 <!-- Placement Settings -->
 <div>
   <label for="placementSettings" class="block text-sm font-medium text-gray-700">Placement Settings</label>
-  <input id="placementSettings" data-bind="placementSettings" type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-gray-900 bg-white" />
+  <span id="displayPlacementSettings" class="block mt-1 text-gray-800">N/A</span>
+  <input id="placementSettings" data-bind="placementSettings" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
 </div>
             </section>
 
                       <script>
                         (function() {
                         const pairs = [
-                          { span: 'displayCompanyName', input: 'companyName' },
-                          { span: 'displayCampaignChannel', input: 'campaignChannel' },
-                          { span: 'displayCampaignKPI', input: 'campaignKPI' },
-                          { span: 'displayCampaignKPITarget', input: 'campaignKPITarget' },
-                          { span: 'displayCampaignPacing', input: 'campaignPacing' },
-                          { span: 'displayCampaignFlight', input: 'campaignFlight' }
+                          { span: 'displayAdGroupName', input: 'adGroupNameInput' },
+                          { span: 'displayCampaignName', input: 'campaignName' },
+                          { span: 'displayBudgetAllocation', input: 'budgetAllocation' },
+                          { span: 'displayBidStrategy', input: 'bidStrategy' },
+                          { span: 'displayCreativeFormat', input: 'creativeFormat' },
+                          { span: 'displayTargetingRefinements', input: 'targetingRefinements' },
+                          { span: 'displayPlacementSettings', input: 'placementSettings' }
                         ];
 
                         const btnEdit   = document.getElementById('editGeneralBtn');
@@ -361,12 +370,79 @@
                           if (!inlineEditing) return;
                           const now = currentValues();
                           if (snapshot && shallowEqual(snapshot, now)) {
-                          // No change
-                          showSpans();
-                          inlineEditing = false;
-                          snapshot = null;
-                          return;
+                            // No change
+                            showSpans();
+                            inlineEditing = false;
+                            snapshot = null;
+                            return;
                           }
+                          
+                          // Get URL parameters for ad group and campaign IDs
+                          const urlParams = new URLSearchParams(window.location.search);
+                          const adGroupId = urlParams.get('adGroupId') || urlParams.get('id');
+                          const campaignId = urlParams.get('campaignId');
+                          
+                          if (!adGroupId) {
+                            alert('Ad Group ID not found in URL');
+                            return;
+                          }
+                          
+                          // Save to localStorage and record audit
+                          try {
+                            const adgroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+                            const adGroupIndex = adgroups.findIndex(ag => ag.id === adGroupId);
+                            
+                            if (adGroupIndex === -1) {
+                              console.error('Ad group not found with ID:', adGroupId);
+                              return;
+                            }
+                            
+                            const adGroup = adgroups[adGroupIndex];
+                            
+                            // Record audit before making changes (we'll need campaignId for audit)
+                            // For now, we'll use the adGroupId as campaignId since audit needs it
+                            if (window.audit && snapshot) {
+                              window.audit.recordEdit({
+                                campaignId: adGroup.campaignId || adGroupId, // Use stored campaignId or fallback
+                                entityType: 'adgroup',
+                                entityId: adGroupId,
+                                before: {
+                                  adGroupNameInput: snapshot.adGroupNameInput,
+                                  adGroupCampaign: snapshot.campaignName,
+                                  budgetAllocation: snapshot.budgetAllocation,
+                                  bidStrategy: snapshot.bidStrategy,
+                                  creativeFormat: snapshot.creativeFormat,
+                                  targetingRefinements: snapshot.targetingRefinements,
+                                  placementSettings: snapshot.placementSettings
+                                },
+                                after: {
+                                  adGroupNameInput: now.adGroupNameInput,
+                                  adGroupCampaign: now.campaignName,
+                                  budgetAllocation: now.budgetAllocation,
+                                  bidStrategy: now.bidStrategy,
+                                  creativeFormat: now.creativeFormat,
+                                  targetingRefinements: now.targetingRefinements,
+                                  placementSettings: now.placementSettings
+                                }
+                              });
+                            }
+                            
+                            // Update ad group data
+                            if (now.adGroupNameInput !== undefined) adGroup.name = now.adGroupNameInput;
+                            if (now.campaignName !== undefined) adGroup.campaign = now.campaignName;
+                            if (now.budgetAllocation !== undefined) adGroup.budget = now.budgetAllocation;
+                            if (now.bidStrategy !== undefined) adGroup.bidStrategy = now.bidStrategy;
+                            if (now.creativeFormat !== undefined) adGroup.creativeFormat = now.creativeFormat;
+                            if (now.targetingRefinements !== undefined) adGroup.targetingRefinements = now.targetingRefinements;
+                            if (now.placementSettings !== undefined) adGroup.placementSettings = now.placementSettings;
+                            
+                            // Save back to localStorage
+                            localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroups));
+                            console.log('Ad group saved successfully');
+                          } catch (error) {
+                            console.error('Error saving ad group:', error);
+                          }
+                          
                           // Commit to spans
                           showSpans();
                           inlineEditing = false;
@@ -374,6 +450,8 @@
                         });
                         })();
                       </script>
+                      
+
                     </section>
                   </div>
                   </div>
@@ -460,6 +538,9 @@
           }
           
           bindAll('adv.name', adv.name, 'No advertiser found');
+          const advHeader = document.getElementById('advertiserHeader');
+if (advHeader) advHeader.textContent = adv.name || 'No advertiser found';
+
           bindAll('adv.id', adv.id, '');
           bindAll('adv.account', adv.account, 'N/A');
           bindAll('adv.state', adv.state, 'N/A');     // ✓ use state field
@@ -679,7 +760,7 @@ const editableSelectors = [
           }
 
           // Map inputs → adv fields
-          advertisers[idx].name    = vals.companyName?.trim() || '';
+         // advertisers[idx].name    = vals.companyName?.trim() || '';
           advertisers[idx].state   = vals.advertiserState?.trim() || '';   // ✓ use state field
           advertisers[idx].website = vals.advertiserWebsite?.trim() || '';
 
@@ -1032,14 +1113,36 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const fields = [
-    'name', 'campaign', 'budget', 'bidStrategy',
-    'creativeFormat', 'targetingRefinements', 'placementSettings'
+    { dataBindKey: 'adGroupName', adGroupProperty: 'name' },
+    { dataBindKey: 'campaign', adGroupProperty: 'campaign' },
+    { dataBindKey: 'budget', adGroupProperty: 'budget' },
+    { dataBindKey: 'bidStrategy', adGroupProperty: 'bidStrategy' },
+    { dataBindKey: 'creativeFormat', adGroupProperty: 'creativeFormat' },
+    { dataBindKey: 'targetingRefinements', adGroupProperty: 'targetingRefinements' },
+    { dataBindKey: 'placementSettings', adGroupProperty: 'placementSettings' }
   ];
 
-  fields.forEach(key => {
-    const el = document.querySelector(`[data-bind="${key}"]`);
-    if (el) el.value = adGroup[key] || '';
+  // Helper function to safely set text content
+  function safeSet(elementId, value) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.textContent = value || 'N/A';
+    }
+  }
+
+  fields.forEach(field => {
+    const el = document.querySelector(`[data-bind="${field.dataBindKey}"]`);
+    if (el) el.value = adGroup[field.adGroupProperty] || '';
   });
+  
+  // Also populate the display spans for the new edit functionality
+  safeSet('displayAdGroupName', adGroup.name);
+  safeSet('displayCampaignName', adGroup.campaign);
+  safeSet('displayBudgetAllocation', adGroup.budget);
+  safeSet('displayBidStrategy', adGroup.bidStrategy);
+  safeSet('displayCreativeFormat', adGroup.creativeFormat);
+  safeSet('displayTargetingRefinements', adGroup.targetingRefinements);
+  safeSet('displayPlacementSettings', adGroup.placementSettings);
 });
 
 
