@@ -107,6 +107,19 @@ function clearCampaignAudit(campaignId){
     localStorage.removeItem(NOTES_PREFIX + campaignId);
   }
 
+function clearAdGroupAudit(campaignId, adGroupId){
+    const allEntries = loadRaw();
+    const filtered = allEntries.filter(e => {
+      // Remove entries that match this specific ad group
+      if (e.campaignId === campaignId && e.entityType === 'adgroup' && e.entityId === adGroupId) {
+        return false; // Remove this entry
+      }
+      return true; // Keep everything else
+    });
+    saveRaw(filtered);
+    console.log(`🗑️ Cleared audit entries for Ad Group ${adGroupId} in Campaign ${campaignId}`);
+  }
+
 function clearCampaignEdits(campaignId){
   // Get current campaign data to use latest values
   const groups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
@@ -466,11 +479,12 @@ li.innerHTML = line;
     });
   }
 
-  window.audit = {
+window.audit = {
     recordCreate,
     recordEdit,
     getCampaignAudit,
     clearCampaignAudit,
+    clearAdGroupAudit,
     clearCampaignEdits,
     loadNotes,
     saveNotes,
@@ -479,6 +493,6 @@ li.innerHTML = line;
     renderDrawer,
     initDrawerEvents
   };
-
+  
   document.addEventListener('DOMContentLoaded', initDrawerEvents);
 })();

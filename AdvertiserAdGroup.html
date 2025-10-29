@@ -1033,9 +1033,21 @@ localStorage.setItem('adgroups_data_v1', JSON.stringify(groups));
 function deleteAdGroup(id) {
   if (!confirm('Are you sure you want to delete this Ad Group?')) return;
 
+  // Get the ad group before deleting to find its campaign
   let adgroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+  const adGroupToDelete = adgroups.find(ag => ag.id === id);
+  
+  // Remove from storage
   adgroups = adgroups.filter(ag => ag.id !== id);
   localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroups));
+
+  // Clear audit entries for this ad group
+  if (adGroupToDelete && window.audit && window.audit.clearAdGroupAudit) {
+    const campaignId = adGroupToDelete.campaign || adGroupToDelete.campaignId;
+    if (campaignId) {
+      window.audit.clearAdGroupAudit(campaignId, id);
+    }
+  }
 
   if (typeof showToast === 'function') showToast('Ad Group Deleted');
   if (app && typeof app.loadAdGroups === 'function') {
@@ -1043,7 +1055,6 @@ function deleteAdGroup(id) {
     app.applyFiltersAndRender();
   }
 }
-
 function getQueryParam(key) {
   const params = new URLSearchParams(window.location.search);
   return params.get(key);
