@@ -233,19 +233,6 @@
       return;
     }
 
-    // Add select all/deselect all toggle at the top
-    const toggleContainer = document.createElement('div');
-    toggleContainer.className = 'mb-3 flex justify-end items-center gap-2';
-    toggleContainer.innerHTML = `
-      <span id="toggleLabel" class="text-xs text-gray-600">Deselect All</span>
-      <button id="selectAllToggle" class="w-4 h-4 border-2 border-gray-400 rounded bg-blue-600 flex items-center justify-center hover:border-gray-500 transition-colors" title="Toggle all checkboxes">
-        <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-        </svg>
-      </button>
-    `;
-    list.appendChild(toggleContainer);
-
     // Group by entityId and then by field
     const grouped = {};
     entries.forEach(e=>{
@@ -257,12 +244,25 @@
       grouped[entityKey].fields[fieldKey].push(e);
     });
 
-    Object.values(grouped).forEach(group=>{
+    Object.values(grouped).forEach((group, groupIndex)=>{
       const entityHeading = document.createElement('div');
       const title = group.meta.entityType === 'campaign' ? 'Campaign' : 'Ad Group';
-      entityHeading.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-xs font-semibold text-gray-600 uppercase rounded-md';
+      entityHeading.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-xs font-semibold text-gray-600 uppercase rounded-md flex justify-between items-center';
       entityHeading.style.backgroundColor = '#d1d5db';
-      entityHeading.textContent = `${title} (${group.meta.entityId})`;
+      
+      // Create toggle for this section
+      const sectionId = `${group.meta.entityType}_${group.meta.entityId}`;
+      entityHeading.innerHTML = `
+        <span>${title} (${group.meta.entityId})</span>
+        <div class="flex items-center gap-2">
+          <span id="toggleLabel_${groupIndex}" class="text-xs text-gray-600">Deselect All</span>
+          <button id="selectAllToggle_${groupIndex}" data-section-id="${sectionId}" class="w-4 h-4 border-2 border-gray-400 rounded bg-blue-600 flex items-center justify-center hover:border-gray-500 transition-colors" title="Toggle section checkboxes">
+            <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+      `;
       list.appendChild(entityHeading);
 
       const ul = document.createElement('ul');
@@ -313,7 +313,7 @@
           line += `</div>
             <div class="flex items-center gap-2 whitespace-nowrap">
               <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
-              <input type="checkbox" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
+              <input type="checkbox" checked data-section-id="${sectionId}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
             </div>
           </div>`;
           
@@ -325,33 +325,37 @@
       list.appendChild(ul);
     });
 
-    // Add toggle functionality
-    const toggleBtn = document.getElementById('selectAllToggle');
-    const toggleLabel = document.getElementById('toggleLabel');
-    if (toggleBtn && toggleLabel) {
-      toggleBtn.addEventListener('click', function() {
-        const checkboxes = list.querySelectorAll('input[type="checkbox"]:not(#selectAllToggle)');
-        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-        
-        // Toggle all checkboxes to opposite state
-        checkboxes.forEach(cb => cb.checked = !allChecked);
-        
-        // Update toggle button appearance and label text
-        if (allChecked) {
-          // Going to unchecked state
-          this.classList.remove('bg-blue-600');
-          this.classList.add('bg-white');
-          this.querySelector('svg').classList.add('hidden');
-          toggleLabel.textContent = 'Select All';
-        } else {
-          // Going to checked state
-          this.classList.remove('bg-white');
-          this.classList.add('bg-blue-600');
-          this.querySelector('svg').classList.remove('hidden');
-          toggleLabel.textContent = 'Deselect All';
-        }
-      });
-    }
+    // Add section-specific toggle functionality
+    Object.values(grouped).forEach((group, groupIndex) => {
+      const toggleBtn = document.getElementById(`selectAllToggle_${groupIndex}`);
+      const toggleLabel = document.getElementById(`toggleLabel_${groupIndex}`);
+      const sectionId = `${group.meta.entityType}_${group.meta.entityId}`;
+      
+      if (toggleBtn && toggleLabel) {
+        toggleBtn.addEventListener('click', function() {
+          const sectionCheckboxes = list.querySelectorAll(`input[type="checkbox"][data-section-id="${sectionId}"]`);
+          const allChecked = Array.from(sectionCheckboxes).every(cb => cb.checked);
+          
+          // Toggle all checkboxes in this section to opposite state
+          sectionCheckboxes.forEach(cb => cb.checked = !allChecked);
+          
+          // Update toggle button appearance and label text
+          if (allChecked) {
+            // Going to unchecked state
+            this.classList.remove('bg-blue-600');
+            this.classList.add('bg-white');
+            this.querySelector('svg').classList.add('hidden');
+            toggleLabel.textContent = 'Select All';
+          } else {
+            // Going to checked state
+            this.classList.remove('bg-white');
+            this.classList.add('bg-blue-600');
+            this.querySelector('svg').classList.remove('hidden');
+            toggleLabel.textContent = 'Deselect All';
+          }
+        });
+      }
+    });
   }
 
   function openDrawer(opts){
