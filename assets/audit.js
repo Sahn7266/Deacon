@@ -366,7 +366,7 @@ function clearCampaignEdits(campaignId){
 // Build single line format with full-height vertical separator
 let line = `<div class="flex items-center justify-between gap-2">
   <div class="flex items-stretch text-xs flex-grow min-w-0" style="gap: 0;">
-    <span class="font-semibold text-gray-800 whitespace-nowrap flex items-center" style="min-width: 140px; background-color: #f3f4f6; padding: 4px 8px; margin: -4px 0 -4px -12px; padding-right: 8px;">${label}:</span>
+   <span class="font-semibold text-gray-800 whitespace-nowrap flex items-center" style="min-width: 140px; background-color: #ffffff; padding: 4px 8px; margin: -4px 0 -4px -12px; padding-right: 8px; border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem;">${label}:</span>
     <div style="width: 1px; background-color: #d1d5db; flex-shrink: 0; margin: -4px 0;"></div>    <div class="flex items-center gap-1 flex-grow min-w-0 pl-2">
       <span class="text-gray-900 truncate">${currentValue || '—'}</span>`;
 // Add previous value if there are edits
@@ -493,6 +493,6 @@ window.audit = {
     renderDrawer,
     initDrawerEvents
   };
-  
+
   document.addEventListener('DOMContentLoaded', initDrawerEvents);
 })();
