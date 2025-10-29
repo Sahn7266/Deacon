@@ -525,11 +525,13 @@
       </div>
 
       <!-- Action Buttons -->
+<!-- Action Buttons -->
       <div class="flex justify-end space-x-3 pt-4">
         <button type="button" id="cancelAdGroupModal" class="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-100">Cancel</button>
         <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">Create</button>
+        <button type="button" id="createAndAddMore" class="px-4 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700">Create & Add +</button>
       </div>
-    </form>
+        </form>
   </div>
 </div>
 
@@ -961,75 +963,98 @@ document.addEventListener('DOMContentLoaded', () => {
   // Save new Ad Group
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    handleAdGroupCreation(false);
+  });
 
+  // Handle "Create & Add +" button
+  document.getElementById('createAndAddMore')?.addEventListener('click', () => {
+    // Validate the form first
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    handleAdGroupCreation(true);
+  });
+
+  // Unified ad group creation handler
+  function handleAdGroupCreation(keepModalOpen) {
     const adGroup = {
       id: 'AG' + Date.now(),
       name: form.adGroupName.value.trim(),
       campaign: form.adGroupCampaign.value,
-
       budget: form.adGroupBudget.value.trim(),
       bidStrategy: form.adGroupBidStrategy.value.trim(),
       creativeFormat: form.creativeFormat.value.trim(),
       targetingRefinements: form.targetingRefinements.value.trim(),
       placementSettings: form.placementSettings.value.trim(),
-      dsp: 'Custom', // optionally adjust
-      classification: 'Custom', // optional fallback
+      dsp: 'Custom',
+      classification: 'Custom',
       source: 'custom'
     };
 
-      // ✅ Log Ad Group Creation to Audit
-audit.recordCreate({
-  campaignId: adGroup.campaign,
-  entityType: 'adgroup',
-  entityId: adGroup.id,
-  data: {
-    adGroupNameInput: adGroup.name,
-    campaignName: adGroup.campaign,
-    budgetAllocation: adGroup.budget,
-    bidStrategy: adGroup.bidStrategy,
-    creativeFormat: adGroup.creativeFormat,
-    targetingRefinements: adGroup.targetingRefinements,
-    placementSettings: adGroup.placementSettings
-  }
-});
-console.log('✔️ Audit logged for Ad Group:', adGroup.id);
+    // ✅ Log Ad Group Creation to Audit
+    audit.recordCreate({
+      campaignId: adGroup.campaign,
+      entityType: 'adgroup',
+      entityId: adGroup.id,
+      data: {
+        adGroupNameInput: adGroup.name,
+        campaignName: adGroup.campaign,
+        budgetAllocation: adGroup.budget,
+        bidStrategy: adGroup.bidStrategy,
+        creativeFormat: adGroup.creativeFormat,
+        targetingRefinements: adGroup.targetingRefinements,
+        placementSettings: adGroup.placementSettings
+      }
+    });
+    console.log('✔️ Audit logged for Ad Group:', adGroup.id);
 
     let groups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-const existingIndex = groups.findIndex(g => g.id === adGroup.id);
+    const existingIndex = groups.findIndex(g => g.id === adGroup.id);
 
-if (existingIndex !== -1) {
-  // === Audit Edit Tracking ===
-  const originalAdGroup = JSON.parse(JSON.stringify(groups[existingIndex]));
+    if (existingIndex !== -1) {
+      // === Audit Edit Tracking ===
+      const originalAdGroup = JSON.parse(JSON.stringify(groups[existingIndex]));
 
-  audit.recordEdit({
-    campaignId: adGroup.campaign,
-    entityType: 'adgroup',
-    entityId: adGroup.id,
-    before: originalAdGroup,
-    after: adGroup
-  });
-  console.log('✏️ Audit logged for Ad Group edit:', adGroup.id);
+      audit.recordEdit({
+        campaignId: adGroup.campaign,
+        entityType: 'adgroup',
+        entityId: adGroup.id,
+        before: originalAdGroup,
+        after: adGroup
+      });
+      console.log('✏️ Audit logged for Ad Group edit:', adGroup.id);
 
-  groups[existingIndex] = adGroup;
-} else {
+      groups[existingIndex] = adGroup;
+    } else {
+      groups.push(adGroup);
+    }
 
-  groups.push(adGroup);
-}
+    localStorage.setItem('adgroups_data_v1', JSON.stringify(groups));
 
-localStorage.setItem('adgroups_data_v1', JSON.stringify(groups));
+    // Save the campaign ID before resetting
+    const selectedCampaignId = form.adGroupCampaign.value;
 
-
-    modal.classList.add('hidden');
-
+    // Show toast
     if (typeof showToast === 'function') showToast('Ad Group Created Successfully');
 
+    // Refresh the list
     if (app && typeof app.loadAdGroups === 'function') {
       app.loadAdGroups();
       app.applyFiltersAndRender();
     }
-  });
-});
 
+    if (keepModalOpen) {
+      // Keep modal open, reset form, but keep campaign selected
+      form.reset();
+      form.adGroupCampaign.value = selectedCampaignId;
+    } else {
+      // Close modal normally
+      modal.classList.add('hidden');
+      form.reset();
+    }
+  }
+});
 function deleteAdGroup(id) {
   if (!confirm('Are you sure you want to delete this Ad Group?')) return;
 
@@ -1055,6 +1080,30 @@ function deleteAdGroup(id) {
     app.applyFiltersAndRender();
   }
 }
+
+// === AUTO-OPEN AD GROUP MODAL FROM CAMPAIGN CREATION ===
+document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const newCampaignId = urlParams.get('newCampaign');
+  
+  if (newCampaignId) {
+    // Pre-select the campaign
+    const campaignSelect = document.getElementById('adGroupCampaign');
+    if (campaignSelect) {
+      campaignSelect.value = newCampaignId;
+    }
+    
+    // Auto-open the modal
+    const modal = document.getElementById('createAdGroupModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+    
+    // Clean up URL (removes the parameter from URL bar)
+    window.history.replaceState({}, '', './AdvertiserAdGroup.html');
+  }
+});
+
 function getQueryParam(key) {
   const params = new URLSearchParams(window.location.search);
   return params.get(key);
@@ -1063,22 +1112,40 @@ function getQueryParam(key) {
 
 
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const campaignSelect = document.getElementById('adGroupCampaign');
-    if (!campaignSelect) return;
+document.addEventListener('DOMContentLoaded', () => {
+  const campaignSelect = document.getElementById('adGroupCampaign');
+  if (!campaignSelect) return;
 
-    const campaignGroups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
+  // Populate campaign dropdown
+  const campaignGroups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
 
-    campaignGroups.forEach(group => {
-      group.campaigns.forEach(campaign => {
-        const opt = document.createElement('option');
-        opt.value = campaign.id;
-        opt.textContent = campaign.name;
-        campaignSelect.appendChild(opt);
-      });
+  campaignGroups.forEach(group => {
+    group.campaigns.forEach(campaign => {
+      const opt = document.createElement('option');
+      opt.value = campaign.id;
+      opt.textContent = campaign.name;
+      campaignSelect.appendChild(opt);
     });
   });
 
+  // === AUTO-SELECT CAMPAIGN IF COMING FROM CAMPAIGN CREATION ===
+  const urlParams = new URLSearchParams(window.location.search);
+  const newCampaignId = urlParams.get('newCampaign');
+  
+  if (newCampaignId) {
+    // Pre-select the campaign (now that options are populated)
+    campaignSelect.value = newCampaignId;
+    
+    // Auto-open the modal
+    const modal = document.getElementById('createAdGroupModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+    
+    // Clean up URL (removes the parameter from URL bar)
+    window.history.replaceState({}, '', './AdvertiserAdGroup.html');
+  }
+});
 
 
 

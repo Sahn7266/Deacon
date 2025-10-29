@@ -512,11 +512,12 @@
         <div><label class="block text-sm font-medium text-gray-700">Device Targeting<input type="text" id="deviceTargeting" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
       </div>
 
-      <div class="flex justify-end gap-3 pt-4">
+<div class="flex justify-end space-x-3 pt-4">
         <button type="button" id="cancelCampaignModal" class="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-100">Cancel</button>
         <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">Create</button>
+        <button type="button" id="createAndAddAdGroup" class="px-4 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700">Create & Add Ad Group</button>
       </div>
-    </form>
+        </form>
   </div>
 </div>
 
@@ -1232,7 +1233,22 @@ document.addEventListener('DOMContentLoaded', () => {
 // Create campaign logic
 document.getElementById('createCampaignForm').addEventListener('submit', function (e) {
   e.preventDefault();
+  handleCampaignCreation(false);
+});
 
+// Handle "Create & Add Ad Group" button
+document.getElementById('createAndAddAdGroup')?.addEventListener('click', function() {
+  // Validate the form first
+  const form = document.getElementById('createCampaignForm');
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  handleCampaignCreation(true);
+});
+
+// Unified campaign creation handler
+function handleCampaignCreation(redirectToAdGroups) {
   const campaign = {
     id: 'CAM-' + Date.now(),
     name: document.getElementById('campaignName')?.value || '',
@@ -1263,31 +1279,29 @@ document.getElementById('createCampaignForm').addEventListener('submit', functio
 
   groups[0].campaigns.unshift(campaign);
 
-// Log creation to audit
-audit.recordCreate({
-  campaignId: campaign.id,
-  entityType: 'campaign',
-  entityId: campaign.id,
-  data: {
-    campaignName: campaign.name,
-    campaignChannel: campaign.channel,
-    campaignKPI: campaign.kpi,
-    campaignKPITarget: campaign.kpiTarget,
-    campaignPacing: campaign.pacing,
-    campaignAdvertiser: campaign.advertiser,
-    campaignObjective: campaign.objective,
-    campaignStartDate: campaign.startDate,
-    campaignEndDate: campaign.endDate,
-    campaignTotalBudget: campaign.totalBudget,
-    campaignDailyBudget: campaign.dailyBudget,
-    targetAudience: campaign.targetAudience,
-    geoTargeting: campaign.geoTargeting,
-    deviceTargeting: campaign.deviceTargeting
-  }
-});
-console.log('✔️ Audit log created for:', campaign.id);
-
-
+  // Log creation to audit
+  audit.recordCreate({
+    campaignId: campaign.id,
+    entityType: 'campaign',
+    entityId: campaign.id,
+    data: {
+      campaignName: campaign.name,
+      campaignChannel: campaign.channel,
+      campaignKPI: campaign.kpi,
+      campaignKPITarget: campaign.kpiTarget,
+      campaignPacing: campaign.pacing,
+      campaignAdvertiser: campaign.advertiser,
+      campaignObjective: campaign.objective,
+      campaignStartDate: campaign.startDate,
+      campaignEndDate: campaign.endDate,
+      campaignTotalBudget: campaign.totalBudget,
+      campaignDailyBudget: campaign.dailyBudget,
+      targetAudience: campaign.targetAudience,
+      geoTargeting: campaign.geoTargeting,
+      deviceTargeting: campaign.deviceTargeting
+    }
+  });
+  console.log('✔️ Audit log created for:', campaign.id);
 
   localStorage.setItem('campaign_tree_groups', JSON.stringify(groups));
 
@@ -1295,10 +1309,15 @@ console.log('✔️ Audit log created for:', campaign.id);
   app.saveGroups?.();
   app.applyFiltersAndRender?.();
 
-  this.reset();
+  // Reset and close modal
+  document.getElementById('createCampaignForm').reset();
   document.getElementById('createCampaignModal')?.classList.add('hidden');
-});
 
+  // If redirecting to ad groups
+  if (redirectToAdGroups) {
+    window.location.href = `./AdvertiserAdGroup.html?newCampaign=${campaign.id}`;
+  }
+}
 
 
 
