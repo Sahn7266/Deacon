@@ -288,7 +288,7 @@ function clearCampaignEdits(campaignId){
     const notes = drawer.querySelector('[data-audit-notes]');
     const ctx = drawer.querySelector('[data-audit-context]');
     if (ctx) {
-      ctx.textContent = `Manual Entry Log: ${advertiserName || 'Advertiser'} (${advertiserAccount || 'Account N/A'})`;
+      ctx.textContent = `Change Form: ${advertiserName || 'Advertiser'} (${advertiserAccount || 'Account N/A'})`;
     }
 
     const entries = getCampaignAudit(campaignId);
@@ -352,39 +352,49 @@ function clearCampaignEdits(campaignId){
         const editEntries = fieldEntries.filter(e => e.action === 'edit').sort((a, b) => new Date(a.ts) - new Date(b.ts));
         if (createEntry) {
           const li = document.createElement('li');
-          // Add red border if the field has been edited
-          const hasEdits = editEntries.length > 0;
-          li.className = hasEdits ?
-            'border border-red-400 rounded-md px-3 py-1 bg-white' :
-            'border border-gray-200 rounded-md px-3 py-1 bg-white';
-          // Get the latest timestamp for the checkbox area
-          const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
-          // Determine current value and previous value
-          const currentValue = editEntries.length > 0 ?
-            editEntries[editEntries.length - 1].newValue :
-            createEntry.newValue;
-// Build single line format with full-height vertical separator
-let line = `<div class="flex items-center justify-between gap-2">
+// Determine if this field has edits
+const hasEdits = editEntries.length > 0;
+// Sanitize fieldName for use in ID (remove special chars)
+const safeFieldName = fieldName.replace(/[^a-zA-Z0-9]/g, '_');
+const expandableId = `expand_${sectionId}_${safeFieldName}`;
+
+// Add red border if the field has been edited
+li.className = hasEdits ?
+  'border border-red-400 rounded-md px-3 py-1 bg-white' :
+  'border border-gray-200 rounded-md px-3 py-1 bg-white';
+// Get the latest timestamp for the checkbox area
+const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
+// Determine current value and previous value
+const currentValue = editEntries.length > 0 ?
+  editEntries[editEntries.length - 1].newValue :
+  createEntry.newValue;
+
+// Build the main row
+let line = `<div class="flex items-center justify-between gap-2 ${hasEdits ? 'cursor-pointer hover:bg-gray-50' : ''}" ${hasEdits ? `onclick="window.togglePreviousValue('${expandableId}')"` : ''}>
   <div class="flex items-stretch text-xs flex-grow min-w-0" style="gap: 0;">
    <span class="font-semibold text-gray-800 whitespace-nowrap flex items-center" style="min-width: 140px; background-color: #ffffff; padding: 4px 8px; margin: -4px 0 -4px -12px; padding-right: 8px; border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem;">${label}:</span>
-    <div style="width: 1px; background-color: #d1d5db; flex-shrink: 0; margin: -4px 0;"></div>    <div class="flex items-center gap-1 flex-grow min-w-0 pl-2">
-      <span class="text-gray-900 truncate">${currentValue || '—'}</span>`;
-// Add previous value if there are edits
-if (editEntries.length > 0) {
-  // Find what the previous value was before the latest edit
-  const latestEdit = editEntries[editEntries.length - 1];
-  const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue :
-    (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : createEntry.newValue);
-  line += `<span class="font-semibold text-gray-600 ml-2 whitespace-nowrap">Previous:</span>
-           <span class="text-gray-600 truncate">${previousValue || '—'}</span>`;
-}
-line += `</div>
+    <div style="width: 1px; background-color: #d1d5db; flex-shrink: 0; margin: -4px 0;"></div>
+    <div class="flex items-center gap-1 flex-grow min-w-0 pl-2">
+      <span class="text-gray-900 truncate">${currentValue || '—'}</span>
+    </div>
   </div>
   <div class="flex items-center gap-2 whitespace-nowrap">
     <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
-    <input type="checkbox" checked data-section-id="${sectionId}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" />
+    <input type="checkbox" checked data-section-id="${sectionId}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" onclick="event.stopPropagation()" />
   </div>
 </div>`;
+
+// Add expandable previous value section if there are edits
+if (hasEdits) {
+  const latestEdit = editEntries[editEntries.length - 1];
+  const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue :
+    (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : createEntry.newValue);
+  
+  line += `<div id="${expandableId}" class="hidden mt-1 ml-4 pl-4 border-l-2 border-gray-300 text-xs text-gray-600">
+    <span class="font-semibold">Previous:</span> <span>${previousValue || '—'}</span>
+  </div>`;
+}
+
 li.innerHTML = line;
           ul.appendChild(li);
         }
@@ -478,6 +488,16 @@ li.innerHTML = line;
       saveNotes(cid, notes.value);
     });
   }
+
+
+  // Toggle function for expanding/collapsing previous values
+window.togglePreviousValue = function(elementId) {
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.classList.toggle('hidden');
+  }
+};
+
 
 window.audit = {
     recordCreate,
