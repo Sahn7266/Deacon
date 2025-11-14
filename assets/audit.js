@@ -17,17 +17,46 @@
     targetAudience: 'Target Audience',
     geoTargeting: 'Geo Targeting',
     deviceTargeting: 'Device Targeting',
+    
+    // Ad Server fields (clean names without prefix)
+    adServerCampaignName: 'Campaign Name',
+    adServerCampaignVertical: 'Campaign Vertical',
 
-// Ad Group
-adGroupNameInput: 'Ad Group Name',
-adGroupName: 'Ad Group Name', // Alias for backward compatibility
-adGroupCampaign: 'Campaign',
-campaignName: 'Campaign', // For ad group campaign field
-budgetAllocation: 'Budget Allocation',
-bidStrategy: 'Bid Strategy',
-creativeFormat: 'Creative Format',
-targetingRefinements: 'Targeting Refinements',
-placementSettings: 'Placement Settings'    
+    // Ad Group DSP fields
+    adGroupNameInput: 'Ad Group Name',
+    adGroupName: 'Ad Group Name', // Alias for backward compatibility
+    adGroupCampaign: 'Campaign',
+    campaignName: 'Campaign', // For ad group campaign field
+    budgetAllocation: 'Budget Allocation',
+    bidStrategy: 'Bid Strategy',
+    creativeFormat: 'Creative Format',
+    targetingRefinements: 'Targeting Refinements',
+    placementSettings: 'Placement Settings',
+    
+    // Ad Group Ad Server fields
+    adServerAdGroupName: 'Ad Group Name',
+    adServerPlacement: 'Placement'    
+  };
+
+  // Define field categorization for hierarchical display
+  const FIELD_CATEGORIES = {
+    dsp: [
+      'campaignName', 'companyName', 'campaignChannel', 'campaignKPI', 'campaignKPITarget', 
+      'campaignPacing', 'campaignAdvertiser', 'campaignObjective', 'campaignStartDate', 
+      'campaignEndDate', 'campaignTotalBudget', 'campaignDailyBudget', 'targetAudience', 
+      'geoTargeting', 'deviceTargeting'
+    ],
+    adServer: [
+      'adServerCampaignName', 'adServerCampaignVertical'
+    ],
+    adGroupDsp: [
+      'adGroupNameInput', 'adGroupName', 'adGroupCampaign', 'campaignName', 
+      'budgetAllocation', 'bidStrategy', 'creativeFormat', 'targetingRefinements', 
+      'placementSettings'
+    ],
+    adGroupAdServer: [
+      'adServerAdGroupName', 'adServerPlacement'
+    ]
   };
 
   function loadRaw(){
@@ -51,6 +80,9 @@ placementSettings: 'Placement Settings'
     const log = loadRaw();
     const ts = new Date().toISOString();
     Object.entries(data||{}).forEach(([field,val])=>{
+      // Skip the connectors field from audit logs
+      if (field === 'connectors') return;
+      
       const value = clean(val);
       if (!value) return;
       log.push({
@@ -73,6 +105,9 @@ placementSettings: 'Placement Settings'
     const ts = new Date().toISOString();
     const keys = new Set([...(Object.keys(before||{})), ...(Object.keys(after||{}))]);
     keys.forEach(field=>{
+      // Skip the connectors field from audit logs
+      if (field === 'connectors') return;
+      
       const oldValue = clean(before?.[field] ?? '');
       const newValue = clean(after?.[field] ?? '');
       if (oldValue === newValue) return;
@@ -177,6 +212,7 @@ function clearCampaignEdits(campaignId){
   
   // === RECREATE CAMPAIGN CREATE ENTRIES ===
   if (currentCampaign) {
+    // Create new campaign audit entries with current values
     const currentCampaignData = {
       campaignName: currentCampaign.name,
       campaignChannel: currentCampaign.channel,
@@ -191,7 +227,10 @@ function clearCampaignEdits(campaignId){
       campaignDailyBudget: currentCampaign.dailyBudget,
       targetAudience: currentCampaign.targetAudience,
       geoTargeting: currentCampaign.geoTargeting,
-      deviceTargeting: currentCampaign.deviceTargeting
+      deviceTargeting: currentCampaign.deviceTargeting,
+      // Include Ad Server fields
+      adServerCampaignName: currentCampaign.adServerCampaignName,
+      adServerCampaignVertical: currentCampaign.adServerCampaignVertical
     };
     
     // Create new campaign audit entries with current values
@@ -279,7 +318,7 @@ function clearCampaignEdits(campaignId){
     } catch { return ts; }
   }
 
-  // Drawer rendering (expect container existing on Campaigns list page)
+  // Drawer rendering with hierarchical structure
   function renderDrawer({campaignId, advertiserName, advertiserAccount}){
     console.log('📂 Opening drawer for campaign:', campaignId);
     const drawer = document.getElementById('auditDrawer');
@@ -302,17 +341,22 @@ function clearCampaignEdits(campaignId){
       return;
     }
 
-    // Group by both entityType and entityId, always render both campaign and ad group sections
+    // Group by entityType and entityId
     const grouped = {};
     entries.forEach(e => {
       const entityKey = e.entityType + '|' + e.entityId;
-      if (!grouped[entityKey]) grouped[entityKey] = { meta: e, fields: {}, entityType: e.entityType, entityId: e.entityId };
+      if (!grouped[entityKey]) grouped[entityKey] = { 
+        meta: e, 
+        fields: {}, 
+        entityType: e.entityType, 
+        entityId: e.entityId 
+      };
       const fieldKey = e.field;
       if (!grouped[entityKey].fields[fieldKey]) grouped[entityKey].fields[fieldKey] = [];
       grouped[entityKey].fields[fieldKey].push(e);
     });
 
-    // Always render campaign section first, then ad group sections
+    // Sort groups: campaigns first, then ad groups
     const sortedGroups = Object.values(grouped).sort((a, b) => {
       if (a.entityType === b.entityType) return 0;
       if (a.entityType === 'campaign') return -1;
@@ -322,128 +366,209 @@ function clearCampaignEdits(campaignId){
     sortedGroups.forEach((group, groupIndex) => {
       const entityType = group.entityType;
       const entityId = group.entityId;
-      const title = entityType === 'campaign' ? 'Campaign' : 'Ad Group';
-      const sectionId = `${entityType}_${entityId}`;
-      const entityHeading = document.createElement('div');
-      entityHeading.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-xs font-semibold text-gray-600 uppercase rounded-md flex justify-between items-center cursor-pointer hover:opacity-80 transition-opacity';
-      entityHeading.style.backgroundColor = '#d1d5db';
-      entityHeading.innerHTML = `
-        <span>${title} (${entityId})</span>
-        <div class="flex items-center gap-2">
-          <span id="toggleLabel_${groupIndex}" class="text-xs text-gray-600">Deselect All</span>
-          <button id="selectAllToggle_${groupIndex}" data-section-id="${sectionId}" class="w-4 h-4 border-2 border-gray-400 rounded bg-blue-600 flex items-center justify-center hover:border-gray-500 transition-colors" title="Toggle section checkboxes">
-            <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-        </div>
-      `;
-      list.appendChild(entityHeading);
-
-      const ul = document.createElement('ul');
-      ul.className = 'space-y-0.5';
-
-      // Process each field for this entity
-      Object.keys(group.fields).forEach(fieldName => {
-        const fieldEntries = group.fields[fieldName];
-        const label = getFieldLabel(fieldName);
-        // Find the original create entry and any edit entries
-        const createEntry = fieldEntries.find(e => e.action === 'create');
-        const editEntries = fieldEntries.filter(e => e.action === 'edit').sort((a, b) => new Date(a.ts) - new Date(b.ts));
-        if (createEntry) {
-          const li = document.createElement('li');
-// Determine if this field has edits
-const hasEdits = editEntries.length > 0;
-// Sanitize fieldName for use in ID (remove special chars)
-const safeFieldName = fieldName.replace(/[^a-zA-Z0-9]/g, '_');
-const expandableId = `expand_${sectionId}_${safeFieldName}`;
-
-// Add red border if the field has been edited
-li.className = hasEdits ?
-  'border border-red-400 rounded-md px-3 py-1 bg-white' :
-  'border border-gray-200 rounded-md px-3 py-1 bg-white';
-// Get the latest timestamp for the checkbox area
-const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
-// Determine current value and previous value
-const currentValue = editEntries.length > 0 ?
-  editEntries[editEntries.length - 1].newValue :
-  createEntry.newValue;
-
-// Build the main row
-let line = `<div class="flex items-center justify-between gap-2 ${hasEdits ? 'cursor-pointer hover:bg-gray-50' : ''}" ${hasEdits ? `onclick="window.togglePreviousValue('${expandableId}')"` : ''}>
-  <div class="flex items-stretch text-xs flex-grow min-w-0" style="gap: 0;">
-   <span class="font-semibold text-gray-800 whitespace-nowrap flex items-center" style="min-width: 140px; background-color: #ffffff; padding: 4px 8px; margin: -4px 0 -4px -12px; padding-right: 8px; border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem;">${label}:</span>
-    <div style="width: 1px; background-color: #d1d5db; flex-shrink: 0; margin: -4px 0;"></div>
-    <div class="flex items-center gap-1 flex-grow min-w-0 pl-2">
-      <span class="text-gray-900 truncate">${currentValue || '—'}</span>
-    </div>
-  </div>
-  <div class="flex items-center gap-2 whitespace-nowrap">
-    <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
-    <input type="checkbox" checked data-section-id="${sectionId}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" onclick="event.stopPropagation()" />
-  </div>
-</div>`;
-
-// Add expandable previous value section if there are edits
-if (hasEdits) {
-  const latestEdit = editEntries[editEntries.length - 1];
-  const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue :
-    (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : createEntry.newValue);
-  
-  line += `<div id="${expandableId}" class="hidden mt-1 ml-4 pl-4 border-l-2 border-gray-300 text-xs text-gray-600">
-    <span class="font-semibold">Previous:</span> <span>${previousValue || '—'}</span>
-  </div>`;
-}
-
-li.innerHTML = line;
-          ul.appendChild(li);
-        }
-      });
-      list.appendChild(ul);
       
-      // Add accordion click handler to the heading
-      entityHeading.addEventListener('click', function(e) {
-        // Don't collapse if clicking on the toggle button or its children
-        if (e.target.closest('button')) return;
-        
-        // Toggle the visibility of the fields list
-        if (ul.style.display === 'none') {
-          ul.style.display = '';
-        } else {
-          ul.style.display = 'none';
-        }
-      });
-    });
-
-   // Add section-specific toggle functionality
-    sortedGroups.forEach((group, groupIndex) => {
-      const toggleBtn = document.getElementById(`selectAllToggle_${groupIndex}`);
-      const toggleLabel = document.getElementById(`toggleLabel_${groupIndex}`);
-      const sectionId = `${group.entityType}_${group.entityId}`;
-      if (toggleBtn && toggleLabel) {
-        toggleBtn.addEventListener('click', function (e) {
-          e.stopPropagation(); // Prevent accordion collapse when clicking toggle button
-          const sectionCheckboxes = list.querySelectorAll(`input[type="checkbox"][data-section-id="${sectionId}"]`);
-          const allChecked = Array.from(sectionCheckboxes).every(cb => cb.checked);
-          // Toggle all checkboxes in this section to opposite state
-          sectionCheckboxes.forEach(cb => cb.checked = !allChecked);
-          // Update toggle button appearance and label text
-          if (allChecked) {
-            // Going to unchecked state
-            this.classList.remove('bg-blue-600');
-            this.classList.add('bg-white');
-            this.querySelector('svg').classList.add('hidden');
-            toggleLabel.textContent = 'Select All';
-          } else {
-            // Going to checked state
-            this.classList.remove('bg-white');
-            this.classList.add('bg-blue-600');
-            this.querySelector('svg').classList.remove('hidden');
-            toggleLabel.textContent = 'Deselect All';
-          }
-        });
+      if (entityType === 'campaign') {
+        // Campaign section with hierarchical DSP/Ad Server structure
+        renderCampaignSection(list, group, groupIndex);
+      } else {
+        // Ad Group section (keep existing structure)
+        renderAdGroupSection(list, group, groupIndex);
       }
     });
+  }
+
+  function renderCampaignSection(list, group, groupIndex) {
+    const entityId = group.entityId;
+    
+    // Main Campaign header
+    const campaignHeader = document.createElement('div');
+    campaignHeader.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-sm font-bold text-gray-800 uppercase rounded-md';
+    campaignHeader.style.backgroundColor = '#e5e7eb';
+    campaignHeader.innerHTML = `<span>Campaign (${entityId})</span>`;
+    list.appendChild(campaignHeader);
+
+    // Separate fields into DSP and Ad Server categories
+    const dspFields = {};
+    const adServerFields = {};
+    const uncategorizedFields = {};
+
+    Object.keys(group.fields).forEach(fieldName => {
+      if (FIELD_CATEGORIES.dsp.includes(fieldName)) {
+        dspFields[fieldName] = group.fields[fieldName];
+      } else if (FIELD_CATEGORIES.adServer.includes(fieldName)) {
+        adServerFields[fieldName] = group.fields[fieldName];
+      } else {
+        uncategorizedFields[fieldName] = group.fields[fieldName];
+      }
+    });
+
+    // Render DSP section
+    if (Object.keys(dspFields).length > 0) {
+      renderConnectorSection(list, 'DSP: The Trade Desk', dspFields, `dsp_${entityId}`, groupIndex * 2);
+    }
+
+    // Render Ad Server section
+    if (Object.keys(adServerFields).length > 0) {
+      renderConnectorSection(list, 'Ad Server: Google Campaign Manager', adServerFields, `adserver_${entityId}`, groupIndex * 2 + 1);
+    }
+
+    // Render uncategorized fields if any
+    if (Object.keys(uncategorizedFields).length > 0) {
+      renderConnectorSection(list, 'Other Fields', uncategorizedFields, `other_${entityId}`, groupIndex * 2 + 2);
+    }
+  }
+
+  function renderConnectorSection(list, connectorTitle, fields, sectionId, toggleIndex) {
+    // Connector sub-header
+    const connectorHeader = document.createElement('div');
+    connectorHeader.className = 'mt-2 mb-1 -mx-2 px-4 py-1 text-xs font-semibold text-gray-600 uppercase rounded-md flex justify-between items-center cursor-pointer hover:opacity-80 transition-opacity';
+    connectorHeader.style.backgroundColor = '#d1d5db';
+    connectorHeader.innerHTML = `
+      <span>${connectorTitle}</span>
+      <div class="flex items-center gap-2">
+        <span id="toggleLabel_${toggleIndex}" class="text-xs text-gray-600">Deselect All</span>
+        <button id="selectAllToggle_${toggleIndex}" data-section-id="${sectionId}" class="w-4 h-4 border-2 border-gray-400 rounded bg-blue-600 flex items-center justify-center hover:border-gray-500 transition-colors" title="Toggle section checkboxes">
+          <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+    `;
+    list.appendChild(connectorHeader);
+
+    const ul = document.createElement('ul');
+    ul.className = 'space-y-0.5 ml-4';
+
+    // Process each field for this connector
+    Object.keys(fields).forEach(fieldName => {
+      const fieldEntries = fields[fieldName];
+      const label = getFieldLabel(fieldName);
+      
+      // Find the original create entry and any edit entries
+      const createEntry = fieldEntries.find(e => e.action === 'create');
+      const editEntries = fieldEntries.filter(e => e.action === 'edit').sort((a, b) => new Date(a.ts) - new Date(b.ts));
+      
+      if (createEntry) {
+        renderFieldEntry(ul, fieldName, label, createEntry, editEntries, sectionId);
+      }
+    });
+
+    list.appendChild(ul);
+
+    // Add accordion functionality
+    connectorHeader.addEventListener('click', function(e) {
+      if (e.target.closest('button')) return;
+      ul.style.display = ul.style.display === 'none' ? '' : 'none';
+    });
+
+    // Add toggle functionality
+    const toggleBtn = document.getElementById(`selectAllToggle_${toggleIndex}`);
+    const toggleLabel = document.getElementById(`toggleLabel_${toggleIndex}`);
+    if (toggleBtn && toggleLabel) {
+      toggleBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const sectionCheckboxes = list.querySelectorAll(`input[type="checkbox"][data-section-id="${sectionId}"]`);
+        const allChecked = Array.from(sectionCheckboxes).every(cb => cb.checked);
+        
+        sectionCheckboxes.forEach(cb => cb.checked = !allChecked);
+        
+        if (allChecked) {
+          this.classList.remove('bg-blue-600');
+          this.classList.add('bg-white');
+          this.querySelector('svg').classList.add('hidden');
+          toggleLabel.textContent = 'Select All';
+        } else {
+          this.classList.remove('bg-white');
+          this.classList.add('bg-blue-600');
+          this.querySelector('svg').classList.remove('hidden');
+          toggleLabel.textContent = 'Deselect All';
+        }
+      });
+    }
+  }
+
+  function renderAdGroupSection(list, group, groupIndex) {
+    const entityId = group.entityId;
+    
+    // Main Ad Group header
+    const adGroupHeader = document.createElement('div');
+    adGroupHeader.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-sm font-bold text-gray-800 uppercase rounded-md';
+    adGroupHeader.style.backgroundColor = '#e5e7eb';
+    adGroupHeader.innerHTML = `<span>Ad Group (${entityId})</span>`;
+    list.appendChild(adGroupHeader);
+
+    // Separate fields into DSP and Ad Server categories for ad groups
+    const dspFields = {};
+    const adServerFields = {};
+    const uncategorizedFields = {};
+
+    Object.keys(group.fields).forEach(fieldName => {
+      if (FIELD_CATEGORIES.adGroupDsp.includes(fieldName)) {
+        dspFields[fieldName] = group.fields[fieldName];
+      } else if (FIELD_CATEGORIES.adGroupAdServer.includes(fieldName)) {
+        adServerFields[fieldName] = group.fields[fieldName];
+      } else {
+        uncategorizedFields[fieldName] = group.fields[fieldName];
+      }
+    });
+
+    // Render DSP section for ad groups
+    if (Object.keys(dspFields).length > 0) {
+      renderConnectorSection(list, 'DSP: The Trade Desk', dspFields, `adgroup_dsp_${entityId}`, (groupIndex + 100) * 2);
+    }
+
+    // Render Ad Server section for ad groups
+    if (Object.keys(adServerFields).length > 0) {
+      renderConnectorSection(list, 'Ad Server: Google Campaign Manager', adServerFields, `adgroup_adserver_${entityId}`, (groupIndex + 100) * 2 + 1);
+    }
+
+    // Render uncategorized fields if any
+    if (Object.keys(uncategorizedFields).length > 0) {
+      renderConnectorSection(list, 'Other Fields', uncategorizedFields, `adgroup_other_${entityId}`, (groupIndex + 100) * 2 + 2);
+    }
+  }
+
+  function renderFieldEntry(ul, fieldName, label, createEntry, editEntries, sectionId) {
+    const li = document.createElement('li');
+    const hasEdits = editEntries.length > 0;
+    const safeFieldName = fieldName.replace(/[^a-zA-Z0-9]/g, '_');
+    const expandableId = `expand_${sectionId}_${safeFieldName}`;
+
+    li.className = hasEdits ?
+      'border border-red-400 rounded-md px-3 py-1 bg-white' :
+      'border border-gray-200 rounded-md px-3 py-1 bg-white';
+
+    const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
+    const currentValue = editEntries.length > 0 ?
+      editEntries[editEntries.length - 1].newValue :
+      createEntry.newValue;
+
+    let line = `<div class="flex items-center justify-between gap-2 ${hasEdits ? 'cursor-pointer hover:bg-gray-50' : ''}" ${hasEdits ? `onclick="window.togglePreviousValue('${expandableId}')"` : ''}>
+      <div class="flex items-stretch text-xs flex-grow min-w-0" style="gap: 0;">
+       <span class="font-semibold text-gray-800 whitespace-nowrap flex items-center" style="min-width: 140px; background-color: #ffffff; padding: 4px 8px; margin: -4px 0 -4px -12px; padding-right: 8px; border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem;">${label}:</span>
+        <div style="width: 1px; background-color: #d1d5db; flex-shrink: 0; margin: -4px 0;"></div>
+        <div class="flex items-center gap-1 flex-grow min-w-0 pl-2">
+          <span class="text-gray-900 truncate">${currentValue || '—'}</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 whitespace-nowrap">
+        <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
+        <input type="checkbox" checked data-section-id="${sectionId}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" onclick="event.stopPropagation()" />
+      </div>
+    </div>`;
+
+    if (hasEdits) {
+      const latestEdit = editEntries[editEntries.length - 1];
+      const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue :
+        (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : createEntry.newValue);
+      
+      line += `<div id="${expandableId}" class="hidden mt-1 ml-4 pl-4 border-l-2 border-gray-300 text-xs text-gray-600">
+        <span class="font-semibold">Previous:</span> <span>${previousValue || '—'}</span>
+      </div>`;
+    }
+
+    li.innerHTML = line;
+    ul.appendChild(li);
   }
 
   function openDrawer(opts){

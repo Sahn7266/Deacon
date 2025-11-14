@@ -462,7 +462,7 @@
 
 <!-- Create Ad Group Modal -->
 <div id="createAdGroupModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative">
     <!-- Close button -->
     <button id="closeAdGroupModal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -473,65 +473,135 @@
     <h2 class="text-xl font-semibold text-gray-900 mb-6">Create New Ad Group</h2>
 
     <form id="createAdGroupForm" class="space-y-6 max-h-[75vh] overflow-y-auto pr-2">
-
-      <!-- Ad Group Details -->
-      <div>
-        <h3 class="text-md font-semibold text-gray-800 mb-3">Ad Group Details</h3>
-
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="adGroupName">Ad Group Name</label>
-        <input type="text" id="adGroupName" name="adGroupName" required class="w-full border border-gray-300 rounded px-3 py-2 mb-4"/>
-
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="adGroupCampaign">Campaign</label>
-        <select id="adGroupCampaign" name="adGroupCampaign" required class="w-full border border-gray-300 rounded px-3 py-2 mb-4">
-          <option value="">Select campaign</option>
-          <option>Summer Sale 2024</option>
-          <option>Holiday Campaign</option>
-          <option>Brand Awareness Q3</option>
-          <option>Product Launch</option>
-        </select>
-
+      
+      <!-- Choose Connectors Section -->
+      <div id="connectorsSection" class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+        <h3 class="text-md font-semibold text-gray-800 mb-4">Choose Connectors</h3>
+        
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- DSP Selection -->
           <div>
-            <label for="adGroupBudget" class="block text-sm font-medium text-gray-700 mb-1">Budget Allocation</label>
-            <input type="text" id="adGroupBudget" name="adGroupBudget" required class="w-full border border-gray-300 rounded px-3 py-2"/>
+            <label for="adGroupDspSelect" class="block text-sm font-medium text-gray-700 mb-1">DSP</label>
+            <select id="adGroupDspSelect" name="dsp" class="w-full border border-gray-300 rounded px-3 py-2 bg-white">
+              <option value="">Select DSP</option>
+              <option value="thetradedesk">The Trade Desk</option>
+            </select>
           </div>
+          
+          <!-- Ad Server Selection -->
           <div>
-            <label for="adGroupBidStrategy" class="block text-sm font-medium text-gray-700 mb-1">Bid Strategy</label>
-            <select id="adGroupBidStrategy" name="adGroupBidStrategy" required class="w-full border border-gray-300 rounded px-3 py-2">
-              <option value="">Select bid strategy</option>
-              <option>Manual CPC</option>
-              <option>Maximize Clicks</option>
-              <option>Target ROAS</option>
-              <option>Enhanced CPC</option>
+            <label for="adGroupAdServerSelect" class="block text-sm font-medium text-gray-700 mb-1">Ad Server</label>
+            <select id="adGroupAdServerSelect" name="adServer" class="w-full border border-gray-300 rounded px-3 py-2 bg-white">
+              <option value="">Select Ad Server</option>
+              <option value="gcm">Google Campaign Manager</option>
             </select>
           </div>
         </div>
       </div>
 
-      <hr class="border-t my-2"/>
+      <!-- Fields Section -->
+      <div id="fieldsSection" class="border border-gray-300 rounded-lg p-4">
+        <h3 class="text-md font-semibold text-gray-800 mb-4">Fields</h3>
+        
+        <!-- DSP Fields (The Trade Desk) -->
+        <div id="dspFields" class="hidden space-y-4">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 class="text-sm font-semibold text-blue-800 mb-3 flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              DSP: The Trade Desk
+            </h4>
+            
+            <!-- Current Ad Group Fields -->
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="adGroupName">Ad Group Name</label>
+                <input type="text" id="adGroupName" name="adGroupName" required class="w-full border border-gray-300 rounded px-3 py-2"/>
+              </div>
 
-      <!-- Creative & Targeting -->
-      <div>
-        <h3 class="text-md font-semibold text-gray-800 mb-3">Creative & Targeting</h3>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="adGroupCampaign">Campaign</label>
+                <select id="adGroupCampaign" name="adGroupCampaign" required class="w-full border border-gray-300 rounded px-3 py-2">
+                  <option value="">Select campaign</option>
+                </select>
+              </div>
 
-        <label for="creativeFormat" class="block text-sm font-medium text-gray-700 mb-1">Creative Format</label>
-        <input type="text" id="creativeFormat" name="creativeFormat" placeholder="e.g., Display Banner, Video 30s" required class="w-full border border-gray-300 rounded px-3 py-2 mb-4"/>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="adGroupBudget" class="block text-sm font-medium text-gray-700 mb-1">Budget Allocation</label>
+                  <input type="text" id="adGroupBudget" name="adGroupBudget" required class="w-full border border-gray-300 rounded px-3 py-2"/>
+                </div>
+                <div>
+                  <label for="adGroupBidStrategy" class="block text-sm font-medium text-gray-700 mb-1">Bid Strategy</label>
+                  <select id="adGroupBidStrategy" name="adGroupBidStrategy" required class="w-full border border-gray-300 rounded px-3 py-2">
+                    <option value="">Select bid strategy</option>
+                    <option>Manual CPC</option>
+                    <option>Maximize Clicks</option>
+                    <option>Target ROAS</option>
+                    <option>Enhanced CPC</option>
+                  </select>
+                </div>
+              </div>
 
-        <label for="targetingRefinements" class="block text-sm font-medium text-gray-700 mb-1">Targeting Refinements</label>
-        <input type="text" id="targetingRefinements" name="targetingRefinements" placeholder="e.g., Job Title: IT Manager, Director" class="w-full border border-gray-300 rounded px-3 py-2 mb-4"/>
+              <div>
+                <label for="creativeFormat" class="block text-sm font-medium text-gray-700 mb-1">Creative Format</label>
+                <input type="text" id="creativeFormat" name="creativeFormat" placeholder="e.g., Display Banner, Video 30s" required class="w-full border border-gray-300 rounded px-3 py-2"/>
+              </div>
 
-        <label for="placementSettings" class="block text-sm font-medium text-gray-700 mb-1">Placement Settings</label>
-        <input type="text" id="placementSettings" name="placementSettings" placeholder="e.g., Business Publications, Premium Inventory" class="w-full border border-gray-300 rounded px-3 py-2"/>
+              <div>
+                <label for="targetingRefinements" class="block text-sm font-medium text-gray-700 mb-1">Targeting Refinements</label>
+                <input type="text" id="targetingRefinements" name="targetingRefinements" placeholder="e.g., Job Title: IT Manager, Director" class="w-full border border-gray-300 rounded px-3 py-2"/>
+              </div>
+
+              <div>
+                <label for="placementSettings" class="block text-sm font-medium text-gray-700 mb-1">Placement Settings</label>
+                <input type="text" id="placementSettings" name="placementSettings" placeholder="e.g., Business Publications, Premium Inventory" class="w-full border border-gray-300 rounded px-3 py-2"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ad Server Fields (Google Campaign Manager) -->
+        <div id="adServerFields" class="hidden space-y-4 mt-4">
+          <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h4 class="text-sm font-semibold text-green-800 mb-3 flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Ad Server: Google Campaign Manager
+            </h4>
+            
+            <div class="space-y-4">
+              <div>
+                <label for="adServerAdGroupName" class="block text-sm font-medium text-gray-700 mb-1">Ad Group Name</label>
+                <input type="text" id="adServerAdGroupName" name="adServerAdGroupName" class="w-full border border-gray-300 rounded px-3 py-2"/>
+              </div>
+
+              <div>
+                <label for="adServerPlacement" class="block text-sm font-medium text-gray-700 mb-1">Placement</label>
+                <input type="text" id="adServerPlacement" name="adServerPlacement" class="w-full border border-gray-300 rounded px-3 py-2"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state when no connectors selected -->
+        <div id="noFieldsMessage" class="text-center py-8 text-gray-500">
+          <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <p>Select connectors to display fields</p>
+        </div>
       </div>
 
       <!-- Action Buttons -->
-<!-- Action Buttons -->
       <div class="flex justify-end space-x-3 pt-4">
         <button type="button" id="cancelAdGroupModal" class="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-100">Cancel</button>
         <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">Create</button>
         <button type="button" id="createAndAddMore" class="px-4 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700">Create & Add +</button>
       </div>
-        </form>
+    </form>
   </div>
 </div>
 
@@ -947,9 +1017,78 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('createAdGroupForm');
   const modal = document.getElementById('createAdGroupModal');
 
+  // === CONNECTOR SELECTION LOGIC ===
+  const dspSelect = document.getElementById('adGroupDspSelect');
+  const adServerSelect = document.getElementById('adGroupAdServerSelect');
+  const dspFields = document.getElementById('dspFields');
+  const adServerFields = document.getElementById('adServerFields');
+  const noFieldsMessage = document.getElementById('noFieldsMessage');
+
+  // Update field visibility based on connector selections
+  function updateFieldVisibility() {
+    const dspSelected = dspSelect.value;
+    const adServerSelected = adServerSelect.value;
+
+    // Show/hide DSP fields
+    if (dspSelected === 'thetradedesk') {
+      dspFields.classList.remove('hidden');
+    } else {
+      dspFields.classList.add('hidden');
+    }
+
+    // Show/hide Ad Server fields
+    if (adServerSelected === 'gcm') {
+      adServerFields.classList.remove('hidden');
+    } else {
+      adServerFields.classList.add('hidden');
+    }
+
+    // Show/hide empty state message
+    if (!dspSelected && !adServerSelected) {
+      noFieldsMessage.classList.remove('hidden');
+    } else {
+      noFieldsMessage.classList.add('hidden');
+    }
+
+    // Update form validation requirements
+    updateFieldRequirements(dspSelected, adServerSelected);
+  }
+
+  // Update field requirements based on connector selection
+  function updateFieldRequirements(dspSelected, adServerSelected) {
+    // DSP field requirements
+    const dspRequiredFields = ['adGroupName', 'adGroupCampaign', 'adGroupBudget', 'adGroupBidStrategy', 'creativeFormat'];
+    dspRequiredFields.forEach(fieldId => {
+      const field = document.getElementById(fieldId);
+      if (field) {
+        field.required = dspSelected === 'thetradedesk';
+      }
+    });
+
+    // Ad Server fields are optional for now
+    const adServerRequiredFields = ['adServerAdGroupName', 'adServerPlacement'];
+    adServerRequiredFields.forEach(fieldId => {
+      const field = document.getElementById(fieldId);
+      if (field) {
+        field.required = false; // Make optional
+      }
+    });
+  }
+
+  // Event listeners for connector dropdowns
+  dspSelect.addEventListener('change', updateFieldVisibility);
+  adServerSelect.addEventListener('change', updateFieldVisibility);
+
+  // Initialize field visibility
+  updateFieldVisibility();
+
   // Open modal
   document.getElementById('createBtn')?.addEventListener('click', () => {
     modal.classList.remove('hidden');
+    // Reset connector selections and field visibility
+    dspSelect.value = '';
+    adServerSelect.value = '';
+    updateFieldVisibility();
   });
 
   // Close modal
@@ -989,23 +1128,42 @@ document.addEventListener('DOMContentLoaded', () => {
       placementSettings: form.placementSettings.value.trim(),
       dsp: 'Custom',
       classification: 'Custom',
-      source: 'custom'
+      source: 'custom',
+      // Add connector information
+      connectors: {
+        dsp: dspSelect.value,
+        adServer: adServerSelect.value
+      },
+      // Add Ad Server fields
+      adServerAdGroupName: form.adServerAdGroupName?.value?.trim() || '',
+      adServerPlacement: form.adServerPlacement?.value?.trim() || ''
     };
 
     // ✅ Log Ad Group Creation to Audit
+    const auditData = {
+      adGroupNameInput: adGroup.name,
+      campaignName: adGroup.campaign,
+      budgetAllocation: adGroup.budget,
+      bidStrategy: adGroup.bidStrategy,
+      creativeFormat: adGroup.creativeFormat,
+      targetingRefinements: adGroup.targetingRefinements,
+      placementSettings: adGroup.placementSettings,
+      connectors: JSON.stringify(adGroup.connectors)
+    };
+
+    // Add Ad Server fields to audit data if they have values
+    if (adGroup.adServerAdGroupName) {
+      auditData.adServerAdGroupName = adGroup.adServerAdGroupName;
+    }
+    if (adGroup.adServerPlacement) {
+      auditData.adServerPlacement = adGroup.adServerPlacement;
+    }
+
     audit.recordCreate({
       campaignId: adGroup.campaign,
       entityType: 'adgroup',
       entityId: adGroup.id,
-      data: {
-        adGroupNameInput: adGroup.name,
-        campaignName: adGroup.campaign,
-        budgetAllocation: adGroup.budget,
-        bidStrategy: adGroup.bidStrategy,
-        creativeFormat: adGroup.creativeFormat,
-        targetingRefinements: adGroup.targetingRefinements,
-        placementSettings: adGroup.placementSettings
-      }
+      data: auditData
     });
     console.log('✔️ Audit logged for Ad Group:', adGroup.id);
 
@@ -1016,12 +1174,25 @@ document.addEventListener('DOMContentLoaded', () => {
       // === Audit Edit Tracking ===
       const originalAdGroup = JSON.parse(JSON.stringify(groups[existingIndex]));
 
+      const beforeAuditData = {
+        adGroupNameInput: originalAdGroup.name,
+        campaignName: originalAdGroup.campaign,
+        budgetAllocation: originalAdGroup.budget,
+        bidStrategy: originalAdGroup.bidStrategy,
+        creativeFormat: originalAdGroup.creativeFormat,
+        targetingRefinements: originalAdGroup.targetingRefinements,
+        placementSettings: originalAdGroup.placementSettings,
+        connectors: JSON.stringify(originalAdGroup.connectors || {}),
+        adServerAdGroupName: originalAdGroup.adServerAdGroupName || '',
+        adServerPlacement: originalAdGroup.adServerPlacement || ''
+      };
+
       audit.recordEdit({
         campaignId: adGroup.campaign,
         entityType: 'adgroup',
         entityId: adGroup.id,
-        before: originalAdGroup,
-        after: adGroup
+        before: beforeAuditData,
+        after: auditData
       });
       console.log('✏️ Audit logged for Ad Group edit:', adGroup.id);
 
@@ -1032,8 +1203,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     localStorage.setItem('adgroups_data_v1', JSON.stringify(groups));
 
-    // Save the campaign ID before resetting
+    // Save the current selections before resetting
     const selectedCampaignId = form.adGroupCampaign.value;
+    const selectedDsp = dspSelect.value;
+    const selectedAdServer = adServerSelect.value;
 
     // Show toast
     if (typeof showToast === 'function') showToast('Ad Group Created Successfully');
@@ -1045,13 +1218,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (keepModalOpen) {
-      // Keep modal open, reset form, but keep campaign selected
+      // Keep modal open, reset form, but preserve selections
       form.reset();
       form.adGroupCampaign.value = selectedCampaignId;
+      dspSelect.value = selectedDsp;
+      adServerSelect.value = selectedAdServer;
+      updateFieldVisibility();
     } else {
       // Close modal normally
       modal.classList.add('hidden');
       form.reset();
+      dspSelect.value = '';
+      adServerSelect.value = '';
+      updateFieldVisibility();
     }
   }
 });

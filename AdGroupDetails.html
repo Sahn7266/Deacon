@@ -289,6 +289,24 @@
   <span id="displayPlacementSettings" class="block mt-1 text-gray-800">N/A</span>
   <input id="placementSettings" data-bind="placementSettings" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
 </div>
+
+<hr class="border-gray-300" />
+
+<h2 class="text-lg font-semibold text-gray-900">Ad Server Fields</h2>
+
+<!-- Ad Server Ad Group Name -->
+<div>
+  <label for="adServerAdGroupName" class="block text-sm font-medium text-gray-700">Ad Group Name</label>
+  <span id="displayAdServerAdGroupName" class="block mt-1 text-gray-800">N/A</span>
+  <input id="adServerAdGroupName" data-bind="adServerAdGroupName" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
+</div>
+
+<!-- Ad Server Placement -->
+<div>
+  <label for="adServerPlacement" class="block text-sm font-medium text-gray-700">Placement</label>
+  <span id="displayAdServerPlacement" class="block mt-1 text-gray-800">N/A</span>
+  <input id="adServerPlacement" data-bind="adServerPlacement" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
+</div>
             </section>
 
                       <script>
@@ -300,7 +318,9 @@
                           { span: 'displayBidStrategy', input: 'bidStrategy' },
                           { span: 'displayCreativeFormat', input: 'creativeFormat' },
                           { span: 'displayTargetingRefinements', input: 'targetingRefinements' },
-                          { span: 'displayPlacementSettings', input: 'placementSettings' }
+                          { span: 'displayPlacementSettings', input: 'placementSettings' },
+                          { span: 'displayAdServerAdGroupName', input: 'adServerAdGroupName' },
+                          { span: 'displayAdServerPlacement', input: 'adServerPlacement' }
                         ];
 
                         const btnEdit   = document.getElementById('editGeneralBtn');
@@ -435,6 +455,8 @@ btnSave?.addEventListener('click', () => {
     if (now.creativeFormat !== undefined) adGroup.creativeFormat = now.creativeFormat;
     if (now.targetingRefinements !== undefined) adGroup.targetingRefinements = now.targetingRefinements;
     if (now.placementSettings !== undefined) adGroup.placementSettings = now.placementSettings;
+    if (now.adServerAdGroupName !== undefined) adGroup.adServerAdGroupName = now.adServerAdGroupName;
+    if (now.adServerPlacement !== undefined) adGroup.adServerPlacement = now.adServerPlacement;
     
     // Ensure campaignId is stored on the ad group object
     if (campaignId && !adGroup.campaignId) {
@@ -653,7 +675,9 @@ const editableSelectors = [
   '#bidStrategy',
   '#creativeFormat',
   '#targetingRefinements',
-  '#placementSettings'
+  '#placementSettings',
+  '#adServerAdGroupName',
+  '#adServerPlacement'
 ];
 
 
@@ -1126,7 +1150,9 @@ document.addEventListener('DOMContentLoaded', function () {
     { dataBindKey: 'bidStrategy', adGroupProperty: 'bidStrategy' },
     { dataBindKey: 'creativeFormat', adGroupProperty: 'creativeFormat' },
     { dataBindKey: 'targetingRefinements', adGroupProperty: 'targetingRefinements' },
-    { dataBindKey: 'placementSettings', adGroupProperty: 'placementSettings' }
+    { dataBindKey: 'placementSettings', adGroupProperty: 'placementSettings' },
+    { dataBindKey: 'adServerAdGroupName', adGroupProperty: 'adServerAdGroupName' },
+    { dataBindKey: 'adServerPlacement', adGroupProperty: 'adServerPlacement' }
   ];
 
   // Helper function to safely set text content
@@ -1150,6 +1176,8 @@ document.addEventListener('DOMContentLoaded', function () {
   safeSet('displayCreativeFormat', adGroup.creativeFormat);
   safeSet('displayTargetingRefinements', adGroup.targetingRefinements);
   safeSet('displayPlacementSettings', adGroup.placementSettings);
+  safeSet('displayAdServerAdGroupName', adGroup.adServerAdGroupName);
+  safeSet('displayAdServerPlacement', adGroup.adServerPlacement);
 });
 
 
