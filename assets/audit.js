@@ -174,6 +174,11 @@ function clearCampaignEdits(campaignId){
     ag.campaign === campaignId || ag.campaignId === campaignId
   );
   
+  console.log('🔍 Found ad groups for campaign:', campaignId, currentAdGroups.length);
+  currentAdGroups.forEach(ag => {
+    console.log('🔍 Ad Group:', ag.id, 'adServerAdGroupName:', ag.adServerAdGroupName, 'adServerPlacement:', ag.adServerPlacement);
+  });
+  
   if (!currentCampaign && currentAdGroups.length === 0) {
     // If no campaign or ad groups found, just remove edit entries
     const allEntries = loadRaw();
@@ -235,7 +240,11 @@ function clearCampaignEdits(campaignId){
     
     // Create new campaign audit entries with current values
     Object.entries(currentCampaignData).forEach(([field, value]) => {
-      if (value != null && String(value).trim() !== '') {
+      // Always include Ad Server fields, even if empty, to preserve them in audit
+      const isAdServerField = field.startsWith('adServer');
+      const shouldInclude = isAdServerField || (value != null && String(value).trim() !== '');
+      
+      if (shouldInclude) {
         newCreateEntries.push({
           id: uuid(),
           ts: originalCampaignTimestamp,
@@ -244,7 +253,7 @@ function clearCampaignEdits(campaignId){
           entityId: campaignId,
           action: 'create',
           field,
-          newValue: String(value).trim(),
+          newValue: value != null ? String(value).trim() : '',
           user: 'localUser'
         });
       }
@@ -273,12 +282,23 @@ function clearCampaignEdits(campaignId){
       bidStrategy: adGroup.bidStrategy,
       creativeFormat: adGroup.creativeFormat,
       targetingRefinements: adGroup.targetingRefinements,
-      placementSettings: adGroup.placementSettings
+      placementSettings: adGroup.placementSettings,
+      // Include Ad Server fields for ad groups - handle missing fields gracefully
+      adServerAdGroupName: adGroup.adServerAdGroupName || '',
+      adServerPlacement: adGroup.adServerPlacement || ''
     };
+    
+    console.log('🔍 Ad Group data being recreated:', adGroup.id, currentAdGroupData);
     
     // Create new ad group audit entries with current values
     Object.entries(currentAdGroupData).forEach(([field, value]) => {
-      if (value != null && String(value).trim() !== '') {
+      // Always include Ad Server fields for ad groups, even if empty, to preserve them in audit
+      const isAdServerField = field.startsWith('adServer');
+      const shouldInclude = isAdServerField || (value != null && String(value).trim() !== '');
+      
+      console.log(`🔍 Field: ${field}, Value: "${value}", isAdServer: ${isAdServerField}, shouldInclude: ${shouldInclude}`);
+      
+      if (shouldInclude) {
         newCreateEntries.push({
           id: uuid(),
           ts: originalAdGroupTimestamp,
@@ -287,7 +307,7 @@ function clearCampaignEdits(campaignId){
           entityId: adGroup.id,
           action: 'create',
           field,
-          newValue: String(value).trim(),
+          newValue: value != null ? String(value).trim() : '',
           user: 'localUser'
         });
       }

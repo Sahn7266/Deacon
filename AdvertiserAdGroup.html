@@ -1151,13 +1151,9 @@ document.addEventListener('DOMContentLoaded', () => {
       connectors: JSON.stringify(adGroup.connectors)
     };
 
-    // Add Ad Server fields to audit data if they have values
-    if (adGroup.adServerAdGroupName) {
-      auditData.adServerAdGroupName = adGroup.adServerAdGroupName;
-    }
-    if (adGroup.adServerPlacement) {
-      auditData.adServerPlacement = adGroup.adServerPlacement;
-    }
+    // Add Ad Server fields to audit data - always include them to maintain structure
+    auditData.adServerAdGroupName = adGroup.adServerAdGroupName || '';
+    auditData.adServerPlacement = adGroup.adServerPlacement || '';
 
     audit.recordCreate({
       campaignId: adGroup.campaign,
