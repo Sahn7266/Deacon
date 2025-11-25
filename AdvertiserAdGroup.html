@@ -462,144 +462,160 @@
 
 <!-- Create Ad Group Modal -->
 <div id="createAdGroupModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative">
-    <!-- Close button -->
-    <button id="closeAdGroupModal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-6xl max-h-[90vh] p-6 relative">
+    <button id="closeAdGroupModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
       </svg>
     </button>
 
-    <h2 class="text-xl font-semibold text-gray-900 mb-6">Create New Ad Group</h2>
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Create New Ad Group</h2>
 
-    <form id="createAdGroupForm" class="space-y-6 max-h-[75vh] overflow-y-auto pr-2">
+    <form id="createAdGroupForm" class="overflow-y-auto max-h-[75vh] pr-2">
       
-      <!-- Choose Connectors Section -->
-      <div id="connectorsSection" class="border border-gray-300 rounded-lg p-4 bg-gray-50">
-        <h3 class="text-md font-semibold text-gray-800 mb-4">Choose Connectors</h3>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- DSP Selection -->
-          <div>
-            <label for="adGroupDspSelect" class="block text-sm font-medium text-gray-700 mb-1">DSP</label>
-            <select id="adGroupDspSelect" name="dsp" class="w-full border border-gray-300 rounded px-3 py-2 bg-white">
-              <option value="">Select DSP</option>
-              <option value="thetradedesk">The Trade Desk</option>
-            </select>
-          </div>
-          
-          <!-- Ad Server Selection -->
-          <div>
-            <label for="adGroupAdServerSelect" class="block text-sm font-medium text-gray-700 mb-1">Ad Server</label>
-            <select id="adGroupAdServerSelect" name="adServer" class="w-full border border-gray-300 rounded px-3 py-2 bg-white">
-              <option value="">Select Ad Server</option>
-              <option value="gcm">Google Campaign Manager</option>
-            </select>
+      <!-- Beacon Fields Section -->
+      <div class="mb-4">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Beacon Fields</h3>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Ad Group Name *</label>
+              <input type="text" id="beaconAdGroupName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              <p class="text-xs text-gray-500 mt-1">Common identifier across all platforms</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Campaign</label>
+              <input type="text" id="beaconCampaign" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <p class="text-xs text-gray-500 mt-1">Associated campaign name</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Budget Allocation</label>
+              <input type="text" id="beaconBudget" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <p class="text-xs text-gray-500 mt-1">Budget allocated to this ad group</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Fields Section -->
-      <div id="fieldsSection" class="border border-gray-300 rounded-lg p-4">
-        <h3 class="text-md font-semibold text-gray-800 mb-4">Fields</h3>
-        
-        <!-- DSP Fields (The Trade Desk) -->
-        <div id="dspFields" class="hidden space-y-4">
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 class="text-sm font-semibold text-blue-800 mb-3 flex items-center">
-              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              DSP: The Trade Desk
-            </h4>
-            
-            <!-- Current Ad Group Fields -->
-            <div class="space-y-4">
+      <!-- Connectors Section -->
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-lg font-semibold text-gray-800">Connectors</h3>
+          <button type="button" id="connectorsToggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false">
+            <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+          </button>
+        </div>
+        <div id="connectorsContent" class="hidden">
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <!-- DSP Options -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="adGroupName">Ad Group Name</label>
-                <input type="text" id="adGroupName" name="adGroupName" required class="w-full border border-gray-300 rounded px-3 py-2"/>
+                <label class="block text-sm font-bold text-gray-700 mb-2">DSP (Data Service Provider)</label>
+                <div class="flex flex-wrap gap-2">
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="dsp-trade-desk" name="dsp" value="trade-desk" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">The Trade Desk</span>
+                  </label>
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="dsp-dv360" name="dsp" value="dv360" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">DV360</span>
+                  </label>
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="dsp-simplifi" name="dsp" value="simplifi" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">Simplifi</span>
+                  </label>
+                </div>
               </div>
 
+              <!-- Ad Server Options -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1" for="adGroupCampaign">Campaign</label>
-                <select id="adGroupCampaign" name="adGroupCampaign" required class="w-full border border-gray-300 rounded px-3 py-2">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Ad Server</label>
+                <div class="flex flex-wrap gap-2">
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-green-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="adserver-gcm" name="adserver" value="google-campaign-manager" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">Google Campaign Manager</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DSP Fields Section (Trade Desk) -->
+      <div id="dspFieldsSection" class="hidden mb-3">
+        <div class="bg-white border border-blue-200 rounded-lg shadow-sm">
+          <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 border-b border-blue-200 rounded-t-lg">
+            <h4 class="font-semibold text-blue-900 text-sm uppercase tracking-wide">DSP Fields • The Trade Desk</h4>
+          </div>
+          <div class="p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ad Group Name</label>
+                <input type="text" id="adGroupName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign</label>
+                <select id="adGroupCampaign" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                   <option value="">Select campaign</option>
                 </select>
               </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label for="adGroupBudget" class="block text-sm font-medium text-gray-700 mb-1">Budget Allocation</label>
-                  <input type="text" id="adGroupBudget" name="adGroupBudget" required class="w-full border border-gray-300 rounded px-3 py-2"/>
-                </div>
-                <div>
-                  <label for="adGroupBidStrategy" class="block text-sm font-medium text-gray-700 mb-1">Bid Strategy</label>
-                  <select id="adGroupBidStrategy" name="adGroupBidStrategy" required class="w-full border border-gray-300 rounded px-3 py-2">
-                    <option value="">Select bid strategy</option>
-                    <option>Manual CPC</option>
-                    <option>Maximize Clicks</option>
-                    <option>Target ROAS</option>
-                    <option>Enhanced CPC</option>
-                  </select>
-                </div>
-              </div>
-
               <div>
-                <label for="creativeFormat" class="block text-sm font-medium text-gray-700 mb-1">Creative Format</label>
-                <input type="text" id="creativeFormat" name="creativeFormat" placeholder="e.g., Display Banner, Video 30s" required class="w-full border border-gray-300 rounded px-3 py-2"/>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Budget Allocation</label>
+                <input type="text" id="adGroupBudget" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
               </div>
-
               <div>
-                <label for="targetingRefinements" class="block text-sm font-medium text-gray-700 mb-1">Targeting Refinements</label>
-                <input type="text" id="targetingRefinements" name="targetingRefinements" placeholder="e.g., Job Title: IT Manager, Director" class="w-full border border-gray-300 rounded px-3 py-2"/>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Bid Strategy</label>
+                <select id="adGroupBidStrategy" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                  <option value="">Select bid strategy</option>
+                  <option>Manual CPC</option>
+                  <option>Maximize Clicks</option>
+                  <option>Target ROAS</option>
+                  <option>Enhanced CPC</option>
+                </select>
               </div>
-
               <div>
-                <label for="placementSettings" class="block text-sm font-medium text-gray-700 mb-1">Placement Settings</label>
-                <input type="text" id="placementSettings" name="placementSettings" placeholder="e.g., Business Publications, Premium Inventory" class="w-full border border-gray-300 rounded px-3 py-2"/>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Creative Format</label>
+                <input type="text" id="creativeFormat" placeholder="e.g., Display Banner, Video 30s" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Targeting Refinements</label>
+                <input type="text" id="targetingRefinements" placeholder="e.g., Job Title: IT Manager, Director" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Placement Settings</label>
+                <input type="text" id="placementSettings" placeholder="e.g., Business Publications, Premium Inventory" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Ad Server Fields (Google Campaign Manager) -->
-        <div id="adServerFields" class="hidden space-y-4 mt-4">
-          <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h4 class="text-sm font-semibold text-green-800 mb-3 flex items-center">
-              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              Ad Server: Google Campaign Manager
-            </h4>
-            
-            <div class="space-y-4">
-              <div>
-                <label for="adServerAdGroupName" class="block text-sm font-medium text-gray-700 mb-1">Ad Group Name</label>
-                <input type="text" id="adServerAdGroupName" name="adServerAdGroupName" class="w-full border border-gray-300 rounded px-3 py-2"/>
-              </div>
-
-              <div>
-                <label for="adServerPlacement" class="block text-sm font-medium text-gray-700 mb-1">Placement</label>
-                <input type="text" id="adServerPlacement" name="adServerPlacement" class="w-full border border-gray-300 rounded px-3 py-2"/>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Empty state when no connectors selected -->
-        <div id="noFieldsMessage" class="text-center py-8 text-gray-500">
-          <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-          </svg>
-          <p>Select connectors to display fields</p>
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex justify-end space-x-3 pt-4">
-        <button type="button" id="cancelAdGroupModal" class="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-100">Cancel</button>
-        <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">Create</button>
-        <button type="button" id="createAndAddMore" class="px-4 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700">Create & Add +</button>
+      <!-- Ad Server Fields Section (Google Campaign Manager) -->
+      <div id="adServerFieldsSection" class="hidden mb-3">
+        <div class="bg-white border border-green-200 rounded-lg shadow-sm">
+          <div class="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 border-b border-green-200 rounded-t-lg">
+            <h4 class="font-semibold text-green-900 text-sm uppercase tracking-wide">Ad Server Fields • Google Campaign Manager</h4>
+          </div>
+          <div class="p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ad Group Name</label>
+                <input type="text" id="adServerAdGroupName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Placement</label>
+                <input type="text" id="adServerPlacement" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-3 border-t border-gray-200">
+        <button type="button" id="cancelAdGroupModal" class="px-6 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">Cancel</button>
+        <button type="submit" class="px-6 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">Create Ad Group</button>
+        <button type="button" id="createAndAddMore" class="px-6 py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors">Create & Add +</button>
       </div>
     </form>
   </div>
@@ -1017,37 +1033,54 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('createAdGroupForm');
   const modal = document.getElementById('createAdGroupModal');
 
+  // === TOGGLE FUNCTIONALITY ===
+  const connectorsToggle = document.getElementById('connectorsToggle');
+  const connectorsContent = document.getElementById('connectorsContent');
+  let isConnectorsOpen = false;
+
+  connectorsToggle.addEventListener('click', () => {
+    isConnectorsOpen = !isConnectorsOpen;
+    
+    if (isConnectorsOpen) {
+      connectorsContent.classList.remove('hidden');
+      connectorsToggle.classList.remove('bg-gray-200');
+      connectorsToggle.classList.add('bg-blue-600');
+      connectorsToggle.setAttribute('aria-checked', 'true');
+      connectorsToggle.querySelector('span').classList.remove('translate-x-0');
+      connectorsToggle.querySelector('span').classList.add('translate-x-5');
+    } else {
+      connectorsContent.classList.add('hidden');
+      connectorsToggle.classList.remove('bg-blue-600');
+      connectorsToggle.classList.add('bg-gray-200');
+      connectorsToggle.setAttribute('aria-checked', 'false');
+      connectorsToggle.querySelector('span').classList.remove('translate-x-5');
+      connectorsToggle.querySelector('span').classList.add('translate-x-0');
+    }
+  });
+
   // === CONNECTOR SELECTION LOGIC ===
-  const dspSelect = document.getElementById('adGroupDspSelect');
-  const adServerSelect = document.getElementById('adGroupAdServerSelect');
-  const dspFields = document.getElementById('dspFields');
-  const adServerFields = document.getElementById('adServerFields');
-  const noFieldsMessage = document.getElementById('noFieldsMessage');
+  const dspCheckboxes = document.querySelectorAll('input[name="dsp"]');
+  const adServerCheckboxes = document.querySelectorAll('input[name="adserver"]');
+  const dspFieldsSection = document.getElementById('dspFieldsSection');
+  const adServerFieldsSection = document.getElementById('adServerFieldsSection');
 
   // Update field visibility based on connector selections
   function updateFieldVisibility() {
-    const dspSelected = dspSelect.value;
-    const adServerSelected = adServerSelect.value;
+    const dspSelected = Array.from(dspCheckboxes).some(cb => cb.checked);
+    const adServerSelected = Array.from(adServerCheckboxes).some(cb => cb.checked);
 
     // Show/hide DSP fields
-    if (dspSelected === 'thetradedesk') {
-      dspFields.classList.remove('hidden');
+    if (dspSelected) {
+      dspFieldsSection.classList.remove('hidden');
     } else {
-      dspFields.classList.add('hidden');
+      dspFieldsSection.classList.add('hidden');
     }
 
     // Show/hide Ad Server fields
-    if (adServerSelected === 'gcm') {
-      adServerFields.classList.remove('hidden');
+    if (adServerSelected) {
+      adServerFieldsSection.classList.remove('hidden');
     } else {
-      adServerFields.classList.add('hidden');
-    }
-
-    // Show/hide empty state message
-    if (!dspSelected && !adServerSelected) {
-      noFieldsMessage.classList.remove('hidden');
-    } else {
-      noFieldsMessage.classList.add('hidden');
+      adServerFieldsSection.classList.add('hidden');
     }
 
     // Update form validation requirements
@@ -1061,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dspRequiredFields.forEach(fieldId => {
       const field = document.getElementById(fieldId);
       if (field) {
-        field.required = dspSelected === 'thetradedesk';
+        field.required = dspSelected;
       }
     });
 
@@ -1075,9 +1108,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Event listeners for connector dropdowns
-  dspSelect.addEventListener('change', updateFieldVisibility);
-  adServerSelect.addEventListener('change', updateFieldVisibility);
+  // Event listeners for connector checkboxes
+  dspCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateFieldVisibility);
+  });
+  
+  adServerCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateFieldVisibility);
+  });
 
   // Initialize field visibility
   updateFieldVisibility();
@@ -1085,9 +1123,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Open modal
   document.getElementById('createBtn')?.addEventListener('click', () => {
     modal.classList.remove('hidden');
-    // Reset connector selections and field visibility
-    dspSelect.value = '';
-    adServerSelect.value = '';
+    // Reset form and connectors
+    form.reset();
+    isConnectorsOpen = false;
+    connectorsContent.classList.add('hidden');
+    connectorsToggle.classList.remove('bg-blue-600');
+    connectorsToggle.classList.add('bg-gray-200');
+    connectorsToggle.setAttribute('aria-checked', 'false');
+    connectorsToggle.querySelector('span').classList.remove('translate-x-5');
+    connectorsToggle.querySelector('span').classList.add('translate-x-0');
     updateFieldVisibility();
   });
 
@@ -1117,6 +1161,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Unified ad group creation handler
   function handleAdGroupCreation(keepModalOpen) {
+    // Get selected connectors from checkboxes
+    const selectedDsp = Array.from(dspCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+    const selectedAdServer = Array.from(adServerCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+    
     const adGroup = {
       id: 'AG' + Date.now(),
       name: form.adGroupName.value.trim(),
@@ -1131,8 +1179,8 @@ document.addEventListener('DOMContentLoaded', () => {
       source: 'custom',
       // Add connector information
       connectors: {
-        dsp: dspSelect.value,
-        adServer: adServerSelect.value
+        dsp: selectedDsp.join(', '),
+        adServer: selectedAdServer.join(', ')
       },
       // Add Ad Server fields
       adServerAdGroupName: form.adServerAdGroupName?.value?.trim() || '',
@@ -1201,8 +1249,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Save the current selections before resetting
     const selectedCampaignId = form.adGroupCampaign.value;
-    const selectedDsp = dspSelect.value;
-    const selectedAdServer = adServerSelect.value;
+    const selectedDspValues = selectedDsp.slice(); // copy array
+    const selectedAdServerValues = selectedAdServer.slice(); // copy array
 
     // Show toast
     if (typeof showToast === 'function') showToast('Ad Group Created Successfully');
@@ -1217,15 +1265,21 @@ document.addEventListener('DOMContentLoaded', () => {
       // Keep modal open, reset form, but preserve selections
       form.reset();
       form.adGroupCampaign.value = selectedCampaignId;
-      dspSelect.value = selectedDsp;
-      adServerSelect.value = selectedAdServer;
+      // Restore checkbox selections
+      dspCheckboxes.forEach(cb => {
+        cb.checked = selectedDspValues.includes(cb.value);
+      });
+      adServerCheckboxes.forEach(cb => {
+        cb.checked = selectedAdServerValues.includes(cb.value);
+      });
       updateFieldVisibility();
     } else {
       // Close modal normally
       modal.classList.add('hidden');
       form.reset();
-      dspSelect.value = '';
-      adServerSelect.value = '';
+      // Clear all checkboxes
+      dspCheckboxes.forEach(cb => cb.checked = false);
+      adServerCheckboxes.forEach(cb => cb.checked = false);
       updateFieldVisibility();
     }
   }

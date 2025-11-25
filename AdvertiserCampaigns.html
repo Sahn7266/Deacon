@@ -354,9 +354,9 @@
                       </div>
                     </div>
 
-                    <!-- DSP Filter -->
+                    <!-- Connectors Filter -->
                     <div class="relative">
-                      <button id="dspChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="dsp" title="DSP filter">
+                      <button id="dspChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="dsp" title="Connectors filter">
                         <span id="dspChipLabel">All</span>
                         <svg class="w-4 h-4 text-gray-500 ml-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                           <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
@@ -383,7 +383,7 @@
                           <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                         </svg>
                       </button>
-                      <input type="text" id="searchInput" class="search-input" placeholder="Enter ID, DSP, or Campaign Name" autocomplete="off" aria-label="Search campaigns" />
+                      <input type="text" id="searchInput" class="search-input" placeholder="Enter ID, Connectors, or Campaign Name" autocomplete="off" aria-label="Search campaigns" />
                       <button id="searchClear" class="clear-button" aria-label="Clear search" type="button">
                         <svg viewBox="0 0 24 24">
                           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -418,8 +418,8 @@
                       </button>
                     </th>
                     <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp" aria-label="Sort by DSP">
-                        <span>DSP</span>
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp" aria-label="Sort by Connectors">
+                        <span>Connectors</span>
                         <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
                       </button>
                     </th>
@@ -485,93 +485,180 @@
 
 <!-- Create Campaign Modal -->
 <div id="createCampaignModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl p-6 relative">
-    <button id="closeCampaignModal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-6xl max-h-[90vh] p-6 relative">
+    <button id="closeCampaignModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
       </svg>
     </button>
 
-    <h2 class="text-xl font-semibold text-gray-900 mb-6">Create New Campaign</h2>
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Create New Campaign</h2>
 
     <form id="createCampaignForm" class="overflow-y-auto max-h-[75vh] pr-2">
       
-      <!-- Choose Connectors Section -->
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Choose Connectors</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <!-- DSP Dropdown -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">DSP (Data Service Provider)</label>
-            <select id="dspConnector" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <option value="">Select DSP...</option>
-              <option value="trade-desk">The Trade Desk</option>
-            </select>
-          </div>
-
-          <!-- Ad Server Dropdown -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Ad Server</label>
-            <select id="adServerConnector" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <option value="">Select Ad Server...</option>
-              <option value="google-campaign-manager">Google Campaign Manager</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Fields Section -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Fields</h3>
-        
-        <!-- Placeholder when no connectors selected -->
-        <div id="fieldsPlaceholder" class="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-          <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-          </svg>
-          <p class="text-lg">Select a Connector</p>
-          <p class="text-sm mt-2">Choose your DSP and Ad Server to configure campaign fields</p>
-        </div>
-
-        <!-- DSP Fields Section (Trade Desk) -->
-        <div id="dspFieldsSection" class="hidden space-y-6">
-          <div class="border-l-4 border-blue-500 pl-4">
-            <h4 class="font-medium text-gray-900 mb-4">DSP Fields (The Trade Desk)</h4>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div><label class="block text-sm font-medium text-gray-700">Campaign Name<input type="text" id="campaignName" class="mt-1 w-full border border-gray-300 rounded px-3 py-2" required></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">Channel<input type="text" id="campaignChannel" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">KPI<input type="text" id="campaignKPI" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">KPI Target<input type="text" id="campaignKPITarget" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">Pacing<input type="text" id="campaignPacing" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">Advertiser<input type="text" id="campaignAdvertiser" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">Objective<input type="text" id="campaignObjective" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">Start Date<input type="date" id="campaignStartDate" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">End Date<input type="date" id="campaignEndDate" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">Total Budget<input type="number" id="campaignTotalBudget" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">Daily Budget<input type="number" id="campaignDailyBudget" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div class="sm:col-span-2"><label class="block text-sm font-medium text-gray-700">Target Audience<input type="text" id="targetAudience" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">Geographic Targeting<input type="text" id="geoTargeting" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">Device Targeting<input type="text" id="deviceTargeting" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+      <!-- Beacon Fields Section -->
+      <div class="mb-4">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Beacon Fields</h3>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Name *</label>
+              <input type="text" id="beaconCampaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              <p class="text-xs text-gray-500 mt-1">Common identifier across all platforms</p>
             </div>
-          </div>
-        </div>
-
-        <!-- Ad Server Fields Section (Google Campaign Manager) -->
-        <div id="adServerFieldsSection" class="hidden space-y-6">
-          <div class="border-l-4 border-green-500 pl-4">
-            <h4 class="font-medium text-gray-900 mb-4">Ad Server Fields (Google Campaign Manager)</h4>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div><label class="block text-sm font-medium text-gray-700">Campaign Name<input type="text" id="adServerCampaignName" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
-              <div><label class="block text-sm font-medium text-gray-700">Campaign Vertical<input type="text" id="adServerCampaignVertical" class="mt-1 w-full border border-gray-300 rounded px-3 py-2"></label></div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Media Type</label>
+              <input type="text" id="beaconMediaType" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <p class="text-xs text-gray-500 mt-1">Type of media (Display, Video, etc.)</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Domain URL</label>
+              <input type="text" id="beaconDomainUrl" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <p class="text-xs text-gray-500 mt-1">Target landing page domain</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-        <button type="button" id="cancelCampaignModal" class="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-100">Cancel</button>
-        <button type="submit" class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">Create</button>
-        <button type="button" id="createAndAddAdGroup" class="px-4 py-2 text-sm text-white bg-green-600 rounded hover:bg-green-700">Create & Add Ad Group</button>
+      <!-- Connectors Section -->
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-lg font-semibold text-gray-800">Connectors</h3>
+          <button type="button" id="connectorsToggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false">
+            <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+          </button>
+        </div>
+        <div id="connectorsContent" class="hidden">
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <!-- DSP Options -->
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">DSP (Data Service Provider)</label>
+                <div class="flex flex-wrap gap-2">
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="dsp-trade-desk" name="dsp" value="trade-desk" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">The Trade Desk</span>
+                  </label>
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="dsp-dv360" name="dsp" value="dv360" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">DV360</span>
+                  </label>
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="dsp-simplifi" name="dsp" value="simplifi" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">Simplifi</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Ad Server Options -->
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Ad Server</label>
+                <div class="flex flex-wrap gap-2">
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-green-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="adserver-gcm" name="adserver" value="google-campaign-manager" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">Google Campaign Manager</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DSP Fields Section (Trade Desk) -->
+      <div id="dspFieldsSection" class="hidden mb-3">
+        <div class="bg-white border border-blue-200 rounded-lg shadow-sm">
+          <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 border-b border-blue-200 rounded-t-lg">
+            <h4 class="font-semibold text-blue-900 text-sm uppercase tracking-wide">DSP Fields • The Trade Desk</h4>
+          </div>
+          <div class="p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Name</label>
+                <input type="text" id="campaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Channel</label>
+                <input type="text" id="campaignChannel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">KPI</label>
+                <input type="text" id="campaignKPI" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">KPI Target</label>
+                <input type="text" id="campaignKPITarget" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Pacing</label>
+                <input type="text" id="campaignPacing" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Advertiser</label>
+                <input type="text" id="campaignAdvertiser" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Objective</label>
+                <input type="text" id="campaignObjective" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                <input type="date" id="campaignStartDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <input type="date" id="campaignEndDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Total Budget</label>
+                <input type="number" id="campaignTotalBudget" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Daily Budget</label>
+                <input type="number" id="campaignDailyBudget" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
+                <input type="text" id="targetAudience" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Geographic Targeting</label>
+                <input type="text" id="geoTargeting" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Device Targeting</label>
+                <input type="text" id="deviceTargeting" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ad Server Fields Section (Google Campaign Manager) -->
+      <div id="adServerFieldsSection" class="hidden mb-3">
+        <div class="bg-white border border-green-200 rounded-lg shadow-sm">
+          <div class="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 border-b border-green-200 rounded-t-lg">
+            <h4 class="font-semibold text-green-900 text-sm uppercase tracking-wide">Ad Server Fields • Google Campaign Manager</h4>
+          </div>
+          <div class="p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Name</label>
+                <input type="text" id="adServerCampaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Vertical</label>
+                <input type="text" id="adServerCampaignVertical" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-3 border-t border-gray-200">
+        <button type="button" id="cancelCampaignModal" class="px-6 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">Cancel</button>
+        <button type="submit" class="px-6 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">Create Campaign</button>
+        <button type="button" id="createAndAddAdGroup" class="px-6 py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors">Create & Add Ad Group</button>
       </div>
     </form>
   </div>
@@ -635,10 +722,9 @@
         name: 'Harvest Promo',
         expanded: true,
         campaigns: [
-          { id: 'CAM-003', name: 'Autumn Offers', state: 'Active', dsp: 'Google Campaign Manager', adGroups: 3 },
           { id: 'CAM-004', name: 'Thanksgiving Push', state: 'Active', dsp: 'DV360', adGroups: 5 },
           { id: 'CAM-005', name: 'Weekend Harvest', state: 'Inactive', dsp: 'Trade Desk', adGroups: 2 },
-          { id: 'CAM-006', name: 'Last Call Harvest', state: 'Active', dsp: 'Trade Desk', adGroups: 4 }
+          { id: 'CAM-006', name: 'Last Call Harvest', state: 'Active', dsp: 'Trade Desk, Google Campaign Manager', adGroups: 4 }
         ]
       },
       {
@@ -648,8 +734,7 @@
         campaigns: [
           { id: 'CAM-007', name: 'Moonlight Social', state: 'Active', dsp: 'Trade Desk', adGroups: 7 },
           { id: 'CAM-008', name: 'Night Sky Video', state: 'Inactive', dsp: 'DV360', adGroups: 6 },
-          { id: 'CAM-009', name: 'Crater Display', state: 'Active', dsp: 'Google Campaign Manager', adGroups: 5 },
-          { id: 'CAM-010', name: 'Orbit Awareness', state: 'Active', dsp: 'DV360', adGroups: 8 },
+          { id: 'CAM-010', name: 'Orbit Awareness', state: 'Active', dsp: 'DV360, Google Campaign Manager', adGroups: 8 },
           { id: 'CAM-011', name: 'Eclipse Countdown', state: 'Inactive', dsp: 'Trade Desk', adGroups: 3 },
           { id: 'CAM-012', name: 'Tidal Retargeting', state: 'Active', dsp: 'DV360', adGroups: 4 }
         ]
@@ -662,11 +747,11 @@
           { id: 'CAM-013', name: 'Cart Abandoners', state: 'Active', dsp: 'Google Campaign Manager', adGroups: 9 },
           { id: 'CAM-014', name: 'Repeat Buyers', state: 'Active', dsp: 'Trade Desk', adGroups: 6 },
           { id: 'CAM-015', name: 'Lookalike Sprint', state: 'Inactive', dsp: 'DV360', adGroups: 5 },
-          { id: 'CAM-016', name: 'Frequency Cap Tune', state: 'Active', dsp: 'Trade Desk', adGroups: 7 },
+          { id: 'CAM-016', name: 'Frequency Cap Tune', state: 'Active', dsp: 'Trade Desk, Google Campaign Manager', adGroups: 7 },
           { id: 'CAM-017', name: 'Video Retarget', state: 'Active', dsp: 'DV360', adGroups: 8 },
-          { id: 'CAM-018', name: 'Search Warmup', state: 'Inactive', dsp: 'Google Campaign Manager', adGroups: 4 },
+          { id: 'CAM-018', name: 'Search Warmup', state: 'Inactive', dsp: '', adGroups: 4 },
           { id: 'CAM-019', name: 'Dynamic Creative', state: 'Active', dsp: 'Trade Desk', adGroups: 10 },
-          { id: 'CAM-020', name: 'High-Intent Pulse', state: 'Active', dsp: 'DV360', adGroups: 6 }
+          { id: 'CAM-020', name: 'High-Intent Pulse', state: 'Active', dsp: 'DV360, Google Campaign Manager', adGroups: 6 }
         ]
       }
     ];
@@ -976,7 +1061,7 @@ if (this.elements.createBtn) {
           const q = this.searchQuery.trim().toLowerCase();
           const filterBy = (c) => {
             if (this.filters.state !== 'All' && c.state !== this.filters.state) return false;
-            if (this.filters.dsp !== 'All' && c.dsp !== this.filters.dsp) return false;
+            if (this.filters.dsp !== 'All' && (!c.dsp || !c.dsp.includes(this.filters.dsp))) return false;
             if (!q) return true;
             return (
               (c.id && c.id.toLowerCase().includes(q)) ||
@@ -1011,7 +1096,7 @@ if (this.elements.createBtn) {
           for (const g of this.groups) {
             for (const c of g.campaigns) {
               const matchesState = this.filters.state === 'All' || c.state === this.filters.state;
-              const matchesDsp = this.filters.dsp === 'All' || c.dsp === this.filters.dsp;
+              const matchesDsp = this.filters.dsp === 'All' || (c.dsp && c.dsp.includes(this.filters.dsp));
               const matchesSearch = !q || (c.id?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q) || c.dsp?.toLowerCase().includes(q) || g.name.toLowerCase().includes(q));
               if (matchesState && matchesDsp && matchesSearch) total++;
             }
@@ -1273,32 +1358,59 @@ document.addEventListener('click', (e) => {
 
 // Show / hide modal handlers
 document.addEventListener('DOMContentLoaded', () => {
-  const dspConnector = document.getElementById('dspConnector');
-  const adServerConnector = document.getElementById('adServerConnector');
-  const fieldsPlaceholder = document.getElementById('fieldsPlaceholder');
+  // Get connector elements
+  const connectorsToggle = document.getElementById('connectorsToggle');
+  const connectorsContent = document.getElementById('connectorsContent');
+  const dspCheckboxes = document.querySelectorAll('input[name="dsp"]');
+  const adServerCheckboxes = document.querySelectorAll('input[name="adserver"]');
+  
+  // Get field sections
   const dspFieldsSection = document.getElementById('dspFieldsSection');
   const adServerFieldsSection = document.getElementById('adServerFieldsSection');
 
-  function updateFieldsDisplay() {
-    const dspSelected = dspConnector?.value;
-    const adServerSelected = adServerConnector?.value;
-    
-    // Hide placeholder if any connector is selected
-    if (dspSelected || adServerSelected) {
-      fieldsPlaceholder?.classList.add('hidden');
-    } else {
-      fieldsPlaceholder?.classList.remove('hidden');
-    }
+  // Toggle state
+  let connectorsEnabled = false;
 
-    // Show/hide DSP fields
-    if (dspSelected === 'trade-desk') {
+  // Toggle functionality
+  function toggleConnectors() {
+    connectorsEnabled = !connectorsEnabled;
+    
+    // Update toggle appearance
+    if (connectorsEnabled) {
+      connectorsToggle.classList.remove('bg-gray-200');
+      connectorsToggle.classList.add('bg-blue-600');
+      connectorsToggle.setAttribute('aria-checked', 'true');
+      connectorsToggle.querySelector('span').classList.remove('translate-x-0');
+      connectorsToggle.querySelector('span').classList.add('translate-x-5');
+      connectorsContent.classList.remove('hidden');
+    } else {
+      connectorsToggle.classList.remove('bg-blue-600');
+      connectorsToggle.classList.add('bg-gray-200');
+      connectorsToggle.setAttribute('aria-checked', 'false');
+      connectorsToggle.querySelector('span').classList.remove('translate-x-5');
+      connectorsToggle.querySelector('span').classList.add('translate-x-0');
+      connectorsContent.classList.add('hidden');
+      
+      // Clear selections and hide fields when toggling off
+      dspCheckboxes.forEach(cb => cb.checked = false);
+      adServerCheckboxes.forEach(cb => cb.checked = false);
+      updateFieldsDisplay();
+    }
+  }
+
+  function updateFieldsDisplay() {
+    const tradeDeskSelected = document.getElementById('dsp-trade-desk')?.checked;
+    const gcmSelected = document.getElementById('adserver-gcm')?.checked;
+
+    // Show/hide DSP fields (only for Trade Desk)
+    if (tradeDeskSelected) {
       dspFieldsSection?.classList.remove('hidden');
     } else {
       dspFieldsSection?.classList.add('hidden');
     }
 
-    // Show/hide Ad Server fields
-    if (adServerSelected === 'google-campaign-manager') {
+    // Show/hide Ad Server fields (only for Google Campaign Manager)
+    if (gcmSelected) {
       adServerFieldsSection?.classList.remove('hidden');
     } else {
       adServerFieldsSection?.classList.add('hidden');
@@ -1309,13 +1421,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Reset form
     document.getElementById('createCampaignForm')?.reset();
     
-    // Reset connectors
-    if (dspConnector) dspConnector.value = '';
-    if (adServerConnector) adServerConnector.value = '';
+    // Reset connectors toggle to off
+    connectorsEnabled = true; // Set to true so toggleConnectors() will set it to false
+    toggleConnectors();
     
     // Update display
     updateFieldsDisplay();
   }
+
+  // Event listeners
+  connectorsToggle?.addEventListener('click', toggleConnectors);
 
   document.getElementById('createCampaignBtn')?.addEventListener('click', () => {
     resetModal(); // Reset when opening
@@ -1330,9 +1445,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('createCampaignModal')?.classList.add('hidden');
   });
 
-  // Add event listeners for connector dropdowns
-  dspConnector?.addEventListener('change', updateFieldsDisplay);
-  adServerConnector?.addEventListener('change', updateFieldsDisplay);
+  // Add event listeners for connector checkboxes
+  dspCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateFieldsDisplay);
+  });
+  
+  adServerCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateFieldsDisplay);
+  });
 
   // Initialize display state
   updateFieldsDisplay();
@@ -1357,6 +1477,34 @@ document.getElementById('createAndAddAdGroup')?.addEventListener('click', functi
 
 // Unified campaign creation handler
 function handleCampaignCreation(redirectToAdGroups) {
+  // Get selected connectors
+  const selectedDSP = Array.from(document.querySelectorAll('input[name="dsp"]:checked')).map(cb => cb.value);
+  const selectedAdServer = Array.from(document.querySelectorAll('input[name="adserver"]:checked')).map(cb => cb.value);
+  
+  // Create connectors display string
+  const dspLabels = {
+    'trade-desk': 'Trade Desk',
+    'dv360': 'DV360',
+    'simplifi': 'Simplifi'
+  };
+  const adServerLabels = {
+    'google-campaign-manager': 'Google Campaign Manager'
+  };
+  
+  const connectorsList = [];
+  selectedDSP.forEach(dsp => {
+    if (dspLabels[dsp]) {
+      connectorsList.push(dspLabels[dsp]);
+    }
+  });
+  selectedAdServer.forEach(adServer => {
+    if (adServerLabels[adServer]) {
+      connectorsList.push(adServerLabels[adServer]);
+    }
+  });
+  
+  const connectorsDisplay = connectorsList.length > 0 ? connectorsList.join(', ') : '';
+  
   const campaign = {
     id: 'CAM-' + Date.now(),
     name: document.getElementById('campaignName')?.value || '',
@@ -1374,15 +1522,19 @@ function handleCampaignCreation(redirectToAdGroups) {
     kpiTarget: document.getElementById('campaignKPITarget')?.value || '',
     pacing: document.getElementById('campaignPacing')?.value || '',
     state: 'Active',
-    dsp: 'Trade Desk', // Updated to match new connector
+    dsp: connectorsDisplay, // Now contains both DSP and Ad Server selections
     adGroups: 0,
+    // Beacon Fields mapped to Common Data
+    beaconCampaignName: document.getElementById('beaconCampaignName')?.value || '',
+    beaconMediaType: document.getElementById('beaconMediaType')?.value || '',
+    beaconDomainUrl: document.getElementById('beaconDomainUrl')?.value || '',
     // New Ad Server fields
     adServerCampaignName: document.getElementById('adServerCampaignName')?.value || '',
     adServerCampaignVertical: document.getElementById('adServerCampaignVertical')?.value || '',
     // Connector information
     connectors: {
-      dsp: document.getElementById('dspConnector')?.value || '',
-      adServer: document.getElementById('adServerConnector')?.value || ''
+      dsp: selectedDSP,
+      adServer: selectedAdServer
     }
   };
 
@@ -1415,7 +1567,11 @@ function handleCampaignCreation(redirectToAdGroups) {
       targetAudience: campaign.targetAudience,
       geoTargeting: campaign.geoTargeting,
       deviceTargeting: campaign.deviceTargeting,
-      // New Ad Server fields in audit
+      // Beacon fields
+      beaconCampaignName: campaign.beaconCampaignName,
+      beaconMediaType: campaign.beaconMediaType,
+      beaconDomainUrl: campaign.beaconDomainUrl,
+      // Ad Server fields in audit
       adServerCampaignName: campaign.adServerCampaignName,
       adServerCampaignVertical: campaign.adServerCampaignVertical,
       connectors: campaign.connectors
@@ -1438,8 +1594,6 @@ function handleCampaignCreation(redirectToAdGroups) {
     window.location.href = `./AdvertiserAdGroup.html?newCampaign=${campaign.id}`;
   }
 }
-
-
 
 document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('click', function (e) {

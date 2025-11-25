@@ -12,16 +12,53 @@
   <!-- Toast assets (single source of truth) -->
   <link rel="stylesheet" href="./assets/toast.css">
   <script src="./assets/toast.js" defer></script>
-
+  
+  <!-- Theme CSS for platform styling -->
+  <link rel="stylesheet" href="./assets/theme.css">
 
   <!-- REMOVE OR COMMENT OUT THIS LINE: -->
   <script src="./assets/notifications.js"></script>
+  <script src="./assets/audit.js" defer></script>
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
 
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
     .table-fixed { table-layout: fixed; } td, th { white-space: nowrap; }
+
+    /* Fixed table row height to prevent resizing during edit mode */
+    .adgroup-details-table tbody tr {
+      height: 2rem; /* Fixed height for consistent table dimensions */
+    }
+    
+    .adgroup-details-table tbody td {
+      vertical-align: middle;
+      padding-top: 0.25rem !important;
+      padding-bottom: 0.25rem !important;
+    }
+
+    /* Seamless input styling to match spans */
+    .adgroup-details-input {
+      background: white !important;
+      border: 1px solid #d1d5db !important;
+      outline: none !important;
+      box-shadow: none !important;
+      padding: 0.125rem 0.5rem !important;
+      margin: 0 !important;
+      height: auto !important;
+      line-height: 1.25rem;
+      font-size: 0.875rem;
+      color: #374151;
+      width: 100% !important;
+      box-sizing: border-box;
+      border-radius: 0.25rem;
+    }
+    
+    /* Enhanced focus state for better UX */
+    .adgroup-details-input:focus {
+      border: 1px solid #3b82f6 !important;
+      box-shadow: 0 0 0 1px #3b82f6 !important;
+    }
 
     /* Read-only inputs look like text */
     input[aria-readonly="true"] {
@@ -221,107 +258,258 @@
 
             <hr class="border-gray-300 mp-4 p-2">
 
-            <!-- Single-column campaign details card -->
-            <section class="space-y-6">
-              <div class="flex items-center justify-between">
-              <h1 class="text-2xl font-semibold text-gray-900 mx-2">AD GROUP DETAILS</h1>
-              <div class="flex items-center gap-2">
-                <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                <svg viewBox="0 0 24 24" height="16" width="16">
-                  <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
-                </svg>
-                Edit
-                </button>
-                <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
-                <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+            <!-- Two-column ad group details layout -->
+            <section>
+              <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-semibold text-gray-900 mx-2">AD GROUP DETAILS</h1>
+                <div class="flex items-center gap-2">
+                  <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                  <svg viewBox="0 0 24 24" height="16" width="16">
+                    <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
+                  </svg>
+                  Edit
+                  </button>
+                  <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
+                  <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+                </div>
               </div>
+
+              <!-- Two Column Layout -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Common Data Column -->
+                <div class="overflow-x-auto border border-default rounded-md self-start">
+                  <table class="w-full tbl tbl-row-hover table-fixed adgroup-details-table">
+                    <colgroup>
+                      <col class="w-1/3">
+                      <col class="w-2/3">
+                    </colgroup>
+                    <thead class="tbl-head">
+                      <tr>
+                        <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
+                          BEACON FIELDS
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y border-default">
+                      
+                      <!-- Common Ad Group Name -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Ad Group Name
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayCommonAdGroupName" class="text-gray-800 break-words">N/A</span>
+                          <input id="commonAdGroupName" type="text" class="hidden adgroup-details-input" />
+                        </td>
+                      </tr>
+
+                      <!-- Campaign -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Campaign
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayCommonCampaign" class="text-gray-800 break-words">N/A</span>
+                          <input id="commonCampaign" type="text" class="hidden adgroup-details-input" />
+                        </td>
+                      </tr>
+
+                      <!-- Budget Allocation -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Budget Allocation
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayCommonBudget" class="text-gray-800 break-words">N/A</span>
+                          <input id="commonBudget" type="text" class="hidden adgroup-details-input" />
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Right Column - DSP and Ad Server Fields -->
+                <div class="space-y-6">
+                  
+                  <!-- DSP Fields Table -->
+                  <div class="overflow-x-auto border border-default rounded-md">
+                    <table class="w-full tbl tbl-row-hover table-fixed adgroup-details-table">
+                      <colgroup>
+                        <col class="w-1/3">
+                        <col class="w-2/3">
+                      </colgroup>
+                      <thead style="background-color: #dbeafe;">
+                        <tr>
+                          <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-blue-900 uppercase tracking-wider">
+                            DSP FIELDS
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y border-default">
+
+                        <!-- Ad Group Name (original field) -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Ad Group Name
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdGroupName" class="text-gray-800 break-words">N/A</span>
+                            <input id="adGroupNameInput" type="text" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Campaign -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Campaign
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignName" class="text-gray-800 break-words">N/A</span>
+                            <input id="campaignName" type="text" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Budget Allocation -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Budget Allocation
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayBudgetAllocation" class="text-gray-800 break-words">N/A</span>
+                            <input id="budgetAllocation" type="text" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Bid Strategy -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Bid Strategy
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayBidStrategy" class="text-gray-800 break-words">N/A</span>
+                            <input id="bidStrategy" type="text" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Creative Format -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Creative Format
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCreativeFormat" class="text-gray-800 break-words">N/A</span>
+                            <input id="creativeFormat" type="text" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Targeting Refinements -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Targeting Refinements
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayTargetingRefinements" class="text-gray-800 break-words">N/A</span>
+                            <input id="targetingRefinements" type="text" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Placement Settings -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Placement Settings
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayPlacementSettings" class="text-gray-800 break-words">N/A</span>
+                            <input id="placementSettings" type="text" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Ad Server Fields Table -->
+                  <div class="overflow-x-auto border border-default rounded-md">
+                    <table class="w-full tbl tbl-row-hover table-fixed adgroup-details-table">
+                      <colgroup>
+                        <col class="w-1/3">
+                        <col class="w-2/3">
+                      </colgroup>
+                      <thead style="background-color: #d1fae5;">
+                        <tr>
+                          <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-green-900 uppercase tracking-wider">
+                            AD SERVER FIELDS
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y border-default">
+
+                        <!-- Ad Server Ad Group Name -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Ad Server Name
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerAdGroupName" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerAdGroupName" type="text" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Ad Server Placement -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Placement
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerPlacement" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerPlacement" type="text" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+
               </div>
-
-<!-- Ad Group Name -->
-<div>
-  <label for="adGroupNameInput" class="block text-sm font-medium text-gray-700">Ad Group Name</label>
-  <span id="displayAdGroupName" class="block mt-1 text-gray-800">N/A</span>
-  <input id="adGroupNameInput" data-bind="adGroupName" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Campaign -->
-<div>
-  <label for="campaignName" class="block text-sm font-medium text-gray-700">Campaign</label>
-  <span id="displayCampaignName" class="block mt-1 text-gray-800">N/A</span>
-  <input id="campaignName" data-bind="campaign" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Budget Allocation -->
-<div>
-  <label for="budgetAllocation" class="block text-sm font-medium text-gray-700">Budget Allocation</label>
-  <span id="displayBudgetAllocation" class="block mt-1 text-gray-800">N/A</span>
-  <input id="budgetAllocation" data-bind="budget" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Bid Strategy -->
-<div>
-  <label for="bidStrategy" class="block text-sm font-medium text-gray-700">Bid Strategy</label>
-  <span id="displayBidStrategy" class="block mt-1 text-gray-800">N/A</span>
-  <input id="bidStrategy" data-bind="bidStrategy" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<hr class="border-gray-300" />
-
-<h2 class="text-lg font-semibold text-gray-900">Creative & Targeting</h2>
-
-<!-- Creative Format -->
-<div>
-  <label for="creativeFormat" class="block text-sm font-medium text-gray-700">Creative Format</label>
-  <span id="displayCreativeFormat" class="block mt-1 text-gray-800">N/A</span>
-  <input id="creativeFormat" data-bind="creativeFormat" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Targeting Refinements -->
-<div>
-  <label for="targetingRefinements" class="block text-sm font-medium text-gray-700">Targeting Refinements</label>
-  <span id="displayTargetingRefinements" class="block mt-1 text-gray-800">N/A</span>
-  <input id="targetingRefinements" data-bind="targetingRefinements" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Placement Settings -->
-<div>
-  <label for="placementSettings" class="block text-sm font-medium text-gray-700">Placement Settings</label>
-  <span id="displayPlacementSettings" class="block mt-1 text-gray-800">N/A</span>
-  <input id="placementSettings" data-bind="placementSettings" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<hr class="border-gray-300" />
-
-<h2 class="text-lg font-semibold text-gray-900">Ad Server Fields</h2>
-
-<!-- Ad Server Ad Group Name -->
-<div>
-  <label for="adServerAdGroupName" class="block text-sm font-medium text-gray-700">Ad Group Name</label>
-  <span id="displayAdServerAdGroupName" class="block mt-1 text-gray-800">N/A</span>
-  <input id="adServerAdGroupName" data-bind="adServerAdGroupName" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
-
-<!-- Ad Server Placement -->
-<div>
-  <label for="adServerPlacement" class="block text-sm font-medium text-gray-700">Placement</label>
-  <span id="displayAdServerPlacement" class="block mt-1 text-gray-800">N/A</span>
-  <input id="adServerPlacement" data-bind="adServerPlacement" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-</div>
             </section>
 
                       <script>
                         (function() {
                         const pairs = [
-                          { span: 'displayAdGroupName', input: 'adGroupNameInput' },
-                          { span: 'displayCampaignName', input: 'campaignName' },
-                          { span: 'displayBudgetAllocation', input: 'budgetAllocation' },
-                          { span: 'displayBidStrategy', input: 'bidStrategy' },
-                          { span: 'displayCreativeFormat', input: 'creativeFormat' },
-                          { span: 'displayTargetingRefinements', input: 'targetingRefinements' },
-                          { span: 'displayPlacementSettings', input: 'placementSettings' },
-                          { span: 'displayAdServerAdGroupName', input: 'adServerAdGroupName' },
-                          { span: 'displayAdServerPlacement', input: 'adServerPlacement' }
-                        ];
+  // Common Data fields (these are separate and not linked to ad group data yet)
+  { span: 'displayCommonAdGroupName', input: 'commonAdGroupName' },
+  { span: 'displayCommonCampaign', input: 'commonCampaign' },
+  { span: 'displayCommonBudget', input: 'commonBudget' },
+  // Instructional Data fields (these are linked to actual ad group data)
+  { span: 'displayAdGroupName', input: 'adGroupNameInput' },
+  { span: 'displayCampaignName', input: 'campaignName' },
+  { span: 'displayBudgetAllocation', input: 'budgetAllocation' },
+  { span: 'displayBidStrategy', input: 'bidStrategy' },
+  { span: 'displayCreativeFormat', input: 'creativeFormat' },
+  { span: 'displayTargetingRefinements', input: 'targetingRefinements' },
+  { span: 'displayPlacementSettings', input: 'placementSettings' },
+  // Ad Server Fields
+  { span: 'displayAdServerAdGroupName', input: 'adServerAdGroupName' },
+  { span: 'displayAdServerPlacement', input: 'adServerPlacement' }
+];
+
+                        // Fields that are linked to actual ad group data (excluding Common Data section)
+                        const adGroupLinkedFields = [
+  'adGroupNameInput',
+  'campaignName',
+  'budgetAllocation',
+  'bidStrategy',
+  'creativeFormat',
+  'targetingRefinements',
+  'placementSettings',
+  // Ad Server Fields
+  'adServerAdGroupName',
+  'adServerPlacement'
+];
 
                         const btnEdit   = document.getElementById('editGeneralBtn');
                         const btnSave   = document.getElementById('saveGeneralBtn');
@@ -337,7 +525,21 @@
                           if (!span || !input) return;
                           input.classList.remove('hidden');
                           span.classList.add('hidden');
-                          input.value = span.textContent.trim();
+                          
+                          let value = span.textContent.trim();
+                          
+                          // For number inputs (budget fields), extract numeric value or leave empty
+                          if (input.type === 'number') {
+                            // Remove currency symbols, commas, and extract numbers
+                            const numMatch = value.match(/[\d,]+/);
+                            if (numMatch && value !== 'N/A' && value !== '—') {
+                              value = numMatch[0].replace(/,/g, '');
+                            } else {
+                              value = ''; // Leave empty if N/A or no valid number
+                            }
+                          }
+                          
+                          input.value = value;
                           });
                         }
                         function showSpans() {
@@ -345,7 +547,22 @@
                           const span = document.getElementById(p.span);
                           const input = document.getElementById(p.input);
                           if (!span || !input) return;
-                          span.textContent = input.value.trim() || '—';
+                          
+                          // Update span with input value, handling empty values
+                          let displayValue = input.value.trim();
+                          if (!displayValue || displayValue === '') {
+                            displayValue = 'N/A';
+                          }
+                          
+                          // Format currency for budget fields
+                          if (input.type === 'number' && displayValue !== 'N/A') {
+                            const numValue = parseFloat(displayValue);
+                            if (!isNaN(numValue)) {
+                              displayValue = `$${numValue.toLocaleString()}`;
+                            }
+                          }
+                          
+                          span.textContent = displayValue;
                           input.classList.add('hidden');
                           span.classList.remove('hidden');
                           });
@@ -359,6 +576,15 @@
                           });
                           return obj;
                         }
+
+                        function currentAdGroupValues() {
+                          const obj = {};
+                          adGroupLinkedFields.forEach(fieldName => {
+                          const input = document.getElementById(fieldName);
+                          if (input) obj[fieldName] = input.value.trim();
+                          });
+                          return obj;
+                        }
                         function shallowEqual(a,b){
                           const ka = Object.keys(a), kb = Object.keys(b);
                           if (ka.length !== kb.length) return false;
@@ -367,19 +593,25 @@
                         }
 
                         btnEdit?.addEventListener('click', () => {
-                          // Start inline editing for these campaign fields
+                          // Start inline editing for these ad group fields
                           inlineEditing = true;
-                          snapshot = currentValues();
+                          snapshot = currentAdGroupValues(); // Only snapshot ad group-linked fields
                           showInputs();
+                          
+                          // Auto-focus the first editable field for immediate editing
+                          const firstInput = document.getElementById('adGroupNameInput');
+                          if (firstInput) {
+                            setTimeout(() => firstInput.focus(), 50);
+                          }
                         });
 
                         btnCancel?.addEventListener('click', () => {
                           if (!inlineEditing) return;
-                          // Revert
-                          pairs.forEach(p => {
-                          const input = document.getElementById(p.input);
-                          if (input && snapshot && snapshot[p.input] != null) {
-                            input.value = snapshot[p.input];
+                          // Revert only ad group-linked fields
+                          adGroupLinkedFields.forEach(fieldName => {
+                          const input = document.getElementById(fieldName);
+                          if (input && snapshot && snapshot[fieldName] != null) {
+                            input.value = snapshot[fieldName];
                           }
                           });
                           showSpans();
@@ -387,97 +619,98 @@
                           snapshot = null;
                         });
 
-btnSave?.addEventListener('click', () => {
-  if (!inlineEditing) return;
-  const now = currentValues();
-  
-  // Check if no changes
-  if (snapshot && shallowEqual(snapshot, now)) {
-    showSpans();
-    inlineEditing = false;
-    snapshot = null;
-    return;
-  }
+                        btnSave?.addEventListener('click', () => {
+                          if (!inlineEditing) return;
+                          const now = currentAdGroupValues(); // Only get ad group-linked values
+                          if (snapshot && shallowEqual(snapshot, now)) {
+                          // No change
+                          showSpans();
+                          inlineEditing = false;
+                          snapshot = null;
+                          return;
+                          }
 
-  // Get URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const adGroupId = urlParams.get('id') || urlParams.get('adGroupId');
-  let campaignId = urlParams.get('campaignId');
-  
-  if (!adGroupId) {
-    alert('Ad Group ID not found in URL');
-    return;
-  }
-  
-  // Load ad group from storage to get campaignId if not in URL
-  try {
-    const adgroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-    const adGroupIndex = adgroups.findIndex(ag => ag.id === adGroupId);
-    
-    if (adGroupIndex === -1) {
-      console.error('Ad group not found with ID:', adGroupId);
-      alert('Error: Ad group not found');
-      return;
-    }
-    
-    const adGroup = adgroups[adGroupIndex];
-    
-    // If campaignId not in URL, try to get it from the ad group's campaign field
-    if (!campaignId && adGroup.campaign) {
-      campaignId = adGroup.campaign;
-      console.log('📋 Using campaignId from ad group data:', campaignId);
-    }
-    
-    // === AUDIT TRACKING ===
-    if (campaignId && snapshot && window.audit) {
-      try {
-        window.audit.recordEdit({
-          campaignId: campaignId,
-          entityType: 'adgroup',
-          entityId: adGroupId,
-          before: snapshot,
-          after: now
-        });
-        console.log('✏️ Audit logged for Ad Group edit:', adGroupId, 'Campaign:', campaignId);
-      } catch (e) {
-        console.warn('Failed to record audit edit:', e);
-      }
-    } else {
-      console.warn('⚠️ Audit NOT logged - missing campaignId or audit system');
-      console.log('campaignId:', campaignId, 'snapshot:', !!snapshot, 'window.audit:', !!window.audit);
-    }
+                          // === AUDIT TRACKING ===
+                          // Get ad group ID from URL params
+                          const urlParams = new URLSearchParams(window.location.search);
+                          const adGroupId = urlParams.get('id') || urlParams.get('adGroupId');
+                          let campaignId = urlParams.get('campaignId');
+                          
+                          if (!adGroupId) {
+                            alert('Ad Group ID not found in URL');
+                            return;
+                          }
+                          
+                          // Load ad group from storage to get campaignId if not in URL
+                          try {
+                            const adgroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+                            const adGroupIndex = adgroups.findIndex(ag => ag.id === adGroupId);
+                            
+                            if (adGroupIndex === -1) {
+                              console.error('Ad group not found with ID:', adGroupId);
+                              alert('Error: Ad group not found');
+                              return;
+                            }
+                            
+                            const adGroup = adgroups[adGroupIndex];
+                            
+                            // If campaignId not in URL, try to get it from the ad group's campaign field
+                            if (!campaignId && adGroup.campaign) {
+                              campaignId = adGroup.campaign;
+                              console.log('📋 Using campaignId from ad group data:', campaignId);
+                            }
+                            
+                            // === AUDIT TRACKING ===
+                            if (campaignId && snapshot && window.audit) {
+                              try {
+                                window.audit.recordEdit({
+                                  campaignId: campaignId,
+                                  entityType: 'adgroup',
+                                  entityId: adGroupId,
+                                  before: snapshot,
+                                  after: now
+                                });
+                                console.log('✏️ Audit logged for Ad Group edit:', adGroupId, 'Campaign:', campaignId);
+                              } catch (e) {
+                                console.warn('Failed to record audit edit:', e);
+                              }
+                            } else {
+                              console.warn('⚠️ Audit NOT logged - missing campaignId or audit system');
+                              console.log('campaignId:', campaignId, 'snapshot:', !!snapshot, 'window.audit:', !!window.audit);
+                            }
 
-    // === UPDATE AD GROUP DATA ===
-    if (now.adGroupNameInput !== undefined) adGroup.name = now.adGroupNameInput;
-    if (now.campaignName !== undefined) adGroup.campaign = now.campaignName;
-    if (now.budgetAllocation !== undefined) adGroup.budget = now.budgetAllocation;
-    if (now.bidStrategy !== undefined) adGroup.bidStrategy = now.bidStrategy;
-    if (now.creativeFormat !== undefined) adGroup.creativeFormat = now.creativeFormat;
-    if (now.targetingRefinements !== undefined) adGroup.targetingRefinements = now.targetingRefinements;
-    if (now.placementSettings !== undefined) adGroup.placementSettings = now.placementSettings;
-    if (now.adServerAdGroupName !== undefined) adGroup.adServerAdGroupName = now.adServerAdGroupName;
-    if (now.adServerPlacement !== undefined) adGroup.adServerPlacement = now.adServerPlacement;
-    
-    // Ensure campaignId is stored on the ad group object
-    if (campaignId && !adGroup.campaignId) {
-      adGroup.campaignId = campaignId;
-    }
+                            // === UPDATE AD GROUP DATA ===
+                            if (now.adGroupNameInput !== undefined) adGroup.name = now.adGroupNameInput;
+                            if (now.campaignName !== undefined) adGroup.campaign = now.campaignName;
+                            if (now.budgetAllocation !== undefined) adGroup.budget = now.budgetAllocation;
+                            if (now.bidStrategy !== undefined) adGroup.bidStrategy = now.bidStrategy;
+                            if (now.creativeFormat !== undefined) adGroup.creativeFormat = now.creativeFormat;
+                            if (now.targetingRefinements !== undefined) adGroup.targetingRefinements = now.targetingRefinements;
+                            if (now.placementSettings !== undefined) adGroup.placementSettings = now.placementSettings;
+                            if (now.adServerAdGroupName !== undefined) adGroup.adServerAdGroupName = now.adServerAdGroupName;
+                            if (now.adServerPlacement !== undefined) adGroup.adServerPlacement = now.adServerPlacement;
+                            
+                            // Ensure campaignId is stored on the ad group object
+                            if (campaignId && !adGroup.campaignId) {
+                              adGroup.campaignId = campaignId;
+                            }
 
-    // Save back to localStorage
-    localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroups));
-    console.log('✔️ Ad group saved successfully');
-    
-  } catch (error) {
-    console.error('Error saving ad group:', error);
-    alert('Error saving ad group. Check console for details.');
-    return;
-  }
-  
-  // Commit to spans
-  showSpans();
-  inlineEditing = false;
-  snapshot = null;
-});                                              })();
+                            // Save back to localStorage
+                            localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroups));
+                            console.log('✔️ Ad group saved successfully');
+                            
+                          } catch (error) {
+                            console.error('Error saving ad group:', error);
+                            alert('Error saving ad group. Check console for details.');
+                            return;
+                          }
+
+                          // Commit to spans
+                          showSpans();
+                          inlineEditing = false;
+                          snapshot = null;
+                        });
+                        })();
                       </script>
                       
 
@@ -1155,20 +1388,34 @@ document.addEventListener('DOMContentLoaded', function () {
     { dataBindKey: 'adServerPlacement', adGroupProperty: 'adServerPlacement' }
   ];
 
-  // Helper function to safely set text content
+  // Helper function to safely set text content and input values
   function safeSet(elementId, value) {
     const element = document.getElementById(elementId);
     if (element) {
       element.textContent = value || 'N/A';
     }
   }
+  
+  function safeInput(elementId, value) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.value = value || '';
+    }
+  }
 
+  // Bind to data-bind attributes for backwards compatibility
   fields.forEach(field => {
     const el = document.querySelector(`[data-bind="${field.dataBindKey}"]`);
     if (el) el.value = adGroup[field.adGroupProperty] || '';
   });
   
-  // Also populate the display spans for the new edit functionality
+  // Populate the display spans for the new two-column layout
+  // Common Data section (currently just mirror the instructional data)
+  safeSet('displayCommonAdGroupName', adGroup.name);
+  safeSet('displayCommonCampaign', adGroup.campaign);
+  safeSet('displayCommonBudget', adGroup.budget);
+  
+  // Instructional Data section
   safeSet('displayAdGroupName', adGroup.name);
   safeSet('displayCampaignName', adGroup.campaign);
   safeSet('displayBudgetAllocation', adGroup.budget);
@@ -1178,6 +1425,20 @@ document.addEventListener('DOMContentLoaded', function () {
   safeSet('displayPlacementSettings', adGroup.placementSettings);
   safeSet('displayAdServerAdGroupName', adGroup.adServerAdGroupName);
   safeSet('displayAdServerPlacement', adGroup.adServerPlacement);
+  
+  // Set input values for editing
+  safeInput('commonAdGroupName', adGroup.name);
+  safeInput('commonCampaign', adGroup.campaign);
+  safeInput('commonBudget', adGroup.budget);
+  safeInput('adGroupNameInput', adGroup.name);
+  safeInput('campaignName', adGroup.campaign);
+  safeInput('budgetAllocation', adGroup.budget);
+  safeInput('bidStrategy', adGroup.bidStrategy);
+  safeInput('creativeFormat', adGroup.creativeFormat);
+  safeInput('targetingRefinements', adGroup.targetingRefinements);
+  safeInput('placementSettings', adGroup.placementSettings);
+  safeInput('adServerAdGroupName', adGroup.adServerAdGroupName);
+  safeInput('adServerPlacement', adGroup.adServerPlacement);
 });
 
 

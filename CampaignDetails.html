@@ -12,6 +12,9 @@
   <!-- Toast assets (single source of truth) -->
   <link rel="stylesheet" href="./assets/toast.css">
   <script src="./assets/toast.js" defer></script>
+  
+  <!-- Theme CSS for platform styling -->
+  <link rel="stylesheet" href="./assets/theme.css">
 
   <!-- REMOVE OR COMMENT OUT THIS LINE: -->
   <script src="./assets/notifications.js"></script>
@@ -22,6 +25,40 @@
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
     .table-fixed { table-layout: fixed; } td, th { white-space: nowrap; }
+
+    /* Fixed table row height to prevent resizing during edit mode */
+    .campaign-details-table tbody tr {
+      height: 2rem; /* Fixed height for consistent table dimensions */
+    }
+    
+    .campaign-details-table tbody td {
+      vertical-align: middle;
+      padding-top: 0.25rem !important;
+      padding-bottom: 0.25rem !important;
+    }
+
+    /* Seamless input styling to match spans */
+    .campaign-details-input {
+      background: white !important;
+      border: 1px solid #d1d5db !important;
+      outline: none !important;
+      box-shadow: none !important;
+      padding: 0.125rem 0.5rem !important;
+      margin: 0 !important;
+      height: auto !important;
+      line-height: 1.25rem;
+      font-size: 0.875rem;
+      color: #374151;
+      width: 100% !important;
+      box-sizing: border-box;
+      border-radius: 0.25rem;
+    }
+    
+    /* Enhanced focus state for better UX */
+    .campaign-details-input:focus {
+      border: 1px solid #3b82f6 !important;
+      box-shadow: 0 0 0 1px #3b82f6 !important;
+    }
 
     /* Read-only inputs look like text */
     input[aria-readonly="true"] {
@@ -220,144 +257,298 @@
 
             <hr class="border-gray-300 mp-4 p-2">
 
-            <!-- Single-column campaign details card -->
-            <section class="space-y-6">
-              <div class="flex items-center justify-between">
-              <h1 class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGN DETAILS</h1>
-              <div class="flex items-center gap-2">
-                <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                <svg viewBox="0 0 24 24" height="16" width="16">
-                  <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
-                </svg>
-                Edit
-                </button>
-                <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
-                <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
-              </div>
-              </div>
-
-              <!-- View / Edit Fields -->
-              <div class="space-y-5">
-
-              <!-- Campaign Name -->
-              <div>
-                <label for="campaignName" class="block text-sm font-medium text-gray-700">Campaign Name</label>
-                <span id="displayCampaignName" class="block mt-1 text-gray-800">Madison, AL - Programmatic Display</span>
-                <input id="campaignName" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
+            <!-- Two-column campaign details layout -->
+            <section>
+              <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGN DETAILS</h1>
+                <div class="flex items-center gap-2">
+                  <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                  <svg viewBox="0 0 24 24" height="16" width="16">
+                    <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
+                  </svg>
+                  Edit
+                  </button>
+                  <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
+                  <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+                </div>
               </div>
 
-              <!-- Channel -->
-              <div>
-                <label for="campaignChannel" class="block text-sm font-medium text-gray-700">Campaign Channel</label>
-                <span id="displayCampaignChannel" class="block mt-1 text-gray-800">Programmatic Display</span>
-                <input id="campaignChannel" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+              <!-- Two Column Layout -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Common Data Column -->
+                <div class="overflow-x-auto border border-default rounded-md self-start">
+                  <table class="w-full tbl tbl-row-hover table-fixed campaign-details-table">
+                    <colgroup>
+                      <col class="w-1/3">
+                      <col class="w-2/3">
+                    </colgroup>
+                    <thead class="tbl-head">
+                      <tr>
+                        <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
+                          BEACON FIELDS
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y border-default">
+                      
+                      <!-- Common Campaign Name (separate field) -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Campaign Name
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayCommonCampaignName" class="text-gray-800 break-words">N/A</span>
+                          <input id="commonCampaignName" type="text" class="hidden campaign-details-input" />
+                        </td>
+                      </tr>
 
-              <!-- KPI -->
-              <div>
-                <label for="campaignKPI" class="block text-sm font-medium text-gray-700">Campaign KPI</label>
-                <span id="displayCampaignKPI" class="block mt-1 text-gray-800">CTR</span>
-                <input id="campaignKPI" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+                      <!-- Media Type -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Media Type
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayMediaType" class="text-gray-800 break-words">N/A</span>
+                          <input id="mediaType" type="text" class="hidden campaign-details-input" />
+                        </td>
+                      </tr>
 
-              <!-- KPI Target -->
-              <div>
-                <label for="campaignKPITarget" class="block text-sm font-medium text-gray-700">KPI Target</label>
-                <span id="displayCampaignKPITarget" class="block mt-1 text-gray-800">2.50%</span>
-                <input id="campaignKPITarget" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+                      <!-- Domain URL -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Domain URL
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayDomainUrl" class="text-gray-800 break-words">N/A</span>
+                          <input id="domainUrl" type="text" class="hidden campaign-details-input" />
+                        </td>
+                      </tr>
 
-              <!-- Pacing -->
-              <div>
-                <label for="campaignPacing" class="block text-sm font-medium text-gray-700">Campaign Pacing</label>
-                <span id="displayCampaignPacing" class="block mt-1 text-gray-800">Even</span>
-                <input id="campaignPacing" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+                    </tbody>
+                  </table>
+                </div>
 
-              <!-- Advertiser -->
-              <div>
-                <label for="campaignAdvertiser" class="block text-sm font-medium text-gray-700">Advertiser</label>
-                <span id="displayCampaignAdvertiser" class="block mt-1 text-gray-800">N/A</span>
-                <input id="campaignAdvertiser" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+                <!-- Right Column - DSP and Ad Server Fields -->
+                <div class="space-y-6">
+                  
+                  <!-- DSP Fields Table -->
+                  <div class="overflow-x-auto border border-default rounded-md">
+                    <table class="w-full tbl tbl-row-hover table-fixed campaign-details-table">
+                      <colgroup>
+                        <col class="w-1/3">
+                        <col class="w-2/3">
+                      </colgroup>
+                      <thead style="background-color: #dbeafe;">
+                        <tr>
+                          <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-blue-900 uppercase tracking-wider">
+                            DSP FIELDS
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y border-default">
 
-              <!-- Objective -->
-              <div>
-                <label for="campaignObjective" class="block text-sm font-medium text-gray-700">Objective</label>
-                <span id="displayCampaignObjective" class="block mt-1 text-gray-800">N/A</span>
-                <input id="campaignObjective" type="text" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+                        <!-- Campaign Name (original field) -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Campaign Name
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignName" class="text-gray-800 break-words">Madison, AL - Programmatic Display</span>
+                            <input id="campaignName" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-              <!-- Start Date -->
-              <div>
-                <label for="campaignStartDate" class="block text-sm font-medium text-gray-700">Start Date</label>
-                <span id="displayCampaignStartDate" class="block mt-1 text-gray-800">N/A</span>
-                <input id="campaignStartDate" type="date" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+                        <!-- Channel -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Channel
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignChannel" class="text-gray-800 break-words">Programmatic Display</span>
+                            <input id="campaignChannel" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-              <!-- End Date -->
-              <div>
-                <label for="campaignEndDate" class="block text-sm font-medium text-gray-700">End Date</label>
-                <span id="displayCampaignEndDate" class="block mt-1 text-gray-800">N/A</span>
-                <input id="campaignEndDate" type="date" class="hidden mt-1 w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500" />
-              </div>
+                        <!-- KPI -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            KPI
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignKPI" class="text-gray-800 break-words">CTR</span>
+                            <input id="campaignKPI" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-<!-- Total Budget -->
-<div>
-  <label for="campaignTotalBudget" class="block text-sm font-medium text-gray-700">Total Budget</label>
-  <span id="displayCampaignTotalBudget" class="block mt-1 text-gray-800">N/A</span>
-  <input id="campaignTotalBudget" type="number" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
-</div>
+                        <!-- KPI Target -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            KPI Target
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignKPITarget" class="text-gray-800 break-words">2.50%</span>
+                            <input id="campaignKPITarget" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-<!-- Daily Budget -->
-<div>
-  <label for="campaignDailyBudget" class="block text-sm font-medium text-gray-700">Daily Budget</label>
-  <span id="displayCampaignDailyBudget" class="block mt-1 text-gray-800">N/A</span>
-  <input id="campaignDailyBudget" type="number" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
-</div>
+                        <!-- Pacing -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Pacing
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignPacing" class="text-gray-800 break-words">Even</span>
+                            <input id="campaignPacing" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-<!-- Targeting Section -->
-<hr class="border-gray-300" />
-<h2 class="text-lg font-semibold text-gray-900">Targeting</h2>
+                        <!-- Advertiser -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Advertiser
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignAdvertiser" class="text-gray-800 break-words">N/A</span>
+                            <input id="campaignAdvertiser" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-<!-- Target Audience -->
-<div>
-  <label for="targetAudience" class="block text-sm font-medium text-gray-700">Target Audience</label>
-  <span id="displayTargetAudience" class="block mt-1 text-gray-800">N/A</span>
-  <input id="targetAudience" type="text" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
-</div>
+                        <!-- Objective -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Objective
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignObjective" class="text-gray-800 break-words">N/A</span>
+                            <input id="campaignObjective" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-<!-- Geographic Targeting -->
-<div>
-  <label for="geoTargeting" class="block text-sm font-medium text-gray-700">Geographic Targeting</label>
-  <span id="displayGeoTargeting" class="block mt-1 text-gray-800">N/A</span>
-  <input id="geoTargeting" type="text" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
-</div>
+                        <!-- Start Date -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Start Date
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignStartDate" class="text-gray-800 break-words">N/A</span>
+                            <input id="campaignStartDate" type="date" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-<!-- Device Targeting -->
-<div>
-  <label for="deviceTargeting" class="block text-sm font-medium text-gray-700">Device Targeting</label>
-  <span id="displayDeviceTargeting" class="block mt-1 text-gray-800">N/A</span>
-  <input id="deviceTargeting" type="text" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
-</div>
+                        <!-- End Date -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            End Date
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignEndDate" class="text-gray-800 break-words">N/A</span>
+                            <input id="campaignEndDate" type="date" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-<!-- Ad Server Section -->
-<hr class="border-gray-300" />
-<h2 class="text-lg font-semibold text-gray-900">Ad Server Fields</h2>
+                        <!-- Total Budget -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Total Budget
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignTotalBudget" class="text-gray-800 break-words">N/A</span>
+                            <input id="campaignTotalBudget" type="number" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-<!-- Ad Server Campaign Name -->
-<div>
-  <label for="adServerCampaignName" class="block text-sm font-medium text-gray-700">Ad Server Campaign Name</label>
-  <span id="displayAdServerCampaignName" class="block mt-1 text-gray-800">N/A</span>
-  <input id="adServerCampaignName" type="text" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
-</div>
+                        <!-- Daily Budget -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Daily Budget
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayCampaignDailyBudget" class="text-gray-800 break-words">N/A</span>
+                            <input id="campaignDailyBudget" type="number" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
 
-<!-- Ad Server Campaign Vertical -->
-<div>
-  <label for="adServerCampaignVertical" class="block text-sm font-medium text-gray-700">Campaign Vertical</label>
-  <span id="displayAdServerCampaignVertical" class="block mt-1 text-gray-800">N/A</span>
-  <input id="adServerCampaignVertical" type="text" class="hidden mt-1 w-full border border-gray-300 rounded px-3 py-2" />
-</div>
+                        <!-- Target Audience -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Target Audience
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayTargetAudience" class="text-gray-800 break-words">N/A</span>
+                            <input id="targetAudience" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Geographic Targeting -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Geo Targeting
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayGeoTargeting" class="text-gray-800 break-words">N/A</span>
+                            <input id="geoTargeting" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Device Targeting -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Device Targeting
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayDeviceTargeting" class="text-gray-800 break-words">N/A</span>
+                            <input id="deviceTargeting" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Ad Server Fields Table -->
+                  <div class="overflow-x-auto border border-default rounded-md">
+                    <table class="w-full tbl tbl-row-hover table-fixed campaign-details-table">
+                      <colgroup>
+                        <col class="w-1/3">
+                        <col class="w-2/3">
+                      </colgroup>
+                      <thead style="background-color: #d1fae5;">
+                        <tr>
+                          <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-green-900 uppercase tracking-wider">
+                            AD SERVER FIELDS
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y border-default">
+
+                        <!-- Ad Server Campaign Name -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Ad Server Name
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerCampaignName" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerCampaignName" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Ad Server Campaign Vertical -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Vertical
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerCampaignVertical" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerCampaignVertical" type="text" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
 
               </div>
             </section>
@@ -365,6 +556,11 @@
                       <script>
                         (function() {
                         const pairs = [
+  // Common Data fields (these are separate and not linked to campaign data yet)
+  { span: 'displayCommonCampaignName', input: 'commonCampaignName' },
+  { span: 'displayMediaType', input: 'mediaType' },
+  { span: 'displayDomainUrl', input: 'domainUrl' },
+  // Instructional Data fields (these are linked to actual campaign data)
   { span: 'displayCampaignName', input: 'campaignName' },
   { span: 'displayCampaignChannel', input: 'campaignChannel' },
   { span: 'displayCampaignKPI', input: 'campaignKPI' },
@@ -379,8 +575,35 @@
   { span: 'displayTargetAudience', input: 'targetAudience' },
   { span: 'displayGeoTargeting', input: 'geoTargeting' },
   { span: 'displayDeviceTargeting', input: 'deviceTargeting' },
+  // Ad Server Fields
   { span: 'displayAdServerCampaignName', input: 'adServerCampaignName' },
   { span: 'displayAdServerCampaignVertical', input: 'adServerCampaignVertical' }
+];
+
+                        // Fields that are linked to actual campaign data (including Common Data section)
+                        const campaignLinkedFields = [
+  // Common Data fields (now linked to Beacon field data)
+  'commonCampaignName',
+  'mediaType',
+  'domainUrl',
+  // DSP Fields
+  'campaignName',
+  'campaignChannel', 
+  'campaignKPI',
+  'campaignKPITarget',
+  'campaignPacing',
+  'campaignAdvertiser',
+  'campaignObjective',
+  'campaignStartDate',
+  'campaignEndDate',
+  'campaignTotalBudget',
+  'campaignDailyBudget',
+  'targetAudience',
+  'geoTargeting',
+  'deviceTargeting',
+  // Ad Server Fields
+  'adServerCampaignName',
+  'adServerCampaignVertical'
 ];
 
 
@@ -420,7 +643,22 @@
                           const span = document.getElementById(p.span);
                           const input = document.getElementById(p.input);
                           if (!span || !input) return;
-                          span.textContent = input.value.trim() || '—';
+                          
+                          // Update span with input value, handling empty values
+                          let displayValue = input.value.trim();
+                          if (!displayValue || displayValue === '') {
+                            displayValue = 'N/A';
+                          }
+                          
+                          // Format currency for budget fields
+                          if (input.type === 'number' && displayValue !== 'N/A') {
+                            const numValue = parseFloat(displayValue);
+                            if (!isNaN(numValue)) {
+                              displayValue = `$${numValue.toLocaleString()}`;
+                            }
+                          }
+                          
+                          span.textContent = displayValue;
                           input.classList.add('hidden');
                           span.classList.remove('hidden');
                           });
@@ -434,6 +672,15 @@
                           });
                           return obj;
                         }
+
+                        function currentCampaignValues() {
+                          const obj = {};
+                          campaignLinkedFields.forEach(fieldName => {
+                          const input = document.getElementById(fieldName);
+                          if (input) obj[fieldName] = input.value.trim();
+                          });
+                          return obj;
+                        }
                         function shallowEqual(a,b){
                           const ka = Object.keys(a), kb = Object.keys(b);
                           if (ka.length !== kb.length) return false;
@@ -444,17 +691,23 @@
                         btnEdit?.addEventListener('click', () => {
                           // Start inline editing for these campaign fields
                           inlineEditing = true;
-                          snapshot = currentValues();
+                          snapshot = currentCampaignValues(); // Only snapshot campaign-linked fields
                           showInputs();
+                          
+                          // Auto-focus the first editable field for immediate editing
+                          const firstInput = document.getElementById('campaignName');
+                          if (firstInput) {
+                            setTimeout(() => firstInput.focus(), 50);
+                          }
                         });
 
                         btnCancel?.addEventListener('click', () => {
                           if (!inlineEditing) return;
-                          // Revert
-                          pairs.forEach(p => {
-                          const input = document.getElementById(p.input);
-                          if (input && snapshot && snapshot[p.input] != null) {
-                            input.value = snapshot[p.input];
+                          // Revert only campaign-linked fields
+                          campaignLinkedFields.forEach(fieldName => {
+                          const input = document.getElementById(fieldName);
+                          if (input && snapshot && snapshot[fieldName] != null) {
+                            input.value = snapshot[fieldName];
                           }
                           });
                           showSpans();
@@ -464,7 +717,7 @@
 
                         btnSave?.addEventListener('click', () => {
                           if (!inlineEditing) return;
-                          const now = currentValues();
+                          const now = currentCampaignValues(); // Only get campaign-linked values
                           if (snapshot && shallowEqual(snapshot, now)) {
                           // No change
                           showSpans();
@@ -517,6 +770,11 @@
                                   if (now.targetAudience !== undefined) campaign.targetAudience = now.targetAudience;
                                   if (now.geoTargeting !== undefined) campaign.geoTargeting = now.geoTargeting;
                                   if (now.deviceTargeting !== undefined) campaign.deviceTargeting = now.deviceTargeting;
+                                  // Common Data / Beacon Fields mapping
+                                  if (now.commonCampaignName !== undefined) campaign.beaconCampaignName = now.commonCampaignName;
+                                  if (now.mediaType !== undefined) campaign.beaconMediaType = now.mediaType;
+                                  if (now.domainUrl !== undefined) campaign.beaconDomainUrl = now.domainUrl;
+                                  // Ad Server Fields
                                   if (now.adServerCampaignName !== undefined) campaign.adServerCampaignName = now.adServerCampaignName;
                                   if (now.adServerCampaignVertical !== undefined) campaign.adServerCampaignVertical = now.adServerCampaignVertical;
                                   
@@ -1183,6 +1441,11 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   // Set text content display spans
+  // Common Data fields (mapped from Beacon fields)
+  safeSet('displayCommonCampaignName', campaign.beaconCampaignName);
+  safeSet('displayMediaType', campaign.beaconMediaType);
+  safeSet('displayDomainUrl', campaign.beaconDomainUrl);
+  // DSP Fields
   safeSet('displayCampaignName', campaign.name);
   safeSet('displayCampaignChannel', campaign.channel);
   safeSet('displayCampaignKPI', campaign.kpi);
@@ -1197,10 +1460,16 @@ window.addEventListener('DOMContentLoaded', () => {
   safeSet('displayTargetAudience', campaign.targetAudience);
   safeSet('displayGeoTargeting', campaign.geoTargeting);
   safeSet('displayDeviceTargeting', campaign.deviceTargeting);
+  // Ad Server Fields
   safeSet('displayAdServerCampaignName', campaign.adServerCampaignName);
   safeSet('displayAdServerCampaignVertical', campaign.adServerCampaignVertical);
 
   // Set editable inputs
+  // Common Data fields (mapped from Beacon fields)
+  safeInput('commonCampaignName', campaign.beaconCampaignName);
+  safeInput('mediaType', campaign.beaconMediaType);
+  safeInput('domainUrl', campaign.beaconDomainUrl);
+  // DSP Fields
   safeInput('campaignName', campaign.name);
   safeInput('campaignChannel', campaign.channel);
   safeInput('campaignKPI', campaign.kpi);
@@ -1215,6 +1484,7 @@ window.addEventListener('DOMContentLoaded', () => {
   safeInput('targetAudience', campaign.targetAudience);
   safeInput('geoTargeting', campaign.geoTargeting);
   safeInput('deviceTargeting', campaign.deviceTargeting);
+  // Ad Server Fields
   safeInput('adServerCampaignName', campaign.adServerCampaignName);
   safeInput('adServerCampaignVertical', campaign.adServerCampaignVertical);
 });

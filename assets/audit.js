@@ -2,6 +2,15 @@
   const AUDIT_KEY = 'audit_log_v1';
   const NOTES_PREFIX = 'manual_export_notes_';
   const FIELD_LABELS = {
+    // Common Data / Beacon Fields
+    commonCampaignName: 'Campaign Name',
+    beaconCampaignName: 'Campaign Name',
+    mediaType: 'Media Type',
+    beaconMediaType: 'Media Type', 
+    domainUrl: 'Domain URL',
+    beaconDomainUrl: 'Domain URL',
+    
+    // DSP Fields
     campaignName: 'Campaign Name',
     companyName: 'Campaign Name', // Keep both for backward compatibility
     campaignChannel: 'Channel',
@@ -40,6 +49,10 @@
 
   // Define field categorization for hierarchical display
   const FIELD_CATEGORIES = {
+    commonData: [
+      'commonCampaignName', 'beaconCampaignName', 'mediaType', 'beaconMediaType', 
+      'domainUrl', 'beaconDomainUrl'
+    ],
     dsp: [
       'campaignName', 'companyName', 'campaignChannel', 'campaignKPI', 'campaignKPITarget', 
       'campaignPacing', 'campaignAdvertiser', 'campaignObjective', 'campaignStartDate', 
@@ -76,6 +89,13 @@
     return String(v).trim();
   }
 
+  // Field mapping for Common Data fields to their Beacon equivalents
+  const FIELD_MAPPING = {
+    commonCampaignName: 'beaconCampaignName',
+    mediaType: 'beaconMediaType', 
+    domainUrl: 'beaconDomainUrl'
+  };
+
   function recordCreate({campaignId, entityType, entityId, data, user='localUser'}){
     const log = loadRaw();
     const ts = new Date().toISOString();
@@ -108,6 +128,9 @@
       // Skip the connectors field from audit logs
       if (field === 'connectors') return;
       
+      // Map Common Data field names to their Beacon equivalents for consistency
+      const auditField = FIELD_MAPPING[field] || field;
+      
       const oldValue = clean(before?.[field] ?? '');
       const newValue = clean(after?.[field] ?? '');
       if (oldValue === newValue) return;
@@ -120,7 +143,7 @@
         entityType,
         entityId,
         action: 'edit',
-        field,
+        field: auditField, // Use the mapped field name
         oldValue: oldValue || undefined,
         newValue,
         user
@@ -219,6 +242,11 @@ function clearCampaignEdits(campaignId){
   if (currentCampaign) {
     // Create new campaign audit entries with current values
     const currentCampaignData = {
+      // Common Data / Beacon Fields
+      beaconCampaignName: currentCampaign.beaconCampaignName,
+      beaconMediaType: currentCampaign.beaconMediaType,
+      beaconDomainUrl: currentCampaign.beaconDomainUrl,
+      // DSP Fields
       campaignName: currentCampaign.name,
       campaignChannel: currentCampaign.channel,
       campaignKPI: currentCampaign.kpi,
@@ -240,9 +268,10 @@ function clearCampaignEdits(campaignId){
     
     // Create new campaign audit entries with current values
     Object.entries(currentCampaignData).forEach(([field, value]) => {
-      // Always include Ad Server fields, even if empty, to preserve them in audit
+      // Always include Ad Server fields and Beacon fields, even if empty, to preserve them in audit
       const isAdServerField = field.startsWith('adServer');
-      const shouldInclude = isAdServerField || (value != null && String(value).trim() !== '');
+      const isBeaconField = field.startsWith('beacon');
+      const shouldInclude = isAdServerField || isBeaconField || (value != null && String(value).trim() !== '');
       
       if (shouldInclude) {
         newCreateEntries.push({
@@ -400,20 +429,34 @@ function clearCampaignEdits(campaignId){
   function renderCampaignSection(list, group, groupIndex) {
     const entityId = group.entityId;
     
-    // Main Campaign header
+    // Main Campaign header with enhanced styling
     const campaignHeader = document.createElement('div');
-    campaignHeader.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-sm font-bold text-gray-800 uppercase rounded-md';
-    campaignHeader.style.backgroundColor = '#e5e7eb';
-    campaignHeader.innerHTML = `<span>Campaign (${entityId})</span>`;
+    campaignHeader.className = 'mt-4 mb-3 -mx-2 px-4 py-2 text-sm font-bold text-white uppercase rounded-md shadow-sm';
+    campaignHeader.style.backgroundColor = '#1f2937'; // Dark gray
+    campaignHeader.innerHTML = `
+      <div class="flex items-center">
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>Campaign (${entityId})</span>
+      </div>`;
     list.appendChild(campaignHeader);
 
-    // Separate fields into DSP and Ad Server categories
+    // Create container for campaign subsections
+    const campaignContainer = document.createElement('div');
+    campaignContainer.className = 'ml-2 border-l-2 border-gray-300 pl-2'; // Reduced margins
+    list.appendChild(campaignContainer);
+
+    // Separate fields into categories
+    const commonDataFields = {};
     const dspFields = {};
     const adServerFields = {};
     const uncategorizedFields = {};
 
     Object.keys(group.fields).forEach(fieldName => {
-      if (FIELD_CATEGORIES.dsp.includes(fieldName)) {
+      if (FIELD_CATEGORIES.commonData.includes(fieldName)) {
+        commonDataFields[fieldName] = group.fields[fieldName];
+      } else if (FIELD_CATEGORIES.dsp.includes(fieldName)) {
         dspFields[fieldName] = group.fields[fieldName];
       } else if (FIELD_CATEGORIES.adServer.includes(fieldName)) {
         adServerFields[fieldName] = group.fields[fieldName];
@@ -422,32 +465,54 @@ function clearCampaignEdits(campaignId){
       }
     });
 
-    // Render DSP section
-    if (Object.keys(dspFields).length > 0) {
-      renderConnectorSection(list, 'DSP: The Trade Desk', dspFields, `dsp_${entityId}`, groupIndex * 2);
+    // Render Common Data section first with enhanced styling
+    if (Object.keys(commonDataFields).length > 0) {
+      renderConnectorSection(campaignContainer, 'Common Data', commonDataFields, `common_${entityId}`, groupIndex * 3, 'purple');
     }
 
-    // Render Ad Server section
+    // Render DSP section with enhanced styling
+    if (Object.keys(dspFields).length > 0) {
+      renderConnectorSection(campaignContainer, 'DSP: The Trade Desk', dspFields, `dsp_${entityId}`, groupIndex * 3 + 1, 'blue');
+    }
+
+    // Render Ad Server section with enhanced styling
     if (Object.keys(adServerFields).length > 0) {
-      renderConnectorSection(list, 'Ad Server: Google Campaign Manager', adServerFields, `adserver_${entityId}`, groupIndex * 2 + 1);
+      renderConnectorSection(campaignContainer, 'Ad Server: Google Campaign Manager', adServerFields, `adserver_${entityId}`, groupIndex * 3 + 2, 'green');
     }
 
     // Render uncategorized fields if any
     if (Object.keys(uncategorizedFields).length > 0) {
-      renderConnectorSection(list, 'Other Fields', uncategorizedFields, `other_${entityId}`, groupIndex * 2 + 2);
+      renderConnectorSection(campaignContainer, 'Other Fields', uncategorizedFields, `other_${entityId}`, groupIndex * 3 + 3, 'gray');
     }
   }
 
-  function renderConnectorSection(list, connectorTitle, fields, sectionId, toggleIndex) {
-    // Connector sub-header
+  function renderConnectorSection(list, connectorTitle, fields, sectionId, toggleIndex, colorTheme = 'gray') {
+    // Color theme mapping
+    const themes = {
+      blue: { bg: '#dbeafe', text: '#1e40af', border: '#3b82f6' },
+      green: { bg: '#d1fae5', text: '#065f46', border: '#10b981' },
+      gray: { bg: '#f3f4f6', text: '#374151', border: '#6b7280' },
+      purple: { bg: '#ede9fe', text: '#6b21a8', border: '#8b5cf6' }
+    };
+    
+    const theme = themes[colorTheme] || themes.gray;
+    
+    // Connector sub-header with enhanced styling
     const connectorHeader = document.createElement('div');
-    connectorHeader.className = 'mt-2 mb-1 -mx-2 px-4 py-1 text-xs font-semibold text-gray-600 uppercase rounded-md flex justify-between items-center cursor-pointer hover:opacity-80 transition-opacity';
-    connectorHeader.style.backgroundColor = '#d1d5db';
+    connectorHeader.className = 'mt-3 mb-2 ml-3 -mr-2 px-4 py-2 text-xs font-semibold uppercase rounded-md flex justify-between items-center cursor-pointer hover:opacity-90 transition-all duration-200 border-l-4';
+    connectorHeader.style.backgroundColor = theme.bg;
+    connectorHeader.style.color = theme.text;
+    connectorHeader.style.borderLeftColor = theme.border;
     connectorHeader.innerHTML = `
-      <span>${connectorTitle}</span>
+      <div class="flex items-center">
+        <svg class="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+        </svg>
+        <span>${connectorTitle}</span>
+      </div>
       <div class="flex items-center gap-2">
-        <span id="toggleLabel_${toggleIndex}" class="text-xs text-gray-600">Deselect All</span>
-        <button id="selectAllToggle_${toggleIndex}" data-section-id="${sectionId}" class="w-4 h-4 border-2 border-gray-400 rounded bg-blue-600 flex items-center justify-center hover:border-gray-500 transition-colors" title="Toggle section checkboxes">
+        <span id="toggleLabel_${toggleIndex}" class="text-xs opacity-75">Deselect All</span>
+        <button id="selectAllToggle_${toggleIndex}" data-section-id="${sectionId}" class="w-4 h-4 border-2 rounded flex items-center justify-center hover:opacity-80 transition-all duration-200" style="border-color: ${theme.border}; background-color: ${theme.border};" title="Toggle section checkboxes">
           <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
           </svg>
@@ -457,7 +522,7 @@ function clearCampaignEdits(campaignId){
     list.appendChild(connectorHeader);
 
     const ul = document.createElement('ul');
-    ul.className = 'space-y-0.5 ml-4';
+    ul.className = 'space-y-0.5 ml-2 pl-2'; // Reduced indentation for more field width
 
     // Process each field for this connector
     Object.keys(fields).forEach(fieldName => {
@@ -478,10 +543,18 @@ function clearCampaignEdits(campaignId){
     // Add accordion functionality
     connectorHeader.addEventListener('click', function(e) {
       if (e.target.closest('button')) return;
-      ul.style.display = ul.style.display === 'none' ? '' : 'none';
+      const isCollapsed = ul.style.display === 'none';
+      ul.style.display = isCollapsed ? '' : 'none';
+      
+      // Update header styling when collapsed/expanded
+      if (isCollapsed) {
+        connectorHeader.style.opacity = '1';
+      } else {
+        connectorHeader.style.opacity = '0.7';
+      }
     });
 
-    // Add toggle functionality
+    // Add toggle functionality with enhanced styling
     const toggleBtn = document.getElementById(`selectAllToggle_${toggleIndex}`);
     const toggleLabel = document.getElementById(`toggleLabel_${toggleIndex}`);
     if (toggleBtn && toggleLabel) {
@@ -493,14 +566,14 @@ function clearCampaignEdits(campaignId){
         sectionCheckboxes.forEach(cb => cb.checked = !allChecked);
         
         if (allChecked) {
-          this.classList.remove('bg-blue-600');
-          this.classList.add('bg-white');
-          this.querySelector('svg').classList.add('hidden');
+          this.style.backgroundColor = 'white';
+          this.style.borderColor = theme.border;
+          this.querySelector('svg').style.color = theme.border;
           toggleLabel.textContent = 'Select All';
         } else {
-          this.classList.remove('bg-white');
-          this.classList.add('bg-blue-600');
-          this.querySelector('svg').classList.remove('hidden');
+          this.style.backgroundColor = theme.border;
+          this.style.borderColor = theme.border;
+          this.querySelector('svg').style.color = 'white';
           toggleLabel.textContent = 'Deselect All';
         }
       });
@@ -510,12 +583,23 @@ function clearCampaignEdits(campaignId){
   function renderAdGroupSection(list, group, groupIndex) {
     const entityId = group.entityId;
     
-    // Main Ad Group header
+    // Main Ad Group header with enhanced styling
     const adGroupHeader = document.createElement('div');
-    adGroupHeader.className = 'mt-4 mb-2 -mx-2 px-4 py-1 text-sm font-bold text-gray-800 uppercase rounded-md';
-    adGroupHeader.style.backgroundColor = '#e5e7eb';
-    adGroupHeader.innerHTML = `<span>Ad Group (${entityId})</span>`;
+    adGroupHeader.className = 'mt-4 mb-3 -mx-2 px-4 py-2 text-sm font-bold text-white uppercase rounded-md shadow-sm';
+    adGroupHeader.style.backgroundColor = '#7c3aed'; // Purple for Ad Groups
+    adGroupHeader.innerHTML = `
+      <div class="flex items-center">
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>Ad Group (${entityId})</span>
+      </div>`;
     list.appendChild(adGroupHeader);
+
+    // Create container for ad group subsections
+    const adGroupContainer = document.createElement('div');
+    adGroupContainer.className = 'ml-2 border-l-2 border-purple-300 pl-2'; // Reduced margins
+    list.appendChild(adGroupContainer);
 
     // Separate fields into DSP and Ad Server categories for ad groups
     const dspFields = {};
@@ -532,19 +616,19 @@ function clearCampaignEdits(campaignId){
       }
     });
 
-    // Render DSP section for ad groups
+    // Render DSP section for ad groups with distinct styling
     if (Object.keys(dspFields).length > 0) {
-      renderConnectorSection(list, 'DSP: The Trade Desk', dspFields, `adgroup_dsp_${entityId}`, (groupIndex + 100) * 2);
+      renderConnectorSection(adGroupContainer, 'DSP: The Trade Desk', dspFields, `adgroup_dsp_${entityId}`, (groupIndex + 100) * 2, 'blue');
     }
 
-    // Render Ad Server section for ad groups
+    // Render Ad Server section for ad groups with distinct styling
     if (Object.keys(adServerFields).length > 0) {
-      renderConnectorSection(list, 'Ad Server: Google Campaign Manager', adServerFields, `adgroup_adserver_${entityId}`, (groupIndex + 100) * 2 + 1);
+      renderConnectorSection(adGroupContainer, 'Ad Server: Google Campaign Manager', adServerFields, `adgroup_adserver_${entityId}`, (groupIndex + 100) * 2 + 1, 'green');
     }
 
     // Render uncategorized fields if any
     if (Object.keys(uncategorizedFields).length > 0) {
-      renderConnectorSection(list, 'Other Fields', uncategorizedFields, `adgroup_other_${entityId}`, (groupIndex + 100) * 2 + 2);
+      renderConnectorSection(adGroupContainer, 'Other Fields', uncategorizedFields, `adgroup_other_${entityId}`, (groupIndex + 100) * 2 + 2, 'purple');
     }
   }
 
@@ -565,13 +649,13 @@ function clearCampaignEdits(campaignId){
 
     let line = `<div class="flex items-center justify-between gap-2 ${hasEdits ? 'cursor-pointer hover:bg-gray-50' : ''}" ${hasEdits ? `onclick="window.togglePreviousValue('${expandableId}')"` : ''}>
       <div class="flex items-stretch text-xs flex-grow min-w-0" style="gap: 0;">
-       <span class="font-semibold text-gray-800 whitespace-nowrap flex items-center" style="min-width: 140px; background-color: #ffffff; padding: 4px 8px; margin: -4px 0 -4px -12px; padding-right: 8px; border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem;">${label}:</span>
+       <span class="font-semibold text-gray-800 whitespace-nowrap flex items-center" style="min-width: 120px; background-color: #ffffff; padding: 4px 8px; margin: -4px 0 -4px -12px; padding-right: 8px; border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem;">${label}:</span>
         <div style="width: 1px; background-color: #d1d5db; flex-shrink: 0; margin: -4px 0;"></div>
-        <div class="flex items-center gap-1 flex-grow min-w-0 pl-2">
-          <span class="text-gray-900 truncate">${currentValue || '—'}</span>
+        <div class="flex items-center gap-1 flex-grow min-w-0 pl-2" style="max-width: calc(100% - 200px);">
+          <span class="text-gray-900 truncate" title="${currentValue || '—'}">${currentValue || '—'}</span>
         </div>
       </div>
-      <div class="flex items-center gap-2 whitespace-nowrap">
+      <div class="flex items-center gap-2 whitespace-nowrap" style="min-width: 120px;">
         <span class="text-[10px] text-gray-400">${formatTimestamp(latestEntry.ts)}</span>
         <input type="checkbox" checked data-section-id="${sectionId}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" onclick="event.stopPropagation()" />
       </div>
