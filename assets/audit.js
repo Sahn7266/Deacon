@@ -40,6 +40,10 @@
     
     // Ad Server fields (clean names without prefix)
     adServerCampaignName: 'Campaign Name',
+    adServerSchedule: 'Schedule',
+    adServerLandingPageName: 'Landing Page Name',
+    adServerLandingPageURL: 'Landing Page URL',
+    // Legacy Ad Server field for backward compatibility
     adServerCampaignVertical: 'Campaign Vertical',
 
     // Ad Group DSP fields
@@ -70,7 +74,8 @@
       'deviceTargeting'
     ],
     adServer: [
-      'adServerCampaignName', 'adServerCampaignVertical'
+      'adServerCampaignName', 'adServerSchedule', 'adServerLandingPageName', 
+      'adServerLandingPageURL', 'adServerCampaignVertical'
     ],
     adGroupDsp: [
       'adGroupNameInput', 'adGroupName', 'adGroupCampaign', 
@@ -266,7 +271,9 @@ function clearCampaignEdits(campaignId){
       kpiTarget: currentCampaign.kpiTarget,
       // Include Ad Server fields
       adServerCampaignName: currentCampaign.adServerCampaignName,
-      adServerCampaignVertical: currentCampaign.adServerCampaignVertical
+      adServerSchedule: currentCampaign.adServerSchedule,
+      adServerLandingPageName: currentCampaign.adServerLandingPageName,
+      adServerLandingPageURL: currentCampaign.adServerLandingPageURL
     };
     
     // Create new campaign audit entries with current values

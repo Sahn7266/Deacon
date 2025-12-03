@@ -523,25 +523,52 @@
                       </thead>
                       <tbody class="divide-y border-default">
 
-                        <!-- Ad Server Campaign Name -->
+                        <!-- Campaign Name -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Ad Server Name
+                            Campaign Name
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerCampaignName" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerCampaignName" type="text" class="hidden campaign-details-input" />
+                            <select id="adServerCampaignName" class="hidden campaign-details-input">
+                              <option value="">-- Select Campaign Name --</option>
+                              <option value="Brandawareness">Brandawareness</option>
+                              <option value="Persona">Persona</option>
+                              <option value="Targeting">Targeting</option>
+                            </select>
                           </td>
                         </tr>
 
-                        <!-- Ad Server Campaign Vertical -->
+                        <!-- Schedule -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Vertical
+                            Schedule
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerCampaignVertical" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerCampaignVertical" type="text" class="hidden campaign-details-input" />
+                            <span id="displayAdServerSchedule" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerSchedule" type="date" class="hidden campaign-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Landing Page Name -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Landing Page Name
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerLandingPageName" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerLandingPageName" type="text" class="hidden campaign-details-input" placeholder="Enter landing page name" />
+                          </td>
+                        </tr>
+
+                        <!-- Landing Page URL -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Landing Page URL
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerLandingPageURL" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerLandingPageURL" type="text" class="hidden campaign-details-input" placeholder="Enter any URL or value" />
                           </td>
                         </tr>
 
@@ -575,7 +602,9 @@
   { span: 'displayCampaignKPITarget', input: 'campaignKPITarget' },
   // Ad Server Fields
   { span: 'displayAdServerCampaignName', input: 'adServerCampaignName' },
-  { span: 'displayAdServerCampaignVertical', input: 'adServerCampaignVertical' }
+  { span: 'displayAdServerSchedule', input: 'adServerSchedule' },
+  { span: 'displayAdServerLandingPageName', input: 'adServerLandingPageName' },
+  { span: 'displayAdServerLandingPageURL', input: 'adServerLandingPageURL' }
 ];
 
                         // Fields that are linked to actual campaign data (including Common Data section)
@@ -598,7 +627,9 @@
   'campaignKPITarget',
   // Ad Server Fields
   'adServerCampaignName',
-  'adServerCampaignVertical'
+  'adServerSchedule',
+  'adServerLandingPageName',
+  'adServerLandingPageURL'
 ];
 
 
@@ -751,27 +782,27 @@
                                 const campaign = group.campaigns.find(c => c.id === campaignId);
                                 if (campaign) {
                                   // Map the field values to campaign properties
-                                  if (now.campaignName !== undefined) campaign.name = now.campaignName;
-                                  if (now.campaignChannel !== undefined) campaign.channel = now.campaignChannel;
-                                  if (now.campaignKPI !== undefined) campaign.kpi = now.campaignKPI;
-                                  if (now.campaignKPITarget !== undefined) campaign.kpiTarget = now.campaignKPITarget;
+                                  // DSP Fields - New 11 Field Structure
+                                  if (now.campaignSeed !== undefined) campaign.seed = now.campaignSeed;
+                                  if (now.campaignOrganization !== undefined) campaign.organization = now.campaignOrganization;
                                   if (now.campaignPacing !== undefined) campaign.pacing = now.campaignPacing;
-                                  if (now.campaignAdvertiser !== undefined) campaign.advertiser = now.campaignAdvertiser;
-                                  if (now.campaignObjective !== undefined) campaign.objective = now.campaignObjective;
+                                  if (now.campaignTimezone !== undefined) campaign.timezone = now.campaignTimezone;
                                   if (now.campaignStartDate !== undefined) campaign.startDate = now.campaignStartDate;
                                   if (now.campaignEndDate !== undefined) campaign.endDate = now.campaignEndDate;
-                                  if (now.campaignTotalBudget !== undefined) campaign.totalBudget = now.campaignTotalBudget;
-                                  if (now.campaignDailyBudget !== undefined) campaign.dailyBudget = now.campaignDailyBudget;
-                                  if (now.targetAudience !== undefined) campaign.targetAudience = now.targetAudience;
-                                  if (now.geoTargeting !== undefined) campaign.geoTargeting = now.geoTargeting;
-                                  if (now.deviceTargeting !== undefined) campaign.deviceTargeting = now.deviceTargeting;
+                                  if (now.campaignChannel !== undefined) campaign.channel = now.campaignChannel;
+                                  if (now.campaignName !== undefined) campaign.name = now.campaignName;
+                                  if (now.campaignBudget !== undefined) campaign.budget = now.campaignBudget;
+                                  if (now.campaignKPI !== undefined) campaign.kpi = now.campaignKPI;
+                                  if (now.campaignKPITarget !== undefined) campaign.kpiTarget = now.campaignKPITarget;
                                   // Common Data / Beacon Fields mapping
                                   if (now.commonCampaignName !== undefined) campaign.beaconCampaignName = now.commonCampaignName;
                                   if (now.mediaType !== undefined) campaign.beaconMediaType = now.mediaType;
                                   if (now.domainUrl !== undefined) campaign.beaconDomainUrl = now.domainUrl;
-                                  // Ad Server Fields
+                                  // Ad Server Fields - New 4 Field Structure
                                   if (now.adServerCampaignName !== undefined) campaign.adServerCampaignName = now.adServerCampaignName;
-                                  if (now.adServerCampaignVertical !== undefined) campaign.adServerCampaignVertical = now.adServerCampaignVertical;
+                                  if (now.adServerSchedule !== undefined) campaign.adServerSchedule = now.adServerSchedule;
+                                  if (now.adServerLandingPageName !== undefined) campaign.adServerLandingPageName = now.adServerLandingPageName;
+                                  if (now.adServerLandingPageURL !== undefined) campaign.adServerLandingPageURL = now.adServerLandingPageURL;
                                   
                                   campaignFound = true;
                                   break;
@@ -1460,7 +1491,9 @@ window.addEventListener('DOMContentLoaded', () => {
   safeSet('displayCampaignKPITarget', campaign.kpiTarget, 'percentage');
   // Ad Server Fields
   safeSet('displayAdServerCampaignName', campaign.adServerCampaignName);
-  safeSet('displayAdServerCampaignVertical', campaign.adServerCampaignVertical);
+  safeSet('displayAdServerSchedule', campaign.adServerSchedule);
+  safeSet('displayAdServerLandingPageName', campaign.adServerLandingPageName);
+  safeSet('displayAdServerLandingPageURL', campaign.adServerLandingPageURL);
 
   // Set editable inputs
   // Common Data fields (mapped from Beacon fields)
@@ -1481,7 +1514,9 @@ window.addEventListener('DOMContentLoaded', () => {
   safeInput('campaignKPITarget', campaign.kpiTarget);
   // Ad Server Fields
   safeInput('adServerCampaignName', campaign.adServerCampaignName);
-  safeInput('adServerCampaignVertical', campaign.adServerCampaignVertical);
+  safeInput('adServerSchedule', campaign.adServerSchedule);
+  safeInput('adServerLandingPageName', campaign.adServerLandingPageName);
+  safeInput('adServerLandingPageURL', campaign.adServerLandingPageURL);
 });
 
 
