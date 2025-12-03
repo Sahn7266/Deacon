@@ -10,9 +10,20 @@
     domainUrl: 'Domain URL',
     beaconDomainUrl: 'Domain URL',
     
-    // DSP Fields
+    // DSP Fields - New 11 Field Structure
+    seed: 'Seed',
+    organization: 'Campaign Organization',
+    pacing: 'Pacing',
+    timezone: 'Timezone',
+    startDate: 'Start Date (UTC)',
+    endDate: 'End Date (UTC)',
+    channel: 'Campaign Channel',
     campaignName: 'Campaign Name',
-    companyName: 'Campaign Name', // Keep both for backward compatibility
+    budget: 'Campaign Budget',
+    kpi: 'Campaign KPI',
+    kpiTarget: 'KPI Target',
+    
+    // Legacy DSP Fields (for backward compatibility)
     campaignChannel: 'Channel',
     campaignKPI: 'KPI',
     campaignKPITarget: 'KPI Target',
@@ -35,7 +46,6 @@
     adGroupNameInput: 'Ad Group Name',
     adGroupName: 'Ad Group Name', // Alias for backward compatibility
     adGroupCampaign: 'Campaign',
-    campaignName: 'Campaign', // For ad group campaign field
     budgetAllocation: 'Budget Allocation',
     bidStrategy: 'Bid Strategy',
     creativeFormat: 'Creative Format',
@@ -49,21 +59,21 @@
 
   // Define field categorization for hierarchical display
   const FIELD_CATEGORIES = {
-    commonData: [
-      'commonCampaignName', 'beaconCampaignName', 'mediaType', 'beaconMediaType', 
-      'domainUrl', 'beaconDomainUrl'
-    ],
     dsp: [
-      'campaignName', 'companyName', 'campaignChannel', 'campaignKPI', 'campaignKPITarget', 
-      'campaignPacing', 'campaignAdvertiser', 'campaignObjective', 'campaignStartDate', 
-      'campaignEndDate', 'campaignTotalBudget', 'campaignDailyBudget', 'targetAudience', 
-      'geoTargeting', 'deviceTargeting'
+      // New 11 Field Structure
+      'seed', 'organization', 'pacing', 'timezone', 'startDate', 'endDate', 
+      'channel', 'campaignName', 'budget', 'kpi', 'kpiTarget',
+      // Legacy fields for backward compatibility
+      'campaignChannel', 'campaignKPI', 'campaignKPITarget', 'campaignPacing', 
+      'campaignAdvertiser', 'campaignObjective', 'campaignStartDate', 'campaignEndDate', 
+      'campaignTotalBudget', 'campaignDailyBudget', 'targetAudience', 'geoTargeting', 
+      'deviceTargeting'
     ],
     adServer: [
       'adServerCampaignName', 'adServerCampaignVertical'
     ],
     adGroupDsp: [
-      'adGroupNameInput', 'adGroupName', 'adGroupCampaign', 'campaignName', 
+      'adGroupNameInput', 'adGroupName', 'adGroupCampaign', 
       'budgetAllocation', 'bidStrategy', 'creativeFormat', 'targetingRefinements', 
       'placementSettings'
     ],
@@ -242,25 +252,18 @@ function clearCampaignEdits(campaignId){
   if (currentCampaign) {
     // Create new campaign audit entries with current values
     const currentCampaignData = {
-      // Common Data / Beacon Fields
-      beaconCampaignName: currentCampaign.beaconCampaignName,
-      beaconMediaType: currentCampaign.beaconMediaType,
-      beaconDomainUrl: currentCampaign.beaconDomainUrl,
-      // DSP Fields
+      // DSP Fields - New 11 Field Structure
+      seed: currentCampaign.seed,
+      organization: currentCampaign.organization,
+      pacing: currentCampaign.pacing,
+      timezone: currentCampaign.timezone,
+      startDate: currentCampaign.startDate,
+      endDate: currentCampaign.endDate,
+      channel: currentCampaign.channel,
       campaignName: currentCampaign.name,
-      campaignChannel: currentCampaign.channel,
-      campaignKPI: currentCampaign.kpi,
-      campaignKPITarget: currentCampaign.kpiTarget,
-      campaignPacing: currentCampaign.pacing,
-      campaignAdvertiser: currentCampaign.advertiser,
-      campaignObjective: currentCampaign.objective,
-      campaignStartDate: currentCampaign.startDate,
-      campaignEndDate: currentCampaign.endDate,
-      campaignTotalBudget: currentCampaign.totalBudget,
-      campaignDailyBudget: currentCampaign.dailyBudget,
-      targetAudience: currentCampaign.targetAudience,
-      geoTargeting: currentCampaign.geoTargeting,
-      deviceTargeting: currentCampaign.deviceTargeting,
+      budget: currentCampaign.budget,
+      kpi: currentCampaign.kpi,
+      kpiTarget: currentCampaign.kpiTarget,
       // Include Ad Server fields
       adServerCampaignName: currentCampaign.adServerCampaignName,
       adServerCampaignVertical: currentCampaign.adServerCampaignVertical
@@ -268,10 +271,9 @@ function clearCampaignEdits(campaignId){
     
     // Create new campaign audit entries with current values
     Object.entries(currentCampaignData).forEach(([field, value]) => {
-      // Always include Ad Server fields and Beacon fields, even if empty, to preserve them in audit
+      // Always include Ad Server fields, even if empty, to preserve them in audit
       const isAdServerField = field.startsWith('adServer');
-      const isBeaconField = field.startsWith('beacon');
-      const shouldInclude = isAdServerField || isBeaconField || (value != null && String(value).trim() !== '');
+      const shouldInclude = isAdServerField || (value != null && String(value).trim() !== '');
       
       if (shouldInclude) {
         newCreateEntries.push({
@@ -447,42 +449,38 @@ function clearCampaignEdits(campaignId){
     campaignContainer.className = 'ml-2 border-l-2 border-gray-300 pl-2'; // Reduced margins
     list.appendChild(campaignContainer);
 
-    // Separate fields into categories
-    const commonDataFields = {};
+    // Separate fields into categories (excluding common data)
     const dspFields = {};
     const adServerFields = {};
     const uncategorizedFields = {};
 
     Object.keys(group.fields).forEach(fieldName => {
-      if (FIELD_CATEGORIES.commonData.includes(fieldName)) {
-        commonDataFields[fieldName] = group.fields[fieldName];
-      } else if (FIELD_CATEGORIES.dsp.includes(fieldName)) {
+      if (FIELD_CATEGORIES.dsp.includes(fieldName)) {
         dspFields[fieldName] = group.fields[fieldName];
       } else if (FIELD_CATEGORIES.adServer.includes(fieldName)) {
         adServerFields[fieldName] = group.fields[fieldName];
       } else {
-        uncategorizedFields[fieldName] = group.fields[fieldName];
+        // Skip common data fields completely
+        const isCommonDataField = ['commonCampaignName', 'beaconCampaignName', 'mediaType', 'beaconMediaType', 'domainUrl', 'beaconDomainUrl'].includes(fieldName);
+        if (!isCommonDataField) {
+          uncategorizedFields[fieldName] = group.fields[fieldName];
+        }
       }
     });
 
-    // Render Common Data section first with enhanced styling
-    if (Object.keys(commonDataFields).length > 0) {
-      renderConnectorSection(campaignContainer, 'Common Data', commonDataFields, `common_${entityId}`, groupIndex * 3, 'purple');
-    }
-
     // Render DSP section with enhanced styling
     if (Object.keys(dspFields).length > 0) {
-      renderConnectorSection(campaignContainer, 'DSP: The Trade Desk', dspFields, `dsp_${entityId}`, groupIndex * 3 + 1, 'blue');
+      renderConnectorSection(campaignContainer, 'DSP: The Trade Desk', dspFields, `dsp_${entityId}`, groupIndex * 2, 'blue');
     }
 
     // Render Ad Server section with enhanced styling
     if (Object.keys(adServerFields).length > 0) {
-      renderConnectorSection(campaignContainer, 'Ad Server: Google Campaign Manager', adServerFields, `adserver_${entityId}`, groupIndex * 3 + 2, 'green');
+      renderConnectorSection(campaignContainer, 'Ad Server: Google Campaign Manager', adServerFields, `adserver_${entityId}`, groupIndex * 2 + 1, 'green');
     }
 
     // Render uncategorized fields if any
     if (Object.keys(uncategorizedFields).length > 0) {
-      renderConnectorSection(campaignContainer, 'Other Fields', uncategorizedFields, `other_${entityId}`, groupIndex * 3 + 3, 'gray');
+      renderConnectorSection(campaignContainer, 'Other Fields', uncategorizedFields, `other_${entityId}`, groupIndex * 2 + 2, 'gray');
     }
   }
 

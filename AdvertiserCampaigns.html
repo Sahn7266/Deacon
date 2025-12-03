@@ -574,60 +574,88 @@
           <div class="p-4">
             <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
               <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Seed</label>
+                <select id="campaignSeed" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                  <option value="">-- Select Seed --</option>
+                  <option value="Default Seed List">Default Seed List</option>
+                </select>
+              </div>
+              <div class="xl:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">How would you like to organize your campaigns?</label>
+                <select id="campaignOrganization" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                  <option value="">-- Select Organization --</option>
+                  <option value="Create new campaign group">Create new campaign group</option>
+                  <option value="Add campaigns to existing group">Add campaigns to existing group</option>
+                  <option value="Do not create campaign group">Do not create campaign group</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Pace Ahead</label>
+                <select id="campaignPacing" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                  <option value="">-- Select Pacing --</option>
+                  <option value="Pace Ahead">Pace Ahead</option>
+                  <option value="Pace Behind">Pace Behind</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+                <select id="campaignTimezone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                  <option value="">-- Select Timezone --</option>
+                  <option value="UTC">UTC (Coordinated Universal Time)</option>
+                  <option value="EST">EST (Eastern Standard Time)</option>
+                  <option value="CST">CST (Central Standard Time)</option>
+                  <option value="MST">MST (Mountain Standard Time)</option>
+                  <option value="PST">PST (Pacific Standard Time)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date (UTC)</label>
+                <input type="date" id="campaignStartDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">End Date (UTC)</label>
+                <input type="date" id="campaignEndDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Channel</label>
+                <select id="campaignChannel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                  <option value="">-- Select Channel --</option>
+                  <option value="Display">Display</option>
+                  <option value="Video">Video</option>
+                  <option value="Audio">Audio</option>
+                  <option value="Native">Native</option>
+                </select>
+              </div>
+              <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Name</label>
-                <input type="text" id="campaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <select id="campaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                  <option value="">-- Select Campaign Name --</option>
+                  <option value="Brand Awareness">Brand Awareness</option>
+                  <option value="Persona">Persona</option>
+                  <option value="Company Targeting">Company Targeting</option>
+                </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Channel</label>
-                <input type="text" id="campaignChannel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Budget</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-2 text-gray-500">$</span>
+                  <input type="number" id="campaignBudget" class="w-full border border-gray-300 rounded-md pl-8 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" step="0.01" min="0" required>
+                </div>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">KPI</label>
-                <input type="text" id="campaignKPI" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign KPI</label>
+                <select id="campaignKPI" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                  <option value="">-- Select KPI --</option>
+                  <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
+                  <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
+                </select>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">KPI Target</label>
-                <input type="text" id="campaignKPITarget" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Pacing</label>
-                <input type="text" id="campaignPacing" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Advertiser</label>
-                <input type="text" id="campaignAdvertiser" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Objective</label>
-                <input type="text" id="campaignObjective" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                <input type="date" id="campaignStartDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                <input type="date" id="campaignEndDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Total Budget</label>
-                <input type="number" id="campaignTotalBudget" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Daily Budget</label>
-                <input type="number" id="campaignDailyBudget" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
-                <input type="text" id="targetAudience" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Geographic Targeting</label>
-                <input type="text" id="geoTargeting" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Device Targeting</label>
-                <input type="text" id="deviceTargeting" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <div class="relative">
+                  <input type="number" id="campaignKPITarget" class="w-full border border-gray-300 rounded-md pr-8 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" step="0.01" min="0" required>
+                  <span class="absolute right-3 top-2 text-gray-500">%</span>
+                </div>
               </div>
             </div>
           </div>
@@ -644,11 +672,24 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Name</label>
-                <input type="text" id="adServerCampaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <select id="adServerCampaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                  <option value="">-- Select Campaign Name --</option>
+                  <option value="Brandawareness">Brandawareness</option>
+                  <option value="Persona">Persona</option>
+                  <option value="Targeting">Targeting</option>
+                </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Vertical</label>
-                <input type="text" id="adServerCampaignVertical" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Schedule</label>
+                <input type="date" id="adServerSchedule" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Landing Page Name</label>
+                <input type="text" id="adServerLandingPageName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter landing page name" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Landing Page URL</label>
+                <input type="url" id="adServerLandingPageURL" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="https://example.com" required>
               </div>
             </div>
           </div>
@@ -722,6 +763,7 @@
         name: 'Harvest Promo',
         expanded: true,
         campaigns: [
+          { id: 'CAM-003', name: 'Autumn Offers', state: 'Active', dsp: 'Google Campaign Manager', adGroups: 3 },
           { id: 'CAM-004', name: 'Thanksgiving Push', state: 'Active', dsp: 'DV360', adGroups: 5 },
           { id: 'CAM-005', name: 'Weekend Harvest', state: 'Inactive', dsp: 'Trade Desk', adGroups: 2 },
           { id: 'CAM-006', name: 'Last Call Harvest', state: 'Active', dsp: 'Trade Desk, Google Campaign Manager', adGroups: 4 }
@@ -734,6 +776,7 @@
         campaigns: [
           { id: 'CAM-007', name: 'Moonlight Social', state: 'Active', dsp: 'Trade Desk', adGroups: 7 },
           { id: 'CAM-008', name: 'Night Sky Video', state: 'Inactive', dsp: 'DV360', adGroups: 6 },
+          { id: 'CAM-009', name: 'Crater Display', state: 'Active', dsp: 'Google Campaign Manager', adGroups: 5 },
           { id: 'CAM-010', name: 'Orbit Awareness', state: 'Active', dsp: 'DV360, Google Campaign Manager', adGroups: 8 },
           { id: 'CAM-011', name: 'Eclipse Countdown', state: 'Inactive', dsp: 'Trade Desk', adGroups: 3 },
           { id: 'CAM-012', name: 'Tidal Retargeting', state: 'Active', dsp: 'DV360', adGroups: 4 }
@@ -805,20 +848,18 @@ const campaign = latestGroup?.campaign; // this is the real campaign object
     entityType: 'campaign',
     entityId: campaign.id,
     data: {
+      beaconCampaignName: campaign.beaconCampaignName,
+      seed: campaign.seed,
+      organization: campaign.organization,
+      pacing: campaign.pacing,
+      timezone: campaign.timezone,
+      startDate: campaign.startDate,
+      endDate: campaign.endDate,
+      channel: campaign.channel,
       campaignName: campaign.name,
-      campaignChannel: campaign.channel,
-      campaignKPI: campaign.kpi,
-      campaignKPITarget: campaign.kpiTarget,
-      campaignPacing: campaign.pacing,
-      campaignAdvertiser: campaign.advertiser,
-      campaignObjective: campaign.objective,
-      campaignStartDate: campaign.startDate,
-      campaignEndDate: campaign.endDate,
-      campaignTotalBudget: campaign.totalBudget,
-      campaignDailyBudget: campaign.dailyBudget,
-      targetAudience: campaign.audience,
-      geoTargeting: campaign.geo,
-      deviceTargeting: campaign.device
+      budget: campaign.budget,
+      kpi: campaign.kpi,
+      kpiTarget: campaign.kpiTarget
     }
   });
 
@@ -1065,6 +1106,7 @@ if (this.elements.createBtn) {
             if (!q) return true;
             return (
               (c.id && c.id.toLowerCase().includes(q)) ||
+              (c.beaconCampaignName && c.beaconCampaignName.toLowerCase().includes(q)) ||
               (c.name && c.name.toLowerCase().includes(q)) ||
               (c.dsp && c.dsp.toLowerCase().includes(q))
             );
@@ -1097,7 +1139,7 @@ if (this.elements.createBtn) {
             for (const c of g.campaigns) {
               const matchesState = this.filters.state === 'All' || c.state === this.filters.state;
               const matchesDsp = this.filters.dsp === 'All' || (c.dsp && c.dsp.includes(this.filters.dsp));
-              const matchesSearch = !q || (c.id?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q) || c.dsp?.toLowerCase().includes(q) || g.name.toLowerCase().includes(q));
+              const matchesSearch = !q || (c.id?.toLowerCase().includes(q) || c.beaconCampaignName?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q) || c.dsp?.toLowerCase().includes(q) || g.name.toLowerCase().includes(q));
               if (matchesState && matchesDsp && matchesSearch) total++;
             }
           }
@@ -1234,8 +1276,8 @@ tr.className = 'hover:bg-gray-50';
 tr.innerHTML = `
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.id || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm font-medium border-r border-default">
-    <a href="./CampaignDetails.html?campaignId=${encodeURIComponent(c.id)}&campaignName=${encodeURIComponent(c.name)}" class="text-blue-600 hover:underline">
-      ${c.name || ''}
+    <a href="./CampaignDetails.html?campaignId=${encodeURIComponent(c.id)}&campaignName=${encodeURIComponent(c.beaconCampaignName || c.name)}" class="text-blue-600 hover:underline">
+      ${c.beaconCampaignName || c.name || ''}
     </a>
   </td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
@@ -1508,19 +1550,16 @@ function handleCampaignCreation(redirectToAdGroups) {
   const campaign = {
     id: 'CAM-' + Date.now(),
     name: document.getElementById('campaignName')?.value || '',
-    advertiser: document.getElementById('campaignAdvertiser')?.value || '',
-    objective: document.getElementById('campaignObjective')?.value || '',
+    seed: document.getElementById('campaignSeed')?.value || '',
+    organization: document.getElementById('campaignOrganization')?.value || '',
+    pacing: document.getElementById('campaignPacing')?.value || '',
+    timezone: document.getElementById('campaignTimezone')?.value || '',
     startDate: document.getElementById('campaignStartDate')?.value || '',
     endDate: document.getElementById('campaignEndDate')?.value || '',
-    totalBudget: document.getElementById('campaignTotalBudget')?.value || '0',
-    dailyBudget: document.getElementById('campaignDailyBudget')?.value || '0',
-    targetAudience: document.getElementById('targetAudience')?.value || '',
-    geoTargeting: document.getElementById('geoTargeting')?.value || '',
-    deviceTargeting: document.getElementById('deviceTargeting')?.value || '',
     channel: document.getElementById('campaignChannel')?.value || '',
+    budget: document.getElementById('campaignBudget')?.value || '0',
     kpi: document.getElementById('campaignKPI')?.value || '',
     kpiTarget: document.getElementById('campaignKPITarget')?.value || '',
-    pacing: document.getElementById('campaignPacing')?.value || '',
     state: 'Active',
     dsp: connectorsDisplay, // Now contains both DSP and Ad Server selections
     adGroups: 0,
@@ -1530,7 +1569,9 @@ function handleCampaignCreation(redirectToAdGroups) {
     beaconDomainUrl: document.getElementById('beaconDomainUrl')?.value || '',
     // New Ad Server fields
     adServerCampaignName: document.getElementById('adServerCampaignName')?.value || '',
-    adServerCampaignVertical: document.getElementById('adServerCampaignVertical')?.value || '',
+    adServerSchedule: document.getElementById('adServerSchedule')?.value || '',
+    adServerLandingPageName: document.getElementById('adServerLandingPageName')?.value || '',
+    adServerLandingPageURL: document.getElementById('adServerLandingPageURL')?.value || '',
     // Connector information
     connectors: {
       dsp: selectedDSP,
@@ -1553,13 +1594,18 @@ function handleCampaignCreation(redirectToAdGroups) {
     entityType: 'campaign',
     entityId: campaign.id,
     data: {
+      beaconCampaignName: campaign.beaconCampaignName,
+      seed: campaign.seed,
+      organization: campaign.organization,
+      pacing: campaign.pacing,
+      timezone: campaign.timezone,
+      startDate: campaign.startDate,
+      endDate: campaign.endDate,
+      channel: campaign.channel,
       campaignName: campaign.name,
-      campaignChannel: campaign.channel,
-      campaignKPI: campaign.kpi,
-      campaignKPITarget: campaign.kpiTarget,
-      campaignPacing: campaign.pacing,
-      campaignAdvertiser: campaign.advertiser,
-      campaignObjective: campaign.objective,
+      budget: campaign.budget,
+      kpi: campaign.kpi,
+      kpiTarget: campaign.kpiTarget,
       campaignStartDate: campaign.startDate,
       campaignEndDate: campaign.endDate,
       campaignTotalBudget: campaign.totalBudget,
@@ -1573,7 +1619,9 @@ function handleCampaignCreation(redirectToAdGroups) {
       beaconDomainUrl: campaign.beaconDomainUrl,
       // Ad Server fields in audit
       adServerCampaignName: campaign.adServerCampaignName,
-      adServerCampaignVertical: campaign.adServerCampaignVertical,
+      adServerSchedule: campaign.adServerSchedule,
+      adServerLandingPageName: campaign.adServerLandingPageName,
+      adServerLandingPageURL: campaign.adServerLandingPageURL,
       connectors: campaign.connectors
     }
   });

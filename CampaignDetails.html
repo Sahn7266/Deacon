@@ -348,47 +348,33 @@
                       </thead>
                       <tbody class="divide-y border-default">
 
-                        <!-- Campaign Name (original field) -->
+                        <!-- Seed -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Campaign Name
+                            Seed
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignName" class="text-gray-800 break-words">Madison, AL - Programmatic Display</span>
-                            <input id="campaignName" type="text" class="hidden campaign-details-input" />
+                            <span id="displayCampaignSeed" class="text-gray-800 break-words">N/A</span>
+                            <select id="campaignSeed" class="hidden campaign-details-input">
+                              <option value="">-- Select Seed --</option>
+                              <option value="Default Seed List">Default Seed List</option>
+                            </select>
                           </td>
                         </tr>
 
-                        <!-- Channel -->
+                        <!-- Campaign Organization -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Channel
+                            Campaign Organization
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignChannel" class="text-gray-800 break-words">Programmatic Display</span>
-                            <input id="campaignChannel" type="text" class="hidden campaign-details-input" />
-                          </td>
-                        </tr>
-
-                        <!-- KPI -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            KPI
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignKPI" class="text-gray-800 break-words">CTR</span>
-                            <input id="campaignKPI" type="text" class="hidden campaign-details-input" />
-                          </td>
-                        </tr>
-
-                        <!-- KPI Target -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            KPI Target
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignKPITarget" class="text-gray-800 break-words">2.50%</span>
-                            <input id="campaignKPITarget" type="text" class="hidden campaign-details-input" />
+                            <span id="displayCampaignOrganization" class="text-gray-800 break-words">N/A</span>
+                            <select id="campaignOrganization" class="hidden campaign-details-input">
+                              <option value="">-- Select Organization --</option>
+                              <option value="Create new campaign group">Create new campaign group</option>
+                              <option value="Add campaigns to existing group">Add campaigns to existing group</option>
+                              <option value="Do not create campaign group">Do not create campaign group</option>
+                            </select>
                           </td>
                         </tr>
 
@@ -398,37 +384,37 @@
                             Pacing
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignPacing" class="text-gray-800 break-words">Even</span>
-                            <input id="campaignPacing" type="text" class="hidden campaign-details-input" />
+                            <span id="displayCampaignPacing" class="text-gray-800 break-words">N/A</span>
+                            <select id="campaignPacing" class="hidden campaign-details-input">
+                              <option value="">-- Select Pacing --</option>
+                              <option value="Pace Ahead">Pace Ahead</option>
+                              <option value="Pace Behind">Pace Behind</option>
+                            </select>
                           </td>
                         </tr>
 
-                        <!-- Advertiser -->
+                        <!-- Timezone -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Advertiser
+                            Timezone
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignAdvertiser" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignAdvertiser" type="text" class="hidden campaign-details-input" />
+                            <span id="displayCampaignTimezone" class="text-gray-800 break-words">N/A</span>
+                            <select id="campaignTimezone" class="hidden campaign-details-input">
+                              <option value="">-- Select Timezone --</option>
+                              <option value="UTC">UTC (Coordinated Universal Time)</option>
+                              <option value="EST">EST (Eastern Standard Time)</option>
+                              <option value="CST">CST (Central Standard Time)</option>
+                              <option value="MST">MST (Mountain Standard Time)</option>
+                              <option value="PST">PST (Pacific Standard Time)</option>
+                            </select>
                           </td>
                         </tr>
 
-                        <!-- Objective -->
+                        <!-- Start Date (UTC) -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Objective
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignObjective" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignObjective" type="text" class="hidden campaign-details-input" />
-                          </td>
-                        </tr>
-
-                        <!-- Start Date -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Start Date
+                            Start Date (UTC)
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignStartDate" class="text-gray-800 break-words">N/A</span>
@@ -436,10 +422,10 @@
                           </td>
                         </tr>
 
-                        <!-- End Date -->
+                        <!-- End Date (UTC) -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            End Date
+                            End Date (UTC)
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignEndDate" class="text-gray-800 break-words">N/A</span>
@@ -447,58 +433,73 @@
                           </td>
                         </tr>
 
-                        <!-- Total Budget -->
+                        <!-- Campaign Channel -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Total Budget
+                            Campaign Channel
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignTotalBudget" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignTotalBudget" type="number" class="hidden campaign-details-input" />
+                            <span id="displayCampaignChannel" class="text-gray-800 break-words">N/A</span>
+                            <select id="campaignChannel" class="hidden campaign-details-input">
+                              <option value="">-- Select Channel --</option>
+                              <option value="Display">Display</option>
+                              <option value="Video">Video</option>
+                              <option value="Audio">Audio</option>
+                              <option value="Native">Native</option>
+                            </select>
                           </td>
                         </tr>
 
-                        <!-- Daily Budget -->
+                        <!-- Campaign Name -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Daily Budget
+                            Campaign Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignDailyBudget" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignDailyBudget" type="number" class="hidden campaign-details-input" />
+                            <span id="displayCampaignName" class="text-gray-800 break-words">N/A</span>
+                            <select id="campaignName" class="hidden campaign-details-input">
+                              <option value="">-- Select Campaign Name --</option>
+                              <option value="Brand Awareness">Brand Awareness</option>
+                              <option value="Persona">Persona</option>
+                              <option value="Company Targeting">Company Targeting</option>
+                            </select>
                           </td>
                         </tr>
 
-                        <!-- Target Audience -->
+                        <!-- Campaign Budget -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Target Audience
+                            Campaign Budget
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayTargetAudience" class="text-gray-800 break-words">N/A</span>
-                            <input id="targetAudience" type="text" class="hidden campaign-details-input" />
+                            <span id="displayCampaignBudget" class="text-gray-800 break-words">N/A</span>
+                            <input id="campaignBudget" type="number" step="0.01" min="0" class="hidden campaign-details-input" placeholder="0.00" />
                           </td>
                         </tr>
 
-                        <!-- Geographic Targeting -->
+                        <!-- Campaign KPI -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Geo Targeting
+                            Campaign KPI
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayGeoTargeting" class="text-gray-800 break-words">N/A</span>
-                            <input id="geoTargeting" type="text" class="hidden campaign-details-input" />
+                            <span id="displayCampaignKPI" class="text-gray-800 break-words">N/A</span>
+                            <select id="campaignKPI" class="hidden campaign-details-input">
+                              <option value="">-- Select KPI --</option>
+                              <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
+                              <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
+                            </select>
                           </td>
                         </tr>
 
-                        <!-- Device Targeting -->
+                        <!-- KPI Target -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Device Targeting
+                            KPI Target
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayDeviceTargeting" class="text-gray-800 break-words">N/A</span>
-                            <input id="deviceTargeting" type="text" class="hidden campaign-details-input" />
+                            <span id="displayCampaignKPITarget" class="text-gray-800 break-words">N/A</span>
+                            <input id="campaignKPITarget" type="number" step="0.01" min="0" class="hidden campaign-details-input" placeholder="0.00" />
                           </td>
                         </tr>
 
@@ -560,21 +561,18 @@
   { span: 'displayCommonCampaignName', input: 'commonCampaignName' },
   { span: 'displayMediaType', input: 'mediaType' },
   { span: 'displayDomainUrl', input: 'domainUrl' },
-  // Instructional Data fields (these are linked to actual campaign data)
-  { span: 'displayCampaignName', input: 'campaignName' },
-  { span: 'displayCampaignChannel', input: 'campaignChannel' },
-  { span: 'displayCampaignKPI', input: 'campaignKPI' },
-  { span: 'displayCampaignKPITarget', input: 'campaignKPITarget' },
+  // DSP Fields (these are linked to actual campaign data)
+  { span: 'displayCampaignSeed', input: 'campaignSeed' },
+  { span: 'displayCampaignOrganization', input: 'campaignOrganization' },
   { span: 'displayCampaignPacing', input: 'campaignPacing' },
-  { span: 'displayCampaignAdvertiser', input: 'campaignAdvertiser' },
-  { span: 'displayCampaignObjective', input: 'campaignObjective' },
+  { span: 'displayCampaignTimezone', input: 'campaignTimezone' },
   { span: 'displayCampaignStartDate', input: 'campaignStartDate' },
   { span: 'displayCampaignEndDate', input: 'campaignEndDate' },
-  { span: 'displayCampaignTotalBudget', input: 'campaignTotalBudget' },
-  { span: 'displayCampaignDailyBudget', input: 'campaignDailyBudget' },
-  { span: 'displayTargetAudience', input: 'targetAudience' },
-  { span: 'displayGeoTargeting', input: 'geoTargeting' },
-  { span: 'displayDeviceTargeting', input: 'deviceTargeting' },
+  { span: 'displayCampaignChannel', input: 'campaignChannel' },
+  { span: 'displayCampaignName', input: 'campaignName' },
+  { span: 'displayCampaignBudget', input: 'campaignBudget' },
+  { span: 'displayCampaignKPI', input: 'campaignKPI' },
+  { span: 'displayCampaignKPITarget', input: 'campaignKPITarget' },
   // Ad Server Fields
   { span: 'displayAdServerCampaignName', input: 'adServerCampaignName' },
   { span: 'displayAdServerCampaignVertical', input: 'adServerCampaignVertical' }
@@ -587,20 +585,17 @@
   'mediaType',
   'domainUrl',
   // DSP Fields
-  'campaignName',
-  'campaignChannel', 
-  'campaignKPI',
-  'campaignKPITarget',
+  'campaignSeed',
+  'campaignOrganization',
   'campaignPacing',
-  'campaignAdvertiser',
-  'campaignObjective',
+  'campaignTimezone',
   'campaignStartDate',
   'campaignEndDate',
-  'campaignTotalBudget',
-  'campaignDailyBudget',
-  'targetAudience',
-  'geoTargeting',
-  'deviceTargeting',
+  'campaignChannel',
+  'campaignName',
+  'campaignBudget',
+  'campaignKPI',
+  'campaignKPITarget',
   // Ad Server Fields
   'adServerCampaignName',
   'adServerCampaignVertical'
@@ -1426,10 +1421,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (!campaign) return;
 
-  const safeSet = (id, value, isCurrency = false) => {
+  const safeSet = (id, value, format = 'none') => {
     const el = document.getElementById(id);
     if (el) {
-      el.textContent = isCurrency ? `$${Number(value).toLocaleString()}` : (value || 'N/A');
+      if (format === 'currency') {
+        el.textContent = `$${Number(value || 0).toLocaleString()}`;
+      } else if (format === 'percentage') {
+        el.textContent = value ? `${value}%` : 'N/A';
+      } else {
+        el.textContent = value || 'N/A';
+      }
     }
   };
 
@@ -1446,20 +1447,17 @@ window.addEventListener('DOMContentLoaded', () => {
   safeSet('displayMediaType', campaign.beaconMediaType);
   safeSet('displayDomainUrl', campaign.beaconDomainUrl);
   // DSP Fields
-  safeSet('displayCampaignName', campaign.name);
-  safeSet('displayCampaignChannel', campaign.channel);
-  safeSet('displayCampaignKPI', campaign.kpi);
-  safeSet('displayCampaignKPITarget', campaign.kpiTarget);
+  safeSet('displayCampaignSeed', campaign.seed);
+  safeSet('displayCampaignOrganization', campaign.organization);
   safeSet('displayCampaignPacing', campaign.pacing);
-  safeSet('displayCampaignAdvertiser', campaign.advertiser);
-  safeSet('displayCampaignObjective', campaign.objective);
+  safeSet('displayCampaignTimezone', campaign.timezone);
   safeSet('displayCampaignStartDate', campaign.startDate);
   safeSet('displayCampaignEndDate', campaign.endDate);
-  safeSet('displayCampaignTotalBudget', campaign.totalBudget, true);
-  safeSet('displayCampaignDailyBudget', campaign.dailyBudget, true);
-  safeSet('displayTargetAudience', campaign.targetAudience);
-  safeSet('displayGeoTargeting', campaign.geoTargeting);
-  safeSet('displayDeviceTargeting', campaign.deviceTargeting);
+  safeSet('displayCampaignChannel', campaign.channel);
+  safeSet('displayCampaignName', campaign.name);
+  safeSet('displayCampaignBudget', campaign.budget, 'currency');
+  safeSet('displayCampaignKPI', campaign.kpi);
+  safeSet('displayCampaignKPITarget', campaign.kpiTarget, 'percentage');
   // Ad Server Fields
   safeSet('displayAdServerCampaignName', campaign.adServerCampaignName);
   safeSet('displayAdServerCampaignVertical', campaign.adServerCampaignVertical);
@@ -1470,20 +1468,17 @@ window.addEventListener('DOMContentLoaded', () => {
   safeInput('mediaType', campaign.beaconMediaType);
   safeInput('domainUrl', campaign.beaconDomainUrl);
   // DSP Fields
-  safeInput('campaignName', campaign.name);
-  safeInput('campaignChannel', campaign.channel);
-  safeInput('campaignKPI', campaign.kpi);
-  safeInput('campaignKPITarget', campaign.kpiTarget);
+  safeInput('campaignSeed', campaign.seed);
+  safeInput('campaignOrganization', campaign.organization);
   safeInput('campaignPacing', campaign.pacing);
-  safeInput('campaignAdvertiser', campaign.advertiser);
-  safeInput('campaignObjective', campaign.objective);
+  safeInput('campaignTimezone', campaign.timezone);
   safeInput('campaignStartDate', campaign.startDate);
   safeInput('campaignEndDate', campaign.endDate);
-  safeInput('campaignTotalBudget', campaign.totalBudget);
-  safeInput('campaignDailyBudget', campaign.dailyBudget);
-  safeInput('targetAudience', campaign.targetAudience);
-  safeInput('geoTargeting', campaign.geoTargeting);
-  safeInput('deviceTargeting', campaign.deviceTargeting);
+  safeInput('campaignChannel', campaign.channel);
+  safeInput('campaignName', campaign.name);
+  safeInput('campaignBudget', campaign.budget);
+  safeInput('campaignKPI', campaign.kpi);
+  safeInput('campaignKPITarget', campaign.kpiTarget);
   // Ad Server Fields
   safeInput('adServerCampaignName', campaign.adServerCampaignName);
   safeInput('adServerCampaignVertical', campaign.adServerCampaignVertical);
