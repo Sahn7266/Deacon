@@ -996,6 +996,36 @@ if (this.elements.createBtn) {
     if (modal) {
       modal.classList.remove('hidden');
       modal.classList.add('flex');
+      
+      // Reset form and state immediately (like ad groups)
+      const form = document.getElementById('createCampaignForm');
+      if (form) form.reset();
+      
+      // Reset connectors toggle
+      const connectorsContent = document.getElementById('connectorsContent');
+      const connectorsToggle = document.getElementById('connectorsToggle');
+      
+      if (connectorsToggle && connectorsContent) {
+        connectorsToggle.classList.remove('bg-blue-600');
+        connectorsToggle.classList.add('bg-gray-200');
+        connectorsToggle.setAttribute('aria-checked', 'false');
+        const toggleSpan = connectorsToggle.querySelector('span');
+        if (toggleSpan) {
+          toggleSpan.classList.remove('translate-x-5');
+          toggleSpan.classList.add('translate-x-0');
+        }
+        connectorsContent.classList.add('hidden');
+      }
+      
+      // Hide all expanded sections
+      const dspFieldsSection = document.getElementById('dspFieldsSection');
+      const adServerFieldsSection = document.getElementById('adServerFieldsSection');
+      if (dspFieldsSection) dspFieldsSection.classList.add('hidden');
+      if (adServerFieldsSection) adServerFieldsSection.classList.add('hidden');
+      
+      // Clear all checkboxes
+      const allCheckboxes = document.querySelectorAll('#createCampaignModal input[type="checkbox"]');
+      allCheckboxes.forEach(cb => cb.checked = false);
     }
   });
 }
@@ -1885,32 +1915,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function resetModal() {
-    // Reset form
-    document.getElementById('createCampaignForm')?.reset();
-    
-    // Reset connectors toggle to off
-    connectorsEnabled = true; // Set to true so toggleConnectors() will set it to false
-    toggleConnectors();
-    
-    // Update display
-    updateFieldsDisplay();
-  }
-
-  // Event listeners
+  // Event listeners for modal
   connectorsToggle?.addEventListener('click', toggleConnectors);
 
-  document.getElementById('createCampaignBtn')?.addEventListener('click', () => {
-    resetModal(); // Reset when opening
-    document.getElementById('createCampaignModal')?.classList.remove('hidden');
-  });
+  // Simple event listeners for opening/closing modal (like ad groups)
+  const createBtn = document.getElementById('createBtn');
+  if (createBtn && !createBtn.hasCustomListener) {
+    createBtn.hasCustomListener = true; // Prevent duplicate listeners
+    createBtn.addEventListener('click', () => {
+      const modal = document.getElementById('createCampaignModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Reset immediately inline (no delays, no async)
+        const form = document.getElementById('createCampaignForm');
+        if (form) form.reset();
+        
+        // Reset connectors
+        const connectorsContent = document.getElementById('connectorsContent');
+        if (connectorsContent) connectorsContent.classList.add('hidden');
+        if (connectorsToggle) {
+          connectorsEnabled = false;
+          connectorsToggle.classList.remove('bg-blue-600');
+          connectorsToggle.classList.add('bg-gray-200');
+          connectorsToggle.setAttribute('aria-checked', 'false');
+          const toggleSpan = connectorsToggle.querySelector('span');
+          if (toggleSpan) {
+            toggleSpan.classList.remove('translate-x-5');
+            toggleSpan.classList.add('translate-x-0');
+          }
+        }
+        
+        // Hide sections
+        const dspFieldsSection = document.getElementById('dspFieldsSection');
+        const adServerFieldsSection = document.getElementById('adServerFieldsSection');
+        if (dspFieldsSection) dspFieldsSection.classList.add('hidden');
+        if (adServerFieldsSection) adServerFieldsSection.classList.add('hidden');
+        
+        // Clear checkboxes
+        document.querySelectorAll('#createCampaignModal input[type="checkbox"]').forEach(cb => cb.checked = false);
+        
+        // Update fields display
+        updateFieldsDisplay();
+      }
+    });
+  }
 
   document.getElementById('closeCampaignModal')?.addEventListener('click', () => {
     document.getElementById('createCampaignModal')?.classList.add('hidden');
+    document.getElementById('createCampaignModal')?.classList.remove('flex');
   });
 
   document.getElementById('cancelCampaignModal')?.addEventListener('click', () => {
     document.getElementById('createCampaignModal')?.classList.add('hidden');
+    document.getElementById('createCampaignModal')?.classList.remove('flex');
   });
 
   // Add event listeners for connector checkboxes
@@ -2099,9 +2158,13 @@ function handleCampaignCreation(redirectToAdGroups) {
     app.applyFiltersAndRender?.();
   }
 
-  // Reset and close modal
-  document.getElementById('createCampaignForm').reset();
-  document.getElementById('createCampaignModal')?.classList.add('hidden');
+  // Close modal first
+  const modal = document.getElementById('createCampaignModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    console.log('✅ Modal closed after campaign creation');
+  }
 
   // If redirecting to ad groups
   if (redirectToAdGroups) {
