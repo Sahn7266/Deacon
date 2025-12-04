@@ -109,6 +109,43 @@
       opacity: 1;
       visibility: visible;
     }
+    
+    /* Drag and Drop Styles */
+    .campaign-row {
+      cursor: move;
+    }
+    
+    .campaign-row:hover {
+      background-color: #f9fafb !important;
+    }
+    
+    .campaign-row.dragging {
+      opacity: 0.5;
+    }
+    
+    .group-drop-zone {
+      transition: all 0.2s ease;
+    }
+    
+    .ungrouped-drop-zone {
+      transition: all 0.2s ease;
+    }
+    
+    
+    .drop-zone {
+      position: relative;
+    }
+    
+    .drop-zone::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
   </style>
 
 <script src="./assets/audit.js" defer></script>
@@ -748,7 +785,7 @@
         DSP_FILTER: 'campaign_dsp_filter'
       },
       PAGINATION: {
-        DEFAULT_ROWS: 25,
+        DEFAULT_ROWS: 50,
         MAX_ROWS: 200
       }
     };
@@ -812,6 +849,7 @@
       app = {
         campaigns: [],
         groups: [],
+        ungroupedExpanded: true,  // Track expand/collapse state for ungrouped section
         currentPage: 1,
         rowsPerPage: CONFIG.PAGINATION.DEFAULT_ROWS,
         filters: { state: 'All', dsp: 'All' },
@@ -822,10 +860,24 @@
 
         init: function() {
           this.loadGroups();
+          this.loadUngroupedState();
           this.cacheElements();
           this.loadFilters();
           this.initEventListeners();
+          this.setupDragAndDrop();
           this.applyFiltersAndRender();
+        },
+
+        loadUngroupedState: function() {
+          try {
+            const stored = localStorage.getItem('ungrouped_expanded_state');
+            if (stored !== null) {
+              this.ungroupedExpanded = JSON.parse(stored);
+            }
+          } catch (e) {
+            console.warn('Failed to load ungrouped state:', e);
+            this.ungroupedExpanded = true; // Default to expanded
+          }
         },
 
         loadGroups: function() {
@@ -880,7 +932,7 @@
         cacheElements: function() {
           const ids = [
             'menuButton','menuDropdown','notificationButton','notificationDropdown',
-            'createBtn','stateChip','stateChipLabel','stateMenu',
+            'createBtn','manageCampaignGroupBtn','stateChip','stateChipLabel','stateMenu',
             'dspChip','dspChipLabel','dspMenu',
             'searchWrapper','searchToggle','searchInput','searchClear','filtersGroup',
             'campaignTableBody','recordCount','pagination',
@@ -900,6 +952,12 @@
                 g.expanded = !g.expanded;
                 this.saveGroups();
                 this.applyFiltersAndRender();
+                return;
+              }
+
+              const toggleUngroupedBtn = e.target.closest('[data-action="toggle-ungrouped"]');
+              if (toggleUngroupedBtn) {
+                this.toggleUngrouped();
                 return;
               }
 
@@ -939,6 +997,13 @@ if (this.elements.createBtn) {
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
+  });
+}
+
+          // Manage Campaign Group button
+if (this.elements.manageCampaignGroupBtn) {
+  this.elements.manageCampaignGroupBtn.addEventListener('click', () => {
+    this.createNewCampaignGroup();
   });
 }
 
@@ -1176,10 +1241,23 @@ if (this.elements.createBtn) {
           // Add individual campaigns first (at the top)
           if (this.campaigns && this.campaigns.length > 0) {
             const individualCampaigns = this.campaigns.filter(filterBy);
-            for (const c of individualCampaigns) {
-              // Update ad group count dynamically
-              c.liveAdGroupCount = this.getAdGroupCount(c.id);
-              rows.push({ type: 'campaign', groupId: null, campaign: c });
+            if (individualCampaigns.length > 0) {
+              // Add ungrouped header
+              rows.push({ 
+                type: 'ungrouped-header', 
+                name: 'Ungrouped Campaigns',
+                campaignCount: individualCampaigns.length,
+                expanded: this.ungroupedExpanded
+              });
+              
+              // Only add campaigns if ungrouped section is expanded
+              if (this.ungroupedExpanded) {
+                for (const c of individualCampaigns) {
+                  // Update ad group count dynamically
+                  c.liveAdGroupCount = this.getAdGroupCount(c.id);
+                  rows.push({ type: 'campaign', groupId: null, campaign: c });
+                }
+              }
             }
           }
           
@@ -1255,11 +1333,13 @@ if (this.elements.createBtn) {
         },
 
         // Modal controls
-        openEditGroupModal: function(groupId) {
+        openEditGroupModal: function(groupId, isNewGroup = false) {
           const group = this.groups.find(g => g.id === groupId);
           if (!group) return;
 
           this.editingGroupId = groupId;
+          this.isEditingNewGroup = isNewGroup || group.isNewlyCreated;
+          
           if (this.elements.editGroupNameInput) {
             this.elements.editGroupNameInput.value = group.name || '';
             this.elements.editGroupNameInput.dataset.original = group.name || '';
@@ -1268,13 +1348,19 @@ if (this.elements.createBtn) {
             this.elements.editGroupModal.classList.remove('hidden');
             this.elements.editGroupModal.classList.add('flex');
           }
-          // Focus input
-          setTimeout(() => this.elements.editGroupNameInput?.focus(), 50);
+          // Focus input and select all text for easy editing
+          setTimeout(() => {
+            if (this.elements.editGroupNameInput) {
+              this.elements.editGroupNameInput.focus();
+              this.elements.editGroupNameInput.select();
+            }
+          }, 50);
           this.updateEditGroupSaveState();
         },
 
         closeEditGroupModal: function() {
           this.editingGroupId = null;
+          this.isEditingNewGroup = false;
           if (this.elements.editGroupModal) {
             this.elements.editGroupModal.classList.add('hidden');
             this.elements.editGroupModal.classList.remove('flex');
@@ -1285,7 +1371,14 @@ if (this.elements.createBtn) {
           if (!this.elements.editGroupNameInput || !this.elements.editGroupSaveBtn) return;
           const val = (this.elements.editGroupNameInput.value || '').trim();
           const orig = this.elements.editGroupNameInput.dataset.original || '';
-          this.elements.editGroupSaveBtn.disabled = (val.length === 0 || val === orig);
+          
+          // For new groups, enable save as long as there's text
+          // For existing groups, enable save only if text changed and not empty
+          if (this.isEditingNewGroup) {
+            this.elements.editGroupSaveBtn.disabled = (val.length === 0);
+          } else {
+            this.elements.editGroupSaveBtn.disabled = (val.length === 0 || val === orig);
+          }
         },
 
         saveEditGroupName: function() {
@@ -1314,10 +1407,194 @@ try {
 
           
           group.name = newName;
+          // Clear the newly created flag since it's now been saved
+          if (group.isNewlyCreated) {
+            delete group.isNewlyCreated;
+          }
+          
           this.saveGroups();
           this.applyFiltersAndRender();
           this.closeEditGroupModal();
-          if (typeof showToast === 'function') showToast('Campaign Group name updated');
+          if (typeof showToast === 'function') {
+            const message = this.isEditingNewGroup ? 'Campaign Group created successfully' : 'Campaign Group name updated';
+            showToast(message);
+          }
+        },
+
+        setupDragAndDrop: function() {
+          const tbody = this.elements.campaignTableBody;
+          if (!tbody) return;
+
+          // Handle drag start for campaign rows
+          tbody.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('campaign-row')) {
+              e.target.style.opacity = '0.5';
+              e.dataTransfer.effectAllowed = 'move';
+              e.dataTransfer.setData('text/plain', JSON.stringify({
+                campaignId: e.target.dataset.campaignId,
+                sourceGroupId: e.target.dataset.groupId
+              }));
+              
+              // Add visual feedback to drop zones
+              document.querySelectorAll('.group-drop-zone, .ungrouped-drop-zone').forEach(zone => {
+                zone.style.backgroundColor = '#e0f2fe';
+                zone.style.border = '2px dashed #0284c7';
+              });
+            }
+          });
+
+          // Handle drag end
+          tbody.addEventListener('dragend', (e) => {
+            if (e.target.classList.contains('campaign-row')) {
+              e.target.style.opacity = '';
+              
+              // Remove visual feedback from drop zones
+              document.querySelectorAll('.group-drop-zone, .ungrouped-drop-zone').forEach(zone => {
+                zone.style.backgroundColor = '';
+                zone.style.border = '';
+              });
+            }
+          });
+
+          // Handle drag over for group rows (to allow dropping)
+          tbody.addEventListener('dragover', (e) => {
+            if (e.target.closest('.group-drop-zone, .ungrouped-drop-zone')) {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = 'move';
+              
+              // Add hover effect
+              const dropZone = e.target.closest('.group-drop-zone, .ungrouped-drop-zone');
+              dropZone.style.backgroundColor = '#bfdbfe';
+            }
+          });
+
+          // Handle drag leave
+          tbody.addEventListener('dragleave', (e) => {
+            if (e.target.closest('.group-drop-zone, .ungrouped-drop-zone')) {
+              const dropZone = e.target.closest('.group-drop-zone, .ungrouped-drop-zone');
+              dropZone.style.backgroundColor = '#e0f2fe';
+            }
+          });
+
+          // Handle drop
+          tbody.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const dropZone = e.target.closest('.group-drop-zone, .ungrouped-drop-zone');
+            if (dropZone) {
+              try {
+                const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const targetGroupId = dropZone.dataset.groupId;
+                
+                if (dragData.campaignId && targetGroupId && dragData.sourceGroupId !== targetGroupId) {
+                  this.moveCampaignToGroup(dragData.campaignId, dragData.sourceGroupId, targetGroupId);
+                }
+              } catch (error) {
+                console.error('Failed to process drop:', error);
+              }
+              
+              // Reset drop zone styling
+              dropZone.style.backgroundColor = '';
+              dropZone.style.border = '';
+            }
+          });
+        },
+
+        moveCampaignToGroup: function(campaignId, sourceGroupId, targetGroupId) {
+          let campaignToMove = null;
+          
+          // Find and remove campaign from source location
+          if (sourceGroupId === 'ungrouped') {
+            // Remove from individual campaigns array
+            const index = this.campaigns.findIndex(c => c.id === campaignId);
+            if (index !== -1) {
+              campaignToMove = this.campaigns.splice(index, 1)[0];
+            }
+          } else {
+            // Remove from source group
+            const sourceGroup = this.groups.find(g => g.id === sourceGroupId);
+            if (sourceGroup) {
+              const index = sourceGroup.campaigns.findIndex(c => c.id === campaignId);
+              if (index !== -1) {
+                campaignToMove = sourceGroup.campaigns.splice(index, 1)[0];
+              }
+            }
+          }
+          
+          if (!campaignToMove) {
+            console.error('Campaign not found:', campaignId);
+            return;
+          }
+          
+          // Add campaign to target location
+          if (targetGroupId === 'ungrouped') {
+            // Move to ungrouped campaigns
+            if (!this.campaigns) this.campaigns = [];
+            this.campaigns.unshift(campaignToMove);
+            
+            // Show success message
+            if (typeof showToast === 'function') {
+              showToast(`Campaign "${campaignToMove.beaconCampaignName || campaignToMove.name}" moved to ungrouped campaigns`);
+            }
+          } else {
+            // Move to target group
+            const targetGroup = this.groups.find(g => g.id === targetGroupId);
+            if (targetGroup) {
+              targetGroup.campaigns.push(campaignToMove);
+              
+              // Show success message
+              if (typeof showToast === 'function') {
+                showToast(`Campaign "${campaignToMove.beaconCampaignName || campaignToMove.name}" moved to "${targetGroup.name}"`);
+              }
+            } else {
+              console.error('Target group not found:', targetGroupId);
+              return;
+            }
+          }
+          
+          // Save changes
+          this.saveGroups();
+          
+          // Refresh the display
+          this.applyFiltersAndRender();
+        },
+
+        createNewCampaignGroup: function() {
+          // Generate unique ID for new group
+          const timestamp = Date.now();
+          const newGroup = {
+            id: `GRP-${timestamp}`,
+            name: 'Campaign Group',
+            expanded: true,
+            campaigns: [],
+            isNewlyCreated: true  // Mark as newly created
+          };
+
+          // Add the new group to the groups array
+          this.groups.push(newGroup);
+          
+          // Save to localStorage
+          this.saveGroups();
+          
+          // Re-render the table to show the new group
+          this.applyFiltersAndRender();
+          
+          // Automatically open edit modal for the new group
+          setTimeout(() => {
+            this.openEditGroupModal(newGroup.id, true);  // Pass true for isNewGroup
+          }, 100);
+        },
+
+        toggleUngrouped: function() {
+          this.ungroupedExpanded = !this.ungroupedExpanded;
+          
+          // Save state to localStorage
+          try {
+            localStorage.setItem('ungrouped_expanded_state', JSON.stringify(this.ungroupedExpanded));
+          } catch (e) {
+            console.warn('Failed to save ungrouped state:', e);
+          }
+          
+          this.applyFiltersAndRender();
         },
 
         deleteGroup: function(groupId) {
@@ -1374,14 +1651,30 @@ try {
           rows.forEach(r => {
             const tr = document.createElement('tr');
 
-            if (r.type === 'group') {
+            if (r.type === 'ungrouped-header') {
+              tr.innerHTML = `
+  <td class="px-3 py-1 text-sm font-semibold bg-gray-100">
+    <button data-action="toggle-ungrouped" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
+      ${r.expanded ? '&minus;' : '+'}
+    </button>
+  </td>
+  <td colspan="5" class="px-3 py-1 text-sm font-semibold bg-gray-100 drop-zone ungrouped-drop-zone" data-group-id="ungrouped">
+    ${r.name} (${r.campaignCount})
+  </td>
+  <td class="px-6 py-1 text-sm bg-gray-100 text-center">
+    <!-- No actions for ungrouped header -->
+  </td>
+`;
+              tr.className = 'row-ungrouped-header ungrouped-drop-zone';
+              tr.dataset.groupId = 'ungrouped';
+            } else if (r.type === 'group') {
              tr.innerHTML = `
   <td class="px-3 py-1 text-sm font-semibold bg-gray-100">
     <button data-action="toggle-group" data-group-id="${r.groupId}" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
       ${r.expanded ? '&minus;' : '+'}
     </button>
   </td>
-  <td colspan="5" class="px-3 py-1 text-sm font-semibold bg-gray-100">
+  <td colspan="5" class="px-3 py-1 text-sm font-semibold bg-gray-100 drop-zone" data-group-id="${r.groupId}">
     Campaign Group: ${r.name}
   </td>
   <td class="px-6 py-1 text-sm bg-gray-100 text-center flex gap-3 justify-center items-center">
@@ -1390,11 +1683,15 @@ try {
   </td>
 `;
 ;
-              tr.className = 'row-group';
+              tr.className = 'row-group group-drop-zone';
+              tr.dataset.groupId = r.groupId;
             } else {
               const c = r.campaign;
 
-tr.className = 'hover:bg-gray-50';
+tr.className = 'hover:bg-gray-50 campaign-row';
+tr.draggable = true;
+tr.dataset.campaignId = c.id;
+tr.dataset.groupId = r.groupId || 'ungrouped';
 tr.innerHTML = `
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.id || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm font-medium border-r border-default">
