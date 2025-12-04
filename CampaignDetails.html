@@ -260,7 +260,7 @@
             <!-- Two-column campaign details layout -->
             <section>
               <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGN DETAILS</h1>
+                <h1 id="campaignDetailsTitle" class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGN DETAILS</h1>
                 <div class="flex items-center gap-2">
                   <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                   <svg viewBox="0 0 24 24" height="16" width="16">
@@ -1508,6 +1508,13 @@
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const campaignId = urlParams.get('campaignId');
+  const campaignName = urlParams.get('campaignName');
+  
+  // Update the page title with campaign name
+  const titleElement = document.getElementById('campaignDetailsTitle');
+  if (titleElement && campaignName) {
+    titleElement.innerHTML = `<span style="color: #0F66A7;">${campaignName}</span>: Campaign Details`;
+  }
 
   if (!campaignId) return;
 
