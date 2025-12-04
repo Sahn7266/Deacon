@@ -775,42 +775,89 @@
                           // Update the actual campaign data in storage
                           if (campaignId) {
                             try {
-                              const groups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
+                              const data = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
                               let campaignFound = false;
                               
-                              for (const group of groups) {
-                                const campaign = group.campaigns.find(c => c.id === campaignId);
-                                if (campaign) {
-                                  // Map the field values to campaign properties
-                                  // DSP Fields - New 11 Field Structure
-                                  if (now.campaignSeed !== undefined) campaign.seed = now.campaignSeed;
-                                  if (now.campaignOrganization !== undefined) campaign.organization = now.campaignOrganization;
-                                  if (now.campaignPacing !== undefined) campaign.pacing = now.campaignPacing;
-                                  if (now.campaignTimezone !== undefined) campaign.timezone = now.campaignTimezone;
-                                  if (now.campaignStartDate !== undefined) campaign.startDate = now.campaignStartDate;
-                                  if (now.campaignEndDate !== undefined) campaign.endDate = now.campaignEndDate;
-                                  if (now.campaignChannel !== undefined) campaign.channel = now.campaignChannel;
-                                  if (now.campaignName !== undefined) campaign.name = now.campaignName;
-                                  if (now.campaignBudget !== undefined) campaign.budget = now.campaignBudget;
-                                  if (now.campaignKPI !== undefined) campaign.kpi = now.campaignKPI;
-                                  if (now.campaignKPITarget !== undefined) campaign.kpiTarget = now.campaignKPITarget;
-                                  // Common Data / Beacon Fields mapping
-                                  if (now.commonCampaignName !== undefined) campaign.beaconCampaignName = now.commonCampaignName;
-                                  if (now.mediaType !== undefined) campaign.beaconMediaType = now.mediaType;
-                                  if (now.domainUrl !== undefined) campaign.beaconDomainUrl = now.domainUrl;
-                                  // Ad Server Fields - New 4 Field Structure
-                                  if (now.adServerCampaignName !== undefined) campaign.adServerCampaignName = now.adServerCampaignName;
-                                  if (now.adServerSchedule !== undefined) campaign.adServerSchedule = now.adServerSchedule;
-                                  if (now.adServerLandingPageName !== undefined) campaign.adServerLandingPageName = now.adServerLandingPageName;
-                                  if (now.adServerLandingPageURL !== undefined) campaign.adServerLandingPageURL = now.adServerLandingPageURL;
-                                  
-                                  campaignFound = true;
-                                  break;
+                              // Handle both old and new data structures
+                              let campaigns = [];
+                              let groups = [];
+                              
+                              if (Array.isArray(data)) {
+                                // Old structure - data is just an array of groups
+                                groups = data;
+                              } else {
+                                // New structure - data is an object with campaigns and groups arrays
+                                campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
+                                groups = Array.isArray(data.groups) ? data.groups : [];
+                              }
+
+                              // First check top-level campaigns array
+                              const topLevelCampaign = campaigns.find(c => c.id === campaignId);
+                              if (topLevelCampaign) {
+                                // Map the field values to campaign properties
+                                // DSP Fields - New 11 Field Structure
+                                if (now.campaignSeed !== undefined) topLevelCampaign.seed = now.campaignSeed;
+                                if (now.campaignOrganization !== undefined) topLevelCampaign.organization = now.campaignOrganization;
+                                if (now.campaignPacing !== undefined) topLevelCampaign.pacing = now.campaignPacing;
+                                if (now.campaignTimezone !== undefined) topLevelCampaign.timezone = now.campaignTimezone;
+                                if (now.campaignStartDate !== undefined) topLevelCampaign.startDate = now.campaignStartDate;
+                                if (now.campaignEndDate !== undefined) topLevelCampaign.endDate = now.campaignEndDate;
+                                if (now.campaignChannel !== undefined) topLevelCampaign.channel = now.campaignChannel;
+                                if (now.campaignName !== undefined) topLevelCampaign.name = now.campaignName;
+                                if (now.campaignBudget !== undefined) topLevelCampaign.budget = now.campaignBudget;
+                                if (now.campaignKPI !== undefined) topLevelCampaign.kpi = now.campaignKPI;
+                                if (now.campaignKPITarget !== undefined) topLevelCampaign.kpiTarget = now.campaignKPITarget;
+                                // Common Data / Beacon Fields mapping
+                                if (now.commonCampaignName !== undefined) topLevelCampaign.beaconCampaignName = now.commonCampaignName;
+                                if (now.mediaType !== undefined) topLevelCampaign.beaconMediaType = now.mediaType;
+                                if (now.domainUrl !== undefined) topLevelCampaign.beaconDomainUrl = now.domainUrl;
+                                // Ad Server Fields - New 4 Field Structure
+                                if (now.adServerCampaignName !== undefined) topLevelCampaign.adServerCampaignName = now.adServerCampaignName;
+                                if (now.adServerSchedule !== undefined) topLevelCampaign.adServerSchedule = now.adServerSchedule;
+                                if (now.adServerLandingPageName !== undefined) topLevelCampaign.adServerLandingPageName = now.adServerLandingPageName;
+                                if (now.adServerLandingPageURL !== undefined) topLevelCampaign.adServerLandingPageURL = now.adServerLandingPageURL;
+                                
+                                campaignFound = true;
+                              }
+                              
+                              // If not found in top-level, check within groups
+                              if (!campaignFound) {
+                                for (const group of groups) {
+                                  const campaign = group.campaigns.find(c => c.id === campaignId);
+                                  if (campaign) {
+                                    // Map the field values to campaign properties
+                                    // DSP Fields - New 11 Field Structure
+                                    if (now.campaignSeed !== undefined) campaign.seed = now.campaignSeed;
+                                    if (now.campaignOrganization !== undefined) campaign.organization = now.campaignOrganization;
+                                    if (now.campaignPacing !== undefined) campaign.pacing = now.campaignPacing;
+                                    if (now.campaignTimezone !== undefined) campaign.timezone = now.campaignTimezone;
+                                    if (now.campaignStartDate !== undefined) campaign.startDate = now.campaignStartDate;
+                                    if (now.campaignEndDate !== undefined) campaign.endDate = now.campaignEndDate;
+                                    if (now.campaignChannel !== undefined) campaign.channel = now.campaignChannel;
+                                    if (now.campaignName !== undefined) campaign.name = now.campaignName;
+                                    if (now.campaignBudget !== undefined) campaign.budget = now.campaignBudget;
+                                    if (now.campaignKPI !== undefined) campaign.kpi = now.campaignKPI;
+                                    if (now.campaignKPITarget !== undefined) campaign.kpiTarget = now.campaignKPITarget;
+                                    // Common Data / Beacon Fields mapping
+                                    if (now.commonCampaignName !== undefined) campaign.beaconCampaignName = now.commonCampaignName;
+                                    if (now.mediaType !== undefined) campaign.beaconMediaType = now.mediaType;
+                                    if (now.domainUrl !== undefined) campaign.beaconDomainUrl = now.domainUrl;
+                                    // Ad Server Fields - New 4 Field Structure
+                                    if (now.adServerCampaignName !== undefined) campaign.adServerCampaignName = now.adServerCampaignName;
+                                    if (now.adServerSchedule !== undefined) campaign.adServerSchedule = now.adServerSchedule;
+                                    if (now.adServerLandingPageName !== undefined) campaign.adServerLandingPageName = now.adServerLandingPageName;
+                                    if (now.adServerLandingPageURL !== undefined) campaign.adServerLandingPageURL = now.adServerLandingPageURL;
+                                    
+                                    campaignFound = true;
+                                    break;
+                                  }
                                 }
                               }
                               
                               if (campaignFound) {
-                                localStorage.setItem('campaign_tree_groups', JSON.stringify(groups));
+                                // Reconstruct the proper data structure for saving
+                                const updatedData = Array.isArray(data) ? groups : { campaigns, groups };
+                                localStorage.setItem('campaign_tree_groups', JSON.stringify(updatedData));
                                 console.log('Campaign data updated successfully');
                               }
                             } catch (e) {
@@ -1442,12 +1489,33 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (!campaignId) return;
 
-  const groups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
+  const data = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
   let campaign = null;
 
-  for (const group of groups) {
-    campaign = group.campaigns.find(c => c.id === campaignId);
-    if (campaign) break;
+  // Handle both old and new data structures
+  let campaigns = [];
+  let groups = [];
+  
+  if (Array.isArray(data)) {
+    // Old structure - data is just an array of groups
+    groups = data;
+  } else {
+    // New structure - data is an object with campaigns and groups arrays
+    campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
+    groups = Array.isArray(data.groups) ? data.groups : [];
+  }
+
+  // First check top-level campaigns array (newly created campaigns go here)
+  campaign = campaigns.find(c => c.id === campaignId);
+  
+  // If not found, check within groups
+  if (!campaign) {
+    for (const group of groups) {
+      if (group.campaigns) {
+        campaign = group.campaigns.find(c => c.id === campaignId);
+        if (campaign) break;
+      }
+    }
   }
 
   if (!campaign) return;

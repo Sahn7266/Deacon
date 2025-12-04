@@ -837,16 +837,26 @@
               if (Array.isArray(data)) {
                 // Old structure - convert to new
                 this.campaigns = [];
-                this.groups = data;
+                this.groups = Array.isArray(data) ? data : [];
               } else {
                 // New structure
-                this.campaigns = data.campaigns || [];
-                this.groups = data.groups || [];
+                this.campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
+                this.groups = Array.isArray(data.groups) ? data.groups : [];
               }
             } else {
               this.campaigns = [];
               this.groups = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
               this.saveGroups();
+            }
+            
+            // Additional safety check to ensure groups is always an array
+            if (!Array.isArray(this.groups)) {
+              console.warn('Groups was not an array, resetting to default');
+              this.groups = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+            }
+            if (!Array.isArray(this.campaigns)) {
+              console.warn('Campaigns was not an array, resetting to empty');
+              this.campaigns = [];
             }
           } catch (e) {
             console.warn('Failed to load groups:', e);
@@ -1099,6 +1109,53 @@ if (this.elements.createBtn) {
           }
         },
 
+        // Get live ad group count for a campaign
+        getAdGroupCount: function(campaignId) {
+          try {
+            const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+            return adGroups.filter(ag => {
+              // Check multiple possible campaign reference formats
+              const agCampaignId = ag.campaignId || ag.campaign;
+              
+              // Direct match
+              if (agCampaignId === campaignId) return true;
+              
+              // Check if the ad group campaign is a campaign name and we need to match by name
+              if (typeof agCampaignId === 'string') {
+                // Try to find campaign by name to get the ID
+                const campaignData = this.findCampaignByName(agCampaignId);
+                if (campaignData && campaignData.id === campaignId) return true;
+              }
+              
+              return false;
+            }).length;
+          } catch (e) {
+            console.warn('Failed to count ad groups:', e);
+            return 0;
+          }
+        },
+
+        // Helper function to find campaign by name
+        findCampaignByName: function(campaignName) {
+          // Search in individual campaigns
+          if (this.campaigns) {
+            const found = this.campaigns.find(c => 
+              c.beaconCampaignName === campaignName || c.name === campaignName
+            );
+            if (found) return found;
+          }
+          
+          // Search in grouped campaigns
+          for (const group of this.groups) {
+            const found = group.campaigns.find(c => 
+              c.beaconCampaignName === campaignName || c.name === campaignName
+            );
+            if (found) return found;
+          }
+          
+          return null;
+        },
+
         // Build visible rows (individual campaigns + group headers + children)
         getVisibleRows: function() {
           const q = this.searchQuery.trim().toLowerCase();
@@ -1120,6 +1177,8 @@ if (this.elements.createBtn) {
           if (this.campaigns && this.campaigns.length > 0) {
             const individualCampaigns = this.campaigns.filter(filterBy);
             for (const c of individualCampaigns) {
+              // Update ad group count dynamically
+              c.liveAdGroupCount = this.getAdGroupCount(c.id);
               rows.push({ type: 'campaign', groupId: null, campaign: c });
             }
           }
@@ -1136,6 +1195,8 @@ if (this.elements.createBtn) {
 
             if (g.expanded) {
               for (const c of children) {
+                // Update ad group count dynamically
+                c.liveAdGroupCount = this.getAdGroupCount(c.id);
                 rows.push({ type: 'campaign', groupId: g.id, campaign: c });
               }
             }
@@ -1344,7 +1405,7 @@ tr.innerHTML = `
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.adServer || ''}</td>
-  <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums border-r border-default">${c.adGroups ?? 0}</td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums border-r border-default">${c.liveAdGroupCount !== undefined ? c.liveAdGroupCount : (c.adGroups ?? 0)}</td>
 `;
 const tdActions = document.createElement('td');
 tdActions.className = 'px-6 py-1 whitespace-nowrap text-sm text-center flex gap-3 justify-center items-center';
@@ -1452,6 +1513,12 @@ document.addEventListener('click', (e) => {
 
   if (!confirm(`Are you sure you want to delete Campaign ID "${campaignId}"?`)) return;
 
+  // Delete from individual campaigns list
+  if (app.campaigns) {
+    app.campaigns = app.campaigns.filter(c => c.id !== campaignId);
+  }
+
+  // Delete from grouped campaigns
   app.groups.forEach(group => {
     group.campaigns = group.campaigns.filter(c => c.id !== campaignId);
   });
@@ -1562,6 +1629,27 @@ document.addEventListener('DOMContentLoaded', () => {
   updateFieldsDisplay();
 });
 
+// Add global storage listener to refresh campaign list when ad groups change
+window.addEventListener('storage', function(e) {
+  if (e.key === 'adgroups_data_v1' && app) {
+    console.log('📊 Ad groups data changed, refreshing campaign list...');
+    app.applyFiltersAndRender?.();
+  }
+});
+
+// Add custom event listener for same-tab updates
+window.addEventListener('adGroupsUpdated', function(e) {
+  if (app) {
+    console.log('📊 Ad groups updated in same tab, refreshing campaign list...');
+    app.applyFiltersAndRender?.();
+  }
+});
+
+// Function to trigger ad group update event (for use by other pages)
+window.triggerAdGroupUpdate = function() {
+  window.dispatchEvent(new CustomEvent('adGroupsUpdated'));
+};
+
 // Create campaign logic
 document.getElementById('createCampaignForm').addEventListener('submit', function (e) {
   e.preventDefault();
@@ -1584,6 +1672,13 @@ function handleCampaignCreation(redirectToAdGroups) {
   // Get selected connectors
   const selectedDSP = Array.from(document.querySelectorAll('input[name="dsp"]:checked')).map(cb => cb.value);
   const selectedAdServer = Array.from(document.querySelectorAll('input[name="adserver"]:checked')).map(cb => cb.value);
+  
+  // Debug: Log form field values
+  console.log('🔍 Form field values during creation:');
+  console.log('beaconCampaignName:', document.getElementById('beaconCampaignName')?.value);
+  console.log('campaignName:', document.getElementById('campaignName')?.value);
+  console.log('campaignSeed:', document.getElementById('campaignSeed')?.value);
+  console.log('campaignBudget:', document.getElementById('campaignBudget')?.value);
   
   // Create separate DSP and Ad Server display strings
   const dspLabels = {
@@ -1628,7 +1723,7 @@ function handleCampaignCreation(redirectToAdGroups) {
     state: 'Active',
     dsp: dspDisplay, // Only contains DSP selections
     adServer: adServerDisplay, // Only contains Ad Server selections
-    adGroups: 0,
+    adGroups: 0, // Initialize with 0 - will be updated dynamically by live count
     // Beacon Fields mapped to Common Data
     beaconCampaignName: document.getElementById('beaconCampaignName')?.value || '',
     beaconMediaType: document.getElementById('beaconMediaType')?.value || '',
@@ -1645,6 +1740,8 @@ function handleCampaignCreation(redirectToAdGroups) {
     }
   };
 
+  console.log('🔍 Created campaign object:', campaign);
+
   const raw = localStorage.getItem('campaign_tree_groups');
   let data = raw ? JSON.parse(raw) : { campaigns: [], groups: [] };
 
@@ -1654,6 +1751,8 @@ function handleCampaignCreation(redirectToAdGroups) {
 
   // Add campaign directly to the top-level campaigns array
   data.campaigns.unshift(campaign);
+
+  console.log('🔍 Updated campaigns data:', data.campaigns);
 
   // Log creation to audit
   audit.recordCreate({
@@ -1698,8 +1797,8 @@ function handleCampaignCreation(redirectToAdGroups) {
 
   // Update app instance to reflect new data
   if (app) {
-    app.campaigns = data.campaigns;
-    app.groups = data.groups;
+    app.campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
+    app.groups = Array.isArray(data.groups) ? data.groups : [];
     app.applyFiltersAndRender?.();
   }
 

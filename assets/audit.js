@@ -64,18 +64,13 @@
   // Define field categorization for hierarchical display
   const FIELD_CATEGORIES = {
     dsp: [
-      // New 11 Field Structure
+      // DSP Fields only (8 fields)
       'seed', 'organization', 'pacing', 'timezone', 'startDate', 'endDate', 
-      'channel', 'campaignName', 'budget', 'kpi', 'kpiTarget',
-      // Legacy fields for backward compatibility
-      'campaignChannel', 'campaignKPI', 'campaignKPITarget', 'campaignPacing', 
-      'campaignAdvertiser', 'campaignObjective', 'campaignStartDate', 'campaignEndDate', 
-      'campaignTotalBudget', 'campaignDailyBudget', 'targetAudience', 'geoTargeting', 
-      'deviceTargeting'
+      'channel', 'campaignName', 'budget', 'kpi', 'kpiTarget'
     ],
     adServer: [
       'adServerCampaignName', 'adServerSchedule', 'adServerLandingPageName', 
-      'adServerLandingPageURL', 'adServerCampaignVertical'
+      'adServerLandingPageURL'
     ],
     adGroupDsp: [
       'adGroupNameInput', 'adGroupName', 'adGroupCampaign', 'campaignName',
@@ -104,11 +99,24 @@
     return String(v).trim();
   }
 
-  // Field mapping for Common Data fields to their Beacon equivalents
+  // Field mapping for form field names to audit field names
   const FIELD_MAPPING = {
+    // Common Data / Beacon field mappings
     commonCampaignName: 'beaconCampaignName',
     mediaType: 'beaconMediaType', 
-    domainUrl: 'beaconDomainUrl'
+    domainUrl: 'beaconDomainUrl',
+    // DSP field mappings (form names → audit names)
+    campaignSeed: 'seed',
+    campaignOrganization: 'organization',
+    campaignPacing: 'pacing',
+    campaignTimezone: 'timezone',
+    campaignStartDate: 'startDate',
+    campaignEndDate: 'endDate',
+    campaignChannel: 'channel',
+    campaignBudget: 'budget',
+    campaignKPI: 'kpi',
+    campaignKPITarget: 'kpiTarget'
+    // Note: campaignName stays as campaignName (no mapping needed)
   };
 
   function recordCreate({campaignId, entityType, entityId, data, user='localUser'}){
@@ -195,14 +203,32 @@ function clearAdGroupAudit(campaignId, adGroupId){
 
 function clearCampaignEdits(campaignId){
   // Get current campaign data to use latest values
-  const groups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
+  const data = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
   let currentCampaign = null;
   
-  for (const group of groups) {
-    const campaign = group.campaigns.find(c => c.id === campaignId);
-    if (campaign) {
-      currentCampaign = campaign;
-      break;
+  // Handle both old and new data structures
+  let campaigns = [];
+  let groups = [];
+  
+  if (Array.isArray(data)) {
+    // Old structure - data is just an array of groups
+    groups = data;
+  } else {
+    // New structure - data is an object with campaigns and groups arrays
+    campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
+    groups = Array.isArray(data.groups) ? data.groups : [];
+  }
+
+  // First check top-level campaigns array (newly created campaigns go here)
+  currentCampaign = campaigns.find(c => c.id === campaignId);
+  
+  // If not found, check within groups
+  if (!currentCampaign) {
+    for (const group of groups) {
+      if (group.campaigns) {
+        currentCampaign = group.campaigns.find(c => c.id === campaignId);
+        if (currentCampaign) break;
+      }
     }
   }
   
@@ -257,6 +283,10 @@ function clearCampaignEdits(campaignId){
   if (currentCampaign) {
     // Create new campaign audit entries with current values
     const currentCampaignData = {
+      // Beacon Fields
+      beaconCampaignName: currentCampaign.beaconCampaignName,
+      beaconMediaType: currentCampaign.beaconMediaType,
+      beaconDomainUrl: currentCampaign.beaconDomainUrl,
       // DSP Fields - New 11 Field Structure
       seed: currentCampaign.seed,
       organization: currentCampaign.organization,
@@ -467,11 +497,8 @@ function clearCampaignEdits(campaignId){
       } else if (FIELD_CATEGORIES.adServer.includes(fieldName)) {
         adServerFields[fieldName] = group.fields[fieldName];
       } else {
-        // Skip common data fields completely
-        const isCommonDataField = ['commonCampaignName', 'beaconCampaignName', 'mediaType', 'beaconMediaType', 'domainUrl', 'beaconDomainUrl'].includes(fieldName);
-        if (!isCommonDataField) {
-          uncategorizedFields[fieldName] = group.fields[fieldName];
-        }
+        // All other fields go to uncategorized
+        uncategorizedFields[fieldName] = group.fields[fieldName];
       }
     });
 
@@ -485,10 +512,7 @@ function clearCampaignEdits(campaignId){
       renderConnectorSection(campaignContainer, 'Ad Server: Google Campaign Manager', adServerFields, `adserver_${entityId}`, groupIndex * 2 + 1, 'green');
     }
 
-    // Render uncategorized fields if any
-    if (Object.keys(uncategorizedFields).length > 0) {
-      renderConnectorSection(campaignContainer, 'Other Fields', uncategorizedFields, `other_${entityId}`, groupIndex * 2 + 2, 'gray');
-    }
+    // Note: Removed 'Other Fields' section as all campaign fields should be properly categorized
   }
 
   function renderConnectorSection(list, connectorTitle, fields, sectionId, toggleIndex, colorTheme = 'gray') {
@@ -538,7 +562,8 @@ function clearCampaignEdits(campaignId){
       const createEntry = fieldEntries.find(e => e.action === 'create');
       const editEntries = fieldEntries.filter(e => e.action === 'edit').sort((a, b) => new Date(a.ts) - new Date(b.ts));
       
-      if (createEntry) {
+      // Show field if it has either a create entry OR edit entries
+      if (createEntry || editEntries.length > 0) {
         renderFieldEntry(ul, fieldName, label, createEntry, editEntries, sectionId);
       }
     });
@@ -650,13 +675,13 @@ function clearCampaignEdits(campaignId){
     const latestEntry = editEntries.length > 0 ? editEntries[editEntries.length - 1] : createEntry;
     const currentValue = editEntries.length > 0 ?
       editEntries[editEntries.length - 1].newValue :
-      createEntry.newValue;
+      (createEntry ? createEntry.newValue : '—');
 
     let line = `<div class="flex items-center justify-between gap-2 ${hasEdits ? 'cursor-pointer hover:bg-gray-50' : ''}" ${hasEdits ? `onclick="window.togglePreviousValue('${expandableId}')"` : ''}>
       <div class="flex items-stretch text-xs flex-grow min-w-0" style="gap: 0;">
-       <span class="font-semibold text-gray-800 whitespace-nowrap flex items-center" style="min-width: 120px; background-color: #ffffff; padding: 4px 8px; margin: -4px 0 -4px -12px; padding-right: 8px; border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem;">${label}:</span>
+       <span class="font-semibold text-gray-800 whitespace-nowrap flex items-center" style="min-width: 160px; background-color: #ffffff; padding: 4px 8px; margin: -4px 0 -4px -12px; padding-right: 8px; border-top-left-radius: 0.375rem; border-bottom-left-radius: 0.375rem;">${label}:</span>
         <div style="width: 1px; background-color: #d1d5db; flex-shrink: 0; margin: -4px 0;"></div>
-        <div class="flex items-center gap-1 flex-grow min-w-0 pl-2" style="max-width: calc(100% - 200px);">
+        <div class="flex items-center gap-1 flex-grow min-w-0 pl-2" style="max-width: calc(100% - 240px);">
           <span class="text-gray-900 truncate" title="${currentValue || '—'}">${currentValue || '—'}</span>
         </div>
       </div>
@@ -669,7 +694,8 @@ function clearCampaignEdits(campaignId){
     if (hasEdits) {
       const latestEdit = editEntries[editEntries.length - 1];
       const previousValue = latestEdit.oldValue !== undefined ? latestEdit.oldValue :
-        (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : createEntry.newValue);
+        (editEntries.length > 1 ? editEntries[editEntries.length - 2].newValue : 
+         (createEntry ? createEntry.newValue : '—'));
       
       line += `<div id="${expandableId}" class="hidden mt-1 ml-4 pl-4 border-l-2 border-gray-300 text-xs text-gray-600">
         <span class="font-semibold">Previous:</span> <span>${previousValue || '—'}</span>

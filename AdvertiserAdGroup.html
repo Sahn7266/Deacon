@@ -1221,7 +1221,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const adGroup = {
       id: 'AG' + Date.now(),
       name: form.adGroupName.value.trim(),
-      campaign: form.adGroupCampaign.value,
+      campaign: form.adGroupCampaign.value, // This will be the campaign ID
+      campaignId: form.adGroupCampaign.value, // Add explicit campaignId for better matching
       budget: form.adGroupBudget.value.trim(),
       bidStrategy: form.adGroupBidStrategy.value.trim(),
       creativeFormat: form.creativeFormat.value.trim(),
@@ -1300,6 +1301,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     localStorage.setItem('adgroups_data_v1', JSON.stringify(groups));
 
+    // Trigger ad group update event for campaign list refresh
+    if (window.triggerAdGroupUpdate) {
+      window.triggerAdGroupUpdate();
+    }
+
     // Save the current selections before resetting
     const selectedCampaignId = form.adGroupCampaign.value;
     const selectedDspValues = selectedDsp.slice(); // copy array
@@ -1347,6 +1353,11 @@ function deleteAdGroup(id) {
   // Remove from storage
   adgroups = adgroups.filter(ag => ag.id !== id);
   localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroups));
+
+  // Trigger ad group update event for campaign list refresh
+  if (window.triggerAdGroupUpdate) {
+    window.triggerAdGroupUpdate();
+  }
 
   // Clear audit entries for this ad group
   if (adGroupToDelete && window.audit && window.audit.clearAdGroupAudit) {
