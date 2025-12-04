@@ -423,6 +423,12 @@
                         <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
                       </button>
                     </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adServer" aria-label="Sort by Ad Server">
+                        <span>Ad Server</span>
+                        <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                      </button>
+                    </th>
                     <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
                       <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adGroups" aria-label="Sort by Ad Groups">
                         <span>Ad Groups</span>
@@ -742,7 +748,7 @@
         DSP_FILTER: 'campaign_dsp_filter'
       },
       PAGINATION: {
-        DEFAULT_ROWS: 15,
+        DEFAULT_ROWS: 25,
         MAX_ROWS: 200
       }
     };
@@ -804,6 +810,7 @@
 
     document.addEventListener('DOMContentLoaded', function() {
       app = {
+        campaigns: [],
         groups: [],
         currentPage: 1,
         rowsPerPage: CONFIG.PAGINATION.DEFAULT_ROWS,
@@ -825,52 +832,38 @@
           try {
             const stored = localStorage.getItem(CONFIG.STORAGE_KEYS.DATA);
             if (stored) {
-              this.groups = JSON.parse(stored);
+              const data = JSON.parse(stored);
+              // Handle both old and new data structures
+              if (Array.isArray(data)) {
+                // Old structure - convert to new
+                this.campaigns = [];
+                this.groups = data;
+              } else {
+                // New structure
+                this.campaigns = data.campaigns || [];
+                this.groups = data.groups || [];
+              }
             } else {
+              this.campaigns = [];
               this.groups = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
               this.saveGroups();
             }
           } catch (e) {
             console.warn('Failed to load groups:', e);
+            this.campaigns = [];
             this.groups = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
           }
         },
 
         saveGroups: function() {
           try {
-            localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(this.groups));
-            try {
-const latestGroup = this.groups.at(-1);
-const campaign = latestGroup?.campaign; // this is the real campaign object
-  if (campaign && campaign.id) {
-  audit.recordCreate({
-    campaignId: campaign.id,
-    entityType: 'campaign',
-    entityId: campaign.id,
-    data: {
-      beaconCampaignName: campaign.beaconCampaignName,
-      seed: campaign.seed,
-      organization: campaign.organization,
-      pacing: campaign.pacing,
-      timezone: campaign.timezone,
-      startDate: campaign.startDate,
-      endDate: campaign.endDate,
-      channel: campaign.channel,
-      campaignName: campaign.name,
-      budget: campaign.budget,
-      kpi: campaign.kpi,
-      kpiTarget: campaign.kpiTarget
-    }
-  });
-
-  console.log('✔️ Audit logged for campaign:', campaign.id);
-}
-} catch (e) {
-  console.warn('Failed to log audit creation:', e);
-}
-
+            const data = {
+              campaigns: this.campaigns || [],
+              groups: this.groups || []
+            };
+            localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(data));
           } catch (e) {
-            console.warn('Failed to save groups:', e);
+            console.warn('Failed to save data:', e);
           }
         },
 
@@ -886,7 +879,7 @@ const campaign = latestGroup?.campaign; // this is the real campaign object
           ];
           ids.forEach(id => this.elements[id] = document.getElementById(id));
 
-          // Delegate toggles and edit buttons on the tbody
+          // Delegate toggles, edit and delete buttons on the tbody
           if (this.elements.campaignTableBody) {
             this.elements.campaignTableBody.addEventListener('click', (e) => {
               const toggleBtn = e.target.closest('[data-action="toggle-group"]');
@@ -895,6 +888,7 @@ const campaign = latestGroup?.campaign; // this is the real campaign object
                 const g = this.groups.find(x => x.id === gid);
                 if (!g) return;
                 g.expanded = !g.expanded;
+                this.saveGroups();
                 this.applyFiltersAndRender();
                 return;
               }
@@ -903,6 +897,14 @@ const campaign = latestGroup?.campaign; // this is the real campaign object
               if (editBtn) {
                 const gid = editBtn.getAttribute('data-group-id');
                 this.openEditGroupModal(gid);
+                return;
+              }
+
+              const deleteBtn = e.target.closest('[data-action="delete-group"]');
+              if (deleteBtn) {
+                const gid = deleteBtn.getAttribute('data-group-id');
+                this.deleteGroup(gid);
+                return;
               }
             });
           }
@@ -1097,7 +1099,7 @@ if (this.elements.createBtn) {
           }
         },
 
-        // Build visible rows (group headers + children)
+        // Build visible rows (individual campaigns + group headers + children)
         getVisibleRows: function() {
           const q = this.searchQuery.trim().toLowerCase();
           const filterBy = (c) => {
@@ -1113,6 +1115,16 @@ if (this.elements.createBtn) {
           };
 
           const rows = [];
+          
+          // Add individual campaigns first (at the top)
+          if (this.campaigns && this.campaigns.length > 0) {
+            const individualCampaigns = this.campaigns.filter(filterBy);
+            for (const c of individualCampaigns) {
+              rows.push({ type: 'campaign', groupId: null, campaign: c });
+            }
+          }
+          
+          // Then add groups
           for (const g of this.groups) {
             const groupMatchesSearch = q && g.name.toLowerCase().includes(q);
             const children = g.campaigns.filter(filterBy);
@@ -1135,6 +1147,18 @@ if (this.elements.createBtn) {
           // total campaigns after filters/search (not paginated)
           const q = this.searchQuery.trim().toLowerCase();
           let total = 0;
+          
+          // Count individual campaigns
+          if (this.campaigns) {
+            for (const c of this.campaigns) {
+              const matchesState = this.filters.state === 'All' || c.state === this.filters.state;
+              const matchesDsp = this.filters.dsp === 'All' || (c.dsp && c.dsp.includes(this.filters.dsp));
+              const matchesSearch = !q || (c.id?.toLowerCase().includes(q) || c.beaconCampaignName?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q) || c.dsp?.toLowerCase().includes(q));
+              if (matchesState && matchesDsp && matchesSearch) total++;
+            }
+          }
+          
+          // Count grouped campaigns
           for (const g of this.groups) {
             for (const c of g.campaigns) {
               const matchesState = this.filters.state === 'All' || c.state === this.filters.state;
@@ -1235,6 +1259,45 @@ try {
           if (typeof showToast === 'function') showToast('Campaign Group name updated');
         },
 
+        deleteGroup: function(groupId) {
+          const group = this.groups.find(g => g.id === groupId);
+          if (!group) return;
+
+          const campaignCount = group.campaigns?.length || 0;
+          let message = `Are you sure you want to delete the campaign group "${group.name}"?`;
+          if (campaignCount > 0) {
+            message += `\n\nThis group contains ${campaignCount} campaign(s). The campaigns will be moved to the individual campaigns list (not grouped).`;
+          }
+
+          if (!confirm(message)) return;
+
+          // Move campaigns to individual campaigns list
+          if (group.campaigns && group.campaigns.length > 0) {
+            if (!this.campaigns) this.campaigns = [];
+            this.campaigns.unshift(...group.campaigns);
+          }
+
+          // Remove the group
+          this.groups = this.groups.filter(g => g.id !== groupId);
+          
+          // Log deletion audit
+          try {
+            audit.recordDelete({
+              entityType: 'campaignGroup',
+              entityId: groupId,
+              data: { name: group.name, campaignCount }
+            });
+          } catch (e) {
+            console.warn('Failed to log group deletion audit:', e);
+          }
+
+          this.saveGroups();
+          this.applyFiltersAndRender();
+          if (typeof showToast === 'function') {
+            showToast(`Campaign Group "${group.name}" deleted. ${campaignCount} campaign(s) moved to individual list.`);
+          }
+        },
+
         renderTable: function(rows) {
           const tbody = this.elements.campaignTableBody;
           if (!tbody) return;
@@ -1242,7 +1305,7 @@ try {
 
           if (rows.length === 0) {
             const tr = document.createElement('tr');
-            tr.innerHTML = '<td colspan="5" class="px-6 py-4 text-center text-gray-500">No results</td>';
+            tr.innerHTML = '<td colspan="6" class="px-6 py-4 text-center text-gray-500">No results</td>';
             tbody.appendChild(tr);
             return;
           }
@@ -1252,20 +1315,18 @@ try {
 
             if (r.type === 'group') {
              tr.innerHTML = `
-  <td class="px-3 py-1 text-sm font-semibold border-r border-default bg-gray-100">
+  <td class="px-3 py-1 text-sm font-semibold bg-gray-100">
     <button data-action="toggle-group" data-group-id="${r.groupId}" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
       ${r.expanded ? '&minus;' : '+'}
     </button>
   </td>
-  <td colspan="4" class="px-3 py-1 text-sm font-semibold border-r border-default bg-gray-100">
+  <td colspan="5" class="px-3 py-1 text-sm font-semibold bg-gray-100">
     Campaign Group: ${r.name}
-    <button class="ml-2 align-middle" title="Edit Group" data-action="edit-group" data-group-id="${r.groupId}">
-      <svg class="inline w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-      </svg>
-    </button>
   </td>
-  <td class="bg-gray-100 border-default border-r"></td>
+  <td class="px-6 py-1 text-sm bg-gray-100 text-center flex gap-3 justify-center items-center">
+    <button data-action="edit-group" data-group-id="${r.groupId}" class="text-blue-600 hover:underline" title="Edit Group Name">Edit</button>
+    <button data-action="delete-group" data-group-id="${r.groupId}" class="text-red-600 hover:underline" title="Delete Group">Delete</button>
+  </td>
 `;
 ;
               tr.className = 'row-group';
@@ -1282,6 +1343,7 @@ tr.innerHTML = `
   </td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
+  <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.adServer || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums border-r border-default">${c.adGroups ?? 0}</td>
 `;
 const tdActions = document.createElement('td');
@@ -1523,7 +1585,7 @@ function handleCampaignCreation(redirectToAdGroups) {
   const selectedDSP = Array.from(document.querySelectorAll('input[name="dsp"]:checked')).map(cb => cb.value);
   const selectedAdServer = Array.from(document.querySelectorAll('input[name="adserver"]:checked')).map(cb => cb.value);
   
-  // Create connectors display string
+  // Create separate DSP and Ad Server display strings
   const dspLabels = {
     'trade-desk': 'Trade Desk',
     'dv360': 'DV360',
@@ -1533,19 +1595,22 @@ function handleCampaignCreation(redirectToAdGroups) {
     'google-campaign-manager': 'Google Campaign Manager'
   };
   
-  const connectorsList = [];
+  const dspList = [];
+  const adServerList = [];
+  
   selectedDSP.forEach(dsp => {
     if (dspLabels[dsp]) {
-      connectorsList.push(dspLabels[dsp]);
+      dspList.push(dspLabels[dsp]);
     }
   });
   selectedAdServer.forEach(adServer => {
     if (adServerLabels[adServer]) {
-      connectorsList.push(adServerLabels[adServer]);
+      adServerList.push(adServerLabels[adServer]);
     }
   });
   
-  const connectorsDisplay = connectorsList.length > 0 ? connectorsList.join(', ') : '';
+  const dspDisplay = dspList.length > 0 ? dspList.join(', ') : '';
+  const adServerDisplay = adServerList.length > 0 ? adServerList.join(', ') : '';
   
   const campaign = {
     id: 'CAM-' + Date.now(),
@@ -1561,7 +1626,8 @@ function handleCampaignCreation(redirectToAdGroups) {
     kpi: document.getElementById('campaignKPI')?.value || '',
     kpiTarget: document.getElementById('campaignKPITarget')?.value || '',
     state: 'Active',
-    dsp: connectorsDisplay, // Now contains both DSP and Ad Server selections
+    dsp: dspDisplay, // Only contains DSP selections
+    adServer: adServerDisplay, // Only contains Ad Server selections
     adGroups: 0,
     // Beacon Fields mapped to Common Data
     beaconCampaignName: document.getElementById('beaconCampaignName')?.value || '',
@@ -1580,13 +1646,14 @@ function handleCampaignCreation(redirectToAdGroups) {
   };
 
   const raw = localStorage.getItem('campaign_tree_groups');
-  let groups = raw ? JSON.parse(raw) : [];
+  let data = raw ? JSON.parse(raw) : { campaigns: [], groups: [] };
 
-  if (!groups.length) {
-    groups.push({ id: 'DEFAULT', name: 'Ungrouped', expanded: true, campaigns: [] });
-  }
+  // Ensure the data structure has both campaigns and groups arrays
+  if (!data.campaigns) data.campaigns = [];
+  if (!data.groups) data.groups = [];
 
-  groups[0].campaigns.unshift(campaign);
+  // Add campaign directly to the top-level campaigns array
+  data.campaigns.unshift(campaign);
 
   // Log creation to audit
   audit.recordCreate({
@@ -1627,11 +1694,14 @@ function handleCampaignCreation(redirectToAdGroups) {
   });
   console.log('✔️ Audit log created for:', campaign.id);
 
-  localStorage.setItem('campaign_tree_groups', JSON.stringify(groups));
+  localStorage.setItem('campaign_tree_groups', JSON.stringify(data));
 
-  app.groups = groups;
-  app.saveGroups?.();
-  app.applyFiltersAndRender?.();
+  // Update app instance to reflect new data
+  if (app) {
+    app.campaigns = data.campaigns;
+    app.groups = data.groups;
+    app.applyFiltersAndRender?.();
+  }
 
   // Reset and close modal
   document.getElementById('createCampaignForm').reset();

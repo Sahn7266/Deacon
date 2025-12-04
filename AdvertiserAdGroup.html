@@ -368,10 +368,7 @@
                       </button>
                       <div id="campaignMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto min-w-max">
                         <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
-                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Summer Sale 2024">Summer Sale 2024</button>
-                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Holiday Campaign">Holiday Campaign</button>
-                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Brand Awareness Q3">Brand Awareness Q3</button>
-                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Product Launch">Product Launch</button>
+                        <!-- Campaign options will be populated dynamically by JavaScript -->
                       </div>
                     </div>
                   </div>
@@ -634,7 +631,7 @@
         DSP_FILTER: 'adgroup_dsp_filter',
         CAMPAIGN_FILTER: 'adgroup_campaign_filter'
       },
-      PAGINATION: { DEFAULT_ROWS: 15, MAX_ROWS: 200 }
+      PAGINATION: { DEFAULT_ROWS: 25, MAX_ROWS: 200 }
     };
 
     // === SAMPLE AD GROUP DATA ===
@@ -670,6 +667,7 @@
           this.loadAdGroups();
           this.cacheElements();
           this.loadFilters();
+          this.populateCampaignFilter();
           this.initEventListeners();
           this.applyFiltersAndRender();
         },
@@ -699,6 +697,61 @@
           } catch (e) {
             console.warn('Failed to save ad groups:', e);
           }
+        },
+
+        populateCampaignFilter: function() {
+          const campaignMenu = document.getElementById('campaignMenu');
+          if (!campaignMenu) return;
+
+          // Get campaign data from the new data structure
+          const stored = localStorage.getItem('campaign_tree_groups');
+          let data = stored ? JSON.parse(stored) : { campaigns: [], groups: [] };
+          
+          // Handle both old and new data structures
+          if (Array.isArray(data)) {
+            data = { campaigns: [], groups: data };
+          }
+          
+          // Ensure data structure has both arrays
+          if (!data.campaigns) data.campaigns = [];
+          if (!data.groups) data.groups = [];
+
+          // Collect unique campaign names
+          const campaignNames = new Set();
+
+          // Add individual campaigns
+          data.campaigns.forEach(campaign => {
+            const name = campaign.beaconCampaignName || campaign.name;
+            if (name) campaignNames.add(name);
+          });
+
+          // Add campaigns from groups
+          data.groups.forEach(group => {
+            group.campaigns.forEach(campaign => {
+              const name = campaign.beaconCampaignName || campaign.name;
+              if (name) campaignNames.add(name);
+            });
+          });
+
+          // Clear existing options except "All"
+          const allOption = campaignMenu.querySelector('[data-value="All"]');
+          campaignMenu.innerHTML = '';
+          
+          // Re-add "All" option
+          const allButton = document.createElement('button');
+          allButton.className = 'block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap';
+          allButton.setAttribute('data-value', 'All');
+          allButton.textContent = 'All';
+          campaignMenu.appendChild(allButton);
+
+          // Add campaign options
+          Array.from(campaignNames).sort().forEach(name => {
+            const button = document.createElement('button');
+            button.className = 'block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap';
+            button.setAttribute('data-value', name);
+            button.textContent = name;
+            campaignMenu.appendChild(button);
+          });
         },
 
         loadFilters: function() {
@@ -1346,13 +1399,35 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!campaignSelect) return;
 
   // Populate campaign dropdown
-  const campaignGroups = JSON.parse(localStorage.getItem('campaign_tree_groups') || '[]');
+  const stored = localStorage.getItem('campaign_tree_groups');
+  let data = stored ? JSON.parse(stored) : { campaigns: [], groups: [] };
+  
+  // Handle both old and new data structures
+  if (Array.isArray(data)) {
+    // Old structure - convert to new
+    data = { campaigns: [], groups: data };
+  }
+  
+  // Ensure data structure has both arrays
+  if (!data.campaigns) data.campaigns = [];
+  if (!data.groups) data.groups = [];
 
-  campaignGroups.forEach(group => {
+  // Add individual campaigns first (from top-level campaigns array)
+  data.campaigns.forEach(campaign => {
+    const opt = document.createElement('option');
+    opt.value = campaign.id;
+    // Use Beacon Campaign Name instead of DSP Campaign Name
+    opt.textContent = campaign.beaconCampaignName || campaign.name || campaign.id;
+    campaignSelect.appendChild(opt);
+  });
+
+  // Add campaigns from groups
+  data.groups.forEach(group => {
     group.campaigns.forEach(campaign => {
       const opt = document.createElement('option');
       opt.value = campaign.id;
-      opt.textContent = campaign.name;
+      // Use Beacon Campaign Name instead of DSP Campaign Name
+      opt.textContent = campaign.beaconCampaignName || campaign.name || campaign.id;
       campaignSelect.appendChild(opt);
     });
   });

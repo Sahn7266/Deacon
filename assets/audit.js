@@ -78,7 +78,7 @@
       'adServerLandingPageURL', 'adServerCampaignVertical'
     ],
     adGroupDsp: [
-      'adGroupNameInput', 'adGroupName', 'adGroupCampaign', 
+      'adGroupNameInput', 'adGroupName', 'adGroupCampaign', 'campaignName',
       'budgetAllocation', 'bidStrategy', 'creativeFormat', 'targetingRefinements', 
       'placementSettings'
     ],
