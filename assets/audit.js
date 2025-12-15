@@ -46,19 +46,40 @@
     // Legacy Ad Server field for backward compatibility
     adServerCampaignVertical: 'Campaign Vertical',
 
-    // Ad Group DSP fields
-    adGroupNameInput: 'Ad Group Name',
-    adGroupName: 'Ad Group Name', // Alias for backward compatibility
+    // Ad Group DSP fields (new detailed structure)
+    adGroupNameInput: 'Name',
+    adGroupName: 'Name', // Alias for backward compatibility
+    campaignName: 'Campaign',
     adGroupCampaign: 'Campaign',
+    funnelLocation: 'Funnel Location',
+    channel: 'Channel', 
+    deviceTypes: 'Device Types',
+    adEnvironments: 'Ad Environments',
+    primaryGoal: 'Primary Goal',
+    target: 'Target',
+    audience: 'Audience',
+    frequency: 'Frequency',
+    geos: 'Geos',
+    baseBid: 'Base Bid',
+    maxBid: 'Max Bid',
+    
+    // Ad Group Ad Server fields (new detailed structure)
+    adServerName: 'Name',
+    adServerStatus: 'Status',
+    adServerCompatibility: 'Compatibility',
+    adServerDimensions: 'Dimensions',
+    adServerTestingStarts: 'Testing Starts',
+    adServerStartDate: 'Start Date',
+    adServerEndDate: 'End Date', 
+    adServerCostStructure: 'Cost Structure',
+    adServerCapCost: 'Cap Cost',
+    
+    // Legacy Ad Group fields (for backward compatibility)
     budgetAllocation: 'Budget Allocation',
     bidStrategy: 'Bid Strategy',
     creativeFormat: 'Creative Format',
     targetingRefinements: 'Targeting Refinements',
-    placementSettings: 'Placement Settings',
-    
-    // Ad Group Ad Server fields
-    adServerAdGroupName: 'Ad Group Name',
-    adServerPlacement: 'Placement'    
+    placementSettings: 'Placement Settings'    
   };
 
   // Define field categorization for hierarchical display
@@ -73,12 +94,19 @@
       'adServerLandingPageURL'
     ],
     adGroupDsp: [
-      'adGroupNameInput', 'adGroupName', 'adGroupCampaign', 'campaignName',
-      'budgetAllocation', 'bidStrategy', 'creativeFormat', 'targetingRefinements', 
-      'placementSettings'
+      // DSP fields that match what's actually recorded in audit
+      'adGroupNameInput', 'campaignName', 'funnelLocation', 'channel', 
+      'deviceTypes', 'adEnvironments', 'primaryGoal', 'target', 
+      'audience', 'frequency', 'geos', 'baseBid', 'maxBid',
+      // Legacy DSP fields (for backward compatibility)
+      'adGroupName', 'adGroupCampaign', 'budgetAllocation', 'bidStrategy', 
+      'creativeFormat', 'targetingRefinements', 'placementSettings'
     ],
     adGroupAdServer: [
-      'adServerAdGroupName', 'adServerPlacement'
+      // Ad Server fields that match what's actually recorded in audit
+      'adServerName', 'adServerStatus', 'adServerCompatibility', 
+      'adServerDimensions', 'adServerTestingStarts', 'adServerStartDate',
+      'adServerEndDate', 'adServerCostStructure', 'adServerCapCost'
     ]
   };
 
@@ -115,8 +143,38 @@
     campaignChannel: 'channel',
     campaignBudget: 'budget',
     campaignKPI: 'kpi',
-    campaignKPITarget: 'kpiTarget'
+    campaignKPITarget: 'kpiTarget',
     // Note: campaignName stays as campaignName (no mapping needed)
+    
+    // Ad Group DSP field mappings (form input names → audit names)
+    adGroupNameInput: 'adGroupNameInput',
+    funnelLocationInput: 'funnelLocation',
+    channelInput: 'channel',
+    deviceTypesInput: 'deviceTypes',
+    adEnvironmentsInput: 'adEnvironments',
+    primaryGoalInput: 'primaryGoal',
+    targetInput: 'target',
+    audienceInput: 'audience',
+    frequencyInput: 'frequency',
+    geosInput: 'geos',
+    baseBidInput: 'baseBid',
+    maxBidInput: 'maxBid',
+    
+    // Ad Group Ad Server field mappings (form input names → audit names)
+    adServerNameInput: 'adServerName',
+    adServerStatusInput: 'adServerStatus',
+    adServerCompatibilityInput: 'adServerCompatibility',
+    adServerDimensionsInput: 'adServerDimensions',
+    adServerTestingStartsInput: 'adServerTestingStarts',
+    adServerStartDateInput: 'adServerStartDate',
+    adServerEndDateInput: 'adServerEndDate',
+    adServerCostStructureInput: 'adServerCostStructure',
+    adServerCapCostInput: 'adServerCapCost',
+    
+    // Legacy field mappings
+    commonAdGroupName: 'adGroupNameInput',
+    commonCampaign: 'campaignName',
+    commonBudget: 'budgetAllocation'
   };
 
   function recordCreate({campaignId, entityType, entityId, data, user='localUser'}){
@@ -159,6 +217,7 @@
       if (oldValue === newValue) return;
       // If both empty ignore
       if (!oldValue && !newValue) return;
+      
       log.push({
         id: uuid(),
         ts,
@@ -344,14 +403,38 @@ function clearCampaignEdits(campaignId){
       : new Date().toISOString();
     
     const currentAdGroupData = {
+      // DSP Fields (new detailed structure)
       adGroupNameInput: adGroup.name,
       campaignName: adGroup.campaign,
-      budgetAllocation: adGroup.budget,
-      bidStrategy: adGroup.bidStrategy,
-      creativeFormat: adGroup.creativeFormat,
-      targetingRefinements: adGroup.targetingRefinements,
-      placementSettings: adGroup.placementSettings,
-      // Include Ad Server fields for ad groups - handle missing fields gracefully
+      funnelLocation: adGroup.funnelLocation || '',
+      channel: adGroup.channel || '',
+      deviceTypes: adGroup.deviceTypes || '',
+      adEnvironments: adGroup.adEnvironments || '',
+      primaryGoal: adGroup.primaryGoal || '',
+      target: adGroup.target || '',
+      audience: adGroup.audience || '',
+      frequency: adGroup.frequency || '',
+      geos: adGroup.geos || '',
+      baseBid: adGroup.baseBid || '',
+      maxBid: adGroup.maxBid || '',
+      
+      // Ad Server Fields (new detailed structure)
+      adServerName: adGroup.adServerName || '',
+      adServerStatus: adGroup.adServerStatus || '',
+      adServerCompatibility: adGroup.adServerCompatibility || '',
+      adServerDimensions: adGroup.adServerDimensions || '',
+      adServerTestingStarts: adGroup.adServerTestingStarts || '',
+      adServerStartDate: adGroup.adServerStartDate || '',
+      adServerEndDate: adGroup.adServerEndDate || '',
+      adServerCostStructure: adGroup.adServerCostStructure || '',
+      adServerCapCost: adGroup.adServerCapCost || '',
+      
+      // Legacy fields (for backward compatibility)
+      budgetAllocation: adGroup.budget || '',
+      bidStrategy: adGroup.bidStrategy || '',
+      creativeFormat: adGroup.creativeFormat || '',
+      targetingRefinements: adGroup.targetingRefinements || '',
+      placementSettings: adGroup.placementSettings || '',
       adServerAdGroupName: adGroup.adServerAdGroupName || '',
       adServerPlacement: adGroup.adServerPlacement || ''
     };
@@ -363,8 +446,6 @@ function clearCampaignEdits(campaignId){
       // Always include Ad Server fields for ad groups, even if empty, to preserve them in audit
       const isAdServerField = field.startsWith('adServer');
       const shouldInclude = isAdServerField || (value != null && String(value).trim() !== '');
-      
-      console.log(`🔍 Field: ${field}, Value: "${value}", isAdServer: ${isAdServerField}, shouldInclude: ${shouldInclude}`);
       
       if (shouldInclude) {
         newCreateEntries.push({
@@ -389,6 +470,10 @@ function clearCampaignEdits(campaignId){
   console.log(`✔️ Cleared edits for campaign ${campaignId} and ${currentAdGroups.length} ad groups`);
 }
   function getFieldLabel(field){
+    // Filter out unwanted legacy fields completely
+    if (field === 'adServerAdGroupName' || field === 'adServerPlacement') {
+      return null;
+    }
     return FIELD_LABELS[field] || field;
   }
 
@@ -408,7 +493,6 @@ function clearCampaignEdits(campaignId){
 
   // Drawer rendering with hierarchical structure
   function renderDrawer({campaignId, advertiserName, advertiserAccount}){
-    console.log('📂 Opening drawer for campaign:', campaignId);
     const drawer = document.getElementById('auditDrawer');
     if (!drawer) return;
     const list = drawer.querySelector('[data-audit-list]');
@@ -558,6 +642,9 @@ function clearCampaignEdits(campaignId){
       const fieldEntries = fields[fieldName];
       const label = getFieldLabel(fieldName);
       
+      // Skip fields that should be filtered out (label is null)
+      if (label === null) return;
+      
       // Find the original create entry and any edit entries
       const createEntry = fieldEntries.find(e => e.action === 'create');
       const editEntries = fieldEntries.filter(e => e.action === 'edit').sort((a, b) => new Date(a.ts) - new Date(b.ts));
@@ -654,11 +741,6 @@ function clearCampaignEdits(campaignId){
     // Render Ad Server section for ad groups with distinct styling
     if (Object.keys(adServerFields).length > 0) {
       renderConnectorSection(adGroupContainer, 'Ad Server: Google Campaign Manager', adServerFields, `adgroup_adserver_${entityId}`, (groupIndex + 100) * 2 + 1, 'green');
-    }
-
-    // Render uncategorized fields if any
-    if (Object.keys(uncategorizedFields).length > 0) {
-      renderConnectorSection(adGroupContainer, 'Other Fields', uncategorizedFields, `adgroup_other_${entityId}`, (groupIndex + 100) * 2 + 2, 'purple');
     }
   }
 

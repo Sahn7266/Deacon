@@ -311,7 +311,9 @@
                         </td>
                         <td class="px-6 py-1 text-sm">
                           <span id="displayCommonCampaign" class="text-gray-800 break-words">N/A</span>
-                          <input id="commonCampaign" type="text" class="hidden adgroup-details-input" />
+                          <select id="commonCampaign" class="hidden adgroup-details-input">
+                            <option value="">Select campaign</option>
+                          </select>
                         </td>
                       </tr>
 
@@ -349,10 +351,12 @@
                       </thead>
                       <tbody class="divide-y border-default">
 
-                        <!-- Ad Group Name (original field) -->
+
+
+                        <!-- Name -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Ad Group Name
+                            Name
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdGroupName" class="text-gray-800 break-words">N/A</span>
@@ -360,69 +364,152 @@
                           </td>
                         </tr>
 
-                        <!-- Campaign -->
+                        <!-- Funnel Location -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Campaign
+                            Funnel Location
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignName" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignName" type="text" class="hidden adgroup-details-input" />
+                            <span id="displayFunnelLocation" class="text-gray-800 break-words">N/A</span>
+                            <select id="funnelLocationInput" class="hidden adgroup-details-input">
+                              <option value="">Select funnel location</option>
+                              <option value="Awareness">Awareness</option>
+                              <option value="Consideration">Consideration</option>
+                              <option value="Conversion">Conversion</option>
+                              <option value="Loyalty">Loyalty</option>
+                            </select>
                           </td>
                         </tr>
 
-                        <!-- Budget Allocation -->
+                        <!-- Channel -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Budget Allocation
+                            Channel
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayBudgetAllocation" class="text-gray-800 break-words">N/A</span>
-                            <input id="budgetAllocation" type="text" class="hidden adgroup-details-input" />
+                            <span id="displayChannel" class="text-gray-800 break-words">N/A</span>
+                            <select id="channelInput" class="hidden adgroup-details-input">
+                              <option value="">Select channel</option>
+                              <option value="Display">Display</option>
+                              <option value="Video">Video</option>
+                              <option value="Audio">Audio</option>
+                              <option value="Native Display">Native Display</option>
+                              <option value="Native Video">Native Video</option>
+                              <option value="TV">TV</option>
+                              <option value="Out of Home">Out of Home</option>
+                            </select>
                           </td>
                         </tr>
 
-                        <!-- Bid Strategy -->
+                        <!-- Device Types -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Bid Strategy
+                            Device Types
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayBidStrategy" class="text-gray-800 break-words">N/A</span>
-                            <input id="bidStrategy" type="text" class="hidden adgroup-details-input" />
+                            <span id="displayDeviceTypes" class="text-gray-800 break-words">N/A</span>
+                            <input id="deviceTypesInput" type="text" class="hidden adgroup-details-input" placeholder="Comma-separated values" />
                           </td>
                         </tr>
 
-                        <!-- Creative Format -->
+                        <!-- Ad Environments -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Creative Format
+                            Ad Environments
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCreativeFormat" class="text-gray-800 break-words">N/A</span>
-                            <input id="creativeFormat" type="text" class="hidden adgroup-details-input" />
+                            <span id="displayAdEnvironments" class="text-gray-800 break-words">N/A</span>
+                            <input id="adEnvironmentsInput" type="text" class="hidden adgroup-details-input" placeholder="Comma-separated values" />
                           </td>
                         </tr>
 
-                        <!-- Targeting Refinements -->
+                        <!-- Primary Goal -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Targeting Refinements
+                            Primary Goal
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayTargetingRefinements" class="text-gray-800 break-words">N/A</span>
-                            <input id="targetingRefinements" type="text" class="hidden adgroup-details-input" />
+                            <span id="displayPrimaryGoal" class="text-gray-800 break-words">N/A</span>
+                            <select id="primaryGoalInput" class="hidden adgroup-details-input">
+                              <option value="">Select primary goal</option>
+                              <option value="Cost per Acquisition (CPA)">Cost per Acquisition (CPA)</option>
+                              <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
+                            </select>
                           </td>
                         </tr>
 
-                        <!-- Placement Settings -->
+                        <!-- Target -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Placement Settings
+                            Target
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayPlacementSettings" class="text-gray-800 break-words">N/A</span>
-                            <input id="placementSettings" type="text" class="hidden adgroup-details-input" />
+                            <span id="displayTarget" class="text-gray-800 break-words">N/A</span>
+                            <input id="targetInput" type="text" class="hidden adgroup-details-input" placeholder="$0.00" />
+                          </td>
+                        </tr>
+
+                        <!-- Audience -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Audience
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAudience" class="text-gray-800 break-words">N/A</span>
+                            <select id="audienceInput" class="hidden adgroup-details-input">
+                              <option value="">Select audience</option>
+                              <option value="Apply a shared audience">Apply a shared audience</option>
+                              <option value="Koa Audiences">Koa Audiences</option>
+                              <option value="Target Everyone">Target Everyone</option>
+                            </select>
+                          </td>
+                        </tr>
+
+                        <!-- Frequency -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Frequency
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayFrequency" class="text-gray-800 break-words">N/A</span>
+                            <input id="frequencyInput" type="text" class="hidden adgroup-details-input" placeholder="e.g., 4 ads per 1 day" />
+                          </td>
+                        </tr>
+
+                        <!-- Geos -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Geos
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayGeos" class="text-gray-800 break-words">N/A</span>
+                            <select id="geosInput" class="hidden adgroup-details-input">
+                              <option value="">Select geos</option>
+                              <option value="Specific Locations">Specific Locations</option>
+                              <option value="Everywhere">Everywhere</option>
+                            </select>
+                          </td>
+                        </tr>
+
+                        <!-- Base Bid -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Base Bid
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayBaseBid" class="text-gray-800 break-words">N/A</span>
+                            <input id="baseBidInput" type="text" class="hidden adgroup-details-input" placeholder="$0.00" />
+                          </td>
+                        </tr>
+
+                        <!-- Max Bid -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Max Bid
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayMaxBid" class="text-gray-800 break-words">N/A</span>
+                            <input id="maxBidInput" type="text" class="hidden adgroup-details-input" placeholder="$0.00" />
                           </td>
                         </tr>
 
@@ -446,25 +533,120 @@
                       </thead>
                       <tbody class="divide-y border-default">
 
-                        <!-- Ad Server Ad Group Name -->
+                        <!-- Name -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Ad Server Name
+                            Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerAdGroupName" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerAdGroupName" type="text" class="hidden adgroup-details-input" />
+                            <span id="displayAdServerName" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerNameInput" type="text" class="hidden adgroup-details-input" />
                           </td>
                         </tr>
 
-                        <!-- Ad Server Placement -->
+                        <!-- Status -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Placement
+                            Status
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerPlacement" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerPlacement" type="text" class="hidden adgroup-details-input" />
+                            <span id="displayAdServerStatus" class="text-gray-800 break-words">N/A</span>
+                            <select id="adServerStatusInput" class="hidden adgroup-details-input">
+                              <option value="">Select status</option>
+                              <option value="Active">Active</option>
+                              <option value="Inactive">Inactive</option>
+                            </select>
+                          </td>
+                        </tr>
+
+                        <!-- Compatibility -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Compatibility
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerCompatibility" class="text-gray-800 break-words">N/A</span>
+                            <select id="adServerCompatibilityInput" class="hidden adgroup-details-input">
+                              <option value="">Select compatibility</option>
+                              <option value="Display">Display</option>
+                              <option value="Persona">Persona</option>
+                              <option value="Video">Video</option>
+                              <option value="Audio">Audio</option>
+                            </select>
+                          </td>
+                        </tr>
+
+                        <!-- Dimensions -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Dimensions
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerDimensions" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerDimensionsInput" type="text" class="hidden adgroup-details-input" placeholder="Comma-separated values" />
+                          </td>
+                        </tr>
+
+                        <!-- Testing Starts -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Testing Starts
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerTestingStarts" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerTestingStartsInput" type="date" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Start Date -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Start Date
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerStartDate" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerStartDateInput" type="date" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- End Date -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            End Date
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerEndDate" class="text-gray-800 break-words">N/A</span>
+                            <input id="adServerEndDateInput" type="date" class="hidden adgroup-details-input" />
+                          </td>
+                        </tr>
+
+                        <!-- Cost Structure -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Cost Structure
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerCostStructure" class="text-gray-800 break-words">N/A</span>
+                            <select id="adServerCostStructureInput" class="hidden adgroup-details-input">
+                              <option value="">Select cost structure</option>
+                              <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
+                              <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
+                            </select>
+                          </td>
+                        </tr>
+
+                        <!-- Cap Cost -->
+                        <tr class="border-b border-default">
+                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                            Cap Cost
+                          </td>
+                          <td class="px-6 py-1 text-sm">
+                            <span id="displayAdServerCapCost" class="text-gray-800 break-words">N/A</span>
+                            <select id="adServerCapCostInput" class="hidden adgroup-details-input">
+                              <option value="">Select cap cost</option>
+                              <option value="OFF">OFF</option>
+                              <option value="ON">ON</option>
+                            </select>
                           </td>
                         </tr>
 
@@ -484,31 +666,59 @@
   { span: 'displayCommonAdGroupName', input: 'commonAdGroupName' },
   { span: 'displayCommonCampaign', input: 'commonCampaign' },
   { span: 'displayCommonBudget', input: 'commonBudget' },
-  // Instructional Data fields (these are linked to actual ad group data)
+  // DSP Fields (these are linked to actual ad group data)
   { span: 'displayAdGroupName', input: 'adGroupNameInput' },
-  { span: 'displayCampaignName', input: 'campaignName' },
-  { span: 'displayBudgetAllocation', input: 'budgetAllocation' },
-  { span: 'displayBidStrategy', input: 'bidStrategy' },
-  { span: 'displayCreativeFormat', input: 'creativeFormat' },
-  { span: 'displayTargetingRefinements', input: 'targetingRefinements' },
-  { span: 'displayPlacementSettings', input: 'placementSettings' },
+  { span: 'displayFunnelLocation', input: 'funnelLocationInput' },
+  { span: 'displayChannel', input: 'channelInput' },
+  { span: 'displayDeviceTypes', input: 'deviceTypesInput' },
+  { span: 'displayAdEnvironments', input: 'adEnvironmentsInput' },
+  { span: 'displayPrimaryGoal', input: 'primaryGoalInput' },
+  { span: 'displayTarget', input: 'targetInput' },
+  { span: 'displayAudience', input: 'audienceInput' },
+  { span: 'displayFrequency', input: 'frequencyInput' },
+  { span: 'displayGeos', input: 'geosInput' },
+  { span: 'displayBaseBid', input: 'baseBidInput' },
+  { span: 'displayMaxBid', input: 'maxBidInput' },
   // Ad Server Fields
-  { span: 'displayAdServerAdGroupName', input: 'adServerAdGroupName' },
-  { span: 'displayAdServerPlacement', input: 'adServerPlacement' }
+  { span: 'displayAdServerName', input: 'adServerNameInput' },
+  { span: 'displayAdServerStatus', input: 'adServerStatusInput' },
+  { span: 'displayAdServerCompatibility', input: 'adServerCompatibilityInput' },
+  { span: 'displayAdServerDimensions', input: 'adServerDimensionsInput' },
+  { span: 'displayAdServerTestingStarts', input: 'adServerTestingStartsInput' },
+  { span: 'displayAdServerStartDate', input: 'adServerStartDateInput' },
+  { span: 'displayAdServerEndDate', input: 'adServerEndDateInput' },
+  { span: 'displayAdServerCostStructure', input: 'adServerCostStructureInput' },
+  { span: 'displayAdServerCapCost', input: 'adServerCapCostInput' }
 ];
 
                         // Fields that are linked to actual ad group data (excluding Common Data section)
                         const adGroupLinkedFields = [
+  // Beacon Fields (Common Data)
+  'commonAdGroupName',
+  'commonCampaign',
+  // DSP Fields
   'adGroupNameInput',
-  'campaignName',
-  'budgetAllocation',
-  'bidStrategy',
-  'creativeFormat',
-  'targetingRefinements',
-  'placementSettings',
+  'funnelLocationInput',
+  'channelInput',
+  'deviceTypesInput',
+  'adEnvironmentsInput',
+  'primaryGoalInput',
+  'targetInput',
+  'audienceInput',
+  'frequencyInput',
+  'geosInput',
+  'baseBidInput',
+  'maxBidInput',
   // Ad Server Fields
-  'adServerAdGroupName',
-  'adServerPlacement'
+  'adServerNameInput',
+  'adServerStatusInput',
+  'adServerCompatibilityInput',
+  'adServerDimensionsInput',
+  'adServerTestingStartsInput',
+  'adServerStartDateInput',
+  'adServerEndDateInput',
+  'adServerCostStructureInput',
+  'adServerCapCostInput'
 ];
 
                         const btnEdit   = document.getElementById('editGeneralBtn');
@@ -583,6 +793,7 @@
                           const input = document.getElementById(fieldName);
                           if (input) obj[fieldName] = input.value.trim();
                           });
+                          
                           return obj;
                         }
                         function shallowEqual(a,b){
@@ -680,7 +891,30 @@
                             }
 
                             // === UPDATE AD GROUP DATA ===
-                            if (now.adGroupNameInput !== undefined) adGroup.name = now.adGroupNameInput;
+                            // Update main ad group name from Beacon field
+                            if (now.commonAdGroupName !== undefined) adGroup.name = now.commonAdGroupName;
+                            // Update DSP name field separately
+                            if (now.adGroupNameInput !== undefined) adGroup.dspName = now.adGroupNameInput;
+                            if (now.funnelLocationInput !== undefined) adGroup.funnelLocation = now.funnelLocationInput;
+                            if (now.channelInput !== undefined) adGroup.channel = now.channelInput;
+                            if (now.deviceTypesInput !== undefined) adGroup.deviceTypes = now.deviceTypesInput;
+                            if (now.adEnvironmentsInput !== undefined) adGroup.adEnvironments = now.adEnvironmentsInput;
+                            if (now.primaryGoalInput !== undefined) adGroup.primaryGoal = now.primaryGoalInput;
+                            if (now.targetInput !== undefined) adGroup.target = now.targetInput;
+                            if (now.audienceInput !== undefined) adGroup.audience = now.audienceInput;
+                            if (now.frequencyInput !== undefined) adGroup.frequency = now.frequencyInput;
+                            if (now.geosInput !== undefined) adGroup.geos = now.geosInput;
+                            if (now.baseBidInput !== undefined) adGroup.baseBid = now.baseBidInput;
+                            if (now.maxBidInput !== undefined) adGroup.maxBid = now.maxBidInput;
+                            if (now.adServerNameInput !== undefined) adGroup.adServerName = now.adServerNameInput;
+                            if (now.adServerStatusInput !== undefined) adGroup.adServerStatus = now.adServerStatusInput;
+                            if (now.adServerCompatibilityInput !== undefined) adGroup.adServerCompatibility = now.adServerCompatibilityInput;
+                            if (now.adServerDimensionsInput !== undefined) adGroup.adServerDimensions = now.adServerDimensionsInput;
+                            if (now.adServerTestingStartsInput !== undefined) adGroup.adServerTestingStarts = now.adServerTestingStartsInput;
+                            if (now.adServerStartDateInput !== undefined) adGroup.adServerStartDate = now.adServerStartDateInput;
+                            if (now.adServerEndDateInput !== undefined) adGroup.adServerEndDate = now.adServerEndDateInput;
+                            if (now.adServerCostStructureInput !== undefined) adGroup.adServerCostStructure = now.adServerCostStructureInput;
+                            if (now.adServerCapCostInput !== undefined) adGroup.adServerCapCost = now.adServerCapCostInput;
                             if (now.campaignName !== undefined) adGroup.campaign = now.campaignName;
                             if (now.budgetAllocation !== undefined) adGroup.budget = now.budgetAllocation;
                             if (now.bidStrategy !== undefined) adGroup.bidStrategy = now.bidStrategy;
@@ -1363,6 +1597,51 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Populate campaign dropdown
+  function populateCampaignDropdown() {
+    const campaignSelect = document.getElementById('commonCampaign');
+    if (!campaignSelect) return;
+
+    // Clear existing options (except the default one)
+    while (campaignSelect.children.length > 1) {
+      campaignSelect.removeChild(campaignSelect.lastChild);
+    }
+
+    const stored = localStorage.getItem('campaign_tree_groups');
+    let data = stored ? JSON.parse(stored) : { campaigns: [], groups: [] };
+    
+    // Handle both old and new data structures
+    if (Array.isArray(data)) {
+      // Old structure - convert to new
+      data = { campaigns: [], groups: data };
+    }
+    
+    // Ensure data structure has both arrays
+    if (!data.campaigns) data.campaigns = [];
+    if (!data.groups) data.groups = [];
+
+    // Add individual campaigns first
+    data.campaigns.forEach(campaign => {
+      const opt = document.createElement('option');
+      opt.value = campaign.id;
+      opt.textContent = campaign.beaconCampaignName || campaign.name || campaign.id;
+      campaignSelect.appendChild(opt);
+    });
+
+    // Add campaigns from groups
+    data.groups.forEach(group => {
+      group.campaigns.forEach(campaign => {
+        const opt = document.createElement('option');
+        opt.value = campaign.id;
+        opt.textContent = campaign.beaconCampaignName || campaign.name || campaign.id;
+        campaignSelect.appendChild(opt);
+      });
+    });
+  }
+
+  // Call the function to populate campaigns
+  populateCampaignDropdown();
+
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
 
@@ -1415,31 +1694,62 @@ document.addEventListener('DOMContentLoaded', function () {
   safeSet('displayCommonCampaign', adGroup.campaign);
   safeSet('displayCommonBudget', adGroup.budget);
   
-  // Instructional Data section
-  safeSet('displayAdGroupName', adGroup.name);
+  // DSP Fields section
   safeSet('displayCampaignName', adGroup.campaign);
-  safeSet('displayBudgetAllocation', adGroup.budget);
-  safeSet('displayBidStrategy', adGroup.bidStrategy);
-  safeSet('displayCreativeFormat', adGroup.creativeFormat);
-  safeSet('displayTargetingRefinements', adGroup.targetingRefinements);
-  safeSet('displayPlacementSettings', adGroup.placementSettings);
-  safeSet('displayAdServerAdGroupName', adGroup.adServerAdGroupName);
-  safeSet('displayAdServerPlacement', adGroup.adServerPlacement);
+  safeSet('displayAdGroupName', adGroup.name);
+  safeSet('displayFunnelLocation', adGroup.funnelLocation);
+  safeSet('displayChannel', adGroup.channel);
+  safeSet('displayDeviceTypes', adGroup.deviceTypes);
+  safeSet('displayAdEnvironments', adGroup.adEnvironments);
+  safeSet('displayPrimaryGoal', adGroup.primaryGoal);
+  safeSet('displayTarget', adGroup.target);
+  safeSet('displayAudience', adGroup.audience);
+  safeSet('displayFrequency', adGroup.frequency);
+  safeSet('displayGeos', adGroup.geos);
+  safeSet('displayBaseBid', adGroup.baseBid);
+  safeSet('displayMaxBid', adGroup.maxBid);
+  
+  // Ad Server Fields section
+  safeSet('displayAdServerName', adGroup.adServerName);
+  safeSet('displayAdServerStatus', adGroup.adServerStatus);
+  safeSet('displayAdServerCompatibility', adGroup.adServerCompatibility);
+  safeSet('displayAdServerDimensions', adGroup.adServerDimensions);
+  safeSet('displayAdServerTestingStarts', adGroup.adServerTestingStarts);
+  safeSet('displayAdServerStartDate', adGroup.adServerStartDate);
+  safeSet('displayAdServerEndDate', adGroup.adServerEndDate);
+  safeSet('displayAdServerCostStructure', adGroup.adServerCostStructure);
+  safeSet('displayAdServerCapCost', adGroup.adServerCapCost);
   
   // Set input values for editing
   safeInput('commonAdGroupName', adGroup.name);
   safeInput('commonCampaign', adGroup.campaign);
   safeInput('commonBudget', adGroup.budget);
+  
+  // DSP Field inputs
   safeInput('adGroupNameInput', adGroup.name);
-  safeInput('campaignName', adGroup.campaign);
-  safeInput('budgetAllocation', adGroup.budget);
-  safeInput('bidStrategy', adGroup.bidStrategy);
-  safeInput('creativeFormat', adGroup.creativeFormat);
-  safeInput('targetingRefinements', adGroup.targetingRefinements);
-  safeInput('placementSettings', adGroup.placementSettings);
-  safeInput('adServerAdGroupName', adGroup.adServerAdGroupName);
-  safeInput('adServerPlacement', adGroup.adServerPlacement);
-});
+  safeInput('funnelLocationInput', adGroup.funnelLocation);
+  safeInput('channelInput', adGroup.channel);
+  safeInput('deviceTypesInput', adGroup.deviceTypes);
+  safeInput('adEnvironmentsInput', adGroup.adEnvironments);
+  safeInput('primaryGoalInput', adGroup.primaryGoal);
+  safeInput('targetInput', adGroup.target);
+  safeInput('audienceInput', adGroup.audience);
+  safeInput('frequencyInput', adGroup.frequency);
+  safeInput('geosInput', adGroup.geos);
+  safeInput('baseBidInput', adGroup.baseBid);
+  safeInput('maxBidInput', adGroup.maxBid);
+  
+  // Ad Server Field inputs
+  safeInput('adServerNameInput', adGroup.adServerName);
+  safeInput('adServerStatusInput', adGroup.adServerStatus);
+  safeInput('adServerCompatibilityInput', adGroup.adServerCompatibility);
+  safeInput('adServerDimensionsInput', adGroup.adServerDimensions);
+  safeInput('adServerTestingStartsInput', adGroup.adServerTestingStarts);
+  safeInput('adServerStartDateInput', adGroup.adServerStartDate);
+  safeInput('adServerEndDateInput', adGroup.adServerEndDate);
+  safeInput('adServerCostStructureInput', adGroup.adServerCostStructure);
+  safeInput('adServerCapCostInput', adGroup.adServerCapCost);
+  });
 
 
 
@@ -1448,7 +1758,5 @@ document.addEventListener('DOMContentLoaded', function () {
   
   </script>
   <script src="./assets/sidebar.js" defer></script>
-  <script src="./assets/audit.js" defer></script>
-
-</body>
+  <script src="./assets/audit.js" defer></script></body>
 </html>

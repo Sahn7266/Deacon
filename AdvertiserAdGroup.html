@@ -482,8 +482,10 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Campaign</label>
-              <input type="text" id="beaconCampaign" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <p class="text-xs text-gray-500 mt-1">Associated campaign name</p>
+              <select id="adGroupCampaign" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <option value="">Select campaign</option>
+              </select>
+              <p class="text-xs text-gray-500 mt-1">Campaign to tie this ad group to</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Budget Allocation</label>
@@ -547,41 +549,172 @@
           </div>
           <div class="p-4">
             <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ad Group Name</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input type="text" id="adGroupName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Campaign</label>
-                <select id="adGroupCampaign" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                  <option value="">Select campaign</option>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Funnel Location</label>
+                <select id="adGroupFunnelLocation" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select funnel location</option>
+                  <option value="Awareness">Awareness</option>
+                  <option value="Consideration">Consideration</option>
+                  <option value="Conversion">Conversion</option>
+                  <option value="Loyalty">Loyalty</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Budget Allocation</label>
-                <input type="text" id="adGroupBudget" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Bid Strategy</label>
-                <select id="adGroupBidStrategy" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                  <option value="">Select bid strategy</option>
-                  <option>Manual CPC</option>
-                  <option>Maximize Clicks</option>
-                  <option>Target ROAS</option>
-                  <option>Enhanced CPC</option>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Channel</label>
+                <select id="adGroupChannel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select channel</option>
+                  <option value="Display">Display</option>
+                  <option value="Video">Video</option>
+                  <option value="Audio">Audio</option>
+                  <option value="Native Display">Native Display</option>
+                  <option value="Native Video">Native Video</option>
+                  <option value="TV">TV</option>
+                  <option value="Out of Home">Out of Home</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Creative Format</label>
-                <input type="text" id="creativeFormat" placeholder="e.g., Display Banner, Video 30s" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Device Types</label>
+                <div class="relative">
+                  <button type="button" id="deviceTypesDropdownBtn" class="w-full border border-gray-300 rounded-md px-3 py-2 text-left focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white flex justify-between items-center">
+                    <span id="deviceTypesSelected">Select device types</span>
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                  <div id="deviceTypesDropdown" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 hidden">
+                    <div class="p-2">
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" id="selectAllDeviceTypes" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm font-medium text-blue-600">Select All</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="Digital Home Assistant" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Digital Home Assistant</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="Digital Out of Home" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Digital Out of Home</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="Mobile" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Mobile</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="Other" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Other</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="PC Tablet" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">PC Tablet</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="TV" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">TV</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Targeting Refinements</label>
-                <input type="text" id="targetingRefinements" placeholder="e.g., Job Title: IT Manager, Director" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ad Environments</label>
+                <div class="relative">
+                  <button type="button" id="adEnvironmentsDropdownBtn" class="w-full border border-gray-300 rounded-md px-3 py-2 text-left focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white flex justify-between items-center">
+                    <span id="adEnvironmentsSelected">Select ad environments</span>
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                  <div id="adEnvironmentsDropdown" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 hidden">
+                    <div class="p-2">
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" id="selectAllAdEnvironments" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm font-medium text-blue-600">Select All</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="adEnvironments" value="In-App" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">In-App</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="adEnvironments" value="Mobile Optimized Web" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Mobile Optimized Web</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="adEnvironments" value="Web (PC & Mobile)" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Web (PC & Mobile)</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Placement Settings</label>
-                <input type="text" id="placementSettings" placeholder="e.g., Business Publications, Premium Inventory" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Primary Goal</label>
+                <select id="adGroupPrimaryGoal" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select primary goal</option>
+                  <option value="Cost per Acquisition (CPA)">Cost per Acquisition (CPA)</option>
+                  <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Target</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">$</span>
+                  </div>
+                  <input type="text" id="adGroupTarget" class="w-full border border-gray-300 rounded-md pl-8 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Audience</label>
+                <select id="adGroupAudience" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select audience</option>
+                  <option value="Apply a shared audience">Apply a shared audience</option>
+                  <option value="Koa Audiences">Koa Audiences</option>
+                  <option value="Target Everyone">Target Everyone</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                <div class="flex items-center space-x-2">
+                  <input type="number" id="adGroupFrequencyNumber" class="w-16 border border-gray-300 rounded-md px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" min="1" placeholder="1">
+                  <span class="text-sm text-gray-600">ads per</span>
+                  <input type="number" id="adGroupFrequencyPer" class="w-16 border border-gray-300 rounded-md px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" min="1" placeholder="1">
+                  <select id="adGroupFrequencyPeriod" class="border border-gray-300 rounded-md px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="day">day</option>
+                    <option value="week">week</option>
+                    <option value="month">month</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Geos</label>
+                <select id="adGroupGeos" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select geos</option>
+                  <option value="Specific Locations">Specific Locations</option>
+                  <option value="Everywhere">Everywhere</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Base Bid</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">$</span>
+                  </div>
+                  <input type="text" id="adGroupBaseBid" class="w-full border border-gray-300 rounded-md pl-8 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Max Bid</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">$</span>
+                  </div>
+                  <input type="text" id="adGroupMaxBid" class="w-full border border-gray-300 rounded-md pl-8 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+                </div>
               </div>
             </div>
           </div>
@@ -595,14 +728,91 @@
             <h4 class="font-semibold text-green-900 text-sm uppercase tracking-wide">Ad Server Fields • Google Campaign Manager</h4>
           </div>
           <div class="p-4">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ad Group Name</label>
-                <input type="text" id="adServerAdGroupName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input type="text" id="adServerName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Placement</label>
-                <input type="text" id="adServerPlacement" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select id="adServerStatus" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                  <option value="">Select status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Compatibility</label>
+                <select id="adServerCompatibility" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                  <option value="">Select compatibility</option>
+                  <option value="Display">Display</option>
+                  <option value="Persona">Persona</option>
+                  <option value="Video">Video</option>
+                  <option value="Audio">Audio</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Dimensions</label>
+                <div class="relative">
+                  <button type="button" id="dimensionsDropdownBtn" class="w-full border border-gray-300 rounded-md px-3 py-2 text-left focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white flex justify-between items-center">
+                    <span id="dimensionsSelected">Select dimensions</span>
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                  <div id="dimensionsDropdown" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 hidden">
+                    <div class="p-2">
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" id="selectAllDimensions" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <span class="text-sm font-medium text-green-600">Select All</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="dimensions" value="160x600" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <span class="text-sm">160x600</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="dimensions" value="320x50" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <span class="text-sm">320x50</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="dimensions" value="300x250" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <span class="text-sm">300x250</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="dimensions" value="728x90" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <span class="text-sm">728x90</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Testing Starts</label>
+                <input type="date" id="adServerTestingStarts" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                <input type="date" id="adServerStartDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <input type="date" id="adServerEndDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cost Structure</label>
+                <select id="adServerCostStructure" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                  <option value="">Select cost structure</option>
+                  <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
+                  <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cap Cost</label>
+                <select id="adServerCapCost" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                  <option value="">Select cap cost</option>
+                  <option value="OFF">OFF</option>
+                  <option value="ON">ON</option>
+                </select>
               </div>
             </div>
           </div>
@@ -1142,8 +1352,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Update field requirements based on connector selection
   function updateFieldRequirements(dspSelected, adServerSelected) {
-    // DSP field requirements
-    const dspRequiredFields = ['adGroupName', 'adGroupCampaign', 'adGroupBudget', 'adGroupBidStrategy', 'creativeFormat'];
+    // DSP field requirements - updated for swapped fields
+    const dspRequiredFields = ['adGroupName', 'adGroupCampaign'];
     dspRequiredFields.forEach(fieldId => {
       const field = document.getElementById(fieldId);
       if (field) {
@@ -1151,12 +1361,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Ad Server fields are optional for now
-    const adServerRequiredFields = ['adServerAdGroupName', 'adServerPlacement'];
+    // Ad Server field requirements - updated for swapped fields  
+    const adServerRequiredFields = ['adServerName'];
     adServerRequiredFields.forEach(fieldId => {
       const field = document.getElementById(fieldId);
       if (field) {
-        field.required = false; // Make optional
+        field.required = adServerSelected;
       }
     });
   }
@@ -1173,11 +1383,212 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize field visibility
   updateFieldVisibility();
 
+  // === DIMENSIONS MULTI-SELECT DROPDOWN ===
+  const dimensionsDropdownBtn = document.getElementById('dimensionsDropdownBtn');
+  const dimensionsDropdown = document.getElementById('dimensionsDropdown');
+  const dimensionsSelected = document.getElementById('dimensionsSelected');
+  const selectAllDimensions = document.getElementById('selectAllDimensions');
+  const dimensionCheckboxes = document.querySelectorAll('input[name="dimensions"]');
+
+  // Toggle dropdown visibility
+  dimensionsDropdownBtn.addEventListener('click', () => {
+    dimensionsDropdown.classList.toggle('hidden');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (event) => {
+    if (!dimensionsDropdownBtn.contains(event.target) && !dimensionsDropdown.contains(event.target)) {
+      dimensionsDropdown.classList.add('hidden');
+    }
+  });
+
+  // Update selected text
+  function updateDimensionsText() {
+    const checkedBoxes = Array.from(dimensionCheckboxes).filter(cb => cb.checked);
+    if (checkedBoxes.length === 0) {
+      dimensionsSelected.textContent = 'Select dimensions';
+    } else if (checkedBoxes.length === dimensionCheckboxes.length) {
+      dimensionsSelected.textContent = 'All dimensions selected';
+    } else if (checkedBoxes.length === 1) {
+      dimensionsSelected.textContent = checkedBoxes[0].value;
+    } else {
+      dimensionsSelected.textContent = `${checkedBoxes.length} dimensions selected`;
+    }
+  }
+
+  // Select All functionality
+  selectAllDimensions.addEventListener('change', () => {
+    dimensionCheckboxes.forEach(cb => {
+      cb.checked = selectAllDimensions.checked;
+    });
+    updateDimensionsText();
+  });
+
+  // Individual checkbox handling
+  dimensionCheckboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      const allChecked = Array.from(dimensionCheckboxes).every(checkbox => checkbox.checked);
+      const someChecked = Array.from(dimensionCheckboxes).some(checkbox => checkbox.checked);
+      
+      selectAllDimensions.checked = allChecked;
+      selectAllDimensions.indeterminate = someChecked && !allChecked;
+      
+      updateDimensionsText();
+    });
+  });
+
+  // Initialize dimensions text
+  updateDimensionsText();
+
+  // Reset dimensions dropdown
+  function resetDimensionsDropdown() {
+    dimensionCheckboxes.forEach(cb => cb.checked = false);
+    selectAllDimensions.checked = false;
+    selectAllDimensions.indeterminate = false;
+    updateDimensionsText();
+    dimensionsDropdown.classList.add('hidden');
+  }
+
+  // === DEVICE TYPES MULTI-SELECT DROPDOWN ===
+  const deviceTypesDropdownBtn = document.getElementById('deviceTypesDropdownBtn');
+  const deviceTypesDropdown = document.getElementById('deviceTypesDropdown');
+  const deviceTypesSelected = document.getElementById('deviceTypesSelected');
+  const selectAllDeviceTypes = document.getElementById('selectAllDeviceTypes');
+  const deviceTypeCheckboxes = document.querySelectorAll('input[name="deviceTypes"]');
+
+  // Toggle dropdown visibility
+  deviceTypesDropdownBtn?.addEventListener('click', () => {
+    deviceTypesDropdown.classList.toggle('hidden');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (event) => {
+    if (deviceTypesDropdownBtn && !deviceTypesDropdownBtn.contains(event.target) && !deviceTypesDropdown.contains(event.target)) {
+      deviceTypesDropdown.classList.add('hidden');
+    }
+  });
+
+  // Update selected text
+  function updateDeviceTypesText() {
+    const checkedBoxes = Array.from(deviceTypeCheckboxes).filter(cb => cb.checked);
+    if (checkedBoxes.length === 0) {
+      deviceTypesSelected.textContent = 'Select device types';
+    } else if (checkedBoxes.length === deviceTypeCheckboxes.length) {
+      deviceTypesSelected.textContent = 'All device types selected';
+    } else if (checkedBoxes.length === 1) {
+      deviceTypesSelected.textContent = checkedBoxes[0].value;
+    } else {
+      deviceTypesSelected.textContent = `${checkedBoxes.length} device types selected`;
+    }
+  }
+
+  // Select All functionality
+  selectAllDeviceTypes?.addEventListener('change', () => {
+    deviceTypeCheckboxes.forEach(cb => {
+      cb.checked = selectAllDeviceTypes.checked;
+    });
+    updateDeviceTypesText();
+  });
+
+  // Individual checkbox handling
+  deviceTypeCheckboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      const allChecked = Array.from(deviceTypeCheckboxes).every(checkbox => checkbox.checked);
+      const someChecked = Array.from(deviceTypeCheckboxes).some(checkbox => checkbox.checked);
+      
+      selectAllDeviceTypes.checked = allChecked;
+      selectAllDeviceTypes.indeterminate = someChecked && !allChecked;
+      
+      updateDeviceTypesText();
+    });
+  });
+
+  // Initialize device types text
+  updateDeviceTypesText();
+
+  // Reset device types dropdown
+  function resetDeviceTypesDropdown() {
+    deviceTypeCheckboxes.forEach(cb => cb.checked = false);
+    selectAllDeviceTypes.checked = false;
+    selectAllDeviceTypes.indeterminate = false;
+    updateDeviceTypesText();
+    deviceTypesDropdown.classList.add('hidden');
+  }
+
+  // === AD ENVIRONMENTS MULTI-SELECT DROPDOWN ===
+  const adEnvironmentsDropdownBtn = document.getElementById('adEnvironmentsDropdownBtn');
+  const adEnvironmentsDropdown = document.getElementById('adEnvironmentsDropdown');
+  const adEnvironmentsSelected = document.getElementById('adEnvironmentsSelected');
+  const selectAllAdEnvironments = document.getElementById('selectAllAdEnvironments');
+  const adEnvironmentCheckboxes = document.querySelectorAll('input[name="adEnvironments"]');
+
+  // Toggle dropdown visibility
+  adEnvironmentsDropdownBtn?.addEventListener('click', () => {
+    adEnvironmentsDropdown.classList.toggle('hidden');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (event) => {
+    if (adEnvironmentsDropdownBtn && !adEnvironmentsDropdownBtn.contains(event.target) && !adEnvironmentsDropdown.contains(event.target)) {
+      adEnvironmentsDropdown.classList.add('hidden');
+    }
+  });
+
+  // Update selected text
+  function updateAdEnvironmentsText() {
+    const checkedBoxes = Array.from(adEnvironmentCheckboxes).filter(cb => cb.checked);
+    if (checkedBoxes.length === 0) {
+      adEnvironmentsSelected.textContent = 'Select ad environments';
+    } else if (checkedBoxes.length === adEnvironmentCheckboxes.length) {
+      adEnvironmentsSelected.textContent = 'All environments selected';
+    } else if (checkedBoxes.length === 1) {
+      adEnvironmentsSelected.textContent = checkedBoxes[0].value;
+    } else {
+      adEnvironmentsSelected.textContent = `${checkedBoxes.length} environments selected`;
+    }
+  }
+
+  // Select All functionality
+  selectAllAdEnvironments?.addEventListener('change', () => {
+    adEnvironmentCheckboxes.forEach(cb => {
+      cb.checked = selectAllAdEnvironments.checked;
+    });
+    updateAdEnvironmentsText();
+  });
+
+  // Individual checkbox handling
+  adEnvironmentCheckboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      const allChecked = Array.from(adEnvironmentCheckboxes).every(checkbox => checkbox.checked);
+      const someChecked = Array.from(adEnvironmentCheckboxes).some(checkbox => checkbox.checked);
+      
+      selectAllAdEnvironments.checked = allChecked;
+      selectAllAdEnvironments.indeterminate = someChecked && !allChecked;
+      
+      updateAdEnvironmentsText();
+    });
+  });
+
+  // Initialize ad environments text
+  updateAdEnvironmentsText();
+
+  // Reset ad environments dropdown
+  function resetAdEnvironmentsDropdown() {
+    adEnvironmentCheckboxes.forEach(cb => cb.checked = false);
+    selectAllAdEnvironments.checked = false;
+    selectAllAdEnvironments.indeterminate = false;
+    updateAdEnvironmentsText();
+    adEnvironmentsDropdown.classList.add('hidden');
+  }
+
   // Open modal
   document.getElementById('createBtn')?.addEventListener('click', () => {
     modal.classList.remove('hidden');
     // Reset form and connectors
     form.reset();
+    resetDimensionsDropdown();
+    resetDeviceTypesDropdown();
+    resetAdEnvironmentsDropdown();
     isConnectorsOpen = false;
     connectorsContent.classList.add('hidden');
     connectorsToggle.classList.remove('bg-blue-600');
@@ -1199,63 +1610,125 @@ document.addEventListener('DOMContentLoaded', () => {
   // Save new Ad Group
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    console.log('Form submit triggered');
     handleAdGroupCreation(false);
   });
 
   // Handle "Create & Add +" button
   document.getElementById('createAndAddMore')?.addEventListener('click', () => {
+    console.log('Create & Add + button clicked');
     // Validate the form first
     if (!form.checkValidity()) {
+      console.log('Form validation failed');
       form.reportValidity();
       return;
     }
+    console.log('Form validation passed, creating ad group');
     handleAdGroupCreation(true);
   });
 
   // Unified ad group creation handler
   function handleAdGroupCreation(keepModalOpen) {
-    // Get selected connectors from checkboxes
-    const selectedDsp = Array.from(dspCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-    const selectedAdServer = Array.from(adServerCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+    console.log('handleAdGroupCreation called with keepModalOpen:', keepModalOpen);
     
-    const adGroup = {
-      id: 'AG' + Date.now(),
-      name: form.adGroupName.value.trim(),
-      campaign: form.adGroupCampaign.value, // This will be the campaign ID
-      campaignId: form.adGroupCampaign.value, // Add explicit campaignId for better matching
-      budget: form.adGroupBudget.value.trim(),
-      bidStrategy: form.adGroupBidStrategy.value.trim(),
-      creativeFormat: form.creativeFormat.value.trim(),
-      targetingRefinements: form.targetingRefinements.value.trim(),
-      placementSettings: form.placementSettings.value.trim(),
-      dsp: 'Custom',
-      classification: 'Custom',
-      source: 'custom',
-      // Add connector information
-      connectors: {
-        dsp: selectedDsp.join(', '),
-        adServer: selectedAdServer.join(', ')
-      },
-      // Add Ad Server fields
-      adServerAdGroupName: form.adServerAdGroupName?.value?.trim() || '',
-      adServerPlacement: form.adServerPlacement?.value?.trim() || ''
-    };
+    try {
+      // Get selected connectors from checkboxes
+      const selectedDsp = Array.from(dspCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+      const selectedAdServer = Array.from(adServerCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+      console.log('Selected connectors - DSP:', selectedDsp, 'Ad Server:', selectedAdServer);
+      
+      // Helper function to get selected multi-select values
+      function getMultiSelectValues(checkboxName) {
+        const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]:checked`);
+        return Array.from(checkboxes).map(cb => cb.value).join(', ');
+      }
+      
+      // Helper function to get frequency value
+      function getFrequencyValue() {
+        const number = document.getElementById('adGroupFrequencyNumber')?.value || '';
+        const per = document.getElementById('adGroupFrequencyPer')?.value || '';
+        const period = document.getElementById('adGroupFrequencyPeriod')?.value || '';
+        if (number && per && period) {
+          return `${number} ads per ${per} ${period}`;
+        }
+        return '';
+      }
+      
+      console.log('Gathering form data...');
+      const adGroup = {
+        id: 'AG' + Date.now(),
+        // Use Beacon Ad Group Name as the primary name
+        name: document.getElementById('beaconAdGroupName')?.value?.trim() || '',
+        // DSP Fields (now contain the detailed fields)
+        dspName: document.getElementById('adGroupName')?.value?.trim() || '',
+        campaign: document.getElementById('adGroupCampaign')?.value || '',
+        campaignId: document.getElementById('adGroupCampaign')?.value || '',
+        funnelLocation: document.getElementById('adGroupFunnelLocation')?.value || '',
+        channel: document.getElementById('adGroupChannel')?.value || '',
+        deviceTypes: getMultiSelectValues('deviceTypes'),
+        adEnvironments: getMultiSelectValues('adEnvironments'),
+        primaryGoal: document.getElementById('adGroupPrimaryGoal')?.value || '',
+        target: document.getElementById('adGroupTarget')?.value?.trim() || '',
+        audience: document.getElementById('adGroupAudience')?.value || '',
+        frequency: getFrequencyValue(),
+        geos: document.getElementById('adGroupGeos')?.value || '',
+        baseBid: document.getElementById('adGroupBaseBid')?.value?.trim() || '',
+        maxBid: document.getElementById('adGroupMaxBid')?.value?.trim() || '',
+        
+        // Ad Server Fields (now contain the simple fields)
+        adServerName: document.getElementById('adServerName')?.value?.trim() || '',
+        adServerStatus: document.getElementById('adServerStatus')?.value || '',
+        adServerCompatibility: document.getElementById('adServerCompatibility')?.value || '',
+        adServerDimensions: getMultiSelectValues('dimensions'),
+        adServerTestingStarts: document.getElementById('adServerTestingStarts')?.value || '',
+        adServerStartDate: document.getElementById('adServerStartDate')?.value || '',
+        adServerEndDate: document.getElementById('adServerEndDate')?.value || '',
+        adServerCostStructure: document.getElementById('adServerCostStructure')?.value || '',
+        adServerCapCost: document.getElementById('adServerCapCost')?.value || '',
+        
+        // Legacy fields for compatibility
+        dsp: 'Custom',
+        classification: 'Custom',
+        source: 'custom',
+        // Add connector information
+        connectors: {
+          dsp: selectedDsp.join(', '),
+          adServer: selectedAdServer.join(', ')
+        }
+      };
+
+      console.log('Ad Group object created:', adGroup);
 
     // ✅ Log Ad Group Creation to Audit
     const auditData = {
-      adGroupNameInput: adGroup.name,
+      // DSP Fields (using DSP name for DSP audit tracking)
+      adGroupNameInput: adGroup.dspName,
       campaignName: adGroup.campaign,
-      budgetAllocation: adGroup.budget,
-      bidStrategy: adGroup.bidStrategy,
-      creativeFormat: adGroup.creativeFormat,
-      targetingRefinements: adGroup.targetingRefinements,
-      placementSettings: adGroup.placementSettings,
+      funnelLocation: adGroup.funnelLocation,
+      channel: adGroup.channel,
+      deviceTypes: adGroup.deviceTypes,
+      adEnvironments: adGroup.adEnvironments,
+      primaryGoal: adGroup.primaryGoal,
+      target: adGroup.target,
+      audience: adGroup.audience,
+      frequency: adGroup.frequency,
+      geos: adGroup.geos,
+      baseBid: adGroup.baseBid,
+      maxBid: adGroup.maxBid,
+      
+      // Ad Server Fields
+      adServerName: adGroup.adServerName,
+      adServerStatus: adGroup.adServerStatus,
+      adServerCompatibility: adGroup.adServerCompatibility,
+      adServerDimensions: adGroup.adServerDimensions,
+      adServerTestingStarts: adGroup.adServerTestingStarts,
+      adServerStartDate: adGroup.adServerStartDate,
+      adServerEndDate: adGroup.adServerEndDate,
+      adServerCostStructure: adGroup.adServerCostStructure,
+      adServerCapCost: adGroup.adServerCapCost,
+      
       connectors: JSON.stringify(adGroup.connectors)
     };
-
-    // Add Ad Server fields to audit data - always include them to maintain structure
-    auditData.adServerAdGroupName = adGroup.adServerAdGroupName || '';
-    auditData.adServerPlacement = adGroup.adServerPlacement || '';
 
     audit.recordCreate({
       campaignId: adGroup.campaign,
@@ -1273,16 +1746,33 @@ document.addEventListener('DOMContentLoaded', () => {
       const originalAdGroup = JSON.parse(JSON.stringify(groups[existingIndex]));
 
       const beforeAuditData = {
+        // DSP Fields
         adGroupNameInput: originalAdGroup.name,
         campaignName: originalAdGroup.campaign,
-        budgetAllocation: originalAdGroup.budget,
-        bidStrategy: originalAdGroup.bidStrategy,
-        creativeFormat: originalAdGroup.creativeFormat,
-        targetingRefinements: originalAdGroup.targetingRefinements,
-        placementSettings: originalAdGroup.placementSettings,
-        connectors: JSON.stringify(originalAdGroup.connectors || {}),
-        adServerAdGroupName: originalAdGroup.adServerAdGroupName || '',
-        adServerPlacement: originalAdGroup.adServerPlacement || ''
+        funnelLocation: originalAdGroup.funnelLocation || '',
+        channel: originalAdGroup.channel || '',
+        deviceTypes: originalAdGroup.deviceTypes || '',
+        adEnvironments: originalAdGroup.adEnvironments || '',
+        primaryGoal: originalAdGroup.primaryGoal || '',
+        target: originalAdGroup.target || '',
+        audience: originalAdGroup.audience || '',
+        frequency: originalAdGroup.frequency || '',
+        geos: originalAdGroup.geos || '',
+        baseBid: originalAdGroup.baseBid || '',
+        maxBid: originalAdGroup.maxBid || '',
+        
+        // Ad Server Fields
+        adServerName: originalAdGroup.adServerName || '',
+        adServerStatus: originalAdGroup.adServerStatus || '',
+        adServerCompatibility: originalAdGroup.adServerCompatibility || '',
+        adServerDimensions: originalAdGroup.adServerDimensions || '',
+        adServerTestingStarts: originalAdGroup.adServerTestingStarts || '',
+        adServerStartDate: originalAdGroup.adServerStartDate || '',
+        adServerEndDate: originalAdGroup.adServerEndDate || '',
+        adServerCostStructure: originalAdGroup.adServerCostStructure || '',
+        adServerCapCost: originalAdGroup.adServerCapCost || '',
+        
+        connectors: JSON.stringify(originalAdGroup.connectors || {})
       };
 
       audit.recordEdit({
@@ -1307,7 +1797,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Save the current selections before resetting
-    const selectedCampaignId = form.adGroupCampaign.value;
+    const selectedCampaignId = document.getElementById('adGroupCampaign')?.value || '';
     const selectedDspValues = selectedDsp.slice(); // copy array
     const selectedAdServerValues = selectedAdServer.slice(); // copy array
 
@@ -1323,7 +1813,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (keepModalOpen) {
       // Keep modal open, reset form, but preserve selections
       form.reset();
-      form.adGroupCampaign.value = selectedCampaignId;
+      resetDimensionsDropdown();
+      resetDeviceTypesDropdown();
+      resetAdEnvironmentsDropdown();
+      document.getElementById('adGroupCampaign').value = selectedCampaignId;
       // Restore checkbox selections
       dspCheckboxes.forEach(cb => {
         cb.checked = selectedDspValues.includes(cb.value);
@@ -1336,10 +1829,19 @@ document.addEventListener('DOMContentLoaded', () => {
       // Close modal normally
       modal.classList.add('hidden');
       form.reset();
+      resetDimensionsDropdown();
+      resetDeviceTypesDropdown();
+      resetAdEnvironmentsDropdown();
       // Clear all checkboxes
       dspCheckboxes.forEach(cb => cb.checked = false);
       adServerCheckboxes.forEach(cb => cb.checked = false);
       updateFieldVisibility();
+    }
+    } catch (error) {
+      console.error('Error creating ad group:', error);
+      if (typeof showToast === 'function') {
+        showToast('Error creating ad group. Please check the console for details.');
+      }
     }
   }
 });
