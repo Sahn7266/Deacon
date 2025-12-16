@@ -411,6 +411,9 @@
                         <span>Ad Groups</span><span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
                       </button>
                     </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <span class="px-6 py-3 block">Actions</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody id="advertiserTableBody" class="bg-white divide-y divide-gray-200">
@@ -436,138 +439,298 @@
   </div>
 
   <div id="createAdvertiserModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 relative">
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-900">Create New Advertiser</h2>
-        <button-type id="closeModalX" class="text-gray-400 hover:text-gray-600 transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-6xl max-h-[90vh] p-6 relative mx-4">
+      <button id="closeModalX" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
 
-      <div class="p-6 space-y-4">
-        <div>
-          <label for="accountNumber" class="block text-sm font-medium text-gray-700 mb-2">
-            Account Number <span class="text-red-500" id="accountRequiredAsterisk">*</span>
-          </label>
-          <div class="flex items-center space-x-2">
-            <input 
-              type="text" 
-              id="accountNumber" 
-              class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter account number"
-            />
-            <button 
-              id="lookupBtn" 
-              class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors"
-              title="Lookup account"
-            >
-              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Create New Advertiser</h2>
+
+      <form id="createAdvertiserForm" class="overflow-y-auto max-h-[75vh] pr-2">
+        
+        <!-- Beacon Fields Section -->
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold text-gray-800 mb-3">Beacon Fields</h3>
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ID</label>
+                <input type="text" id="advertiserId" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 focus:outline-none" readonly>
+                <p class="text-xs text-gray-500 mt-1">System-generated identifier</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Account Number <span class="text-red-500" id="accountRequiredAsterisk">*</span>
+                </label>
+                <div class="flex items-center space-x-2">
+                  <input 
+                    type="text" 
+                    id="accountNumber" 
+                    class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter account number"
+                  />
+                  <button 
+                    type="button"
+                    id="lookupBtn" 
+                    class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors"
+                    title="Lookup account"
+                  >
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                  </button>
+                </div>
+                <p id="accountDupError" class="mt-2 text-sm text-red-600 hidden" role="alert" aria-live="assertive">
+                  An advertiser with this Account # already exists.
+                </p>
+              </div>
+              <div class="lg:col-span-2">
+                <div class="flex items-center mb-2">
+                  <input 
+                    type="checkbox" 
+                    id="noCrmAccount" 
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label for="noCrmAccount" class="ml-2 text-sm text-gray-700">
+                    Advertiser is Not Connected to a CRM Account
+                  </label>
+                </div>
+              </div>
+              <div class="lg:col-span-2">
+                <label for="advertiserName" class="block text-sm font-medium text-gray-700 mb-1">
+                  Name <span class="text-red-500">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="advertiserName" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100"
+                  placeholder="Enter advertiser name"
+                  disabled
+                />
+                <p id="nameDupError" class="mt-2 text-sm text-red-600 hidden" role="alert" aria-live="assertive">
+                  An advertiser with this Name already exists.
+                </p>
+                <div id="crmAccountDisplay" class="hidden mt-1 text-xs text-gray-500">
+                  CRM Account: <span id="crmAccountName"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connectors Section -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-lg font-semibold text-gray-800">Connectors</h3>
+            <button type="button" id="connectorsToggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false">
+              <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
             </button>
           </div>
+          <div id="connectorsContent" class="hidden">
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- DSP Options -->
+                <div>
+                  <label class="block text-sm font-bold text-gray-700 mb-2">DSP (Data Service Provider)</label>
+                  <div class="flex flex-wrap gap-2">
+                    <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
+                      <input type="checkbox" id="dsp-trade-desk" name="dsp" value="trade-desk" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                      <span class="text-sm font-medium text-gray-700">The Trade Desk</span>
+                    </label>
+                  </div>
+                </div>
 
-          <p id="accountDupError" class="mt-2 text-sm text-red-600 hidden" role="alert" aria-live="assertive">
-            An advertiser with this Account # already exists.
-          </p>
-        </div>
-
-        <div class="flex items-center">
-          <input 
-            type="checkbox" 
-            id="noCrmAccount" 
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label for="noCrmAccount" class="ml-2 text-sm text-gray-700">
-            Advertiser is Not Connected to a CRM Account
-          </label>
-        </div>
-
-        <div>
-          <label for="advertiserName" class="block text-sm font-medium text-gray-700 mb-2">
-            Name <span class="text-red-500">*</span>
-          </label>
-          <input 
-            type="text" 
-            id="advertiserName" 
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100"
-            placeholder="Enter advertiser name"
-            disabled
-          />
-          <p id="nameDupError" class="mt-2 text-sm text-red-600 hidden" role="alert" aria-live="assertive">
-            An advertiser with this Name already exists.
-          </p>
-          <div id="crmAccountDisplay" class="hidden mt-1 text-xs text-gray-500">
-            CRM Account: <span id="crmAccountName"></span>
+                <!-- Ad Server Options -->
+                <div>
+                  <label class="block text-sm font-bold text-gray-700 mb-2">Ad Server</label>
+                  <div class="flex flex-wrap gap-2">
+                    <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-green-300 cursor-pointer transition-colors">
+                      <input type="checkbox" id="adserver-gcm" name="adserver" value="google-campaign-manager" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                      <span class="text-sm font-medium text-gray-700">Google Campaign Manager</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div id="platformsContainer" class="">
-          <hr class="my-4 border-gray-200" />
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Platforms <span class="text-red-500">*</span>
-          </label>
+        <!-- DSP Fields Section (The Trade Desk) -->
+        <div id="dspFieldsSection" class="hidden mb-3">
+          <div class="bg-white border border-blue-200 rounded-lg shadow-sm">
+            <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 border-b border-blue-200 rounded-t-lg">
+              <h4 class="font-semibold text-blue-900 text-sm uppercase tracking-wide">DSP Fields • The Trade Desk</h4>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <input type="text" id="dspName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter DSP name">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Partner</label>
+                  <select id="dspPartner" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">-- Select Partner --</option>
+                    <option value="Multiview">Multiview</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Domain Address</label>
+                  <input type="text" id="dspDomain" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter domain">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Advertiser Country</label>
+                  <select id="dspCountry" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">-- Select Country --</option>
+                    <option value="United States">United States</option>
+                    <option value="Canada">Canada</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Germany">Germany</option>
+                    <option value="France">France</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Are you targeting anyone in the EU</label>
+                  <select id="dspEuTargeting" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">-- Select --</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Industry Category</label>
+                  <select id="dspIndustry" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">-- Select Industry --</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Automotive">Automotive</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Education">Education</option>
+                    <option value="Entertainment">Entertainment</option>
+                  </select>
+                </div>
+                
+                <!-- Attribution Windows -->
+                <div class="xl:col-span-3">
+                  <label class="block text-sm font-bold text-gray-700 mb-2 mt-2">Attribution Windows</label>
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Click</label>
+                      <div class="flex gap-2">
+                        <input type="number" id="dspAttrClickValue" class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="90">
+                        <select id="dspAttrClickUnit" class="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                          <option value="Days" selected>Days</option>
+                          <option value="Weeks">Weeks</option>
+                          <option value="Months">Months</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Impression</label>
+                      <div class="flex gap-2">
+                        <input type="number" id="dspAttrImpressionValue" class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="90">
+                        <select id="dspAttrImpressionUnit" class="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                          <option value="Days" selected>Days</option>
+                          <option value="Weeks">Weeks</option>
+                          <option value="Months">Months</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-          <div>
-           <div class="space-y-2">
-             <div class="flex items-center">
-               <input 
-                 type="checkbox" 
-                 id="platformGCM" 
-                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-               />
-               <label for="platformGCM" class="ml-2 text-sm text-gray-700">Google Campaign Manager (GCM)</label>
-             </div>
-             <div class="flex items-center">
-               <input 
-                 type="checkbox" 
-                 id="platformTradeDesk" 
-                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-               />
-               <label for="platformTradeDesk" class="ml-2 text-sm text-gray-700">Trade Desk</label>
-             </div>
-             <div class="flex items-center">
-               <input 
-                 type="checkbox" 
-                 id="platformDV360" 
-                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-               />
-               <label for="platformDV360" class="ml-2 text-sm text-gray-700">DV360</label>
-             </div>
-           </div>
-         </div>
-         </div>
-       </div>
+                <!-- De-Duplication Windows -->
+                <div class="xl:col-span-3">
+                  <label class="block text-sm font-bold text-gray-700 mb-2 mt-2">De-Duplication Windows</label>
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Click</label>
+                      <div class="flex items-center gap-2">
+                        <input type="number" id="dspDedupClick" class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="7">
+                        <span class="text-sm text-gray-600">Seconds</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Conversion</label>
+                      <div class="flex items-center gap-2">
+                        <input type="number" id="dspDedupConversion" class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="7">
+                        <span class="text-sm text-gray-600">Seconds</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-      <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
-        <div class="flex items-center justify-between w-full">
-          <div class="text-sm text-gray-600">
-            <label class="flex items-center space-x-2">
-              <input id="platformToggle" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded" />
-              <span class="text-sm text-gray-700">Enable Platforms (P2)</span>
-            </label>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Yahoo Integration</label>
+                  <select id="dspYahoo" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">-- Select --</option>
+                    <option value="Enabled">Enabled</option>
+                    <option value="Disabled">Disabled</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="flex items-center space-x-3">
-        <button 
-          id="cancelModalBtn" 
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-        >
-          Cancel
-        </button>
-        <button 
-          id="createAdvertiserBtn" 
-          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-          disabled
-        >
-          Create
-        </button>
-      </div>
+        </div>
+
+        <!-- Ad Server Fields Section (Google Campaign Manager) -->
+        <div id="adServerFieldsSection" class="hidden mb-3">
+          <div class="bg-white border border-green-200 rounded-lg shadow-sm">
+            <div class="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 border-b border-green-200 rounded-t-lg">
+              <h4 class="font-semibold text-green-900 text-sm uppercase tracking-wide">Ad Server Fields • Google Campaign Manager</h4>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Advertiser Name</label>
+                  <input type="text" id="adServerAdvertiserName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter advertiser name">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Advertiser Vertical</label>
+                  <select id="adServerVertical" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <option value="">-- Select Vertical --</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Automotive">Automotive</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Education">Education</option>
+                    <option value="Entertainment">Entertainment</option>
+                  </select>
+                </div>
+                
+                <!-- Declarations -->
+                <div class="lg:col-span-2">
+                  <label class="block text-sm font-bold text-gray-700 mb-2 mt-2">Declarations</label>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">EU Political Ads</label>
+                    <select id="adServerEuPolitical" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                      <option value="">-- Select --</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-3 border-t border-gray-200">
+          <button type="button" id="cancelModalBtn" class="px-6 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">Cancel</button>
+          <button type="submit" id="createAdvertiserBtn" class="px-6 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>Create Advertiser</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <div id="accountLookupModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+  <div id="accountLookupModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style="z-index: 9999;">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col">
       <div class="flex items-center justify-between p-6 border-b border-gray-200">
         <h3 class="text-lg font-semibold text-gray-900">Select an account to connect to this advertiser:</h3>
@@ -629,7 +792,7 @@
         OWNER_FILTER: 'adv_list_owner'
       },
       PAGINATION: {
-        DEFAULT_ROWS: 15,
+        DEFAULT_ROWS: 50,
         MAX_ROWS: 200
       },
       CURRENT_USER: 'David DeHerrera',
@@ -965,6 +1128,18 @@
             // Table clicks
             if (this.elements.advertiserTableBody) {
               this.elements.advertiserTableBody.addEventListener('click', function(e) {
+                // Handle delete button
+                const deleteBtn = e.target.closest('.delete-advertiser');
+                if (deleteBtn) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const advId = deleteBtn.getAttribute('data-adv-id');
+                  if (advId) {
+                    self.deleteAdvertiser(advId);
+                  }
+                  return;
+                }
+                
                 const link = e.target.closest('a[data-adv-id]');
                 if (link) {
                   e.preventDefault();
@@ -1178,9 +1353,79 @@ self.validateForm();
 
             })();
             
-            if (this.elements.createAdvertiserBtn) {
-              this.elements.createAdvertiserBtn.addEventListener('click', function() {
+            // Form submission handler
+            const createAdvertiserForm = document.getElementById('createAdvertiserForm');
+            if (createAdvertiserForm) {
+              createAdvertiserForm.addEventListener('submit', function(e) {
+                e.preventDefault();
                 self.handleCreateAdvertiser();
+              });
+            }
+
+            if (this.elements.createAdvertiserBtn) {
+              this.elements.createAdvertiserBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                self.handleCreateAdvertiser();
+              });
+            }
+
+            // Connectors toggle
+            const connectorsToggle = document.getElementById('connectorsToggle');
+            const connectorsContent = document.getElementById('connectorsContent');
+            if (connectorsToggle && connectorsContent) {
+              connectorsToggle.addEventListener('click', function() {
+                const isChecked = this.getAttribute('aria-checked') === 'true';
+                const newState = !isChecked;
+                
+                this.setAttribute('aria-checked', newState);
+                const slider = this.querySelector('span');
+                if (newState) {
+                  this.classList.remove('bg-gray-200');
+                  this.classList.add('bg-blue-600');
+                  if (slider) slider.classList.add('translate-x-5');
+                  connectorsContent.classList.remove('hidden');
+                } else {
+                  this.classList.add('bg-gray-200');
+                  this.classList.remove('bg-blue-600');
+                  if (slider) slider.classList.remove('translate-x-5');
+                  connectorsContent.classList.add('hidden');
+                  // Hide DSP and Ad Server sections when connectors are disabled
+                  const dspSection = document.getElementById('dspFieldsSection');
+                  const adServerSection = document.getElementById('adServerFieldsSection');
+                  if (dspSection) dspSection.classList.add('hidden');
+                  if (adServerSection) adServerSection.classList.add('hidden');
+                  // Uncheck connector checkboxes
+                  const dspCheckbox = document.getElementById('dsp-trade-desk');
+                  const adServerCheckbox = document.getElementById('adserver-gcm');
+                  if (dspCheckbox) dspCheckbox.checked = false;
+                  if (adServerCheckbox) adServerCheckbox.checked = false;
+                }
+              });
+            }
+
+            // DSP and Ad Server checkbox toggles
+            const dspCheckbox = document.getElementById('dsp-trade-desk');
+            const adServerCheckbox = document.getElementById('adserver-gcm');
+            const dspSection = document.getElementById('dspFieldsSection');
+            const adServerSection = document.getElementById('adServerFieldsSection');
+
+            if (dspCheckbox && dspSection) {
+              dspCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                  dspSection.classList.remove('hidden');
+                } else {
+                  dspSection.classList.add('hidden');
+                }
+              });
+            }
+
+            if (adServerCheckbox && adServerSection) {
+              adServerCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                  adServerSection.classList.remove('hidden');
+                } else {
+                  adServerSection.classList.add('hidden');
+                }
               });
             }
 
@@ -1357,7 +1602,7 @@ self.validateForm();
             
             if (data.length === 0) {
               const tr = document.createElement('tr');
-              tr.innerHTML = '<td colspan="6" class="px-6 py-2 text-center text-gray-500">No advertisers found</td>';
+              tr.innerHTML = '<td colspan="7" class="px-6 py-2 text-center text-gray-500">No advertisers found</td>';
               this.elements.advertiserTableBody.appendChild(tr);
               return;
             }
@@ -1374,7 +1619,10 @@ self.validateForm();
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.account || '') + '</td>' +
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.status || '') + '</td>' +
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.campaign || '') + '</td>' +
-                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.adGroup || '') + '</td>';
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.adGroup || '') + '</td>' +
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-center">' +
+                  '<button class="text-red-600 hover:underline delete-advertiser" data-adv-id="' + (adv.id || '') + '" title="Delete Advertiser">Delete</button>' +
+                '</td>';
               this.elements.advertiserTableBody.appendChild(tr);
             }
           },
@@ -1450,10 +1698,57 @@ self.validateForm();
           },
 
           resetCreateForm: function() {
+            // Generate new advertiser ID
+            const advertiserId = document.getElementById('advertiserId');
+            if (advertiserId) {
+              advertiserId.value = 'ADV-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            }
+
             if (this.elements.accountNumber) this.elements.accountNumber.value = '';
             if (this.elements.advertiserName) this.elements.advertiserName.value = '';
             if (this.elements.noCrmAccount) this.elements.noCrmAccount.checked = false;
             this.selectedAccount = null;
+            
+            // Reset connectors toggle
+            const connectorsToggle = document.getElementById('connectorsToggle');
+            const connectorsContent = document.getElementById('connectorsContent');
+            if (connectorsToggle) {
+              connectorsToggle.setAttribute('aria-checked', 'false');
+              connectorsToggle.classList.add('bg-gray-200');
+              connectorsToggle.classList.remove('bg-blue-600');
+              const slider = connectorsToggle.querySelector('span');
+              if (slider) slider.classList.remove('translate-x-5');
+            }
+            if (connectorsContent) connectorsContent.classList.add('hidden');
+
+            // Reset connector checkboxes
+            const dspCheckbox = document.getElementById('dsp-trade-desk');
+            const adServerCheckbox = document.getElementById('adserver-gcm');
+            if (dspCheckbox) dspCheckbox.checked = false;
+            if (adServerCheckbox) adServerCheckbox.checked = false;
+
+            // Hide DSP and Ad Server sections
+            const dspSection = document.getElementById('dspFieldsSection');
+            const adServerSection = document.getElementById('adServerFieldsSection');
+            if (dspSection) dspSection.classList.add('hidden');
+            if (adServerSection) adServerSection.classList.add('hidden');
+
+            // Reset all DSP fields
+            const dspFields = ['dspName', 'dspPartner', 'dspDomain', 'dspCountry', 'dspEuTargeting', 
+                              'dspIndustry', 'dspAttrClickValue', 'dspAttrClickUnit', 
+                              'dspAttrImpressionValue', 'dspAttrImpressionUnit', 'dspDedupClick', 
+                              'dspDedupConversion', 'dspYahoo'];
+            dspFields.forEach(id => {
+              const field = document.getElementById(id);
+              if (field) field.value = '';
+            });
+
+            // Reset all Ad Server fields
+            const adServerFields = ['adServerAdvertiserName', 'adServerVertical', 'adServerEuPolitical'];
+            adServerFields.forEach(id => {
+              const field = document.getElementById(id);
+              if (field) field.value = '';
+            });
             
             // ensure platform toggle is reset and platform options hidden by default
             if (this.elements.platformToggle) this.elements.platformToggle.checked = false;
@@ -1553,9 +1848,9 @@ self.validateForm();
             // - If not noCrm: account AND name required, and neither accountDup nor nameDup should be true.
             let isValid = false;
             if (noCrm) {
-              isValid = hasName && !nameDup && platformRequirementMet;
+              isValid = hasName && !nameDup;
             } else {
-              isValid = hasName && hasAccount && !accountDup && !nameDup && platformRequirementMet;
+              isValid = hasName && hasAccount && !accountDup && !nameDup;
            
             }
 
@@ -1597,47 +1892,102 @@ return false;
               return;
             }
 
+            // Get advertiser ID
+            const advIdField = document.getElementById('advertiserId');
+            const advertiserId = advIdField ? advIdField.value : ('ADV' + String(Date.now()).slice(-6));
+
             // Get platform selections (but ignore if platforms are disabled)
             const platformsEnabled = this.elements.platformToggle ? this.elements.platformToggle.checked : true;
             const platformGCM = document.getElementById('platformGCM');
             const platformTradeDesk = document.getElementById('platformTradeDesk');
             const platformDV360 = document.getElementById('platformDV360');
 
-            // Build a draft advertiser and save as a draft (do NOT add to main list yet)
-            const draftAdvertiser = {
-              id: 'ADV' + String(Date.now()).slice(-6),
+            // Collect DSP fields
+            const dspData = {};
+            const dspCheckbox = document.getElementById('dsp-trade-desk');
+            if (dspCheckbox && dspCheckbox.checked) {
+              dspData.name = document.getElementById('dspName')?.value || '';
+              dspData.partner = document.getElementById('dspPartner')?.value || '';
+              dspData.domain = document.getElementById('dspDomain')?.value || '';
+              dspData.country = document.getElementById('dspCountry')?.value || '';
+              dspData.euTargeting = document.getElementById('dspEuTargeting')?.value || '';
+              dspData.industry = document.getElementById('dspIndustry')?.value || '';
+              dspData.attributionWindows = {
+                click: {
+                  value: document.getElementById('dspAttrClickValue')?.value || '',
+                  unit: document.getElementById('dspAttrClickUnit')?.value || 'Days'
+                },
+                impression: {
+                  value: document.getElementById('dspAttrImpressionValue')?.value || '',
+                  unit: document.getElementById('dspAttrImpressionUnit')?.value || 'Days'
+                }
+              };
+              dspData.deduplicationWindows = {
+                click: document.getElementById('dspDedupClick')?.value || '',
+                conversion: document.getElementById('dspDedupConversion')?.value || ''
+              };
+              dspData.yahooIntegration = document.getElementById('dspYahoo')?.value || '';
+            }
+
+            // Collect Ad Server fields
+            const adServerData = {};
+            const adServerCheckbox = document.getElementById('adserver-gcm');
+            if (adServerCheckbox && adServerCheckbox.checked) {
+              adServerData.advertiserName = document.getElementById('adServerAdvertiserName')?.value || '';
+              adServerData.vertical = document.getElementById('adServerVertical')?.value || '';
+              adServerData.declarations = {
+                euPoliticalAds: document.getElementById('adServerEuPolitical')?.value || ''
+              };
+            }
+
+            // Build the new advertiser object
+            const newAdvertiser = {
+              id: advertiserId,
               name: this.elements.advertiserName ? this.elements.advertiserName.value.trim() : '',
               account: this.selectedAccount ? this.selectedAccount.accountNumber : 
                       (noCrm ? '' : (this.elements.accountNumber ? this.elements.accountNumber.value.trim() : '')),
               status: 'Active',
-              campaign: '',
-              adGroup: '',
+              state: 'Active',
+              campaign: '0',
+              adGroup: '0',
               owner: CONFIG.CURRENT_USER,
               platforms: {
                 gcm: platformsEnabled ? (platformGCM ? platformGCM.checked : false) : false,
                 tradeDesk: platformsEnabled ? (platformTradeDesk ? platformTradeDesk.checked : false) : false,
                 dv360: platformsEnabled ? (platformDV360 ? platformDV360.checked : false) : false
               },
-              _draft: true
+              dsp: Object.keys(dspData).length > 0 ? dspData : null,
+              adServer: Object.keys(adServerData).length > 0 ? adServerData : null
             };
 
-            // Persist draft so WFAdvertiserCreate.html can load it
+            // Add to the main advertiser list (at the beginning so it appears first)
             try {
-              localStorage.setItem('adv_draft', JSON.stringify(draftAdvertiser));
-              localStorage.setItem('adv_selected_id', draftAdvertiser.id);
-              localStorage.setItem('adv_selected_data', JSON.stringify(draftAdvertiser));
+              const advertisers = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.DATA) || '[]');
+              advertisers.unshift(newAdvertiser);
+              localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(advertisers));
+              
+              // Also save as selected data for details page
+              localStorage.setItem('adv_selected_id', newAdvertiser.id);
+              localStorage.setItem('adv_selected_data', JSON.stringify(newAdvertiser));
+              
+              // Update local advertisers array
+              this.advertisers = advertisers;
             } catch (e) {
-              console.warn('Failed to save advertiser draft:', e);
+              console.error('Failed to save advertiser:', e);
+              if (typeof showToast === 'function') {
+                showToast('Error creating advertiser. Please try again.', 3000);
+              }
+              return;
             }
 
             this.hideCreateModal();
             if (typeof showToast === 'function') {
-              showToast('Advertiser draft saved. Complete creation on the details page.', 2500);
+              showToast('Advertiser created successfully.', 2500);
             }
 
-            // Redirect to create page so user can finalize (create) there
+            // Redirect to details page
             setTimeout(function() {
-              window.location.href = './WFAdvertiserCreate.html';
+              window.location.href = './WFAdvertiserDetails.html';
             }, 300);
            },
 
@@ -1647,6 +1997,44 @@ return false;
               const pipeEl = document.getElementById('pipeBeforeFilters');
               if (pipeEl) pipeEl.style.display = 'none';
             }
+          },
+
+          deleteAdvertiser: function(advId) {
+            const advertisers = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.DATA) || '[]');
+            const adv = advertisers.find(function(a) { return String(a.id) === String(advId); });
+            
+            if (!adv) {
+              if (typeof showToast === 'function') {
+                showToast('Advertiser not found.', 2000);
+              }
+              return;
+            }
+            
+            const confirmMsg = 'Are you sure you want to delete "' + adv.name + '"?';
+            if (!confirm(confirmMsg)) {
+              return;
+            }
+            
+            const updatedAdvertisers = advertisers.filter(function(a) { 
+              return String(a.id) !== String(advId); 
+            });
+            
+            localStorage.setItem(CONFIG.STORAGE_KEYS.DATA, JSON.stringify(updatedAdvertisers));
+            this.advertisers = updatedAdvertisers;
+            
+            // Clear selected data if deleted advertiser was selected
+            const selectedId = localStorage.getItem('adv_selected_id');
+            if (selectedId && String(selectedId) === String(advId)) {
+              localStorage.removeItem('adv_selected_id');
+              localStorage.removeItem('adv_selected_data');
+            }
+            
+            if (typeof showToast === 'function') {
+              showToast('Advertiser "' + adv.name + '" deleted successfully.', 2500);
+            }
+            
+            // Refresh the table
+            this.applyFiltersAndRender();
           }
         };
 

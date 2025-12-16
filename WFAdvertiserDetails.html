@@ -43,6 +43,29 @@
       pointer-events: none;
     }
     select[aria-readonly="true"]:focus { border: none !important; outline: none !important; box-shadow: none !important; }
+    
+    /* Inline edit input styling */
+    .adgroup-details-input {
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      background-color: white;
+      color: #111827;
+      width: 100%;
+    }
+    .adgroup-details-input:focus {
+      outline: none;
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 1px #93c5fd;
+    }
+    
+    /* Select specific styling for edit mode */
+    select.adgroup-details-input {
+      appearance: auto;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -217,115 +240,271 @@
 
             <hr class="border-gray-300 mp-4 p-2">
 
-            <!-- Two-column cards -->
+            <!-- Advertiser Details Section -->
+            <section>
+              <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-semibold text-gray-900 mx-2">ADVERTISER DETAILS</h1>
+                <div class="flex items-center gap-2">
+              <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                <svg viewBox="0 0 24 24" height="16" width="16">
+                  <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
+                </svg>
+                Edit
+              </button>
+              <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
+              <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+            </div>
+              </div>
+            </section>
+
+            <!-- Two-column layout -->
             <div class="grid md:grid-cols-2 gap-6">
-              <!-- General -->
-              <section class="space-y-2">
-                <div class="flex items-center justify-between">
-                  <h1 class="text-2xl font-semibold text-gray-900 mx-2">ADVERTISER DETAILS</h1>
-                  <div class="flex items-center gap-2">
-                    <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                      <svg viewBox="0 0 24 24" height="16" width="16">
-                        <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
-                      </svg>
-                      Edit
-                    </button>
-                    <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
-                    <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
-                  </div>
-                </div>
-
-                <div id="generalCard" class="p-4 border border-gray-200 rounded-md">
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
-                    <label for="companyName" class="text-sm font-semibold text-gray-600">Company Name:</label>
-                    <div class="md:col-span-2">
-                      <input id="companyName" type="text" data-bind="adv.name" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
+              
+              <!-- LEFT COLUMN -->
+              <div class="space-y-6">
+                
+                <!-- Beacon Fields -->
+                <section class="space-y-2">
+                  <div class="bg-white border border-blue-200 rounded-lg shadow-sm">
+                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 border-b border-blue-200 rounded-t-lg">
+                      <h4 class="font-semibold text-blue-900 text-sm uppercase tracking-wide">Beacon Fields</h4>
                     </div>
-
-                    <label for="accountDisplay" class="text-sm font-semibold text-gray-600">Account #:</label>
-                    <div class="md:col-span-2 flex items-center gap-2">
-                      <span id="accountDisplay" data-bind="adv.account" class="hidden text-sm text-gray-900 rounded px-0 py-1">—</span>
-                      <button id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline">Select Account</button>
-                    </div>
-
-                    <!-- FIXED: Use 'state' consistently -->
-                    <label for="advertiserState" class="text-sm font-semibold text-gray-600">State:</label>
-                    <div class="md:col-span-2">
-                      <select id="advertiserState" data-bind="adv.state" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-white w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                      </select>
-                    </div>
-
-                    <label for="advertiserWebsite" class="text-sm font-semibold text-gray-600">Website:</label>
-                    <div class="md:col-span-2">
-                      <input id="advertiserWebsite" type="text" data-bind="adv.website" data-original="" class="text-sm text-gray-900 border border-gray-300 rounded px-3 py-2 bg-transparent w-full focus:outline-none focus:bg-white focus:border-blue-300">
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <!-- Team -->
-              <section class="space-y-2">
-                <div class="flex items-center justify-between">
-                  <h1 class="text-2xl font-semibold text-gray-900 mx-2">TEAM</h1>
-                  <div class="relative">
-                    <button id="teamStateChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 bg-gray-50 border border-gray-300 hover:bg-gray-100 transition" data-filter="state" aria-haspopup="menu" aria-expanded="false">
-                      <span id="teamStateChipLabel">Active</span>
-                      <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/></svg>
-                    </button>
-                    <div id="teamStateMenu" class="hidden absolute right-0 mt-2 min-w-40 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto" role="menu" tabindex="-1">
-                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="All" role="menuitem">All</button>
-                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Active" role="menuitem">Active</button>
-                      <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Inactive" role="menuitem">Inactive</button>
+                    <div class="p-4">
+                      <table class="w-full text-sm adgroup-details-table">
+                        <tbody>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold" style="width: 40%;">ID:</td>
+                            <td class="py-2">
+                              <span id="displayAdvertiserId" data-bind="adv.id" class="text-gray-900">—</span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Account #:</td>
+                            <td class="py-2">
+                              <span id="accountDisplay" data-bind="adv.account" class="hidden text-gray-900">—</span>
+                              <button id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline">Select Account</button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Name:</td>
+                            <td class="py-2">
+                              <span id="displayAdvertiserName" data-bind="adv.name" class="text-gray-900">—</span>
+                              <input id="inputAdvertiserName" type="text" data-bind="adv.name" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">State:</td>
+                            <td class="py-2">
+                              <span id="displayState" data-bind="adv.state" class="text-gray-900">—</span>
+                              <select id="inputState" data-bind="adv.state" class="hidden adgroup-details-input w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-300">
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                              </select>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
-                </div>
+                </section>
 
-                <div class="p-4 border border-gray-200 rounded-md">
-                  <table class="w-full text-sm table-fixed">
-                    <colgroup>
-                      <col style="width:44%">
-                      <col style="width:36%">
-                      <col style="width:20%">
-                    </colgroup>
-                    <thead>
-                      <tr class="border-b border-gray-300">
-                        <th class="text-left py-2 text-gray-600 font-semibold">Name</th>
-                        <th class="text-left py-2 text-gray-600 font-semibold">Role</th>
-                        <th class="text-left py-2 text-gray-600 font-semibold">State</th>
-                      </tr>
-                    </thead>
-                    <tbody id="teamTableBody">
-                      <tr class="border-b border-gray-100" data-state="active">
-                        <td class="py-2 text-gray-900">Matt Hunter</td>
-                        <td class="py-2 text-gray-500">Account Manager</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
-                      </tr>
-                      <tr class="border-b border-gray-100" data-state="active">
-                        <td class="py-2 text-gray-900">David DeHerrera</td>
-                        <td class="py-2 text-gray-500">Campaign Specialist</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
-                      </tr>
-                      <tr class="border-b border-gray-100" data-state="inactive">
-                        <td class="py-2 text-gray-900">Hailey Golden</td>
-                        <td class="py-2 text-gray-500">Campaign Manager</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
-                      </tr>
-                      <tr class="border-b border-gray-100" data-state="active">
-                        <td class="py-2 text-gray-900">Sam Ahn</td>
-                        <td class="py-2 text-gray-500">Sales Representative</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
-                      </tr>
-                      <tr data-state="inactive">
-                        <td class="py-2 text-gray-900">Trevor White</td>
-                        <td class="py-2 text-gray-500">Partnership Sales</td>
-                        <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+                <!-- DSP Fields -->
+                <section id="dspFieldsSection" class="space-y-2">
+                  <div class="bg-white border border-blue-200 rounded-lg shadow-sm">
+                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 border-b border-blue-200 rounded-t-lg">
+                      <h4 class="font-semibold text-blue-900 text-sm uppercase tracking-wide">DSP Fields • The Trade Desk</h4>
+                    </div>
+                    <div class="p-4">
+                      <table class="w-full text-sm adgroup-details-table">
+                        <tbody>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold" style="width: 40%;">Name:</td>
+                            <td class="py-2">
+                              <span id="displayDspName" data-bind="adv.dsp.name" class="text-gray-900">—</span>
+                              <input id="inputDspName" type="text" data-bind="adv.dsp.name" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Partner:</td>
+                            <td class="py-2">
+                              <span id="displayDspPartner" data-bind="adv.dsp.partner" class="text-gray-900">—</span>
+                              <input id="inputDspPartner" type="text" data-bind="adv.dsp.partner" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Domain:</td>
+                            <td class="py-2">
+                              <span id="displayDspDomain" data-bind="adv.dsp.domain" class="text-gray-900">—</span>
+                              <input id="inputDspDomain" type="text" data-bind="adv.dsp.domain" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Country:</td>
+                            <td class="py-2">
+                              <span id="displayDspCountry" data-bind="adv.dsp.country" class="text-gray-900">—</span>
+                              <input id="inputDspCountry" type="text" data-bind="adv.dsp.country" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">EU Targeting:</td>
+                            <td class="py-2">
+                              <span id="displayDspEuTargeting" data-bind="adv.dsp.euTargeting" class="text-gray-900">—</span>
+                              <input id="inputDspEuTargeting" type="text" data-bind="adv.dsp.euTargeting" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Industry:</td>
+                            <td class="py-2">
+                              <span id="displayDspIndustry" data-bind="adv.dsp.industry" class="text-gray-900">—</span>
+                              <input id="inputDspIndustry" type="text" data-bind="adv.dsp.industry" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Attribution Click:</td>
+                            <td class="py-2">
+                              <span id="displayDspAttrClick" data-bind="adv.dsp.attributionWindows.click" class="text-gray-900">—</span>
+                              <input id="inputDspAttrClick" type="text" data-bind="adv.dsp.attributionWindows.click" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Attribution Impression:</td>
+                            <td class="py-2">
+                              <span id="displayDspAttrImpression" data-bind="adv.dsp.attributionWindows.impression" class="text-gray-900">—</span>
+                              <input id="inputDspAttrImpression" type="text" data-bind="adv.dsp.attributionWindows.impression" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Dedup Click:</td>
+                            <td class="py-2">
+                              <span id="displayDspDedupClick" data-bind="adv.dsp.deduplicationWindows.click" class="text-gray-900">—</span>
+                              <input id="inputDspDedupClick" type="text" data-bind="adv.dsp.deduplicationWindows.click" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Dedup Conversion:</td>
+                            <td class="py-2">
+                              <span id="displayDspDedupConversion" data-bind="adv.dsp.deduplicationWindows.conversion" class="text-gray-900">—</span>
+                              <input id="inputDspDedupConversion" type="text" data-bind="adv.dsp.deduplicationWindows.conversion" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Yahoo Integration:</td>
+                            <td class="py-2">
+                              <span id="displayDspYahoo" data-bind="adv.dsp.yahooIntegration" class="text-gray-900">—</span>
+                              <input id="inputDspYahoo" type="text" data-bind="adv.dsp.yahooIntegration" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+
+              </div>
+
+              <!-- RIGHT COLUMN -->
+              <div class="space-y-6">
+
+                <!-- Team Table -->
+                <section class="space-y-2">
+                  <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-3 border-b border-gray-200 rounded-t-lg flex items-center justify-between">
+                      <h4 class="font-semibold text-gray-900 text-sm uppercase tracking-wide">Team</h4>
+                      <div class="relative">
+                        <button id="teamStateChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 transition" data-filter="state" aria-haspopup="menu" aria-expanded="false">
+                          <span id="teamStateChipLabel">Active</span>
+                          <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/></svg>
+                        </button>
+                        <div id="teamStateMenu" class="hidden absolute right-0 mt-2 min-w-40 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto" role="menu" tabindex="-1">
+                          <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="All" role="menuitem">All</button>
+                          <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Active" role="menuitem">Active</button>
+                          <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-value="Inactive" role="menuitem">Inactive</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="p-4">
+                      <table class="w-full text-sm table-fixed">
+                        <colgroup>
+                          <col style="width:44%">
+                          <col style="width:36%">
+                          <col style="width:20%">
+                        </colgroup>
+                        <thead>
+                          <tr class="border-b border-gray-300">
+                            <th class="text-left py-2 text-gray-600 font-semibold">Name</th>
+                            <th class="text-left py-2 text-gray-600 font-semibold">Role</th>
+                            <th class="text-left py-2 text-gray-600 font-semibold">State</th>
+                          </tr>
+                        </thead>
+                        <tbody id="teamTableBody">
+                          <tr class="border-b border-gray-100" data-state="active">
+                            <td class="py-2 text-gray-900">Matt Hunter</td>
+                            <td class="py-2 text-gray-500">Account Manager</td>
+                            <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
+                          </tr>
+                          <tr class="border-b border-gray-100" data-state="active">
+                            <td class="py-2 text-gray-900">David DeHerrera</td>
+                            <td class="py-2 text-gray-500">Campaign Specialist</td>
+                            <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
+                          </tr>
+                          <tr class="border-b border-gray-100" data-state="inactive">
+                            <td class="py-2 text-gray-900">Hailey Golden</td>
+                            <td class="py-2 text-gray-500">Campaign Manager</td>
+                            <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
+                          </tr>
+                          <tr class="border-b border-gray-100" data-state="active">
+                            <td class="py-2 text-gray-900">Sam Ahn</td>
+                            <td class="py-2 text-gray-500">Sales Representative</td>
+                            <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
+                          </tr>
+                          <tr data-state="inactive">
+                            <td class="py-2 text-gray-900">Trevor White</td>
+                            <td class="py-2 text-gray-500">Partnership Sales</td>
+                            <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Ad Server Fields -->
+                <section id="adServerFieldsSection" class="space-y-2">
+                  <div class="bg-white border border-green-200 rounded-lg shadow-sm">
+                    <div class="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 border-b border-green-200 rounded-t-lg">
+                      <h4 class="font-semibold text-green-900 text-sm uppercase tracking-wide">Ad Server Fields • Google Campaign Manager</h4>
+                    </div>
+                    <div class="p-4">
+                      <table class="w-full text-sm adgroup-details-table">
+                        <tbody>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold" style="width: 40%;">Advertiser Name:</td>
+                            <td class="py-2">
+                              <span id="displayAdServerName" data-bind="adv.adServer.advertiserName" class="text-gray-900">—</span>
+                              <input id="inputAdServerName" type="text" data-bind="adv.adServer.advertiserName" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">Vertical:</td>
+                            <td class="py-2">
+                              <span id="displayAdServerVertical" data-bind="adv.adServer.vertical" class="text-gray-900">—</span>
+                              <input id="inputAdServerVertical" type="text" data-bind="adv.adServer.vertical" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="py-2 pr-3 text-gray-600 font-semibold">EU Political Ads:</td>
+                            <td class="py-2">
+                              <span id="displayAdServerEuPolitical" data-bind="adv.adServer.declarations.euPoliticalAds" class="text-gray-900">—</span>
+                              <input id="inputAdServerEuPolitical" type="text" data-bind="adv.adServer.declarations.euPoliticalAds" class="hidden adgroup-details-input">
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+
+              </div>
             </div>
           </div>
         </div>
@@ -362,9 +541,36 @@
         } catch { return []; }
       }
 
+      function getNestedValue(obj, path, fallback = '—') {
+        if (!obj || !path) return fallback;
+        const keys = path.split('.');
+        let value = obj;
+        for (const key of keys) {
+          if (value && typeof value === 'object' && key in value) {
+            value = value[key];
+          } else {
+            return fallback;
+          }
+        }
+        return (value != null && String(value).trim() !== '') ? value : fallback;
+      }
+
+      function formatAttributionWindow(data) {
+        if (!data || typeof data !== 'object') return '—';
+        const value = data.value || '';
+        const unit = data.unit || '';
+        return value && unit ? `${value} ${unit}` : '—';
+      }
+
       function bindAll(key, value, fallback = '—') {
         const nodes = document.querySelectorAll(`[data-bind="${key}"]`);
-        const text = (value != null && String(value).trim() !== '') ? value : fallback;
+        let text = (value != null && String(value).trim() !== '') ? value : fallback;
+        
+        // Special formatting for attribution windows
+        if (key.includes('attributionWindows')) {
+          text = formatAttributionWindow(value);
+        }
+        
         nodes.forEach(el => {
           if (el.tagName === 'INPUT' || el.tagName === 'SELECT') {
             el.value = text;
@@ -411,21 +617,51 @@
             adv.state = adv.status;
           }
           
+          // Bind Beacon fields
           bindAll('adv.name', adv.name, 'No advertiser found');
           bindAll('adv.id', adv.id, '');
           bindAll('adv.account', adv.account, 'N/A');
-          bindAll('adv.state', adv.state, 'N/A');     // ✓ use state field
-          bindAll('adv.website', adv.website, 'N/A');
+          bindAll('adv.state', adv.state, 'N/A');
+          
+          // Bind DSP fields if they exist
+          if (adv.dsp) {
+            bindAll('adv.dsp.name', getNestedValue(adv, 'dsp.name'));
+            bindAll('adv.dsp.partner', getNestedValue(adv, 'dsp.partner'));
+            bindAll('adv.dsp.domain', getNestedValue(adv, 'dsp.domain'));
+            bindAll('adv.dsp.country', getNestedValue(adv, 'dsp.country'));
+            bindAll('adv.dsp.euTargeting', getNestedValue(adv, 'dsp.euTargeting'));
+            bindAll('adv.dsp.industry', getNestedValue(adv, 'dsp.industry'));
+            bindAll('adv.dsp.attributionWindows.click', getNestedValue(adv, 'dsp.attributionWindows.click'));
+            bindAll('adv.dsp.attributionWindows.impression', getNestedValue(adv, 'dsp.attributionWindows.impression'));
+            bindAll('adv.dsp.deduplicationWindows.click', getNestedValue(adv, 'dsp.deduplicationWindows.click') !== '—' ? getNestedValue(adv, 'dsp.deduplicationWindows.click') + ' Seconds' : '—');
+            bindAll('adv.dsp.deduplicationWindows.conversion', getNestedValue(adv, 'dsp.deduplicationWindows.conversion') !== '—' ? getNestedValue(adv, 'dsp.deduplicationWindows.conversion') + ' Seconds' : '—');
+            bindAll('adv.dsp.yahooIntegration', getNestedValue(adv, 'dsp.yahooIntegration'));
+            
+            // Show DSP section
+            const dspSection = document.getElementById('dspFieldsSection');
+            if (dspSection) dspSection.classList.remove('hidden');
+          }
+          
+          // Bind Ad Server fields if they exist
+          if (adv.adServer) {
+            bindAll('adv.adServer.advertiserName', getNestedValue(adv, 'adServer.advertiserName'));
+            bindAll('adv.adServer.vertical', getNestedValue(adv, 'adServer.vertical'));
+            bindAll('adv.adServer.declarations.euPoliticalAds', getNestedValue(adv, 'adServer.declarations.euPoliticalAds'));
+            
+            // Show Ad Server section
+            const adServerSection = document.getElementById('adServerFieldsSection');
+            if (adServerSection) adServerSection.classList.remove('hidden');
+          }
         } else {
           bindAll('adv.name', 'No advertiser found', 'No advertiser found');
           bindAll('adv.id', '', '');
           bindAll('adv.account', 'N/A', 'N/A');
           bindAll('adv.state', 'N/A', 'N/A');
-          bindAll('adv.website', 'N/A', 'N/A');
         }
 
         // Expose for other modules if needed
         window.bindAll = bindAll;
+        window.currentAdvertiser = adv;
       });
     })();
   </script>
@@ -510,7 +746,27 @@
       const SELECTED_ID_KEY  = 'adv_selected_id';
       const SELECTED_DATA_KEY= 'adv_selected_data';
 
-      const editableSelectors = ['#companyName', '#advertiserState', '#advertiserWebsite'];
+      // Pairs of span/input elements for inline editing
+      const pairs = [
+        { span: 'displayAdvertiserName', input: 'inputAdvertiserName' },
+        { span: 'displayState', input: 'inputState' },
+        // DSP Fields
+        { span: 'displayDspName', input: 'inputDspName' },
+        { span: 'displayDspPartner', input: 'inputDspPartner' },
+        { span: 'displayDspDomain', input: 'inputDspDomain' },
+        { span: 'displayDspCountry', input: 'inputDspCountry' },
+        { span: 'displayDspEuTargeting', input: 'inputDspEuTargeting' },
+        { span: 'displayDspIndustry', input: 'inputDspIndustry' },
+        { span: 'displayDspAttrClick', input: 'inputDspAttrClick' },
+        { span: 'displayDspAttrImpression', input: 'inputDspAttrImpression' },
+        { span: 'displayDspDedupClick', input: 'inputDspDedupClick' },
+        { span: 'displayDspDedupConversion', input: 'inputDspDedupConversion' },
+        { span: 'displayDspYahoo', input: 'inputDspYahoo' },
+        // Ad Server Fields
+        { span: 'displayAdServerName', input: 'inputAdServerName' },
+        { span: 'displayAdServerVertical', input: 'inputAdServerVertical' },
+        { span: 'displayAdServerEuPolitical', input: 'inputAdServerEuPolitical' }
+      ];
 
       const btnEdit   = document.getElementById('editGeneralBtn');
       const btnSave   = document.getElementById('saveGeneralBtn');
@@ -518,163 +774,205 @@
 
       let editing = false;
       let snapshot = null;
-      let dirty = false;
 
-      function qInputs() {
-        return editableSelectors.map(s => document.querySelector(s)).filter(Boolean);
+      function showSpans() {
+        pairs.forEach(p => {
+          const span = document.getElementById(p.span);
+          const input = document.getElementById(p.input);
+          if (!span || !input) return;
+          
+          // Update span with input value
+          let displayValue = input.value.trim();
+          if (!displayValue || displayValue === '') {
+            displayValue = '—';
+          }
+          
+          span.textContent = displayValue;
+          input.classList.add('hidden');
+          span.classList.remove('hidden');
+        });
       }
-      function getValues() {
-        const map = {};
-        qInputs().forEach(i => { map[i.id] = i.value ?? ''; });
-        return map;
+
+      function showInputs() {
+        pairs.forEach(p => {
+          const span = document.getElementById(p.span);
+          const input = document.getElementById(p.input);
+          if (!span || !input) return;
+          
+          input.classList.remove('hidden');
+          span.classList.add('hidden');
+          
+          // Set input/select value from span
+          let value = span.textContent.trim();
+          if (value === '—' || value === 'N/A') {
+            value = '';
+          }
+          
+          // Special handling for State select
+          if (input.id === 'inputState' && input.tagName === 'SELECT') {
+            // Match the option value
+            const options = Array.from(input.options);
+            const match = options.find(opt => opt.value.toLowerCase() === value.toLowerCase());
+            input.value = match ? match.value : (options.length > 0 ? options[0].value : '');
+          } else {
+            input.value = value;
+          }
+        });
       }
-      function setValues(vals) {
-        qInputs().forEach(i => { if (vals.hasOwnProperty(i.id)) i.value = vals[i.id]; });
+
+      function currentValues() {
+        const obj = {};
+        pairs.forEach(p => {
+          const input = document.getElementById(p.input);
+          if (input) obj[p.input] = input.value.trim();
+        });
+        return obj;
       }
+
       function shallowEqual(a,b){
         const ka = Object.keys(a), kb = Object.keys(b);
         if (ka.length !== kb.length) return false;
-        for (const k of ka) if ((a[k] ?? '') !== (b[k] ?? '')) return false;
+        for (const k of ka) if (a[k] !== b[k]) return false;
         return true;
       }
 
-      function applyViewStyle(input) {
-        input.readOnly = true;
-        input.setAttribute('aria-readonly','true');
-        input.tabIndex = -1;
+      btnEdit?.addEventListener('click', () => {
+        editing = true;
+        snapshot = currentValues();
+        showInputs();
         
-        if (input.tagName === 'SELECT') {
-          // For select elements in read-only mode
-          ['border','rounded','px-3','py-2','focus:outline-none','focus:bg-white','focus:border-blue-300','bg-white','w-full','text-gray-900']
-            .forEach(c => input.classList.remove(c));
-          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight']
-            .forEach(c => input.classList.add(c));
-          input.style.pointerEvents = 'none';
-          input.style.appearance = 'none';
-        } else {
-          // For input elements
-          ['border','rounded','px-3','py-2','focus:outline-none','focus:bg-white','focus:border-blue-300','bg-white','w-full','text-gray-900']
-            .forEach(c => input.classList.remove(c));
-          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight']
-            .forEach(c => input.classList.add(c));
-        }
-      }
-
-      function applyEditStyle(input) {
-        input.readOnly = false;
-        input.removeAttribute('aria-readonly');
-        input.tabIndex = 0;
+        btnEdit.classList.add('hidden');
+        btnSave.classList.remove('hidden');
+        btnCancel.classList.remove('hidden');
         
-        if (input.tagName === 'SELECT') {
-          // For select elements in edit mode
-          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight'].forEach(c => input.classList.remove(c));
-          ['bg-white','border','border-gray-300','rounded','px-3','py-2','text-gray-900','w-full','focus:outline-none','focus:bg-white','focus:border-blue-300'].forEach(c => input.classList.add(c));
-          input.style.pointerEvents = '';
-          input.style.appearance = '';
-        } else {
-          // For input elements
-          ['bg-transparent','border-0','p-0','text-gray-700','leading-tight'].forEach(c => input.classList.remove(c));
-          ['bg-white','border','border-gray-300','rounded','px-3','py-2','text-gray-900','w-full','focus:outline-none','focus:bg-white','focus:border-blue-300'].forEach(c => input.classList.add(c));
+        // Auto-focus first editable field
+        const firstInput = document.getElementById('inputAdvertiserName');
+        if (firstInput) {
+          setTimeout(() => firstInput.focus(), 50);
         }
-      }
+      });
 
-      function setMode(isEditing) {
-        editing = isEditing;
-        const inputs = qInputs();
-        inputs.forEach(i => isEditing ? applyEditStyle(i) : applyViewStyle(i));
-        btnEdit?.classList.toggle('hidden', isEditing);
-        btnSave?.classList.toggle('hidden', !isEditing);
-        btnCancel?.classList.toggle('hidden', !isEditing);
+      btnCancel?.addEventListener('click', () => {
+        if (!editing) return;
+        
+        // Revert to snapshot
+        pairs.forEach(p => {
+          const input = document.getElementById(p.input);
+          if (input && snapshot && snapshot[p.input] != null) {
+            input.value = snapshot[p.input];
+          }
+        });
+        
+        showSpans();
+        editing = false;
+        snapshot = null;
+        
+        btnEdit.classList.remove('hidden');
+        btnSave.classList.add('hidden');
+        btnCancel.classList.add('hidden');
+      });
 
-        if (isEditing) {
-          snapshot = getValues();
-          dirty = false;
-          inputs.forEach(i => i.addEventListener('input', onDirty));
-          inputs.forEach(i => i.addEventListener('change', onDirty)); // For select elements
-          inputs[0]?.focus();
-        } else {
+      btnSave?.addEventListener('click', () => {
+        if (!editing) return;
+        const now = currentValues();
+        
+        if (snapshot && shallowEqual(snapshot, now)) {
+          // No changes
+          showSpans();
+          editing = false;
           snapshot = null;
-          dirty = false;
-          inputs.forEach(i => i.removeEventListener('input', onDirty));
-          inputs.forEach(i => i.removeEventListener('change', onDirty));
+          btnEdit.classList.remove('hidden');
+          btnSave.classList.add('hidden');
+          btnCancel.classList.add('hidden');
+          return;
         }
-      }
 
-      function onDirty() {
-        if (!editing || !snapshot) return;
-        dirty = !shallowEqual(snapshot, getValues());
-      }
-
-      function saveAll() {
+        // Save changes
         const selectedId = localStorage.getItem(SELECTED_ID_KEY);
         if (!selectedId) {
           showToast({ message: 'No advertiser selected.', type: 'error' });
-          return false;
+          return;
         }
+
         try {
-          const vals = getValues();
           const advertisers = JSON.parse(localStorage.getItem(STORAGE_KEY_DATA) || '[]');
           const idx = advertisers.findIndex(a => String(a.id) === String(selectedId));
           if (idx === -1) {
             showToast({ message: 'Advertiser not found in storage.', type: 'error' });
-            return false;
+            return;
           }
 
-          // Map inputs → adv fields
-          advertisers[idx].name    = vals.companyName?.trim() || '';
-          advertisers[idx].state   = vals.advertiserState?.trim() || '';   // ✓ use state field
-          advertisers[idx].website = vals.advertiserWebsite?.trim() || '';
+          // Update Beacon fields
+          advertisers[idx].name = now.inputAdvertiserName?.trim() || '';
+          advertisers[idx].state = now.inputState?.trim() || '';
+
+          // Update DSP fields if they exist
+          if (!advertisers[idx].dsp) advertisers[idx].dsp = {};
+          advertisers[idx].dsp.name = now.inputDspName?.trim() || '';
+          advertisers[idx].dsp.partner = now.inputDspPartner?.trim() || '';
+          advertisers[idx].dsp.domain = now.inputDspDomain?.trim() || '';
+          advertisers[idx].dsp.country = now.inputDspCountry?.trim() || '';
+          advertisers[idx].dsp.euTargeting = now.inputDspEuTargeting?.trim() || '';
+          advertisers[idx].dsp.industry = now.inputDspIndustry?.trim() || '';
+          advertisers[idx].dsp.yahooIntegration = now.inputDspYahoo?.trim() || '';
+
+          // Attribution windows (parse from "value unit" format back to object structure)
+          if (!advertisers[idx].dsp.attributionWindows) advertisers[idx].dsp.attributionWindows = {};
+          
+          // Parse click attribution (e.g., "90 Days" -> {value: "90", unit: "Days"})
+          const clickStr = now.inputDspAttrClick?.trim() || '';
+          if (clickStr && clickStr !== '—') {
+            const clickParts = clickStr.split(' ');
+            advertisers[idx].dsp.attributionWindows.click = {
+              value: clickParts[0] || '',
+              unit: clickParts.slice(1).join(' ') || 'Days'
+            };
+          } else {
+            advertisers[idx].dsp.attributionWindows.click = { value: '', unit: 'Days' };
+          }
+          
+          // Parse impression attribution (e.g., "90 Days" -> {value: "90", unit: "Days"})
+          const impressionStr = now.inputDspAttrImpression?.trim() || '';
+          if (impressionStr && impressionStr !== '—') {
+            const impressionParts = impressionStr.split(' ');
+            advertisers[idx].dsp.attributionWindows.impression = {
+              value: impressionParts[0] || '',
+              unit: impressionParts.slice(1).join(' ') || 'Days'
+            };
+          } else {
+            advertisers[idx].dsp.attributionWindows.impression = { value: '', unit: 'Days' };
+          }
+
+          // Deduplication windows (remove "Seconds" suffix if present)
+          if (!advertisers[idx].dsp.deduplicationWindows) advertisers[idx].dsp.deduplicationWindows = {};
+          advertisers[idx].dsp.deduplicationWindows.click = (now.inputDspDedupClick?.trim() || '').replace(' Seconds', '');
+          advertisers[idx].dsp.deduplicationWindows.conversion = (now.inputDspDedupConversion?.trim() || '').replace(' Seconds', '');
+
+          // Update Ad Server fields if they exist
+          if (!advertisers[idx].adServer) advertisers[idx].adServer = {};
+          advertisers[idx].adServer.advertiserName = now.inputAdServerName?.trim() || '';
+          advertisers[idx].adServer.vertical = now.inputAdServerVertical?.trim() || '';
+          
+          if (!advertisers[idx].adServer.declarations) advertisers[idx].adServer.declarations = {};
+          advertisers[idx].adServer.declarations.euPoliticalAds = now.inputAdServerEuPolitical?.trim() || '';
 
           localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(advertisers));
           localStorage.setItem(SELECTED_DATA_KEY, JSON.stringify(advertisers[idx]));
 
-          // Rebind view
-          if (typeof window.bindAll === 'function') {
-            bindAll('adv.name', advertisers[idx].name, 'No advertiser found');
-            bindAll('adv.state', advertisers[idx].state, 'N/A');
-            bindAll('adv.website', advertisers[idx].website, 'N/A');
-          }
-
-          return true;
+          showSpans();
+          editing = false;
+          snapshot = null;
+          
+          btnEdit.classList.remove('hidden');
+          btnSave.classList.add('hidden');
+          btnCancel.classList.add('hidden');
+          
+          showToast({ message: 'Data saved successfully.', type: 'success' });
         } catch (e) {
           console.error(e);
           showToast({ message: 'Save failed. Check console.', type: 'error' });
-          return false;
         }
-      }
-
-      function beforeUnloadHandler(e){
-        if (dirty) {
-          e.preventDefault();
-          e.returnValue = '';
-          return '';
-        }
-      }
-      function navGuard(e){
-        if (!dirty) return;
-        const a = e.target.closest('a,button,[role="link"]');
-        if (!a) return;
-        if (a === btnSave || a === btnCancel || a === btnEdit) return;
-        e.preventDefault();
-        e.stopPropagation();
-        const wantsSave = confirm('You have unsaved changes. Save now?\n\nOK = Save  |  Cancel = Discard');
-        if (wantsSave) {
-          const ok = saveAll();
-          if (ok) {
-            dirty = false;
-            window.removeEventListener('beforeunload', beforeUnloadHandler);
-            document.removeEventListener('click', navGuard, true);
-            showToast({ message: 'Saved successfully.', type: 'success' });
-            if (a.tagName === 'A' && a.href) window.location.href = a.href; else a.click?.();
-          }
-        } else {
-          setValues(snapshot || {});
-          dirty = false;
-          window.removeEventListener('beforeunload', beforeUnloadHandler);
-          document.removeEventListener('click', navGuard, true);
-          if (a.tagName === 'A' && a.href) window.location.href = a.href; else a.click?.();
-        }
-      }
+      });
 
       // Simple toast function for compatibility
       function showToast(options) {
@@ -691,39 +989,9 @@
         }
       }
 
-      btnEdit?.addEventListener('click', () => {
-        setMode(true);
-        window.addEventListener('beforeunload', beforeUnloadHandler);
-        document.addEventListener('click', navGuard, true);
-      });
-      btnCancel?.addEventListener('click', () => {
-        if (snapshot) setValues(snapshot);
-        dirty = false;
-        window.removeEventListener('beforeunload', beforeUnloadHandler);
-        document.removeEventListener('click', navGuard, true);
-        setMode(false);
-      });
-      btnSave?.addEventListener('click', () => {
-        if (!dirty) {
-          showToast({ message: 'No changes to save.', type: 'warning' });
-          setMode(false);
-          window.removeEventListener('beforeunload', beforeUnloadHandler);
-          document.removeEventListener('click', navGuard, true);
-          return;
-        }
-        const ok = saveAll();
-        if (ok) {
-          dirty = false;
-          window.removeEventListener('beforeunload', beforeUnloadHandler);
-          document.removeEventListener('click', navGuard, true);
-          setMode(false);
-          showToast({ message: 'Data saved successfully.', type: 'success' });
-        }
-      });
-
-      // Initialize to view mode
+      // Initialize to view mode (spans visible)
       document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => { qInputs().forEach(applyViewStyle); }, 50);
+        setTimeout(() => { showSpans(); }, 100);
       });
     })();
   </script>
