@@ -294,36 +294,25 @@
                       </thead>
                       <tbody class="divide-y border-default">
                         
-                        <!-- Common Campaign Name (separate field) -->
+                        <!-- Campaign ID -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Campaign Name
+                            ID
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCommonCampaignName" class="text-gray-800 break-words">N/A</span>
-                            <input id="commonCampaignName" type="text" class="hidden campaign-details-input" />
+                            <span id="displayBeaconCampaignId" class="text-gray-800 break-words">N/A</span>
+                            <input id="beaconCampaignId" type="text" class="hidden campaign-details-input bg-gray-100 cursor-not-allowed" readonly />
                           </td>
                         </tr>
 
-                        <!-- Media Type -->
+                        <!-- Campaign Name -->
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Media Type
+                            Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayMediaType" class="text-gray-800 break-words">N/A</span>
-                            <input id="mediaType" type="text" class="hidden campaign-details-input" />
-                          </td>
-                        </tr>
-
-                        <!-- Domain URL -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Domain URL
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayDomainUrl" class="text-gray-800 break-words">N/A</span>
-                            <input id="domainUrl" type="text" class="hidden campaign-details-input" />
+                            <span id="displayBeaconCampaignName" class="text-gray-800 break-words">N/A</span>
+                            <input id="beaconCampaignName" type="text" class="hidden campaign-details-input" />
                           </td>
                         </tr>
 
@@ -606,10 +595,9 @@
                       <script>
                         (function() {
                         const pairs = [
-  // Common Data fields (these are separate and not linked to campaign data yet)
-  { span: 'displayCommonCampaignName', input: 'commonCampaignName' },
-  { span: 'displayMediaType', input: 'mediaType' },
-  { span: 'displayDomainUrl', input: 'domainUrl' },
+  // Beacon Fields
+  { span: 'displayBeaconCampaignId', input: 'beaconCampaignId' },
+  { span: 'displayBeaconCampaignName', input: 'beaconCampaignName' },
   // DSP Fields (these are linked to actual campaign data)
   { span: 'displayCampaignSeed', input: 'campaignSeed' },
   { span: 'displayCampaignOrganization', input: 'campaignOrganization' },
@@ -631,10 +619,9 @@
 
                         // Fields that are linked to actual campaign data (including Common Data section)
                         const campaignLinkedFields = [
-  // Common Data fields (now linked to Beacon field data)
-  'commonCampaignName',
-  'mediaType',
-  'domainUrl',
+  // Beacon Fields (now linked to Beacon field data)
+  'beaconCampaignId',
+  'beaconCampaignName',
   // DSP Fields
   'campaignSeed',
   'campaignOrganization',
@@ -829,10 +816,9 @@
                                 if (now.campaignBudget !== undefined) topLevelCampaign.budget = now.campaignBudget;
                                 if (now.campaignKPI !== undefined) topLevelCampaign.kpi = now.campaignKPI;
                                 if (now.campaignKPITarget !== undefined) topLevelCampaign.kpiTarget = now.campaignKPITarget;
-                                // Common Data / Beacon Fields mapping
-                                if (now.commonCampaignName !== undefined) topLevelCampaign.beaconCampaignName = now.commonCampaignName;
-                                if (now.mediaType !== undefined) topLevelCampaign.beaconMediaType = now.mediaType;
-                                if (now.domainUrl !== undefined) topLevelCampaign.beaconDomainUrl = now.domainUrl;
+                                // Beacon Fields mapping
+                                if (now.beaconCampaignId !== undefined) topLevelCampaign.beaconCampaignId = now.beaconCampaignId;
+                                if (now.beaconCampaignName !== undefined) topLevelCampaign.beaconCampaignName = now.beaconCampaignName;
                                 // Ad Server Fields - New 4 Field Structure
                                 if (now.adServerCampaignName !== undefined) topLevelCampaign.adServerCampaignName = now.adServerCampaignName;
                                 if (now.adServerSchedule !== undefined) topLevelCampaign.adServerSchedule = now.adServerSchedule;
@@ -860,10 +846,9 @@
                                     if (now.campaignBudget !== undefined) campaign.budget = now.campaignBudget;
                                     if (now.campaignKPI !== undefined) campaign.kpi = now.campaignKPI;
                                     if (now.campaignKPITarget !== undefined) campaign.kpiTarget = now.campaignKPITarget;
-                                    // Common Data / Beacon Fields mapping
-                                    if (now.commonCampaignName !== undefined) campaign.beaconCampaignName = now.commonCampaignName;
-                                    if (now.mediaType !== undefined) campaign.beaconMediaType = now.mediaType;
-                                    if (now.domainUrl !== undefined) campaign.beaconDomainUrl = now.domainUrl;
+                                    // Beacon Fields mapping
+                                    if (now.beaconCampaignId !== undefined) campaign.beaconCampaignId = now.beaconCampaignId;
+                                    if (now.beaconCampaignName !== undefined) campaign.beaconCampaignName = now.beaconCampaignName;
                                     // Ad Server Fields - New 4 Field Structure
                                     if (now.adServerCampaignName !== undefined) campaign.adServerCampaignName = now.adServerCampaignName;
                                     if (now.adServerSchedule !== undefined) campaign.adServerSchedule = now.adServerSchedule;
@@ -1570,10 +1555,9 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   // Set text content display spans
-  // Common Data fields (mapped from Beacon fields)
-  safeSet('displayCommonCampaignName', campaign.beaconCampaignName);
-  safeSet('displayMediaType', campaign.beaconMediaType);
-  safeSet('displayDomainUrl', campaign.beaconDomainUrl);
+  // Beacon Fields
+  safeSet('displayBeaconCampaignId', campaign.beaconCampaignId);
+  safeSet('displayBeaconCampaignName', campaign.beaconCampaignName);
   // DSP Fields
   safeSet('displayCampaignSeed', campaign.seed);
   safeSet('displayCampaignOrganization', campaign.organization);
@@ -1593,10 +1577,9 @@ window.addEventListener('DOMContentLoaded', () => {
   safeSet('displayAdServerLandingPageURL', campaign.adServerLandingPageURL);
 
   // Set editable inputs
-  // Common Data fields (mapped from Beacon fields)
-  safeInput('commonCampaignName', campaign.beaconCampaignName);
-  safeInput('mediaType', campaign.beaconMediaType);
-  safeInput('domainUrl', campaign.beaconDomainUrl);
+  // Beacon Fields
+  safeInput('beaconCampaignId', campaign.beaconCampaignId);
+  safeInput('beaconCampaignName', campaign.beaconCampaignName);
   // DSP Fields
   safeInput('campaignSeed', campaign.seed);
   safeInput('campaignOrganization', campaign.organization);
@@ -1626,7 +1609,9 @@ function loadAdGroupsForCampaign(campaignId) {
 
   try {
     const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-    const associatedAdGroups = adGroups.filter(adGroup => adGroup.campaign === campaignId);
+    const associatedAdGroups = adGroups.filter(adGroup => 
+      adGroup.campaign === campaignId || adGroup.campaignId === campaignId
+    );
 
     // Clear existing content
     adGroupsTableBody.innerHTML = '';

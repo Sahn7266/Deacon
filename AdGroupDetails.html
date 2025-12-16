@@ -261,7 +261,7 @@
             <!-- Two-column ad group details layout -->
             <section>
               <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-semibold text-gray-900 mx-2">AD GROUP DETAILS</h1>
+                <h1 id="adGroupDetailsTitle" class="text-2xl font-semibold text-gray-900 mx-2">AD GROUP DETAILS</h1>
                 <div class="flex items-center gap-2">
                   <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                   <svg viewBox="0 0 24 24" height="16" width="16">
@@ -293,14 +293,24 @@
                     </thead>
                     <tbody class="divide-y border-default">
                       
-                      <!-- Common Ad Group Name -->
+                      <!-- ID -->
                       <tr class="border-b border-default">
                         <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                          Ad Group Name
+                          ID
                         </td>
                         <td class="px-6 py-1 text-sm">
-                          <span id="displayCommonAdGroupName" class="text-gray-800 break-words">N/A</span>
-                          <input id="commonAdGroupName" type="text" class="hidden adgroup-details-input" />
+                          <span id="displayAdGroupId" class="text-gray-800 break-words">N/A</span>
+                        </td>
+                      </tr>
+
+                      <!-- Name -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Name
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayAdGroupName" class="text-gray-800 break-words">N/A</span>
+                          <input id="inputAdGroupName" type="text" class="hidden adgroup-details-input" />
                         </td>
                       </tr>
 
@@ -310,21 +320,51 @@
                           Campaign
                         </td>
                         <td class="px-6 py-1 text-sm">
-                          <span id="displayCommonCampaign" class="text-gray-800 break-words">N/A</span>
-                          <select id="commonCampaign" class="hidden adgroup-details-input">
+                          <span id="displayCampaign" class="text-gray-800 break-words">N/A</span>
+                          <select id="inputCampaign" class="hidden adgroup-details-input">
                             <option value="">Select campaign</option>
                           </select>
                         </td>
                       </tr>
 
-                      <!-- Budget Allocation -->
+                      <!-- Multiview Classification -->
                       <tr class="border-b border-default">
                         <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                          Budget Allocation
+                          Multiview Classification
                         </td>
                         <td class="px-6 py-1 text-sm">
-                          <span id="displayCommonBudget" class="text-gray-800 break-words">N/A</span>
-                          <input id="commonBudget" type="text" class="hidden adgroup-details-input" />
+                          <span id="displayMultiviewClassification" class="text-gray-800 break-words">N/A</span>
+                          <select id="inputMultiviewClassification" class="hidden adgroup-details-input">
+                            <option value="">-- Select --</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                          </select>
+                        </td>
+                      </tr>
+
+                      <!-- Multiview Tactic -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Multiview Tactic
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayMultiviewTactic" class="text-gray-800 break-words">N/A</span>
+                          <select id="inputMultiviewTactic" class="hidden adgroup-details-input">
+                            <option value="">-- Select --</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                          </select>
+                        </td>
+                      </tr>
+
+                      <!-- Audience -->
+                      <tr class="border-b border-default">
+                        <td class="px-3 py-1 text-sm font-medium border-r border-default">
+                          Audience
+                        </td>
+                        <td class="px-6 py-1 text-sm">
+                          <span id="displayBeaconAudience" class="text-gray-800 break-words">N/A</span>
+                          <input id="inputBeaconAudience" type="text" class="hidden adgroup-details-input" />
                         </td>
                       </tr>
 
@@ -359,7 +399,7 @@
                             Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdGroupName" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayDspName" class="text-gray-800 break-words">N/A</span>
                             <input id="adGroupNameInput" type="text" class="hidden adgroup-details-input" />
                           </td>
                         </tr>
@@ -455,8 +495,8 @@
                             Audience
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAudience" class="text-gray-800 break-words">N/A</span>
-                            <select id="audienceInput" class="hidden adgroup-details-input">
+                            <span id="displayDspAudience" class="text-gray-800 break-words">N/A</span>
+                            <select id="inputDspAudience" class="hidden adgroup-details-input">
                               <option value="">Select audience</option>
                               <option value="Apply a shared audience">Apply a shared audience</option>
                               <option value="Koa Audiences">Koa Audiences</option>
@@ -662,19 +702,21 @@
                       <script>
                         (function() {
                         const pairs = [
-  // Common Data fields (these are separate and not linked to ad group data yet)
-  { span: 'displayCommonAdGroupName', input: 'commonAdGroupName' },
-  { span: 'displayCommonCampaign', input: 'commonCampaign' },
-  { span: 'displayCommonBudget', input: 'commonBudget' },
+  // Beacon Fields
+  { span: 'displayAdGroupName', input: 'inputAdGroupName' },
+  { span: 'displayCampaign', input: 'inputCampaign' },
+  { span: 'displayMultiviewClassification', input: 'inputMultiviewClassification' },
+  { span: 'displayMultiviewTactic', input: 'inputMultiviewTactic' },
+  { span: 'displayBeaconAudience', input: 'inputBeaconAudience' },
   // DSP Fields (these are linked to actual ad group data)
-  { span: 'displayAdGroupName', input: 'adGroupNameInput' },
+  { span: 'displayDspName', input: 'adGroupNameInput' },
   { span: 'displayFunnelLocation', input: 'funnelLocationInput' },
   { span: 'displayChannel', input: 'channelInput' },
   { span: 'displayDeviceTypes', input: 'deviceTypesInput' },
   { span: 'displayAdEnvironments', input: 'adEnvironmentsInput' },
   { span: 'displayPrimaryGoal', input: 'primaryGoalInput' },
   { span: 'displayTarget', input: 'targetInput' },
-  { span: 'displayAudience', input: 'audienceInput' },
+  { span: 'displayDspAudience', input: 'inputDspAudience' },
   { span: 'displayFrequency', input: 'frequencyInput' },
   { span: 'displayGeos', input: 'geosInput' },
   { span: 'displayBaseBid', input: 'baseBidInput' },
@@ -693,14 +735,18 @@
 
                         // Fields that are linked to actual ad group data (excluding Common Data section)
                         const adGroupLinkedFields = [
-  // Beacon Fields (Common Data)
-  'commonAdGroupName',
-  'commonCampaign',
+  // Beacon Fields
+  'inputAdGroupName',
+  'inputCampaign',
+  'inputMultiviewClassification',
+  'inputMultiviewTactic',
+  'inputBeaconAudience',
   // DSP Fields
   'adGroupNameInput',
   'funnelLocationInput',
   'channelInput',
   'deviceTypesInput',
+  'inputDspAudience',
   'adEnvironmentsInput',
   'primaryGoalInput',
   'targetInput',
@@ -891,9 +937,14 @@
                             }
 
                             // === UPDATE AD GROUP DATA ===
-                            // Update main ad group name from Beacon field
-                            if (now.commonAdGroupName !== undefined) adGroup.name = now.commonAdGroupName;
-                            // Update DSP name field separately
+                            // Update Beacon Fields
+                            if (now.inputAdGroupName !== undefined) adGroup.name = now.inputAdGroupName;
+                            if (now.inputCampaign !== undefined) adGroup.campaign = now.inputCampaign;
+                            if (now.inputMultiviewClassification !== undefined) adGroup.multiviewClassification = now.inputMultiviewClassification;
+                            if (now.inputMultiviewTactic !== undefined) adGroup.multiviewTactic = now.inputMultiviewTactic;
+                            if (now.inputBeaconAudience !== undefined) adGroup.beaconAudience = now.inputBeaconAudience;
+                            
+                            // Update DSP Fields
                             if (now.adGroupNameInput !== undefined) adGroup.dspName = now.adGroupNameInput;
                             if (now.funnelLocationInput !== undefined) adGroup.funnelLocation = now.funnelLocationInput;
                             if (now.channelInput !== undefined) adGroup.channel = now.channelInput;
@@ -901,11 +952,13 @@
                             if (now.adEnvironmentsInput !== undefined) adGroup.adEnvironments = now.adEnvironmentsInput;
                             if (now.primaryGoalInput !== undefined) adGroup.primaryGoal = now.primaryGoalInput;
                             if (now.targetInput !== undefined) adGroup.target = now.targetInput;
-                            if (now.audienceInput !== undefined) adGroup.audience = now.audienceInput;
+                            if (now.inputDspAudience !== undefined) adGroup.dspAudience = now.inputDspAudience;
                             if (now.frequencyInput !== undefined) adGroup.frequency = now.frequencyInput;
                             if (now.geosInput !== undefined) adGroup.geos = now.geosInput;
                             if (now.baseBidInput !== undefined) adGroup.baseBid = now.baseBidInput;
                             if (now.maxBidInput !== undefined) adGroup.maxBid = now.maxBidInput;
+                            
+                            // Update Ad Server Fields
                             if (now.adServerNameInput !== undefined) adGroup.adServerName = now.adServerNameInput;
                             if (now.adServerStatusInput !== undefined) adGroup.adServerStatus = now.adServerStatusInput;
                             if (now.adServerCompatibilityInput !== undefined) adGroup.adServerCompatibility = now.adServerCompatibilityInput;
@@ -915,6 +968,8 @@
                             if (now.adServerEndDateInput !== undefined) adGroup.adServerEndDate = now.adServerEndDateInput;
                             if (now.adServerCostStructureInput !== undefined) adGroup.adServerCostStructure = now.adServerCostStructureInput;
                             if (now.adServerCapCostInput !== undefined) adGroup.adServerCapCost = now.adServerCapCostInput;
+                            
+                            // Legacy fields
                             if (now.campaignName !== undefined) adGroup.campaign = now.campaignName;
                             if (now.budgetAllocation !== undefined) adGroup.budget = now.budgetAllocation;
                             if (now.bidStrategy !== undefined) adGroup.bidStrategy = now.bidStrategy;
@@ -1136,7 +1191,7 @@ if (advHeader) advHeader.textContent = adv.name || 'No advertiser found';
       const SELECTED_DATA_KEY= 'adv_selected_data';
 
 const editableSelectors = [
-  '#adGroupNameInput',
+  '#dspNameInput',
   '#campaignName',
   '#budgetAllocation',
   '#bidStrategy',
@@ -1655,6 +1710,12 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
+  // Update the page title with ad group name
+  const titleElement = document.getElementById('adGroupDetailsTitle');
+  if (titleElement && adGroup.name) {
+    titleElement.innerHTML = `<span style="color: #0F66A7;">${adGroup.name}</span>: Ad Group Details`;
+  }
+
   const fields = [
     { dataBindKey: 'adGroupName', adGroupProperty: 'name' },
     { dataBindKey: 'campaign', adGroupProperty: 'campaign' },
@@ -1689,21 +1750,24 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   
   // Populate the display spans for the new two-column layout
-  // Common Data section (currently just mirror the instructional data)
-  safeSet('displayCommonAdGroupName', adGroup.name);
-  safeSet('displayCommonCampaign', adGroup.campaign);
-  safeSet('displayCommonBudget', adGroup.budget);
+  // Beacon Fields section
+  safeSet('displayAdGroupId', adGroup.id);
+  safeSet('displayAdGroupName', adGroup.name);
+  safeSet('displayCampaign', adGroup.campaign);
+  safeSet('displayMultiviewClassification', adGroup.multiviewClassification);
+  safeSet('displayMultiviewTactic', adGroup.multiviewTactic);
+  safeSet('displayBeaconAudience', adGroup.beaconAudience);
   
   // DSP Fields section
+  safeSet('displayDspName', adGroup.dspName);
   safeSet('displayCampaignName', adGroup.campaign);
-  safeSet('displayAdGroupName', adGroup.name);
   safeSet('displayFunnelLocation', adGroup.funnelLocation);
   safeSet('displayChannel', adGroup.channel);
   safeSet('displayDeviceTypes', adGroup.deviceTypes);
   safeSet('displayAdEnvironments', adGroup.adEnvironments);
   safeSet('displayPrimaryGoal', adGroup.primaryGoal);
   safeSet('displayTarget', adGroup.target);
-  safeSet('displayAudience', adGroup.audience);
+  safeSet('displayDspAudience', adGroup.dspAudience);
   safeSet('displayFrequency', adGroup.frequency);
   safeSet('displayGeos', adGroup.geos);
   safeSet('displayBaseBid', adGroup.baseBid);
@@ -1721,19 +1785,63 @@ document.addEventListener('DOMContentLoaded', function () {
   safeSet('displayAdServerCapCost', adGroup.adServerCapCost);
   
   // Set input values for editing
-  safeInput('commonAdGroupName', adGroup.name);
-  safeInput('commonCampaign', adGroup.campaign);
-  safeInput('commonBudget', adGroup.budget);
+  // Beacon Fields (ID is read-only, no input needed)
+  safeInput('inputAdGroupName', adGroup.name);
+  
+  // Populate inputCampaign dropdown before setting value
+  const inputCampaignSelect = document.getElementById('inputCampaign');
+  if (inputCampaignSelect) {
+    // Clear existing options except the first one
+    while (inputCampaignSelect.children.length > 1) {
+      inputCampaignSelect.removeChild(inputCampaignSelect.lastChild);
+    }
+    
+    const stored = localStorage.getItem('campaign_tree_groups');
+    let data = stored ? JSON.parse(stored) : { campaigns: [], groups: [] };
+    
+    // Handle both old and new data structures
+    if (Array.isArray(data)) {
+      data = { campaigns: [], groups: data };
+    }
+    
+    if (!data.campaigns) data.campaigns = [];
+    if (!data.groups) data.groups = [];
+
+    // Add individual campaigns
+    data.campaigns.forEach(campaign => {
+      const opt = document.createElement('option');
+      opt.value = campaign.id;
+      opt.textContent = campaign.beaconCampaignName || campaign.name || campaign.id;
+      inputCampaignSelect.appendChild(opt);
+    });
+
+    // Add campaigns from groups
+    data.groups.forEach(group => {
+      if (group.campaigns) {
+        group.campaigns.forEach(campaign => {
+          const opt = document.createElement('option');
+          opt.value = campaign.id;
+          opt.textContent = campaign.beaconCampaignName || campaign.name || campaign.id;
+          inputCampaignSelect.appendChild(opt);
+        });
+      }
+    });
+  }
+  
+  safeInput('inputCampaign', adGroup.campaign);
+  safeInput('inputMultiviewClassification', adGroup.multiviewClassification);
+  safeInput('inputMultiviewTactic', adGroup.multiviewTactic);
+  safeInput('inputBeaconAudience', adGroup.beaconAudience);
   
   // DSP Field inputs
-  safeInput('adGroupNameInput', adGroup.name);
+  safeInput('adGroupNameInput', adGroup.dspName);
   safeInput('funnelLocationInput', adGroup.funnelLocation);
   safeInput('channelInput', adGroup.channel);
   safeInput('deviceTypesInput', adGroup.deviceTypes);
   safeInput('adEnvironmentsInput', adGroup.adEnvironments);
   safeInput('primaryGoalInput', adGroup.primaryGoal);
   safeInput('targetInput', adGroup.target);
-  safeInput('audienceInput', adGroup.audience);
+  safeInput('inputDspAudience', adGroup.dspAudience);
   safeInput('frequencyInput', adGroup.frequency);
   safeInput('geosInput', adGroup.geos);
   safeInput('baseBidInput', adGroup.baseBid);

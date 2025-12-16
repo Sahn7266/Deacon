@@ -558,8 +558,8 @@
       function formatAttributionWindow(data) {
         if (!data || typeof data !== 'object') return '—';
         const value = data.value || '';
-        const unit = data.unit || '';
-        return value && unit ? `${value} ${unit}` : '—';
+        const unit = data.unit || 'Days';
+        return value ? `${value} ${unit}` : '—';
       }
 
       function bindAll(key, value, fallback = '—') {
@@ -923,9 +923,11 @@
           const clickStr = now.inputDspAttrClick?.trim() || '';
           if (clickStr && clickStr !== '—') {
             const clickParts = clickStr.split(' ');
+            const clickValue = clickParts[0] || '';
+            const clickUnit = clickParts.slice(1).join(' ') || 'Days';
             advertisers[idx].dsp.attributionWindows.click = {
-              value: clickParts[0] || '',
-              unit: clickParts.slice(1).join(' ') || 'Days'
+              value: clickValue,
+              unit: clickUnit
             };
           } else {
             advertisers[idx].dsp.attributionWindows.click = { value: '', unit: 'Days' };
@@ -935,9 +937,11 @@
           const impressionStr = now.inputDspAttrImpression?.trim() || '';
           if (impressionStr && impressionStr !== '—') {
             const impressionParts = impressionStr.split(' ');
+            const impressionValue = impressionParts[0] || '';
+            const impressionUnit = impressionParts.slice(1).join(' ') || 'Days';
             advertisers[idx].dsp.attributionWindows.impression = {
-              value: impressionParts[0] || '',
-              unit: impressionParts.slice(1).join(' ') || 'Days'
+              value: impressionValue,
+              unit: impressionUnit
             };
           } else {
             advertisers[idx].dsp.attributionWindows.impression = { value: '', unit: 'Days' };

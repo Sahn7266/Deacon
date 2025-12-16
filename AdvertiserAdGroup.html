@@ -474,23 +474,43 @@
       <div class="mb-4">
         <h3 class="text-lg font-semibold text-gray-800 mb-3">Beacon Fields</h3>
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Ad Group Name *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">ID</label>
+              <input type="text" id="beaconAdGroupId" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 focus:outline-none" readonly>
+              <p class="text-xs text-gray-500 mt-1">System-generated identifier</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Name <span class="text-red-500">*</span></label>
               <input type="text" id="beaconAdGroupName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-              <p class="text-xs text-gray-500 mt-1">Common identifier across all platforms</p>
+              <p class="text-xs text-gray-500 mt-1">Ad group name</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Campaign</label>
-              <select id="adGroupCampaign" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              <select id="beaconCampaign" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                 <option value="">Select campaign</option>
               </select>
               <p class="text-xs text-gray-500 mt-1">Campaign to tie this ad group to</p>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Budget Allocation</label>
-              <input type="text" id="beaconBudget" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <p class="text-xs text-gray-500 mt-1">Budget allocated to this ad group</p>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Audience</label>
+              <input type="text" id="beaconAudience" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Multiview Classification</label>
+              <select id="beaconMultiviewClassification" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- Select --</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Multiview Tactic</label>
+              <select id="beaconMultiviewTactic" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- Select --</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
             </div>
           </div>
         </div>
@@ -1586,6 +1606,13 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.remove('hidden');
     // Reset form and connectors
     form.reset();
+    
+    // Generate and display Ad Group ID
+    const adGroupIdField = document.getElementById('beaconAdGroupId');
+    if (adGroupIdField) {
+      adGroupIdField.value = 'AG-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    }
+    
     resetDimensionsDropdown();
     resetDeviceTypesDropdown();
     resetAdEnvironmentsDropdown();
@@ -1655,21 +1682,30 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       console.log('Gathering form data...');
+      
+      // Get the Ad Group ID from the field (already generated when modal opened)
+      const idField = document.getElementById('beaconAdGroupId');
+      const adGroupId = idField?.value || ('AG-' + Math.random().toString(36).substr(2, 6).toUpperCase());
+      
       const adGroup = {
-        id: 'AG' + Date.now(),
-        // Use Beacon Ad Group Name as the primary name
+        id: adGroupId,
+        // Beacon Fields
         name: document.getElementById('beaconAdGroupName')?.value?.trim() || '',
+        campaign: document.getElementById('beaconCampaign')?.value || '',
+        campaignId: document.getElementById('beaconCampaign')?.value || '',
+        multiviewClassification: document.getElementById('beaconMultiviewClassification')?.value || '',
+        multiviewTactic: document.getElementById('beaconMultiviewTactic')?.value || '',
+        beaconAudience: document.getElementById('beaconAudience')?.value?.trim() || '',
+        
         // DSP Fields (now contain the detailed fields)
         dspName: document.getElementById('adGroupName')?.value?.trim() || '',
-        campaign: document.getElementById('adGroupCampaign')?.value || '',
-        campaignId: document.getElementById('adGroupCampaign')?.value || '',
         funnelLocation: document.getElementById('adGroupFunnelLocation')?.value || '',
         channel: document.getElementById('adGroupChannel')?.value || '',
         deviceTypes: getMultiSelectValues('deviceTypes'),
         adEnvironments: getMultiSelectValues('adEnvironments'),
         primaryGoal: document.getElementById('adGroupPrimaryGoal')?.value || '',
         target: document.getElementById('adGroupTarget')?.value?.trim() || '',
-        audience: document.getElementById('adGroupAudience')?.value || '',
+        dspAudience: document.getElementById('adGroupAudience')?.value || '',
         frequency: getFrequencyValue(),
         geos: document.getElementById('adGroupGeos')?.value || '',
         baseBid: document.getElementById('adGroupBaseBid')?.value?.trim() || '',
@@ -1747,7 +1783,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const beforeAuditData = {
         // DSP Fields
-        adGroupNameInput: originalAdGroup.name,
+        adGroupNameInput: originalAdGroup.dspName,
         campaignName: originalAdGroup.campaign,
         funnelLocation: originalAdGroup.funnelLocation || '',
         channel: originalAdGroup.channel || '',
@@ -1786,7 +1822,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       groups[existingIndex] = adGroup;
     } else {
-      groups.push(adGroup);
+      groups.unshift(adGroup);
     }
 
     localStorage.setItem('adgroups_data_v1', JSON.stringify(groups));
@@ -1909,7 +1945,10 @@ function getQueryParam(key) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const campaignSelect = document.getElementById('adGroupCampaign');
-  if (!campaignSelect) return;
+  const beaconCampaignSelect = document.getElementById('beaconCampaign');
+  
+  // Need at least one campaign select to populate
+  if (!campaignSelect && !beaconCampaignSelect) return;
 
   // Populate campaign dropdown
   const stored = localStorage.getItem('campaign_tree_groups');
@@ -1925,33 +1964,43 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!data.campaigns) data.campaigns = [];
   if (!data.groups) data.groups = [];
 
-  // Add individual campaigns first (from top-level campaigns array)
-  data.campaigns.forEach(campaign => {
-    const opt = document.createElement('option');
-    opt.value = campaign.id;
-    // Use Beacon Campaign Name instead of DSP Campaign Name
-    opt.textContent = campaign.beaconCampaignName || campaign.name || campaign.id;
-    campaignSelect.appendChild(opt);
-  });
-
-  // Add campaigns from groups
-  data.groups.forEach(group => {
-    group.campaigns.forEach(campaign => {
+  // Function to add campaign options to a select element
+  const populateSelect = (selectElement) => {
+    if (!selectElement) return;
+    
+    // Add individual campaigns first (from top-level campaigns array)
+    data.campaigns.forEach(campaign => {
       const opt = document.createElement('option');
       opt.value = campaign.id;
       // Use Beacon Campaign Name instead of DSP Campaign Name
       opt.textContent = campaign.beaconCampaignName || campaign.name || campaign.id;
-      campaignSelect.appendChild(opt);
+      selectElement.appendChild(opt);
     });
-  });
+
+    // Add campaigns from groups
+    data.groups.forEach(group => {
+      group.campaigns.forEach(campaign => {
+        const opt = document.createElement('option');
+        opt.value = campaign.id;
+        // Use Beacon Campaign Name instead of DSP Campaign Name
+        opt.textContent = campaign.beaconCampaignName || campaign.name || campaign.id;
+        selectElement.appendChild(opt);
+      });
+    });
+  };
+
+  // Populate both campaign dropdowns
+  populateSelect(campaignSelect);
+  populateSelect(beaconCampaignSelect);
 
   // === AUTO-SELECT CAMPAIGN IF COMING FROM CAMPAIGN CREATION ===
   const urlParams = new URLSearchParams(window.location.search);
   const newCampaignId = urlParams.get('newCampaign');
   
   if (newCampaignId) {
-    // Pre-select the campaign (now that options are populated)
-    campaignSelect.value = newCampaignId;
+    // Pre-select the campaign in both dropdowns (now that options are populated)
+    if (campaignSelect) campaignSelect.value = newCampaignId;
+    if (beaconCampaignSelect) beaconCampaignSelect.value = newCampaignId;
     
     // Auto-open the modal
     const modal = document.getElementById('createAdGroupModal');

@@ -47,6 +47,7 @@
     adServerCampaignVertical: 'Campaign Vertical',
 
     // Ad Group DSP fields (new detailed structure)
+    dspName: 'Name',
     adGroupNameInput: 'Name',
     adGroupName: 'Name', // Alias for backward compatibility
     campaignName: 'Campaign',
@@ -95,7 +96,7 @@
     ],
     adGroupDsp: [
       // DSP fields that match what's actually recorded in audit
-      'adGroupNameInput', 'campaignName', 'funnelLocation', 'channel', 
+      'dspName', 'adGroupNameInput', 'campaignName', 'funnelLocation', 'channel', 
       'deviceTypes', 'adEnvironments', 'primaryGoal', 'target', 
       'audience', 'frequency', 'geos', 'baseBid', 'maxBid',
       // Legacy DSP fields (for backward compatibility)
@@ -404,7 +405,7 @@ function clearCampaignEdits(campaignId){
     
     const currentAdGroupData = {
       // DSP Fields (new detailed structure)
-      adGroupNameInput: adGroup.name,
+      adGroupNameInput: adGroup.dspName,
       campaignName: adGroup.campaign,
       funnelLocation: adGroup.funnelLocation || '',
       channel: adGroup.channel || '',

@@ -1413,6 +1413,11 @@ self.validateForm();
               dspCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                   dspSection.classList.remove('hidden');
+                  // Auto-select "Days" for attribution windows
+                  const clickUnit = document.getElementById('dspAttrClickUnit');
+                  const impressionUnit = document.getElementById('dspAttrImpressionUnit');
+                  if (clickUnit) clickUnit.value = 'Days';
+                  if (impressionUnit) impressionUnit.value = 'Days';
                 } else {
                   dspSection.classList.add('hidden');
                 }
