@@ -1264,25 +1264,22 @@ if (this.elements.manageCampaignGroupBtn) {
           const rows = [];
           
           // Add individual campaigns first (at the top)
-          if (this.campaigns && this.campaigns.length > 0) {
-            const individualCampaigns = this.campaigns.filter(filterBy);
-            if (individualCampaigns.length > 0) {
-              // Add ungrouped header
-              rows.push({ 
-                type: 'ungrouped-header', 
-                name: 'Ungrouped Campaigns',
-                campaignCount: individualCampaigns.length,
-                expanded: this.ungroupedExpanded
-              });
-              
-              // Only add campaigns if ungrouped section is expanded
-              if (this.ungroupedExpanded) {
-                for (const c of individualCampaigns) {
-                  // Update ad group count dynamically
-                  c.liveAdGroupCount = this.getAdGroupCount(c.id);
-                  rows.push({ type: 'campaign', groupId: null, campaign: c });
-                }
-              }
+          const individualCampaigns = this.campaigns ? this.campaigns.filter(filterBy) : [];
+          
+          // Always add ungrouped header, even if there are no campaigns
+          rows.push({ 
+            type: 'ungrouped-header', 
+            name: 'Ungrouped Campaigns',
+            campaignCount: individualCampaigns.length,
+            expanded: this.ungroupedExpanded
+          });
+          
+          // Only add campaigns if ungrouped section is expanded
+          if (this.ungroupedExpanded) {
+            for (const c of individualCampaigns) {
+              // Update ad group count dynamically
+              c.liveAdGroupCount = this.getAdGroupCount(c.id);
+              rows.push({ type: 'campaign', groupId: null, campaign: c });
             }
           }
           
