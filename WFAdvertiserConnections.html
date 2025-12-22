@@ -401,8 +401,14 @@
                       <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
                         <div class="px-6 py-2 whitespace-nowrap">Platform Type</div>
                       </th>
+                      <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
+                        <div class="px-6 py-2 whitespace-nowrap">Status</div>
+                      </th>
+                      <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
+                        <div class="px-6 py-2 whitespace-nowrap">Enabled At</div>
+                      </th>
                       <th scope="col" class="text-sm font-medium uppercase tracking-wider">
-                        <div class="px-6 py-2 whitespace-nowrap">Record ID</div>
+                        <div class="px-6 py-2 whitespace-nowrap">Disabled At</div>
                       </th>
                     </tr>
                   </thead>
@@ -440,10 +446,10 @@
     
     // === SAMPLE AD GROUP DATA ===
     const DEFAULT_ADGROUPS = [
-      { platform: 'Google Campaign Manager', platformType: 'Ad Server', recordId: '31265-892' },
-      { platform: 'The Trade Desk',           platformType: 'DSP',       recordId: '712AB46G' },
-      { platform: 'SimpliFi',                 platformType: 'DSP',       recordId: '893472FTG-01' },
-      { platform: 'StackAdapt',               platformType: 'DSP',       recordId: '1065893' }
+      { platform: 'Google Campaign Manager', platformType: 'Ad Server', status: 'ENABLED',  enabled_at: '2025-11-15 09:23:41', disabled_at: null },
+      { platform: 'The Trade Desk',           platformType: 'DSP',       status: 'ENABLED',  enabled_at: '2025-10-08 14:17:55', disabled_at: null },
+      { platform: 'Simplifi',                 platformType: 'DSP',       status: 'DISABLED', enabled_at: '2025-09-22 11:04:18', disabled_at: '2025-12-18 16:30:22' },
+      { platform: 'StackAdapt',               platformType: 'DSP',       status: 'ENABLED',  enabled_at: '2025-12-01 08:45:33', disabled_at: null }
     ];
 
     // === MAIN APPLICATION ===
@@ -472,8 +478,8 @@
             const storedRaw = localStorage.getItem(CONFIG.STORAGE_KEYS.DATA);
             if (storedRaw) {
               const parsed = JSON.parse(storedRaw);
-              // Validate stored format: expect non-empty array of objects with platform & recordId
-              const valid = Array.isArray(parsed) && parsed.length > 0 && parsed.every(it => it && (it.platform || it.recordId));
+              // Validate stored format: expect non-empty array of objects with platform & status & enabled_at
+              const valid = Array.isArray(parsed) && parsed.length > 0 && parsed.every(it => it && it.platform && it.status !== undefined && it.enabled_at !== undefined);
               if (valid) {
                 this.adgroups = parsed;
                 return;
@@ -621,7 +627,7 @@
               }
               return;
             } else if (action === 'delete') {
-              self.confirmDelete?.(btn.dataset.recordId);
+              self.confirmDelete?.(btn.dataset.platform);
             }
           });
 
@@ -672,7 +678,7 @@
           if (this.searchQuery.trim()) {
             const q = this.searchQuery.toLowerCase();
             filtered = filtered.filter(ag =>
-              (ag.recordId && String(ag.recordId).toLowerCase().includes(q)) ||
+              (ag.status && String(ag.status).toLowerCase().includes(q)) ||
               (ag.platform && ag.platform.toLowerCase().includes(q)) ||
               (ag.platformType && ag.platformType.toLowerCase().includes(q))
             );
@@ -718,7 +724,7 @@
 
           if (data.length === 0) {
             const tr = document.createElement('tr');
-            tr.innerHTML = '<td colspan="4" class="px-6 py-4 text-center text-gray-500">No connections found</td>';
+            tr.innerHTML = '<td colspan="6" class="px-6 py-4 text-center text-gray-500">No connections found</td>';
             tbody.appendChild(tr);
             return;
           }
@@ -726,16 +732,19 @@
           data.forEach(row => {
             const tr = document.createElement('tr');
             tr.className = 'hover:bg-gray-50';
+            const statusBadgeClass = row.status === 'ENABLED' 
+              ? 'bg-green-100 text-green-800' 
+              : 'bg-gray-100 text-gray-800';
             tr.innerHTML = `
               <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
                 <div class="flex items-center space-x-2">
-                  <button data-action="edit" data-record-id="${row.recordId || ''}" title="Edit" class="p-1 rounded hover:bg-gray-100" type="button" aria-label="Edit">
+                  <button data-action="edit" data-platform="${row.platform || ''}" title="Edit" class="p-1 rounded hover:bg-gray-100" type="button" aria-label="Edit">
                     <!-- Pencil icon -->
                     <svg class="w-4 h-4 text-gray-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                       <path d="M17.414 2.586a2 2 0 010 2.828l-9.9 9.9a1 1 0 01-.464.263l-4 1a1 1 0 01-1.213-1.213l1-4a1 1 0 01.263-.464l9.9-9.9a2 2 0 012.828 0zM15.121 4.121l.758-.758a1 1 0 10-1.414-1.414l-.758.758 1.414 1.414z"></path>
                     </svg>
                   </button>
-                  <button data-action="delete" data-record-id="${row.recordId || ''}" title="Delete" class="p-1 rounded hover:bg-gray-100" type="button" aria-label="Delete">
+                  <button data-action="delete" data-platform="${row.platform || ''}" title="Delete" class="p-1 rounded hover:bg-gray-100" type="button" aria-label="Delete">
                     <!-- Trash icon -->
                     <svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                       <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h6a1 1 0 011 1v1h3a1 1 0 110 2h-1v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h3V3zm2 3a1 1 0 10-2 0v8a1 1 0 102 0V6zm6 0a1 1 0 10-2 0v8a1 1 0 102 0V6z" clip-rule="evenodd"></path>
@@ -745,7 +754,11 @@
               </td>
               <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${row.platform || ''}</td>
               <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${row.platformType || ''}</td>
-              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900">${row.recordId || ''}</td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-gray-200">
+                <span class="px-2 py-1 text-xs font-semibold rounded ${statusBadgeClass}">${row.status || ''}</span>
+              </td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${row.enabled_at || ''}</td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900">${row.disabled_at || '--'}</td>
             `;
             tbody.appendChild(tr);
           });
