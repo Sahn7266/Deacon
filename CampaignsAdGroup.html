@@ -232,7 +232,7 @@
       </a>
     </li>
     <li>
-      <a href="./CampaignsAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+      <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
         <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="Ad Groups">
         <span data-link-label>Ad Groups</span>
       </a>
@@ -240,356 +240,592 @@
   </ul>
 </nav>
 
-      <!-- Main -->
+      <!-- Main Content -->
       <main class="flex-1 overflow-y-auto p-6">
-        <div class="bg-white rounded-lg shadow-sm">
-          <div class="p-4 border-b border-gray-200">
+        <div class="app-card rounded-lg shadow-lg overflow-hidden">
+          <!-- Advertiser Header -->
+          <div class="px-4 pt-4">
             <div class="flex items-start gap-4 mb-3">
               <div class="flex-1">
-                <h1 data-bind="adv.name" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
+                <h1 data-bind="adv.name" class="text-xl md:text-2xl font-semibold text-gray-900">Loading…</h1>
                 <div class="flex justify-between items-center">
                   <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
                   <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
                 </div>
               </div>
             </div>
+            <hr class="app-divider mp-4">
+          </div>
 
-            <hr class="border-gray-300 mp-4 p-2">
+          <!-- Breadcrumbs -->
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <nav class="flex items-center space-x-2 text-sm" aria-label="Breadcrumb">
+              <a href="./index.html" class="text-blue-600 hover:underline">Advertisers</a>
+              <span class="text-gray-400">/</span>
+              <a href="#" id="breadcrumbAdvertiser" class="text-blue-600 hover:underline">Advertiser</a>
+              <span class="text-gray-400">/</span>
+              <a href="#" id="breadcrumbCampaigns" class="text-blue-600 hover:underline">Campaigns</a>
+              <span class="text-gray-400">/</span>
+              <a href="#" id="breadcrumbCampaign" class="text-blue-600 hover:underline">Campaign</a>
+              <span class="text-gray-400">/</span>
+              <span class="text-gray-600 font-medium">Ad Groups</span>
+            </nav>
+          </div>
 
-            <!-- Two-column campaign details layout -->
-            <section>
-              <div class="flex items-center justify-between mb-6">
-                <h1 id="campaignDetailsTitle" class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGN DETAILS</h1>
-                <div class="flex items-center gap-2">
-                  <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                  <svg viewBox="0 0 24 24" height="16" width="16">
-                    <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
-                  </svg>
-                  Edit
-                  </button>
-                  <button id="saveGeneralBtn" class="hidden text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700">Save</button>
-                  <button id="cancelGeneralBtn" class="hidden text-sm px-3 py-1 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
-                </div>
-              </div>
-
-              <!-- Two Column Layout -->
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <!-- Left Column - Common Data and Ad Groups -->
-                <div class="space-y-6">
-                  <!-- Common Data Column -->
-                  <div class="overflow-x-auto border border-default rounded-md">
-                    <table class="w-full tbl tbl-row-hover table-fixed campaign-details-table">
-                      <colgroup>
-                        <col class="w-1/3">
-                        <col class="w-2/3">
-                      </colgroup>
-                      <thead class="tbl-head">
-                        <tr>
-                          <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
-                            BEACON FIELDS
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody class="divide-y border-default">
-                        
-                        <!-- Campaign ID -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            ID
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayBeaconCampaignId" class="text-gray-800 break-words">N/A</span>
-                            <input id="beaconCampaignId" type="text" class="hidden campaign-details-input bg-gray-100 cursor-not-allowed" readonly />
-                          </td>
-                        </tr>
-
-                        <!-- Campaign Name -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Name
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayBeaconCampaignName" class="text-gray-800 break-words">N/A</span>
-                            <input id="beaconCampaignName" type="text" class="hidden campaign-details-input" />
-                          </td>
-                        </tr>
-
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <!-- Ad Groups Table -->
-                  <div class="overflow-x-auto border border-default rounded-md">
-                    <table class="w-full tbl tbl-row-hover table-fixed campaign-details-table">
-                      <colgroup>
-                        <col class="w-full">
-                      </colgroup>
-                      <thead style="background-color: #f3e8ff;">
-                        <tr>
-                          <th class="px-6 py-2 text-left text-sm font-medium text-purple-900 uppercase tracking-wider">
-                            AD GROUPS
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody id="adGroupsTableBody" class="divide-y border-default">
-                        <!-- Ad groups will be populated here by JavaScript -->
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <!-- Right Column - DSP and Ad Server Fields -->
-                <div class="space-y-6">
-                  
-                  <!-- DSP Fields Table -->
-                  <div class="overflow-x-auto border border-default rounded-md">
-                    <table class="w-full tbl tbl-row-hover table-fixed campaign-details-table">
-                      <colgroup>
-                        <col class="w-1/3">
-                        <col class="w-2/3">
-                      </colgroup>
-                      <thead style="background-color: #dbeafe;">
-                        <tr>
-                          <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-blue-900 uppercase tracking-wider">
-                            DSP FIELDS
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody class="divide-y border-default">
-
-                        <!-- Seed -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Seed
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignSeed" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignSeed" class="hidden campaign-details-input">
-                              <option value="">-- Select Seed --</option>
-                              <option value="Default Seed List">Default Seed List</option>
-                            </select>
-                          </td>
-                        </tr>
-
-                        <!-- Campaign Organization -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Campaign Organization
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignOrganization" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignOrganization" class="hidden campaign-details-input">
-                              <option value="">-- Select Organization --</option>
-                              <option value="Create new campaign group">Create new campaign group</option>
-                              <option value="Add campaigns to existing group">Add campaigns to existing group</option>
-                              <option value="Do not create campaign group">Do not create campaign group</option>
-                            </select>
-                          </td>
-                        </tr>
-
-                        <!-- Pacing -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Pacing
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignPacing" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignPacing" class="hidden campaign-details-input">
-                              <option value="">-- Select Pacing --</option>
-                              <option value="Pace Ahead">Pace Ahead</option>
-                              <option value="Pace Behind">Pace Behind</option>
-                            </select>
-                          </td>
-                        </tr>
-
-                        <!-- Timezone -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Timezone
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignTimezone" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignTimezone" class="hidden campaign-details-input">
-                              <option value="">-- Select Timezone --</option>
-                              <option value="UTC">UTC (Coordinated Universal Time)</option>
-                              <option value="EST">EST (Eastern Standard Time)</option>
-                              <option value="CST">CST (Central Standard Time)</option>
-                              <option value="MST">MST (Mountain Standard Time)</option>
-                              <option value="PST">PST (Pacific Standard Time)</option>
-                            </select>
-                          </td>
-                        </tr>
-
-                        <!-- Start Date (UTC) -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Start Date (UTC)
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignStartDate" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignStartDate" type="date" class="hidden campaign-details-input" />
-                          </td>
-                        </tr>
-
-                        <!-- End Date (UTC) -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            End Date (UTC)
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignEndDate" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignEndDate" type="date" class="hidden campaign-details-input" />
-                          </td>
-                        </tr>
-
-                        <!-- Campaign Channel -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Campaign Channel
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignChannel" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignChannel" class="hidden campaign-details-input">
-                              <option value="">-- Select Channel --</option>
-                              <option value="Display">Display</option>
-                              <option value="Video">Video</option>
-                              <option value="Audio">Audio</option>
-                              <option value="Native">Native</option>
-                            </select>
-                          </td>
-                        </tr>
-
-                        <!-- Campaign Name -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Campaign Name
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignName" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignName" class="hidden campaign-details-input">
-                              <option value="">-- Select Campaign Name --</option>
-                              <option value="Brand Awareness">Brand Awareness</option>
-                              <option value="Persona">Persona</option>
-                              <option value="Company Targeting">Company Targeting</option>
-                            </select>
-                          </td>
-                        </tr>
-
-                        <!-- Campaign Budget -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Campaign Budget
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignBudget" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignBudget" type="number" step="0.01" min="0" class="hidden campaign-details-input" placeholder="0.00" />
-                          </td>
-                        </tr>
-
-                        <!-- Campaign KPI -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Campaign KPI
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignKPI" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignKPI" class="hidden campaign-details-input">
-                              <option value="">-- Select KPI --</option>
-                              <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
-                              <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
-                            </select>
-                          </td>
-                        </tr>
-
-                        <!-- KPI Target -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            KPI Target
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignKPITarget" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignKPITarget" type="number" step="0.01" min="0" class="hidden campaign-details-input" placeholder="0.00" />
-                          </td>
-                        </tr>
-
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <!-- Ad Server Fields Table -->
-                  <div class="overflow-x-auto border border-default rounded-md">
-                    <table class="w-full tbl tbl-row-hover table-fixed campaign-details-table">
-                      <colgroup>
-                        <col class="w-1/3">
-                        <col class="w-2/3">
-                      </colgroup>
-                      <thead style="background-color: #d1fae5;">
-                        <tr>
-                          <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-green-900 uppercase tracking-wider">
-                            AD SERVER FIELDS
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody class="divide-y border-default">
-
-                        <!-- Campaign Name -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Campaign Name
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerCampaignName" class="text-gray-800 break-words">N/A</span>
-                            <select id="adServerCampaignName" class="hidden campaign-details-input">
-                              <option value="">-- Select Campaign Name --</option>
-                              <option value="Brandawareness">Brandawareness</option>
-                              <option value="Persona">Persona</option>
-                              <option value="Targeting">Targeting</option>
-                            </select>
-                          </td>
-                        </tr>
-
-                        <!-- Schedule -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Schedule
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerSchedule" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerSchedule" type="date" class="hidden campaign-details-input" />
-                          </td>
-                        </tr>
-
-                        <!-- Landing Page Name -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Landing Page Name
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerLandingPageName" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerLandingPageName" type="text" class="hidden campaign-details-input" placeholder="Enter landing page name" />
-                          </td>
-                        </tr>
-
-                        <!-- Landing Page URL -->
-                        <tr class="border-b border-default">
-                          <td class="px-3 py-1 text-sm font-medium border-r border-default">
-                            Landing Page URL
-                          </td>
-                          <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerLandingPageURL" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerLandingPageURL" type="text" class="hidden campaign-details-input" placeholder="Enter any URL or value" />
-                          </td>
-                        </tr>
-
-                      </tbody>
-                    </table>
-                  </div>
-
-                </div>
-
+          <!-- Page Header-->
+          <div class="px-4 pt-5">
+            <section class="space-y-2">
+              <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-semibold text-gray-900 mx-2">AD GROUPS</h1>
               </div>
             </section>
+          </div>
+          
+          <!-- Toolbar -->
+          <div class="px-6 py-3">
+            <div class="mb-4">
+              <div class="flex items-center space-x-3  bg-[var(--tbl-head-bg)] border border-gray-300 rounded-md">
+                <!-- New Ad Group Button -->
+                <button id="createBtn" class="flex items-center h-10 px-3 rounded-md hover:bg-gray-50 transition" title="Create New Ad Group">
+                  <span class="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-gray-400 mr-2">
+                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                  </span>
+                  <span class="text-sm font-medium text-gray-700">New Ad Group</span>
+                </button>
+
+                <div class="h-6 border-l border-gray-300 mx-1"></div>
+
+                <!-- Filters -->
+                <div id="filtersGroup" class="flex items-center space-x-2">
+                  <div class="flex items-center px-2 h-10 rounded-md">
+                    <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01.293.707l-6.707 8.707V21l-4-2v-4.586L2.707 6.707A1 1 0 013 6V4z"></path>
+                    </svg>
+
+                    <!-- Classification Filter -->
+                    <div class="relative">
+                      <button id="classChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="classification" title="Classification filter">
+                        <span id="classChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
+                        </svg>
+                      </button>
+                      <div id="classMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto min-w-max">
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Prospecting">Prospecting</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Retargeting">Retargeting</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Brand">Brand</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Loyalty">Loyalty</button>
+                      </div>
+                    </div>
+
+                    <!-- DSP Filter -->
+                    <div class="relative">
+                      <button id="dspChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="dsp" title="DSP filter">
+                        <span id="dspChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
+                        </svg>
+                      </button>
+                      <div id="dspMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto min-w-max">
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Google Campaign Manager">Google Campaign Manager</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Trade Desk">Trade Desk</button>
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="DV360">DV360</button>
+                      </div>
+                    </div>
+
+                    <!-- Campaign Filter -->
+                    <div class="relative">
+                      <button id="campaignChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="campaign" title="Campaign filter">
+                        <span id="campaignChipLabel">All</span>
+                        <svg class="w-4 h-4 text-gray-500 ml-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z"/>
+                        </svg>
+                      </button>
+                      <div id="campaignMenu" class="hidden absolute mt-2 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-20 max-h-56 overflow-auto min-w-max">
+                        <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All</button>
+                        <!-- Campaign options will be populated dynamically by JavaScript -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="h-6 border-l border-gray-300 mx-1"></div>
+
+                <!-- Search -->
+                <div class="relative">
+                  <div class="search-container">
+                    <div class="search-wrapper" id="searchWrapper" style="height:40px;">
+                      <button id="searchToggle" class="search-icon" aria-label="Open search" type="button">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                      </button>
+                      <input type="text" id="searchInput" class="search-input" placeholder="Enter Name, ID, DSP, or Campaign" autocomplete="off" aria-label="Search campaigns" />
+                      <button id="searchClear" class="clear-button" aria-label="Clear search" type="button">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto border border-default rounded-md">
+              <table id="campaignTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
+                <thead class="tbl-head">
+                  <tr>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="id">
+                        <span>ID</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="name">
+                        <span>Name</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp">
+                        <span>DSP</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="classification">
+                        <span>Classification</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="campaign">
+                        <span>Campaign</span>
+                      </button>
+                    </th>
+<th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+  <span class="px-6 py-2 block">Actions</span>
+</th>
+                    
+                  </tr>
+                </thead>
+                <tbody id="campaignTableBody" class="divide-y">
+                  <!-- Campaign rows will be populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-4 flex items-center justify-between text-xs text-gray-500">
+              <span id="recordCount">0 of 0 showing</span>
+              <div id="pagination" class="flex space-x-2">
+                <!-- Pagination buttons will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+
+
+<!-- Create Ad Group Modal -->
+<div id="createAdGroupModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-6xl max-h-[90vh] p-6 relative">
+    <button id="closeAdGroupModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Create New Ad Group</h2>
+
+    <form id="createAdGroupForm" class="overflow-y-auto max-h-[75vh] pr-2">
+      
+      <!-- Beacon Fields Section -->
+      <div class="mb-4">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Beacon Fields</h3>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">ID</label>
+              <input type="text" id="beaconAdGroupId" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 focus:outline-none" readonly>
+              <p class="text-xs text-gray-500 mt-1">System-generated identifier</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Name <span class="text-red-500">*</span></label>
+              <input type="text" id="beaconAdGroupName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              <p class="text-xs text-gray-500 mt-1">Ad group name</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Campaign</label>
+              <select id="beaconCampaign" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <option value="">Select campaign</option>
+              </select>
+              <p class="text-xs text-gray-500 mt-1">Campaign to tie this ad group to</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Audience</label>
+              <input type="text" id="beaconAudience" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Multiview Classification</label>
+              <select id="beaconMultiviewClassification" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- Select --</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Multiview Tactic</label>
+              <select id="beaconMultiviewTactic" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- Select --</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connectors Section -->
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-lg font-semibold text-gray-800">Connectors</h3>
+          <button type="button" id="connectorsToggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false">
+            <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+          </button>
+        </div>
+        <div id="connectorsContent" class="hidden">
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <!-- DSP Options -->
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">DSP (Data Service Provider)</label>
+                <div class="flex flex-wrap gap-2">
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="dsp-trade-desk" name="dsp" value="trade-desk" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">The Trade Desk</span>
+                  </label>
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="dsp-dv360" name="dsp" value="dv360" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">DV360</span>
+                  </label>
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="dsp-simplifi" name="dsp" value="simplifi" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">Simplifi</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Ad Server Options -->
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Ad Server</label>
+                <div class="flex flex-wrap gap-2">
+                  <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-green-300 cursor-pointer transition-colors">
+                    <input type="checkbox" id="adserver-gcm" name="adserver" value="google-campaign-manager" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                    <span class="text-sm font-medium text-gray-700">Google Campaign Manager</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DSP Fields Section (Trade Desk) -->
+      <div id="dspFieldsSection" class="hidden mb-3">
+        <div class="bg-white border border-blue-200 rounded-lg shadow-sm">
+          <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 border-b border-blue-200 rounded-t-lg">
+            <h4 class="font-semibold text-blue-900 text-sm uppercase tracking-wide">DSP Fields • The Trade Desk</h4>
+          </div>
+          <div class="p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input type="text" id="adGroupName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Funnel Location</label>
+                <select id="adGroupFunnelLocation" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select funnel location</option>
+                  <option value="Awareness">Awareness</option>
+                  <option value="Consideration">Consideration</option>
+                  <option value="Conversion">Conversion</option>
+                  <option value="Loyalty">Loyalty</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Channel</label>
+                <select id="adGroupChannel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select channel</option>
+                  <option value="Display">Display</option>
+                  <option value="Video">Video</option>
+                  <option value="Audio">Audio</option>
+                  <option value="Native Display">Native Display</option>
+                  <option value="Native Video">Native Video</option>
+                  <option value="TV">TV</option>
+                  <option value="Out of Home">Out of Home</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Device Types</label>
+                <div class="relative">
+                  <button type="button" id="deviceTypesDropdownBtn" class="w-full border border-gray-300 rounded-md px-3 py-2 text-left focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white flex justify-between items-center">
+                    <span id="deviceTypesSelected">Select device types</span>
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                  <div id="deviceTypesDropdown" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 hidden">
+                    <div class="p-2">
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" id="selectAllDeviceTypes" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm font-medium text-blue-600">Select All</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="Digital Home Assistant" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Digital Home Assistant</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="Digital Out of Home" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Digital Out of Home</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="Mobile" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Mobile</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="Other" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Other</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="PC Tablet" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">PC Tablet</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="deviceTypes" value="TV" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">TV</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ad Environments</label>
+                <div class="relative">
+                  <button type="button" id="adEnvironmentsDropdownBtn" class="w-full border border-gray-300 rounded-md px-3 py-2 text-left focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white flex justify-between items-center">
+                    <span id="adEnvironmentsSelected">Select ad environments</span>
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                  <div id="adEnvironmentsDropdown" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 hidden">
+                    <div class="p-2">
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" id="selectAllAdEnvironments" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm font-medium text-blue-600">Select All</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="adEnvironments" value="In-App" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">In-App</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="adEnvironments" value="Mobile Optimized Web" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Mobile Optimized Web</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="adEnvironments" value="Web (PC & Mobile)" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <span class="text-sm">Web (PC & Mobile)</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Primary Goal</label>
+                <select id="adGroupPrimaryGoal" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select primary goal</option>
+                  <option value="Cost per Acquisition (CPA)">Cost per Acquisition (CPA)</option>
+                  <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Target</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">$</span>
+                  </div>
+                  <input type="text" id="adGroupTarget" class="w-full border border-gray-300 rounded-md pl-8 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Audience</label>
+                <select id="adGroupAudience" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select audience</option>
+                  <option value="Apply a shared audience">Apply a shared audience</option>
+                  <option value="Koa Audiences">Koa Audiences</option>
+                  <option value="Target Everyone">Target Everyone</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                <div class="flex items-center space-x-2">
+                  <input type="number" id="adGroupFrequencyNumber" class="w-16 border border-gray-300 rounded-md px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" min="1" placeholder="1">
+                  <span class="text-sm text-gray-600">ads per</span>
+                  <input type="number" id="adGroupFrequencyPer" class="w-16 border border-gray-300 rounded-md px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" min="1" placeholder="1">
+                  <select id="adGroupFrequencyPeriod" class="border border-gray-300 rounded-md px-2 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="day">day</option>
+                    <option value="week">week</option>
+                    <option value="month">month</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Geos</label>
+                <select id="adGroupGeos" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Select geos</option>
+                  <option value="Specific Locations">Specific Locations</option>
+                  <option value="Everywhere">Everywhere</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Base Bid</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">$</span>
+                  </div>
+                  <input type="text" id="adGroupBaseBid" class="w-full border border-gray-300 rounded-md pl-8 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Max Bid</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">$</span>
+                  </div>
+                  <input type="text" id="adGroupMaxBid" class="w-full border border-gray-300 rounded-md pl-8 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ad Server Fields Section (Google Campaign Manager) -->
+      <div id="adServerFieldsSection" class="hidden mb-3">
+        <div class="bg-white border border-green-200 rounded-lg shadow-sm">
+          <div class="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 border-b border-green-200 rounded-t-lg">
+            <h4 class="font-semibold text-green-900 text-sm uppercase tracking-wide">Ad Server Fields • Google Campaign Manager</h4>
+          </div>
+          <div class="p-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input type="text" id="adServerName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select id="adServerStatus" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                  <option value="">Select status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Compatibility</label>
+                <select id="adServerCompatibility" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                  <option value="">Select compatibility</option>
+                  <option value="Display">Display</option>
+                  <option value="Persona">Persona</option>
+                  <option value="Video">Video</option>
+                  <option value="Audio">Audio</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Dimensions</label>
+                <div class="relative">
+                  <button type="button" id="dimensionsDropdownBtn" class="w-full border border-gray-300 rounded-md px-3 py-2 text-left focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white flex justify-between items-center">
+                    <span id="dimensionsSelected">Select dimensions</span>
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </button>
+                  <div id="dimensionsDropdown" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 hidden">
+                    <div class="p-2">
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" id="selectAllDimensions" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <span class="text-sm font-medium text-green-600">Select All</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="dimensions" value="160x600" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <span class="text-sm">160x600</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="dimensions" value="320x50" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <span class="text-sm">320x50</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="dimensions" value="300x250" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <span class="text-sm">300x250</span>
+                      </label>
+                      <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 cursor-pointer">
+                        <input type="checkbox" name="dimensions" value="728x90" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <span class="text-sm">728x90</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Testing Starts</label>
+                <input type="date" id="adServerTestingStarts" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                <input type="date" id="adServerStartDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <input type="date" id="adServerEndDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cost Structure</label>
+                <select id="adServerCostStructure" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                  <option value="">Select cost structure</option>
+                  <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
+                  <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cap Cost</label>
+                <select id="adServerCapCost" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                  <option value="">Select cap cost</option>
+                  <option value="OFF">OFF</option>
+                  <option value="ON">ON</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 pt-3 border-t border-gray-200">
+        <button type="button" id="cancelAdGroupModal" class="px-6 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">Cancel</button>
+        <button type="submit" class="px-6 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">Create Ad Group</button>
+        <button type="button" id="createAndAddMore" class="px-6 py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors">Create & Add +</button>
+      </div>
+    </form>
+  </div>
+</div>
 
                       <script>
                         (function() {
@@ -1521,21 +1757,22 @@ window.addEventListener('DOMContentLoaded', () => {
       // Update breadcrumb advertiser name and link
       const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
       if (breadcrumbAdvertiser) {
-        breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
-        breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
+        breadcrumbAdvertiser.textContent = advertiser.name || 'Advertiser';
+        breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?id=${encodeURIComponent(advertiser.id)}`;
       }
       
       // Update breadcrumb campaigns link
       const breadcrumbCampaigns = document.getElementById('breadcrumbCampaigns');
       if (breadcrumbCampaigns) {
-        breadcrumbCampaigns.href = `./AdvertiserCampaigns.html?advertiserId=${advertiser.id}`;
+        breadcrumbCampaigns.href = `./AdvertiserCampaigns.html?advertiserId=${encodeURIComponent(advertiser.id)}`;
       }
     }
     
-    // Update breadcrumb campaign name
+    // Update breadcrumb campaign name and link
     const breadcrumbCampaign = document.getElementById('breadcrumbCampaign');
-    if (breadcrumbCampaign && campaignName) {
-      breadcrumbCampaign.textContent = `Campaign: ${campaignName}`;
+    if (breadcrumbCampaign && campaignId && campaignName) {
+      breadcrumbCampaign.textContent = campaignName;
+      breadcrumbCampaign.href = `./CampaignDetails.html?campaignId=${encodeURIComponent(campaignId)}&campaignName=${encodeURIComponent(campaignName)}`;
     }
   } catch (e) {
     console.warn('Failed to populate breadcrumbs:', e);
@@ -1644,7 +1881,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Function to load ad groups associated with the current campaign
 function loadAdGroupsForCampaign(campaignId) {
-  const adGroupsTableBody = document.getElementById('adGroupsTableBody');
+  const adGroupsTableBody = document.getElementById('campaignTableBody');
   if (!adGroupsTableBody) return;
 
   try {
@@ -1653,6 +1890,9 @@ function loadAdGroupsForCampaign(campaignId) {
       adGroup.campaign === campaignId || adGroup.campaignId === campaignId
     );
 
+    console.log('Loading ad groups for campaign:', campaignId);
+    console.log('Found ad groups:', associatedAdGroups.length);
+
     // Clear existing content
     adGroupsTableBody.innerHTML = '';
 
@@ -1660,37 +1900,74 @@ function loadAdGroupsForCampaign(campaignId) {
       // Show empty state
       const emptyRow = document.createElement('tr');
       emptyRow.innerHTML = `
-        <td class="px-6 py-3 text-sm text-gray-500 italic text-center">
-          No ad groups associated with this campaign
+        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+          No ad groups for this campaign
         </td>
       `;
       adGroupsTableBody.appendChild(emptyRow);
     } else {
       // Populate with ad groups
-      associatedAdGroups.forEach(adGroup => {
-        const row = document.createElement('tr');
-        row.className = 'border-b border-default hover:bg-gray-50';
-        row.innerHTML = `
-          <td class="px-6 py-2 text-sm">
-            <a href="./AdGroupDetails.html?id=${encodeURIComponent(adGroup.id)}&campaignId=${encodeURIComponent(campaignId)}" 
-               class="text-blue-600 hover:text-blue-800 hover:underline font-medium"
-               title="View details for ${adGroup.name}">
-              ${adGroup.name || 'Unnamed Ad Group'}
+      associatedAdGroups.forEach(ag => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50';
+        tr.innerHTML = `
+          <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.id || ''}</td>
+          <td class="px-6 py-1 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
+            <a href="./AdGroupDetails.html?id=${encodeURIComponent(ag.id)}&campaignId=${encodeURIComponent(campaignId)}" class="text-blue-600 hover:underline">
+              ${ag.name || ''}
             </a>
           </td>
+          <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.dsp || ''}</td>
+          <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ''}</td>
+          <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.campaign || ''}</td>
+          <td class="px-6 py-1 whitespace-nowrap text-sm text-center border-r border-gray-200">
+            <button class="text-red-600 hover:underline" onclick="deleteAdGroup('${ag.id}')">Delete</button>
+          </td>
         `;
-        adGroupsTableBody.appendChild(row);
+        adGroupsTableBody.appendChild(tr);
       });
     }
   } catch (error) {
     console.error('Error loading ad groups for campaign:', error);
     adGroupsTableBody.innerHTML = `
       <tr>
-        <td class="px-6 py-3 text-sm text-red-500 text-center">
+        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
           Error loading ad groups
         </td>
       </tr>
     `;
+  }
+}
+
+// Delete ad group function
+function deleteAdGroup(adGroupId) {
+  if (!confirm('Are you sure you want to delete this ad group?')) {
+    return;
+  }
+
+  try {
+    const adGroupsData = localStorage.getItem('adgroups_data_v1');
+    if (!adGroupsData) return;
+
+    let allAdGroups = JSON.parse(adGroupsData);
+    allAdGroups = allAdGroups.filter(ag => ag.id !== adGroupId);
+    
+    localStorage.setItem('adgroups_data_v1', JSON.stringify(allAdGroups));
+    
+    // Reload the table
+    const urlParams = new URLSearchParams(window.location.search);
+    const campaignId = urlParams.get('campaignId');
+    loadAdGroupsForCampaign(campaignId);
+    
+    // Show success toast
+    if (typeof showToast === 'function') {
+      showToast('Ad group deleted successfully', 'success');
+    }
+  } catch (error) {
+    console.error('Error deleting ad group:', error);
+    if (typeof showToast === 'function') {
+      showToast('Error deleting ad group', 'error');
+    }
   }
 }
 
