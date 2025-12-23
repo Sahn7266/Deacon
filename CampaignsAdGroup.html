@@ -2062,6 +2062,482 @@ window.addEventListener('adGroupsUpdated', () => {
   }
 });
 
+// ========== CREATE AD GROUP FUNCTIONALITY ==========
+
+const modal = document.getElementById('createAdGroupModal');
+const form = document.getElementById('createAdGroupForm');
+
+// === TOGGLE FUNCTIONALITY ===
+const connectorsToggle = document.getElementById('connectorsToggle');
+const connectorsContent = document.getElementById('connectorsContent');
+let isConnectorsOpen = false;
+
+connectorsToggle?.addEventListener('click', () => {
+  isConnectorsOpen = !isConnectorsOpen;
+  
+  if (isConnectorsOpen) {
+    connectorsContent.classList.remove('hidden');
+    connectorsToggle.classList.remove('bg-gray-200');
+    connectorsToggle.classList.add('bg-blue-600');
+    connectorsToggle.setAttribute('aria-checked', 'true');
+    connectorsToggle.querySelector('span').classList.remove('translate-x-0');
+    connectorsToggle.querySelector('span').classList.add('translate-x-5');
+  } else {
+    connectorsContent.classList.add('hidden');
+    connectorsToggle.classList.remove('bg-blue-600');
+    connectorsToggle.classList.add('bg-gray-200');
+    connectorsToggle.setAttribute('aria-checked', 'false');
+    connectorsToggle.querySelector('span').classList.remove('translate-x-5');
+    connectorsToggle.querySelector('span').classList.add('translate-x-0');
+  }
+});
+
+// === CONNECTOR SELECTION LOGIC ===
+const dspCheckboxes = document.querySelectorAll('input[name="dsp"]');
+const adServerCheckboxes = document.querySelectorAll('input[name="adserver"]');
+const dspFieldsSection = document.getElementById('dspFieldsSection');
+const adServerFieldsSection = document.getElementById('adServerFieldsSection');
+
+// Update field visibility based on connector selections
+function updateFieldVisibility() {
+  const dspSelected = Array.from(dspCheckboxes).some(cb => cb.checked);
+  const adServerSelected = Array.from(adServerCheckboxes).some(cb => cb.checked);
+
+  // Show/hide DSP fields
+  if (dspSelected) {
+    dspFieldsSection.classList.remove('hidden');
+  } else {
+    dspFieldsSection.classList.add('hidden');
+  }
+
+  // Show/hide Ad Server fields
+  if (adServerSelected) {
+    adServerFieldsSection.classList.remove('hidden');
+  } else {
+    adServerFieldsSection.classList.add('hidden');
+  }
+
+  // Update form validation requirements
+  updateFieldRequirements(dspSelected, adServerSelected);
+}
+
+// Update field requirements based on connector selection
+function updateFieldRequirements(dspSelected, adServerSelected) {
+  // DSP field requirements
+  const dspRequiredFields = ['adGroupName', 'adGroupCampaign'];
+  dspRequiredFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.required = dspSelected;
+    }
+  });
+
+  // Ad Server field requirements
+  const adServerRequiredFields = ['adServerName'];
+  adServerRequiredFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.required = adServerSelected;
+    }
+  });
+}
+
+// Event listeners for connector checkboxes
+dspCheckboxes.forEach(checkbox => {
+  checkbox.addEventListener('change', updateFieldVisibility);
+});
+
+adServerCheckboxes.forEach(checkbox => {
+  checkbox.addEventListener('change', updateFieldVisibility);
+});
+
+// Initialize field visibility
+updateFieldVisibility();
+
+// === DIMENSIONS MULTI-SELECT DROPDOWN ===
+const dimensionsDropdownBtn = document.getElementById('dimensionsDropdownBtn');
+const dimensionsDropdown = document.getElementById('dimensionsDropdown');
+const dimensionsSelected = document.getElementById('dimensionsSelected');
+const selectAllDimensions = document.getElementById('selectAllDimensions');
+const dimensionCheckboxes = document.querySelectorAll('input[name="dimensions"]');
+
+// Toggle dropdown visibility
+dimensionsDropdownBtn?.addEventListener('click', () => {
+  dimensionsDropdown.classList.toggle('hidden');
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (event) => {
+  if (dimensionsDropdownBtn && !dimensionsDropdownBtn.contains(event.target) && !dimensionsDropdown.contains(event.target)) {
+    dimensionsDropdown.classList.add('hidden');
+  }
+});
+
+// Update selected text
+function updateDimensionsText() {
+  const checkedBoxes = Array.from(dimensionCheckboxes).filter(cb => cb.checked);
+  if (checkedBoxes.length === 0) {
+    dimensionsSelected.textContent = 'Select dimensions';
+  } else if (checkedBoxes.length === dimensionCheckboxes.length) {
+    dimensionsSelected.textContent = 'All dimensions selected';
+  } else if (checkedBoxes.length === 1) {
+    dimensionsSelected.textContent = checkedBoxes[0].value;
+  } else {
+    dimensionsSelected.textContent = `${checkedBoxes.length} dimensions selected`;
+  }
+}
+
+// Select All functionality
+selectAllDimensions?.addEventListener('change', () => {
+  dimensionCheckboxes.forEach(cb => {
+    cb.checked = selectAllDimensions.checked;
+  });
+  updateDimensionsText();
+});
+
+// Individual checkbox handling
+dimensionCheckboxes.forEach(cb => {
+  cb.addEventListener('change', () => {
+    const allChecked = Array.from(dimensionCheckboxes).every(checkbox => checkbox.checked);
+    const someChecked = Array.from(dimensionCheckboxes).some(checkbox => checkbox.checked);
+    
+    selectAllDimensions.checked = allChecked;
+    selectAllDimensions.indeterminate = someChecked && !allChecked;
+    
+    updateDimensionsText();
+  });
+});
+
+// Initialize dimensions text
+updateDimensionsText();
+
+// Reset dimensions dropdown
+function resetDimensionsDropdown() {
+  dimensionCheckboxes.forEach(cb => cb.checked = false);
+  selectAllDimensions.checked = false;
+  selectAllDimensions.indeterminate = false;
+  updateDimensionsText();
+  dimensionsDropdown.classList.add('hidden');
+}
+
+// === DEVICE TYPES MULTI-SELECT DROPDOWN ===
+const deviceTypesDropdownBtn = document.getElementById('deviceTypesDropdownBtn');
+const deviceTypesDropdown = document.getElementById('deviceTypesDropdown');
+const deviceTypesSelected = document.getElementById('deviceTypesSelected');
+const selectAllDeviceTypes = document.getElementById('selectAllDeviceTypes');
+const deviceTypeCheckboxes = document.querySelectorAll('input[name="deviceTypes"]');
+
+// Toggle dropdown visibility
+deviceTypesDropdownBtn?.addEventListener('click', () => {
+  deviceTypesDropdown.classList.toggle('hidden');
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (event) => {
+  if (deviceTypesDropdownBtn && !deviceTypesDropdownBtn.contains(event.target) && !deviceTypesDropdown.contains(event.target)) {
+    deviceTypesDropdown.classList.add('hidden');
+  }
+});
+
+// Update selected text
+function updateDeviceTypesText() {
+  const checkedBoxes = Array.from(deviceTypeCheckboxes).filter(cb => cb.checked);
+  if (checkedBoxes.length === 0) {
+    deviceTypesSelected.textContent = 'Select device types';
+  } else if (checkedBoxes.length === deviceTypeCheckboxes.length) {
+    deviceTypesSelected.textContent = 'All device types selected';
+  } else if (checkedBoxes.length === 1) {
+    deviceTypesSelected.textContent = checkedBoxes[0].value;
+  } else {
+    deviceTypesSelected.textContent = `${checkedBoxes.length} device types selected`;
+  }
+}
+
+// Select All functionality
+selectAllDeviceTypes?.addEventListener('change', () => {
+  deviceTypeCheckboxes.forEach(cb => {
+    cb.checked = selectAllDeviceTypes.checked;
+  });
+  updateDeviceTypesText();
+});
+
+// Individual checkbox handling
+deviceTypeCheckboxes.forEach(cb => {
+  cb.addEventListener('change', () => {
+    const allChecked = Array.from(deviceTypeCheckboxes).every(checkbox => checkbox.checked);
+    const someChecked = Array.from(deviceTypeCheckboxes).some(checkbox => checkbox.checked);
+    
+    selectAllDeviceTypes.checked = allChecked;
+    selectAllDeviceTypes.indeterminate = someChecked && !allChecked;
+    
+    updateDeviceTypesText();
+  });
+});
+
+// Initialize device types text
+updateDeviceTypesText();
+
+// Reset device types dropdown
+function resetDeviceTypesDropdown() {
+  deviceTypeCheckboxes.forEach(cb => cb.checked = false);
+  selectAllDeviceTypes.checked = false;
+  selectAllDeviceTypes.indeterminate = false;
+  updateDeviceTypesText();
+  deviceTypesDropdown.classList.add('hidden');
+}
+
+// === AD ENVIRONMENTS MULTI-SELECT DROPDOWN ===
+const adEnvironmentsDropdownBtn = document.getElementById('adEnvironmentsDropdownBtn');
+const adEnvironmentsDropdown = document.getElementById('adEnvironmentsDropdown');
+const adEnvironmentsSelected = document.getElementById('adEnvironmentsSelected');
+const selectAllAdEnvironments = document.getElementById('selectAllAdEnvironments');
+const adEnvironmentCheckboxes = document.querySelectorAll('input[name="adEnvironments"]');
+
+// Toggle dropdown visibility
+adEnvironmentsDropdownBtn?.addEventListener('click', () => {
+  adEnvironmentsDropdown.classList.toggle('hidden');
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (event) => {
+  if (adEnvironmentsDropdownBtn && !adEnvironmentsDropdownBtn.contains(event.target) && !adEnvironmentsDropdown.contains(event.target)) {
+    adEnvironmentsDropdown.classList.add('hidden');
+  }
+});
+
+// Update selected text
+function updateAdEnvironmentsText() {
+  const checkedBoxes = Array.from(adEnvironmentCheckboxes).filter(cb => cb.checked);
+  if (checkedBoxes.length === 0) {
+    adEnvironmentsSelected.textContent = 'Select ad environments';
+  } else if (checkedBoxes.length === adEnvironmentCheckboxes.length) {
+    adEnvironmentsSelected.textContent = 'All environments selected';
+  } else if (checkedBoxes.length === 1) {
+    adEnvironmentsSelected.textContent = checkedBoxes[0].value;
+  } else {
+    adEnvironmentsSelected.textContent = `${checkedBoxes.length} environments selected`;
+  }
+}
+
+// Select All functionality
+selectAllAdEnvironments?.addEventListener('change', () => {
+  adEnvironmentCheckboxes.forEach(cb => {
+    cb.checked = selectAllAdEnvironments.checked;
+  });
+  updateAdEnvironmentsText();
+});
+
+// Individual checkbox handling
+adEnvironmentCheckboxes.forEach(cb => {
+  cb.addEventListener('change', () => {
+    const allChecked = Array.from(adEnvironmentCheckboxes).every(checkbox => checkbox.checked);
+    const someChecked = Array.from(adEnvironmentCheckboxes).some(checkbox => checkbox.checked);
+    
+    selectAllAdEnvironments.checked = allChecked;
+    selectAllAdEnvironments.indeterminate = someChecked && !allChecked;
+    
+    updateAdEnvironmentsText();
+  });
+});
+
+// Initialize ad environments text
+updateAdEnvironmentsText();
+
+// Reset ad environments dropdown
+function resetAdEnvironmentsDropdown() {
+  adEnvironmentCheckboxes.forEach(cb => cb.checked = false);
+  selectAllAdEnvironments.checked = false;
+  selectAllAdEnvironments.indeterminate = false;
+  updateAdEnvironmentsText();
+  adEnvironmentsDropdown.classList.add('hidden');
+}
+
+// Open modal and pre-fill campaign
+document.getElementById('createBtn')?.addEventListener('click', () => {
+  modal.classList.remove('hidden');
+  form.reset();
+  
+  // Generate and display Ad Group ID
+  const adGroupIdField = document.getElementById('beaconAdGroupId');
+  if (adGroupIdField) {
+    adGroupIdField.value = 'AG-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+  }
+  
+  // Pre-fill the campaign dropdown with current campaign
+  const urlParams = new URLSearchParams(window.location.search);
+  const campaignId = urlParams.get('campaignId');
+  const campaignName = urlParams.get('campaignName');
+  
+  const campaignSelect = document.getElementById('beaconCampaign');
+  if (campaignSelect && campaignId) {
+    // Clear existing options
+    campaignSelect.innerHTML = '';
+    
+    // Add the current campaign as the only option
+    const option = document.createElement('option');
+    option.value = campaignId;
+    option.textContent = campaignName || campaignId;
+    option.selected = true;
+    campaignSelect.appendChild(option);
+    
+    // Keep enabled so value submits
+    campaignSelect.disabled = false;
+  }
+  
+  // Reset all dropdowns and toggle
+  resetDimensionsDropdown();
+  resetDeviceTypesDropdown();
+  resetAdEnvironmentsDropdown();
+  isConnectorsOpen = false;
+  connectorsContent.classList.add('hidden');
+  connectorsToggle.classList.remove('bg-blue-600');
+  connectorsToggle.classList.add('bg-gray-200');
+  connectorsToggle.setAttribute('aria-checked', 'false');
+  connectorsToggle.querySelector('span').classList.remove('translate-x-5');
+  connectorsToggle.querySelector('span').classList.add('translate-x-0');
+  updateFieldVisibility();
+});
+
+// Close modal handlers
+document.getElementById('closeAdGroupModal')?.addEventListener('click', () => {
+  modal.classList.add('hidden');
+});
+
+document.getElementById('cancelAdGroupModal')?.addEventListener('click', () => {
+  modal.classList.add('hidden');
+});
+
+// Form submit handler
+form?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  handleAdGroupCreation();
+});
+
+// Create Ad Group function
+function handleAdGroupCreation() {
+  try {
+    // Get selected connectors from checkboxes
+    const selectedDsp = Array.from(dspCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+    const selectedAdServer = Array.from(adServerCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+    
+    // Helper function to get selected multi-select values
+    function getMultiSelectValues(checkboxName) {
+      const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]:checked`);
+      return Array.from(checkboxes).map(cb => cb.value).join(', ');
+    }
+    
+    // Helper function to get frequency value
+    function getFrequencyValue() {
+      const number = document.getElementById('adGroupFrequencyNumber')?.value || '';
+      const per = document.getElementById('adGroupFrequencyPer')?.value || '';
+      const period = document.getElementById('adGroupFrequencyPeriod')?.value || '';
+      if (number && per && period) {
+        return `${number} ads per ${per} ${period}`;
+      }
+      return '';
+    }
+    
+    // Get the Ad Group ID from the field
+    const idField = document.getElementById('beaconAdGroupId');
+    const adGroupId = idField?.value || ('AG-' + Math.random().toString(36).substr(2, 6).toUpperCase());
+    
+    // Get current advertiser ID
+    const advData = JSON.parse(localStorage.getItem('adv_selected_data') || '{}');
+    const advertiserId = advData.id || null;
+    
+    // Get campaign from URL (this is the current campaign)
+    const urlParams = new URLSearchParams(window.location.search);
+    const campaignId = urlParams.get('campaignId');
+    const campaignName = urlParams.get('campaignName');
+    
+    const adGroup = {
+      id: adGroupId,
+      advertiserId: advertiserId,
+      // Beacon Fields
+      name: document.getElementById('beaconAdGroupName')?.value?.trim() || '',
+      campaign: campaignId, // Use the current campaign ID
+      campaignId: campaignId,
+      multiviewClassification: document.getElementById('beaconMultiviewClassification')?.value || '',
+      multiviewTactic: document.getElementById('beaconMultiviewTactic')?.value || '',
+      beaconAudience: document.getElementById('beaconAudience')?.value?.trim() || '',
+      
+      // DSP Fields (detailed fields)
+      dspName: document.getElementById('adGroupName')?.value?.trim() || '',
+      funnelLocation: document.getElementById('adGroupFunnelLocation')?.value || '',
+      channel: document.getElementById('adGroupChannel')?.value || '',
+      deviceTypes: getMultiSelectValues('deviceTypes'),
+      adEnvironments: getMultiSelectValues('adEnvironments'),
+      primaryGoal: document.getElementById('adGroupPrimaryGoal')?.value || '',
+      target: document.getElementById('adGroupTarget')?.value?.trim() || '',
+      dspAudience: document.getElementById('adGroupAudience')?.value || '',
+      frequency: getFrequencyValue(),
+      geos: document.getElementById('adGroupGeos')?.value || '',
+      baseBid: document.getElementById('adGroupBaseBid')?.value?.trim() || '',
+      maxBid: document.getElementById('adGroupMaxBid')?.value?.trim() || '',
+      
+      // Ad Server Fields
+      adServerName: document.getElementById('adServerName')?.value?.trim() || '',
+      adServerStatus: document.getElementById('adServerStatus')?.value || '',
+      adServerCompatibility: document.getElementById('adServerCompatibility')?.value || '',
+      adServerDimensions: getMultiSelectValues('dimensions'),
+      adServerTestingStarts: document.getElementById('adServerTestingStarts')?.value || '',
+      adServerStartDate: document.getElementById('adServerStartDate')?.value || '',
+      adServerEndDate: document.getElementById('adServerEndDate')?.value || '',
+      adServerCostStructure: document.getElementById('adServerCostStructure')?.value || '',
+      adServerCapCost: document.getElementById('adServerCapCost')?.value || '',
+      
+      // Legacy fields for compatibility
+      dsp: 'Custom',
+      classification: document.getElementById('beaconMultiviewClassification')?.value || 'Custom',
+      source: 'custom',
+      // Add connector information
+      connectors: {
+        dsp: selectedDsp.join(', '),
+        adServer: selectedAdServer.join(', ')
+      }
+    };
+
+    console.log('Creating ad group:', adGroup);
+
+    // Get existing ad groups
+    let groups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+    
+    // Check if updating existing or creating new
+    const existingIndex = groups.findIndex(g => g.id === adGroup.id);
+    
+    if (existingIndex !== -1) {
+      groups[existingIndex] = adGroup;
+    } else {
+      groups.unshift(adGroup);
+    }
+
+    // Save to localStorage
+    localStorage.setItem('adgroups_data_v1', JSON.stringify(groups));
+    
+    console.log('Ad group saved successfully');
+    
+    // Show success message
+    if (typeof showToast === 'function') {
+      showToast('Ad group created successfully', 'success');
+    }
+    
+    // Close modal
+    modal.classList.add('hidden');
+    
+    // Refresh the table
+    loadAdGroupsForCampaign(campaignId);
+    
+    // Dispatch event for other listeners
+    window.dispatchEvent(new CustomEvent('adGroupsUpdated'));
+    
+  } catch (error) {
+    console.error('Error creating ad group:', error);
+    if (typeof showToast === 'function') {
+      showToast('Error creating ad group', 'error');
+    }
+  }
+}
+
 
   </script>
   <script src="./assets/sidebar.js" defer></script>
