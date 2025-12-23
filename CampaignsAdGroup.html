@@ -2499,6 +2499,48 @@ function handleAdGroupCreation() {
 
     console.log('Creating ad group:', adGroup);
 
+    // ✅ Log Ad Group Creation to Audit
+    const auditData = {
+      // DSP Fields (using DSP name for DSP audit tracking)
+      adGroupNameInput: adGroup.dspName,
+      campaignName: adGroup.campaign,
+      funnelLocation: adGroup.funnelLocation,
+      channel: adGroup.channel,
+      deviceTypes: adGroup.deviceTypes,
+      adEnvironments: adGroup.adEnvironments,
+      primaryGoal: adGroup.primaryGoal,
+      target: adGroup.target,
+      audience: adGroup.dspAudience,
+      frequency: adGroup.frequency,
+      geos: adGroup.geos,
+      baseBid: adGroup.baseBid,
+      maxBid: adGroup.maxBid,
+      
+      // Ad Server Fields
+      adServerName: adGroup.adServerName,
+      adServerStatus: adGroup.adServerStatus,
+      adServerCompatibility: adGroup.adServerCompatibility,
+      adServerDimensions: adGroup.adServerDimensions,
+      adServerTestingStarts: adGroup.adServerTestingStarts,
+      adServerStartDate: adGroup.adServerStartDate,
+      adServerEndDate: adGroup.adServerEndDate,
+      adServerCostStructure: adGroup.adServerCostStructure,
+      adServerCapCost: adGroup.adServerCapCost,
+      
+      connectors: JSON.stringify(adGroup.connectors)
+    };
+
+    // Only record audit for new ad groups (not edits)
+    if (window.audit && window.audit.recordCreate) {
+      window.audit.recordCreate({
+        campaignId: adGroup.campaign,
+        entityType: 'adgroup',
+        entityId: adGroup.id,
+        data: auditData
+      });
+      console.log('✔️ Audit logged for Ad Group:', adGroup.id);
+    }
+
     // Get existing ad groups
     let groups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
     
