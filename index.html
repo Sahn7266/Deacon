@@ -716,7 +716,7 @@
                         </div>
                       </div>
                       <div class="flex items-center space-x-2">
-                        <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status">Not Connected</span>
+                        <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer">Not Connected</span>
                       </div>
                     </div>
                   </div>
@@ -748,7 +748,7 @@
                         </div>
                       </div>
                       <div class="flex items-center space-x-2">
-                        <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status">Not Connected</span>
+                        <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer">Not Connected</span>
                       </div>
                     </div>
                   </div>
@@ -2385,11 +2385,30 @@ init: function() {
                   if (statusBadge) {
                     if (newState) {
                       statusBadge.textContent = 'Connected';
-                      statusBadge.className = 'px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full connector-status';
+                      statusBadge.className = 'px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full connector-status cursor-pointer';
                     } else {
                       statusBadge.textContent = 'Not Connected';
-                      statusBadge.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status';
+                      statusBadge.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer';
                     }
+                  }
+                });
+              });
+
+              // Add individual toggle functionality for each connector status badge
+              document.querySelectorAll('.connector-status').forEach(badge => {
+                badge.addEventListener('click', function(e) {
+                  e.stopPropagation(); // Prevent card click event
+                  
+                  const isConnected = this.textContent.trim() === 'Connected';
+                  
+                  if (isConnected) {
+                    // Change to Not Connected
+                    this.textContent = 'Not Connected';
+                    this.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer';
+                  } else {
+                    // Change to Connected
+                    this.textContent = 'Connected';
+                    this.className = 'px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full connector-status cursor-pointer';
                   }
                 });
               });
