@@ -479,6 +479,11 @@
                       </button>
                     </th>
                     <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adServer">
+                        <span>Ad Server</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
                       <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="classification">
                         <span>Classification</span>
                       </button>
@@ -1982,7 +1987,7 @@ function loadAdGroupsForCampaign(campaignId) {
       // Show empty state
       const emptyRow = document.createElement('tr');
       emptyRow.innerHTML = `
-        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
           No ad groups for this campaign
         </td>
       `;
@@ -1999,8 +2004,9 @@ function loadAdGroupsForCampaign(campaignId) {
               ${ag.name || ''}
             </a>
           </td>
-          <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.dsp || ''}</td>
-          <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ''}</td>
+          <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${(ag.connectors && ag.connectors.dsp) || ''}</td>
+          <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${(ag.connectors && ag.connectors.adServer) || ''}</td>
+          <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ag.multiviewClassification || ''}</td>
           <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.campaign || ''}</td>
           <td class="px-6 py-1 whitespace-nowrap text-sm text-center border-r border-gray-200">
             <button class="text-red-600 hover:underline" onclick="deleteAdGroup('${ag.id}')">Delete</button>
@@ -2013,7 +2019,7 @@ function loadAdGroupsForCampaign(campaignId) {
     console.error('Error loading ad groups for campaign:', error);
     adGroupsTableBody.innerHTML = `
       <tr>
-        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
           Error loading ad groups
         </td>
       </tr>

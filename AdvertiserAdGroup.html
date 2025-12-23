@@ -427,6 +427,11 @@
                       </button>
                     </th>
                     <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adServer">
+                        <span>Ad Server</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
                       <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="classification">
                         <span>Classification</span>
                       </button>
@@ -1242,8 +1247,9 @@
   ${ag.name || ''}
 </a>
 </td>
-              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.dsp || ''}</td>
-              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ''}</td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${(ag.connectors && ag.connectors.dsp) || ''}</td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${(ag.connectors && ag.connectors.adServer) || ''}</td>
+              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ag.multiviewClassification || ''}</td>
              <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.campaign || ''}</td>
 <td class="px-6 py-1 whitespace-nowrap text-sm text-center border-r border-gray-200">
   <button class="text-red-600 hover:underline" onclick="deleteAdGroup('${ag.id}')"
