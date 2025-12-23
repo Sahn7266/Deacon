@@ -1458,27 +1458,31 @@ window.addEventListener('DOMContentLoaded', () => {
       // Update breadcrumb campaign name and link
       const breadcrumbCampaign = document.getElementById('breadcrumbCampaign');
       if (breadcrumbCampaign && campaign) {
-        breadcrumbCampaign.textContent = `Campaign: ${campaign.name || 'Unknown'}`;
-        breadcrumbCampaign.href = `./CampaignDetails.html?campaignId=${encodeURIComponent(campaignId)}&campaignName=${encodeURIComponent(campaign.name)}`;
+        const campaignName = campaign.beaconCampaignName || campaign.name || 'Unknown';
+        breadcrumbCampaign.textContent = `Campaign: ${campaignName}`;
+        breadcrumbCampaign.href = `./CampaignDetails.html?campaignId=${encodeURIComponent(campaignId)}&campaignName=${encodeURIComponent(campaignName)}`;
       }
       
       // Update breadcrumb Ad Groups link
       const breadcrumbAdGroups = document.getElementById('breadcrumbAdGroups');
       if (breadcrumbAdGroups && campaign) {
-        breadcrumbAdGroups.href = `./CampaignsAdGroup.html?campaignId=${encodeURIComponent(campaignId)}&campaignName=${encodeURIComponent(campaign.name)}`;
+        const campaignName = campaign.beaconCampaignName || campaign.name || 'Unknown';
+        breadcrumbAdGroups.href = `./CampaignsAdGroup.html?campaignId=${encodeURIComponent(campaignId)}&campaignName=${encodeURIComponent(campaignName)}`;
       }
     }
     
-    // Get ad group info from localStorage for breadcrumbs
+    // Get ad group info to populate breadcrumbs
     if (adGroupId) {
       const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
       const adGroup = adGroups.find(ag => ag.id === adGroupId);
       
-      // Update breadcrumb ad group name and link
-      const breadcrumbAdGroup = document.getElementById('breadcrumbAdGroup');
-      if (breadcrumbAdGroup && adGroup) {
-        breadcrumbAdGroup.textContent = `Ad Group: ${adGroup.name || 'Unknown'}`;
-        breadcrumbAdGroup.href = `./AdGroupDetails.html?id=${encodeURIComponent(adGroupId)}&campaignId=${encodeURIComponent(campaignId)}`;
+      if (adGroup) {
+        // Update breadcrumb ad group name and link
+        const breadcrumbAdGroup = document.getElementById('breadcrumbAdGroup');
+        if (breadcrumbAdGroup) {
+          breadcrumbAdGroup.textContent = `Ad Group: ${adGroup.name || 'Unknown'}`;
+          breadcrumbAdGroup.href = `./AdGroupDetails.html?id=${encodeURIComponent(adGroupId)}&campaignId=${encodeURIComponent(campaignId)}`;
+        }
       }
     }
   } catch (e) {
@@ -1738,42 +1742,56 @@ function handleDeleteConnection(platformValue) {
   const platformName = platformNames[platformValue] || platformValue;
   
   // Confirm deletion
-  if (!confirm(`Are you sure you want to remove ${platformName} from this ad group?`)) {
+  if (!confirm(`Are you sure you want to remove ${platformName} from this campaign?`)) {
     return;
   }
   
-  // Get current ad group
+  // Get current campaign
   const urlParams = new URLSearchParams(window.location.search);
-  const adGroupId = urlParams.get('id');
+  const campaignId = urlParams.get('campaignId');
   
-  if (!adGroupId) {
+  if (!campaignId) {
     if (window.toast && typeof window.toast.error === 'function') {
-      window.toast.error('Ad Group ID not found');
+      window.toast.error('Campaign ID not found');
     }
     return;
   }
   
   try {
-    const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-    const adGroup = adGroups.find(ag => ag.id === adGroupId);
+    const data = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
+    let campaign = null;
+    let campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
+    let groups = Array.isArray(data.groups) ? data.groups : [];
     
-    if (!adGroup || !adGroup.connectors) {
+    // Find the campaign
+    campaign = campaigns.find(c => c.id === campaignId);
+    
+    if (!campaign) {
+      for (const group of groups) {
+        if (group.campaigns) {
+          campaign = group.campaigns.find(c => c.id === campaignId);
+          if (campaign) break;
+        }
+      }
+    }
+    
+    if (!campaign || !campaign.connectors) {
       if (window.toast && typeof window.toast.error === 'function') {
-        window.toast.error('Ad Group not found');
+        window.toast.error('Campaign not found');
       }
       return;
     }
     
     // Remove the platform from connectors
-    if (adGroup.connectors.dsp) {
-      adGroup.connectors.dsp = adGroup.connectors.dsp.filter(p => p !== platformValue);
+    if (campaign.connectors.dsp) {
+      campaign.connectors.dsp = campaign.connectors.dsp.filter(p => p !== platformValue);
     }
-    if (adGroup.connectors.adServer) {
-      adGroup.connectors.adServer = adGroup.connectors.adServer.filter(p => p !== platformValue);
+    if (campaign.connectors.adServer) {
+      campaign.connectors.adServer = campaign.connectors.adServer.filter(p => p !== platformValue);
     }
     
     // Save back to localStorage
-    localStorage.setItem('adgroups_data_v1', JSON.stringify(adGroups));
+    localStorage.setItem('campaign_tree_groups', JSON.stringify(data));
     
     // Show success message
     if (window.toast && typeof window.toast.success === 'function') {
@@ -1781,7 +1799,7 @@ function handleDeleteConnection(platformValue) {
     }
     
     // Reload the connections table
-    loadAdGroupConnections(adGroup);
+    loadCampaignConnections(campaign);
     
   } catch (error) {
     console.error('Error deleting connection:', error);
@@ -1790,6 +1808,67 @@ function handleDeleteConnection(platformValue) {
     }
   }
 }
+
+// Function to load ad groups associated with the current campaign
+function loadAdGroupsForCampaign(campaignId) {
+  const adGroupsTableBody = document.getElementById('adGroupsTableBody');
+  if (!adGroupsTableBody) return;
+
+  try {
+    const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+    const associatedAdGroups = adGroups.filter(adGroup => 
+      adGroup.campaign === campaignId || adGroup.campaignId === campaignId
+    );
+
+    // Clear existing content
+    adGroupsTableBody.innerHTML = '';
+
+    if (associatedAdGroups.length === 0) {
+      // Show empty state
+      const emptyRow = document.createElement('tr');
+      emptyRow.innerHTML = `
+        <td class="px-6 py-3 text-sm text-gray-500 italic text-center">
+          No ad groups associated with this campaign
+        </td>
+      `;
+      adGroupsTableBody.appendChild(emptyRow);
+    } else {
+      // Populate with ad groups
+      associatedAdGroups.forEach(adGroup => {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-default hover:bg-gray-50';
+        row.innerHTML = `
+          <td class="px-6 py-2 text-sm">
+            <a href="./AdGroupDetails.html?id=${encodeURIComponent(adGroup.id)}&campaignId=${encodeURIComponent(campaignId)}" 
+               class="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+               title="View details for ${adGroup.name}">
+              ${adGroup.name || 'Unnamed Ad Group'}
+            </a>
+          </td>
+        `;
+        adGroupsTableBody.appendChild(row);
+      });
+    }
+  } catch (error) {
+    console.error('Error loading ad groups for campaign:', error);
+    adGroupsTableBody.innerHTML = `
+      <tr>
+        <td class="px-6 py-3 text-sm text-red-500 text-center">
+          Error loading ad groups
+        </td>
+      </tr>
+    `;
+  }
+}
+
+// Listen for ad group updates to refresh the table
+window.addEventListener('adGroupsUpdated', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const campaignId = urlParams.get('campaignId');
+  if (campaignId) {
+    loadAdGroupsForCampaign(campaignId);
+  }
+});
 
 
   </script>
