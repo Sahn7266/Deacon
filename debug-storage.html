@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LocalStorage Debug</title>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    button { margin: 10px 5px; padding: 10px 15px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>LocalStorage Debug Tool</h1>
+  
+  <button onclick="checkStorage()">Check adgroups_data_v1</button>
+  <button onclick="restoreDefaults()">Restore Default Ad Groups</button>
+  <button onclick="clearStorage()">Clear adgroups_data_v1</button>
+  
+  <h2>Current Data:</h2>
+  <pre id="output">Click a button above to see data...</pre>
+  
+  <script>
+    const DEFAULT_ADGROUPS = [
+      { id: 'AG001', name: 'Prospecting – Broad', dsp: 'Google Campaign Manager', classification: 'Prospecting', campaign: 'Summer Sale 2024' },
+      { id: 'AG002', name: 'Prospecting – Interests', dsp: 'Trade Desk', classification: 'Prospecting', campaign: 'Holiday Campaign' },
+      { id: 'AG003', name: 'Brand – Video', dsp: 'DV360', classification: 'Brand', campaign: 'Brand Awareness Q3' },
+      { id: 'AG004', name: 'Retargeting – 7 Day', dsp: 'Google Campaign Manager', classification: 'Retargeting', campaign: 'Product Launch' },
+      { id: 'AG005', name: 'Retargeting – 30 Day', dsp: 'Trade Desk', classification: 'Retargeting', campaign: 'Summer Sale 2024' },
+      { id: 'AG006', name: 'Loyalty – VIP', dsp: 'DV360', classification: 'Loyalty', campaign: 'Holiday Campaign' },
+      { id: 'AG007', name: 'Brand – Social', dsp: 'Google Campaign Manager', classification: 'Brand', campaign: 'Brand Awareness Q3' },
+      { id: 'AG008', name: 'Prospecting – Lookalike', dsp: 'Trade Desk', classification: 'Prospecting', campaign: 'Product Launch' },
+      { id: 'AG009', name: 'Retargeting – Cart', dsp: 'DV360', classification: 'Retargeting', campaign: 'Summer Sale 2024' },
+      { id: 'AG010', name: 'Loyalty – Winback', dsp: 'Google Campaign Manager', classification: 'Loyalty', campaign: 'Holiday Campaign' },
+      { id: 'AG011', name: 'Brand – Display', dsp: 'Trade Desk', classification: 'Brand', campaign: 'Brand Awareness Q3' },
+      { id: 'AG012', name: 'Prospecting – Contextual', dsp: 'DV360', classification: 'Prospecting', campaign: 'Product Launch' }
+    ];
+    
+    function checkStorage() {
+      const stored = localStorage.getItem('adgroups_data_v1');
+      const output = document.getElementById('output');
+      
+      if (!stored) {
+        output.textContent = 'No data found in localStorage for "adgroups_data_v1"';
+        return;
+      }
+      
+      try {
+        const parsed = JSON.parse(stored);
+        output.textContent = JSON.stringify(parsed, null, 2);
+        
+        console.log('Raw stored value:', stored);
+        console.log('Parsed data:', parsed);
+        console.log('Is Array?', Array.isArray(parsed));
+        console.log('Length:', parsed.length);
+      } catch (e) {
+        output.textContent = `Error parsing data: ${e.message}\n\nRaw value:\n${stored}`;
+      }
+    }
+    
+    function restoreDefaults() {
+      localStorage.setItem('adgroups_data_v1', JSON.stringify(DEFAULT_ADGROUPS));
+      alert('Default ad groups restored! Refresh AdvertiserAdGroup.html to see them.');
+      checkStorage();
+    }
+    
+    function clearStorage() {
+      if (confirm('Are you sure you want to clear adgroups_data_v1?')) {
+        localStorage.removeItem('adgroups_data_v1');
+        alert('Cleared!');
+        checkStorage();
+      }
+    }
+  </script>
+</body>
+</html>

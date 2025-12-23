@@ -206,8 +206,8 @@
       <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
   <div class="flex items-center justify-between pb-4 border-b border-gray-200">
     <div class="flex items-center gap-3">
-      <img src="./assets/advertiser.png" alt="Advertiser" class="w-9 h-9 rounded-full" data-sidebar-avatar />
-      <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Advertiser</h2>
+      <img src="./assets/svgs/AdGroups.svg" alt="Ad Group" class="w-9 h-9 rounded-full" data-sidebar-avatar />
+      <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Ad Group</h2>
     </div>
     <button id="sidebarToggle" class="p-1 rounded hover:bg-gray-100" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse/Expand">
       <svg id="iconCollapse" class="w-5 h-5 text-gray-900" viewBox="0 0 26 26" fill="currentColor">
@@ -221,37 +221,17 @@
 
   <ul class="space-y-1 mt-4">
     <li>
-<li>
-  <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+      <a href="./AdGroupDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/Details.svg" alt="Overview" class="w-6 h-6 mr-2" />
         <span data-link-label>Overview</span>
       </a>
     </li>
     <li>
-      <a href="./AdvertiserSalesOrder.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
-        <span data-link-label>Sales Orders</span>
-      </a>
-    </li>
-    <li>
-      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+      <a href="./AdGroupsConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
         <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
-        <span data-link-label>Connections (P2)</span>
+        <span data-link-label>Connections</span>
       </a>
     </li>
-    <li>
-      <a href="./AdvertiserCampaigns.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
-        <span data-link-label>Campaigns</span>
-      </a>
-    </li>
-    <li>
-      <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
-        <span data-link-label>Ad Groups</span>
-      </a>
-    </li>
-    
   </ul>
 </nav>
 
@@ -1954,6 +1934,32 @@ document.addEventListener('DOMContentLoaded', function () {
   safeInput('adServerCostStructureInput', adGroup.adServerCostStructure);
   safeInput('adServerCapCostInput', adGroup.adServerCapCost);
   });
+
+// Add query parameters to sidebar links and highlight active tab
+document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const adGroupId = urlParams.get('id');
+  const campaignId = urlParams.get('campaignId');
+  
+  // Update sidebar links with query parameters
+  const navLinks = document.querySelectorAll('[data-nav-link]');
+  navLinks.forEach(link => {
+    const url = new URL(link.href, window.location.origin);
+    if (adGroupId) url.searchParams.set('id', adGroupId);
+    if (campaignId) url.searchParams.set('campaignId', campaignId);
+    link.href = url.toString();
+  });
+
+  // Highlight the active tab
+  const currentPage = window.location.pathname.split('/').pop().split('?')[0];
+  navLinks.forEach(link => {
+    const linkPage = link.getAttribute('href').split('?')[0].split('/').pop();
+    if (linkPage === currentPage) {
+      link.classList.remove('text-gray-700', 'hover:bg-blue-50');
+      link.classList.add('bg-blue-100', 'text-blue-700');
+    }
+  });
+});
 
 
 
