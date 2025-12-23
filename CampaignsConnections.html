@@ -195,7 +195,11 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <span class="font-semibold text-gray-900" id="breadcrumbCampaign">Campaign: —</span>
+        <a href="#" id="breadcrumbCampaign" class="hover:text-blue-600 transition-colors">Campaign: —</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <span class="font-semibold text-gray-900">Connections</span>
       </nav>
     </div>
 
@@ -226,7 +230,7 @@
       </a>
     </li>
     <li>
-      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+      <a href="./CampaignsConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
         <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
         <span data-link-label>Connections</span>
       </a>
@@ -1276,9 +1280,24 @@
     // Get current page filename without query params
     const currentPage = window.location.pathname.split('/').pop().split('?')[0];
     
+    // Get query parameters to pass along
+    const urlParams = new URLSearchParams(window.location.search);
+    const campaignId = urlParams.get('campaignId');
+    const campaignName = urlParams.get('campaignName');
+    
     document.querySelectorAll('#sidebar a[data-nav-link]').forEach(link => {
       // Get href filename without ./ prefix and query params
       const linkPage = link.getAttribute('href').replace('./', '').split('?')[0];
+      
+      // Add query parameters to sidebar links
+      if (campaignId) {
+        const baseHref = link.getAttribute('href').split('?')[0];
+        let newHref = `${baseHref}?campaignId=${encodeURIComponent(campaignId)}`;
+        if (campaignName) {
+          newHref += `&campaignName=${encodeURIComponent(campaignName)}`;
+        }
+        link.setAttribute('href', newHref);
+      }
       
       if (linkPage === currentPage) {
         link.classList.add('text-blue-700', 'bg-blue-50', 'font-medium');
@@ -1319,10 +1338,11 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
     
-    // Update breadcrumb campaign name
+    // Update breadcrumb campaign name and link
     const breadcrumbCampaign = document.getElementById('breadcrumbCampaign');
-    if (breadcrumbCampaign && campaignName) {
+    if (breadcrumbCampaign && campaignName && campaignId) {
       breadcrumbCampaign.textContent = `Campaign: ${campaignName}`;
+      breadcrumbCampaign.href = `./CampaignDetails.html?campaignId=${encodeURIComponent(campaignId)}&campaignName=${encodeURIComponent(campaignName)}`;
     }
   } catch (e) {
     console.warn('Failed to populate breadcrumbs:', e);
@@ -1425,9 +1445,298 @@ window.addEventListener('DOMContentLoaded', () => {
   safeInput('adServerLandingPageName', campaign.adServerLandingPageName);
   safeInput('adServerLandingPageURL', campaign.adServerLandingPageURL);
 
-  // Load and display associated ad groups
-  loadAdGroupsForCampaign(campaignId);
+  // Load and display campaign connections
+  loadCampaignConnections(campaign);
 });
+
+// Function to load and display campaign connections based on selected connectors
+function loadCampaignConnections(campaign) {
+  const tableBody = document.getElementById('campaignTableBody');
+  if (!tableBody) return;
+
+  // Clear existing content
+  tableBody.innerHTML = '';
+
+  // Check if campaign has connectors data
+  if (!campaign.connectors || (!campaign.connectors.dsp && !campaign.connectors.adServer)) {
+    // No connectors selected - show empty state
+    const emptyRow = document.createElement('tr');
+    emptyRow.innerHTML = `
+      <td colspan="6" class="px-6 py-8 text-sm text-gray-500 italic text-center">
+        No platform connectors configured for this campaign
+      </td>
+    `;
+    tableBody.appendChild(emptyRow);
+    
+    // Update record count
+    const recordCount = document.getElementById('recordCount');
+    if (recordCount) {
+      recordCount.textContent = '0 of 0 showing';
+    }
+    return;
+  }
+
+  // Platform configuration mapping
+  const platformConfig = {
+    'trade-desk': {
+      name: 'The Trade Desk',
+      type: 'DSP',
+      logo: './assets/svgs/TTD.svg'
+    },
+    'dv360': {
+      name: 'Display & Video 360',
+      type: 'DSP',
+      logo: './assets/svgs/DV360.svg'
+    },
+    'simplifi': {
+      name: 'Simplifi',
+      type: 'DSP',
+      logo: './assets/svgs/Simplifi.svg'
+    },
+    'google-campaign-manager': {
+      name: 'Google Campaign Manager',
+      type: 'Ad Server',
+      logo: './assets/svgs/GCM.svg'
+    }
+  };
+
+  const connectedPlatforms = [];
+  
+  // Collect DSP platforms
+  if (campaign.connectors.dsp && Array.isArray(campaign.connectors.dsp)) {
+    campaign.connectors.dsp.forEach(dspValue => {
+      if (platformConfig[dspValue]) {
+        connectedPlatforms.push({
+          value: dspValue,
+          ...platformConfig[dspValue],
+          status: 'Connected',
+          enabledAt: new Date().toLocaleDateString(),
+          disabledAt: '—'
+        });
+      }
+    });
+  }
+  
+  // Collect Ad Server platforms
+  if (campaign.connectors.adServer && Array.isArray(campaign.connectors.adServer)) {
+    campaign.connectors.adServer.forEach(adServerValue => {
+      if (platformConfig[adServerValue]) {
+        connectedPlatforms.push({
+          value: adServerValue,
+          ...platformConfig[adServerValue],
+          status: 'Connected',
+          enabledAt: new Date().toLocaleDateString(),
+          disabledAt: '—'
+        });
+      }
+    });
+  }
+
+  // If no platforms were found, show empty state
+  if (connectedPlatforms.length === 0) {
+    const emptyRow = document.createElement('tr');
+    emptyRow.innerHTML = `
+      <td colspan="6" class="px-6 py-8 text-sm text-gray-500 italic text-center">
+        No platform connectors configured for this campaign
+      </td>
+    `;
+    tableBody.appendChild(emptyRow);
+    
+    // Update record count
+    const recordCount = document.getElementById('recordCount');
+    if (recordCount) {
+      recordCount.textContent = '0 of 0 showing';
+    }
+    return;
+  }
+
+  // Populate table with connected platforms
+  connectedPlatforms.forEach((platform, index) => {
+    const row = document.createElement('tr');
+    row.className = 'border-b border-default hover:bg-gray-50 transition-colors';
+    row.setAttribute('data-platform', platform.value);
+    
+    // Status badge styling
+    const statusBadgeClass = platform.status === 'Connected' 
+      ? 'bg-green-100 text-green-800' 
+      : 'bg-gray-100 text-gray-800';
+    
+    row.innerHTML = `
+      <td class="px-6 py-1 text-sm border-r border-default">
+        <div class="flex items-center space-x-2">
+          <button data-action="edit" data-platform="${platform.value}" title="Edit" class="p-1 rounded hover:bg-gray-100" type="button" aria-label="Edit">
+            <!-- Pencil icon -->
+            <svg class="w-4 h-4 text-gray-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M17.414 2.586a2 2 0 010 2.828l-9.9 9.9a1 1 0 01-.464.263l-4 1a1 1 0 01-1.213-1.213l1-4a1 1 0 01.263-.464l9.9-9.9a2 2 0 012.828 0zM15.121 4.121l.758-.758a1 1 0 10-1.414-1.414l-.758.758 1.414 1.414z"></path>
+            </svg>
+          </button>
+          <button data-action="delete" data-platform="${platform.value}" title="Delete" class="p-1 rounded hover:bg-gray-100" type="button" aria-label="Delete">
+            <!-- Trash icon -->
+            <svg class="w-4 h-4 text-red-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h6a1 1 0 011 1v1h3a1 1 0 110 2h-1v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h3V3zm2 3a1 1 0 10-2 0v8a1 1 0 102 0V6zm6 0a1 1 0 10-2 0v8a1 1 0 102 0V6z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </td>
+      <td class="px-6 py-1 text-sm border-r border-default">
+        <div class="flex items-center gap-3">
+          <img src="${platform.logo}" alt="${platform.name}" class="w-8 h-8" onerror="this.style.display='none'">
+          <span class="font-medium text-gray-900">${platform.name}</span>
+        </div>
+      </td>
+      <td class="px-6 py-1 text-sm text-gray-700 border-r border-default">
+        ${platform.type}
+      </td>
+      <td class="px-6 py-1 text-sm border-r border-default">
+        <span class="px-2 py-1 rounded-full text-xs font-medium ${statusBadgeClass}">
+          ${platform.status}
+        </span>
+      </td>
+      <td class="px-6 py-1 text-sm text-gray-700 border-r border-default">
+        ${platform.enabledAt}
+      </td>
+      <td class="px-6 py-1 text-sm text-gray-500">
+        ${platform.disabledAt}
+      </td>
+    `;
+    
+    tableBody.appendChild(row);
+  });
+
+  // Update record count
+  const recordCount = document.getElementById('recordCount');
+  if (recordCount) {
+    recordCount.textContent = `${connectedPlatforms.length} of ${connectedPlatforms.length} showing`;
+  }
+  
+  // Add event listener for edit/delete actions
+  setupConnectionActions();
+}
+
+// Setup event listeners for edit and delete actions
+function setupConnectionActions() {
+  const tableBody = document.getElementById('campaignTableBody');
+  if (!tableBody) return;
+  
+  // Remove any existing listener to avoid duplicates
+  tableBody.removeEventListener('click', handleConnectionAction);
+  tableBody.addEventListener('click', handleConnectionAction);
+}
+
+// Handle edit and delete actions
+function handleConnectionAction(e) {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  
+  const action = btn.dataset.action;
+  const platformValue = btn.dataset.platform;
+  
+  if (action === 'edit') {
+    handleEditConnection(platformValue);
+  } else if (action === 'delete') {
+    handleDeleteConnection(platformValue);
+  }
+}
+
+// Handle edit connection
+function handleEditConnection(platformValue) {
+  // Platform name mapping
+  const platformNames = {
+    'trade-desk': 'The Trade Desk',
+    'dv360': 'Display & Video 360',
+    'simplifi': 'Simplifi',
+    'google-campaign-manager': 'Google Campaign Manager'
+  };
+  
+  const platformName = platformNames[platformValue] || platformValue;
+  
+  // For now, show a toast message. You can expand this to open a modal
+  if (window.toast && typeof window.toast.info === 'function') {
+    window.toast.info(`Edit functionality for ${platformName} coming soon`);
+  } else {
+    alert(`Edit ${platformName}`);
+  }
+}
+
+// Handle delete connection
+function handleDeleteConnection(platformValue) {
+  // Platform name mapping
+  const platformNames = {
+    'trade-desk': 'The Trade Desk',
+    'dv360': 'Display & Video 360',
+    'simplifi': 'Simplifi',
+    'google-campaign-manager': 'Google Campaign Manager'
+  };
+  
+  const platformName = platformNames[platformValue] || platformValue;
+  
+  // Confirm deletion
+  if (!confirm(`Are you sure you want to remove ${platformName} from this campaign?`)) {
+    return;
+  }
+  
+  // Get current campaign
+  const urlParams = new URLSearchParams(window.location.search);
+  const campaignId = urlParams.get('campaignId');
+  
+  if (!campaignId) {
+    if (window.toast && typeof window.toast.error === 'function') {
+      window.toast.error('Campaign ID not found');
+    }
+    return;
+  }
+  
+  try {
+    const data = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
+    let campaign = null;
+    let campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
+    let groups = Array.isArray(data.groups) ? data.groups : [];
+    
+    // Find the campaign
+    campaign = campaigns.find(c => c.id === campaignId);
+    
+    if (!campaign) {
+      for (const group of groups) {
+        if (group.campaigns) {
+          campaign = group.campaigns.find(c => c.id === campaignId);
+          if (campaign) break;
+        }
+      }
+    }
+    
+    if (!campaign || !campaign.connectors) {
+      if (window.toast && typeof window.toast.error === 'function') {
+        window.toast.error('Campaign not found');
+      }
+      return;
+    }
+    
+    // Remove the platform from connectors
+    if (campaign.connectors.dsp) {
+      campaign.connectors.dsp = campaign.connectors.dsp.filter(p => p !== platformValue);
+    }
+    if (campaign.connectors.adServer) {
+      campaign.connectors.adServer = campaign.connectors.adServer.filter(p => p !== platformValue);
+    }
+    
+    // Save back to localStorage
+    localStorage.setItem('campaign_tree_groups', JSON.stringify(data));
+    
+    // Show success message
+    if (window.toast && typeof window.toast.success === 'function') {
+      window.toast.success(`${platformName} removed successfully`);
+    }
+    
+    // Reload the connections table
+    loadCampaignConnections(campaign);
+    
+  } catch (error) {
+    console.error('Error deleting connection:', error);
+    if (window.toast && typeof window.toast.error === 'function') {
+      window.toast.error('Failed to remove connection');
+    }
+  }
+}
 
 // Function to load ad groups associated with the current campaign
 function loadAdGroupsForCampaign(campaignId) {

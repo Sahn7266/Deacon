@@ -226,7 +226,7 @@
       </a>
     </li>
     <li>
-      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+      <a href="./CampaignsConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
         <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
         <span data-link-label>Connections</span>
       </a>
@@ -1474,9 +1474,24 @@
     // Get current page filename without query params
     const currentPage = window.location.pathname.split('/').pop().split('?')[0];
     
+    // Get query parameters to pass along
+    const urlParams = new URLSearchParams(window.location.search);
+    const campaignId = urlParams.get('campaignId');
+    const campaignName = urlParams.get('campaignName');
+    
     document.querySelectorAll('#sidebar a[data-nav-link]').forEach(link => {
       // Get href filename without ./ prefix and query params
       const linkPage = link.getAttribute('href').replace('./', '').split('?')[0];
+      
+      // Add query parameters to sidebar links
+      if (campaignId) {
+        const baseHref = link.getAttribute('href').split('?')[0];
+        let newHref = `${baseHref}?campaignId=${encodeURIComponent(campaignId)}`;
+        if (campaignName) {
+          newHref += `&campaignName=${encodeURIComponent(campaignName)}`;
+        }
+        link.setAttribute('href', newHref);
+      }
       
       if (linkPage === currentPage) {
         link.classList.add('text-blue-700', 'bg-blue-50', 'font-medium');
