@@ -2210,9 +2210,34 @@ return false;
                 tradeDesk: platformsEnabled ? (platformTradeDesk ? platformTradeDesk.checked : false) : false,
                 dv360: platformsEnabled ? (platformDV360 ? platformDV360.checked : false) : false
               },
+              // Capture platform connection status from Step 2
+              platformConnections: {
+                tradeDeskStatus: null,
+                gcmStatus: null
+              },
               dsp: Object.keys(dspData).length > 0 ? dspData : null,
               adServer: Object.keys(adServerData).length > 0 ? adServerData : null
             };
+
+            // Get connection status from the connector badges
+            const tradeDeskCard = document.querySelector('[data-connector="ttd"]');
+            const gcmCard = document.querySelector('[data-connector="gcm"]');
+            
+            if (tradeDeskCard) {
+              const tradeDeskBadge = tradeDeskCard.querySelector('.connector-status');
+              if (tradeDeskBadge) {
+                const isConnected = tradeDeskBadge.textContent.trim() === 'Connected';
+                newAdvertiser.platformConnections.tradeDeskStatus = isConnected ? 'ENABLED' : 'DISABLED';
+              }
+            }
+            
+            if (gcmCard) {
+              const gcmBadge = gcmCard.querySelector('.connector-status');
+              if (gcmBadge) {
+                const isConnected = gcmBadge.textContent.trim() === 'Connected';
+                newAdvertiser.platformConnections.gcmStatus = isConnected ? 'ENABLED' : 'DISABLED';
+              }
+            }
 
             // Add to the main advertiser list (at the beginning so it appears first)
             try {

@@ -207,6 +207,21 @@
       </div>
     </header>
 
+    <!-- Breadcrumb Bar -->
+    <div class="bg-white border-b border-gray-200 px-6 py-2">
+      <nav class="flex items-center text-sm text-gray-600">
+        <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <span class="font-semibold text-gray-900">Connections</span>
+      </nav>
+    </div>
+
     <!-- Body -->
     <div class="flex flex-1 overflow-hidden">
       <!-- Sidebar -->
@@ -277,19 +292,6 @@
 
       <!-- Main Content -->
       <main class="flex-1 overflow-y-auto p-6">
-        <!-- Breadcrumb Navigation -->
-        <nav class="mb-4 flex items-center text-sm text-gray-600">
-          <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
-          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-          <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
-          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-          <span class="font-semibold text-gray-900">Connections</span>
-        </nav>
-
        <div class="app-card rounded-lg shadow-lg overflow-hidden">
           <!-- Advertiser Header -->
           <div class="px-4 pt-4">
@@ -487,6 +489,18 @@
         },
 
         loadAdGroups: function() {
+          // First, try to load or initialize from advertiser data
+          const advertiserData = localStorage.getItem('adv_selected_data');
+          let advertiser = null;
+          
+          try {
+            if (advertiserData) {
+              advertiser = JSON.parse(advertiserData);
+            }
+          } catch (e) {
+            console.warn('Failed to parse advertiser data:', e);
+          }
+
           try {
             const storedRaw = localStorage.getItem(CONFIG.STORAGE_KEYS.DATA);
             if (storedRaw) {
@@ -495,16 +509,77 @@
               const valid = Array.isArray(parsed) && parsed.length > 0 && parsed.every(it => it && it.platform && it.status !== undefined && it.enabled_at !== undefined);
               if (valid) {
                 this.adgroups = parsed;
+                // Update from advertiser platform connections if available
+                if (advertiser && advertiser.platformConnections) {
+                  this.updateConnectionsFromAdvertiser(advertiser);
+                }
                 return;
               }
             }
 
-            // No valid stored data — reset to DEFAULT_ADGROUPS and persist
+            // No valid stored data — reset to DEFAULT_ADGROUPS and apply advertiser settings
             this.adgroups = [...DEFAULT_ADGROUPS];
+            
+            // Update from advertiser platform connections if available
+            if (advertiser && advertiser.platformConnections) {
+              this.updateConnectionsFromAdvertiser(advertiser);
+            }
+            
             this.saveAdGroups();
           } catch (e) {
             console.warn('Failed to load ad groups, using defaults:', e);
             this.adgroups = [...DEFAULT_ADGROUPS];
+          }
+        },
+
+        updateConnectionsFromAdvertiser: function(advertiser) {
+          try {
+            if (!advertiser || !advertiser.platformConnections) return;
+            
+            const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            
+            // Update The Trade Desk status
+            if (advertiser.platformConnections.tradeDeskStatus) {
+              const tradeDeskIndex = this.adgroups.findIndex(ag => ag.platform === 'The Trade Desk');
+              if (tradeDeskIndex !== -1) {
+                const newStatus = advertiser.platformConnections.tradeDeskStatus;
+                const oldStatus = this.adgroups[tradeDeskIndex].status;
+                
+                this.adgroups[tradeDeskIndex].status = newStatus;
+                
+                // Update timestamps based on status change
+                if (newStatus === 'ENABLED' && oldStatus !== 'ENABLED') {
+                  this.adgroups[tradeDeskIndex].enabled_at = now;
+                  this.adgroups[tradeDeskIndex].disabled_at = null;
+                } else if (newStatus === 'DISABLED' && oldStatus !== 'DISABLED') {
+                  this.adgroups[tradeDeskIndex].disabled_at = now;
+                }
+              }
+            }
+            
+            // Update Google Campaign Manager status
+            if (advertiser.platformConnections.gcmStatus) {
+              const gcmIndex = this.adgroups.findIndex(ag => ag.platform === 'Google Campaign Manager');
+              if (gcmIndex !== -1) {
+                const newStatus = advertiser.platformConnections.gcmStatus;
+                const oldStatus = this.adgroups[gcmIndex].status;
+                
+                this.adgroups[gcmIndex].status = newStatus;
+                
+                // Update timestamps based on status change
+                if (newStatus === 'ENABLED' && oldStatus !== 'ENABLED') {
+                  this.adgroups[gcmIndex].enabled_at = now;
+                  this.adgroups[gcmIndex].disabled_at = null;
+                } else if (newStatus === 'DISABLED' && oldStatus !== 'DISABLED') {
+                  this.adgroups[gcmIndex].disabled_at = now;
+                }
+              }
+            }
+            
+            // Save the updated connections
+            this.saveAdGroups();
+          } catch (e) {
+            console.warn('Failed to update connections from advertiser:', e);
           }
         },
 
