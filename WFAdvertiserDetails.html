@@ -14,6 +14,7 @@
 
   <!-- REMOVE OR COMMENT OUT THIS LINE: -->
   <script src="./assets/notifications.js"></script>
+  <link rel="stylesheet" href="./assets/theme.css">
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
 
@@ -225,13 +226,7 @@
         <span data-link-label>Ad Groups</span>
       </a>
     </li>
-    <!-- CAD (added) -->
-    <li>
-      <a href="./CAD.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Blueprint.svg" class="w-6 h-6 mr-2" alt="CAD">
-        <span data-link-label>CAD</span>
-      </a>
-    </li>
+   
   </ul>
 </nav>
 
@@ -269,7 +264,7 @@
             </section>
 
             <!-- Two-column layout -->
-            <div class="grid md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-2 gap-6">
               
               <!-- LEFT COLUMN -->
               <div class="space-y-6">
@@ -277,35 +272,35 @@
                 <!-- Beacon Fields -->
                 <section class="space-y-2">
                   <div class="bg-white border border-blue-200 rounded-lg shadow-sm">
-                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 border-b border-blue-200 rounded-t-lg">
+                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-3 py-2 border-b border-blue-200 rounded-t-lg">
                       <h4 class="font-semibold text-blue-900 text-sm uppercase tracking-wide">Beacon Fields</h4>
                     </div>
-                    <div class="p-4">
+                    <div class="p-3">
                       <table class="w-full text-sm adgroup-details-table">
                         <tbody>
                           <tr>
-                            <td class="py-2 pr-3 text-gray-600 font-semibold" style="width: 40%;">ID:</td>
-                            <td class="py-2">
+                            <td class="py-1 pr-3 text-gray-600 font-semibold" style="width: 40%;">ID:</td>
+                            <td class="py-1">
                               <span id="displayAdvertiserId" data-bind="adv.id" class="text-gray-900">—</span>
                             </td>
                           </tr>
                           <tr>
-                            <td class="py-2 pr-3 text-gray-600 font-semibold">Account #:</td>
-                            <td class="py-2">
+                            <td class="py-1 pr-3 text-gray-600 font-semibold">Account #:</td>
+                            <td class="py-1">
                               <span id="accountDisplay" data-bind="adv.account" class="hidden text-gray-900">—</span>
                               <button id="accountLookupBtn" class="text-sm text-blue-600 hover:text-blue-800 underline">Select Account</button>
                             </td>
                           </tr>
                           <tr>
-                            <td class="py-2 pr-3 text-gray-600 font-semibold">Name:</td>
-                            <td class="py-2">
+                            <td class="py-1 pr-3 text-gray-600 font-semibold">Name:</td>
+                            <td class="py-1">
                               <span id="displayAdvertiserName" data-bind="adv.name" class="text-gray-900">—</span>
                               <input id="inputAdvertiserName" type="text" data-bind="adv.name" class="hidden adgroup-details-input">
                             </td>
                           </tr>
                           <tr>
-                            <td class="py-2 pr-3 text-gray-600 font-semibold">State:</td>
-                            <td class="py-2">
+                            <td class="py-1 pr-3 text-gray-600 font-semibold">State:</td>
+                            <td class="py-1">
                               <span id="displayState" data-bind="adv.state" class="text-gray-900">—</span>
                               <select id="inputState" data-bind="adv.state" class="hidden adgroup-details-input w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-300">
                                 <option value="Active">Active</option>
@@ -320,6 +315,7 @@
                 </section>
 
                 <!-- DSP Fields -->
+                <!-- COMMENTED OUT - May be restored later
                 <section id="dspFieldsSection" class="space-y-2">
                   <div class="bg-white border border-blue-200 rounded-lg shadow-sm">
                     <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 border-b border-blue-200 rounded-t-lg">
@@ -410,6 +406,7 @@
                     </div>
                   </div>
                 </section>
+                -->
 
               </div>
 
@@ -419,7 +416,7 @@
                 <!-- Team Table -->
                 <section class="space-y-2">
                   <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
-                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-3 border-b border-gray-200 rounded-t-lg flex items-center justify-between">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-3 py-2 border-b border-gray-200 rounded-t-lg flex items-center justify-between">
                       <h4 class="font-semibold text-gray-900 text-sm uppercase tracking-wide">Team</h4>
                       <div class="relative">
                         <button id="teamStateChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 transition" data-filter="state" aria-haspopup="menu" aria-expanded="false">
@@ -433,7 +430,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="p-4">
+                    <div class="p-3">
                       <table class="w-full text-sm table-fixed">
                         <colgroup>
                           <col style="width:44%">
@@ -442,36 +439,36 @@
                         </colgroup>
                         <thead>
                           <tr class="border-b border-gray-300">
-                            <th class="text-left py-2 text-gray-600 font-semibold">Name</th>
-                            <th class="text-left py-2 text-gray-600 font-semibold">Role</th>
-                            <th class="text-left py-2 text-gray-600 font-semibold">State</th>
+                            <th class="text-left py-1 text-gray-600 font-semibold">Name</th>
+                            <th class="text-left py-1 text-gray-600 font-semibold">Role</th>
+                            <th class="text-left py-1 text-gray-600 font-semibold">State</th>
                           </tr>
                         </thead>
                         <tbody id="teamTableBody">
                           <tr class="border-b border-gray-100" data-state="active">
-                            <td class="py-2 text-gray-900">Matt Hunter</td>
-                            <td class="py-2 text-gray-500">Account Manager</td>
-                            <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
+                            <td class="py-1 text-gray-900">Matt Hunter</td>
+                            <td class="py-1 text-gray-500">Account Manager</td>
+                            <td class="py-1"><span class="px-2 py-1 text-xs">Active</span></td>
                           </tr>
                           <tr class="border-b border-gray-100" data-state="active">
-                            <td class="py-2 text-gray-900">David DeHerrera</td>
-                            <td class="py-2 text-gray-500">Campaign Specialist</td>
-                            <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
+                            <td class="py-1 text-gray-900">David DeHerrera</td>
+                            <td class="py-1 text-gray-500">Campaign Specialist</td>
+                            <td class="py-1"><span class="px-2 py-1 text-xs">Active</span></td>
                           </tr>
                           <tr class="border-b border-gray-100" data-state="inactive">
-                            <td class="py-2 text-gray-900">Hailey Golden</td>
-                            <td class="py-2 text-gray-500">Campaign Manager</td>
-                            <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
+                            <td class="py-1 text-gray-900">Hailey Golden</td>
+                            <td class="py-1 text-gray-500">Campaign Manager</td>
+                            <td class="py-1"><span class="px-2 py-1 text-xs">Inactive</span></td>
                           </tr>
                           <tr class="border-b border-gray-100" data-state="active">
-                            <td class="py-2 text-gray-900">Sam Ahn</td>
-                            <td class="py-2 text-gray-500">Sales Representative</td>
-                            <td class="py-2"><span class="px-2 py-1 text-xs">Active</span></td>
+                            <td class="py-1 text-gray-900">Sam Ahn</td>
+                            <td class="py-1 text-gray-500">Sales Representative</td>
+                            <td class="py-1"><span class="px-2 py-1 text-xs">Active</span></td>
                           </tr>
                           <tr data-state="inactive">
-                            <td class="py-2 text-gray-900">Trevor White</td>
-                            <td class="py-2 text-gray-500">Partnership Sales</td>
-                            <td class="py-2"><span class="px-2 py-1 text-xs">Inactive</span></td>
+                            <td class="py-1 text-gray-900">Trevor White</td>
+                            <td class="py-1 text-gray-500">Partnership Sales</td>
+                            <td class="py-1"><span class="px-2 py-1 text-xs">Inactive</span></td>
                           </tr>
                         </tbody>
                       </table>
@@ -480,6 +477,7 @@
                 </section>
 
                 <!-- Ad Server Fields -->
+                <!-- COMMENTED OUT - May be restored later
                 <section id="adServerFieldsSection" class="space-y-2">
                   <div class="bg-white border border-green-200 rounded-lg shadow-sm">
                     <div class="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 border-b border-green-200 rounded-t-lg">
@@ -514,10 +512,136 @@
                     </div>
                   </div>
                 </section>
+                -->
 
               </div>
             </div>
+
           </div>
+
+          <!-- Campaigns Section (Full Width) -->
+          <div class="px-6 py-6 border-b border-gray-200">
+            <section>
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGNS</h2>
+              </div>
+              <div class="overflow-x-auto border border-default rounded-md">
+                <table id="campaignTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
+                  <colgroup>
+                    <col style="width: 10%;">
+                    <col style="width: 25%;">
+                    <col style="width: 10%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                    <col style="width: 10%;">
+                    <col style="width: 15%;">
+                  </colgroup>
+                  <thead class="tbl-head">
+                    <tr>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="id">
+                          <span>ID</span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="name" aria-label="Sort by Name">
+                          <span>Name</span>
+                          <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="state" aria-label="Sort by State">
+                          <span>State</span>
+                          <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp" aria-label="Sort by Connectors">
+                          <span>Connectors</span>
+                          <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adServer" aria-label="Sort by Ad Server">
+                          <span>Ad Server</span>
+                          <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adGroups" aria-label="Sort by Ad Groups">
+                          <span>Ad Groups</span>
+                          <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                        <span class="px-6 py-2 block">Actions</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="campaignTableBody" class="divide-y">
+                    <!-- Campaign rows will be populated by JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
+          <!-- Ad Groups Section (Full Width) -->
+          <div class="px-6 py-6">
+            <section>
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-semibold text-gray-900 mx-2">AD GROUPS</h2>
+              </div>
+              <div class="overflow-x-auto border border-default rounded-md">
+                <table id="adGroupTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
+                  <colgroup>
+                    <col style="width: 10%;">
+                    <col style="width: 25%;">
+                    <col style="width: 15%;">
+                    <col style="width: 20%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                  </colgroup>
+                  <thead class="tbl-head">
+                    <tr>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="id">
+                          <span>ID</span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="name">
+                          <span>Name</span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp">
+                          <span>DSP</span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="classification">
+                          <span>Classification</span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="campaign">
+                          <span>Campaign</span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <span class="px-6 py-2 block">Actions</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="adGroupTableBody" class="divide-y">
+                    <!-- Ad group rows will be populated by JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
         </div>
       </main>
     </div>
@@ -1203,6 +1327,202 @@
     });
   });
   </script>
+
+  <!-- Populate Campaigns and Ad Groups Tables -->
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Get current advertiser
+    let adv = null;
+    try {
+      const rawObj = localStorage.getItem('adv_selected_data');
+      if (rawObj) adv = JSON.parse(rawObj);
+    } catch {}
+
+    if (!adv) {
+      console.log('No advertiser selected');
+      return;
+    }
+
+    console.log('Loading data for advertiser:', adv);
+
+    // Load and populate campaigns
+    function loadCampaigns() {
+      const campaignTableBody = document.getElementById('campaignTableBody');
+      if (!campaignTableBody) return;
+
+      try {
+        const campaignsData = localStorage.getItem('campaign_tree_groups');
+        if (!campaignsData) {
+          campaignTableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No campaigns found</td></tr>';
+          return;
+        }
+
+        const data = JSON.parse(campaignsData);
+        
+        // Flatten all campaigns from the data structure
+        let allCampaigns = [];
+        
+        // Add campaigns from top-level campaigns array
+        if (data.campaigns && Array.isArray(data.campaigns)) {
+          allCampaigns = allCampaigns.concat(data.campaigns);
+        }
+        
+        // Add campaigns from groups
+        if (data.groups && Array.isArray(data.groups)) {
+          data.groups.forEach(group => {
+            if (group.campaigns && Array.isArray(group.campaigns)) {
+              allCampaigns = allCampaigns.concat(group.campaigns);
+            }
+          });
+        }
+        
+        // Filter campaigns for this advertiser
+        const campaigns = allCampaigns.filter(c => String(c.advertiserId) === String(adv.id));
+
+        console.log('Found campaigns:', campaigns.length);
+
+        if (campaigns.length === 0) {
+          campaignTableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No campaigns for this advertiser</td></tr>';
+          return;
+        }
+
+        campaignTableBody.innerHTML = '';
+        campaigns.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-gray-50 campaign-row';
+          tr.dataset.campaignId = c.id;
+          tr.innerHTML = `
+            <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.beaconCampaignId || c.id || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm font-medium border-r border-default">
+              <a href="./CampaignDetails.html?campaignId=${encodeURIComponent(c.id)}&campaignName=${encodeURIComponent(c.beaconCampaignName || c.name)}" class="text-blue-600 hover:underline">
+                ${c.beaconCampaignName || c.name || ''}
+              </a>
+            </td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.adServer || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums border-r border-default">${c.liveAdGroupCount !== undefined ? c.liveAdGroupCount : (c.adGroups ?? 0)}</td>
+          `;
+          
+          // Add Actions column
+          const tdActions = document.createElement('td');
+          tdActions.className = 'px-6 py-1 whitespace-nowrap text-sm text-center flex gap-3 justify-center items-center';
+          
+          const exportLink = document.createElement('a');
+          exportLink.href = '#';
+          exportLink.className = 'text-blue-600 hover:underline export-btn';
+          exportLink.textContent = 'Export';
+          exportLink.dataset.campaignId = c.id;
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'text-red-600 hover:underline delete-btn';
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.dataset.campaignId = c.id;
+          
+          tdActions.appendChild(exportLink);
+          tdActions.appendChild(deleteBtn);
+          tr.appendChild(tdActions);
+          
+          campaignTableBody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error('Error loading campaigns:', e);
+        campaignTableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Error loading campaigns</td></tr>';
+      }
+    }
+
+    // Load and populate ad groups
+    function loadAdGroups() {
+      const adGroupTableBody = document.getElementById('adGroupTableBody');
+      if (!adGroupTableBody) return;
+
+      try {
+        const adGroupsData = localStorage.getItem('adgroups_data_v1');
+        if (!adGroupsData) {
+          adGroupTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No ad groups found</td></tr>';
+          return;
+        }
+
+        const allAdGroups = JSON.parse(adGroupsData);
+        // Filter ad groups for this advertiser
+        const adGroups = allAdGroups.filter(ag => String(ag.advertiserId) === String(adv.id));
+
+        console.log('Found ad groups:', adGroups.length);
+
+        if (adGroups.length === 0) {
+          adGroupTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No ad groups for this advertiser</td></tr>';
+          return;
+        }
+
+        adGroupTableBody.innerHTML = '';
+        adGroups.forEach(ag => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-gray-50';
+          tr.innerHTML = `
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.id || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
+              <a href="./AdGroupDetails.html?id=${encodeURIComponent(ag.id)}&campaignId=${encodeURIComponent(ag.campaign || '')}" class="text-blue-600 hover:underline">
+                ${ag.name || ''}
+              </a>
+            </td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.dsp || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.campaign || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-center border-r border-gray-200">
+              <button class="text-red-600 hover:underline" onclick="deleteAdGroup('${ag.id}')">Delete</button>
+            </td>
+          `;
+          adGroupTableBody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error('Error loading ad groups:', e);
+        adGroupTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Error loading ad groups</td></tr>';
+      }
+    }
+
+    // Initialize tables
+    loadCampaigns();
+    loadAdGroups();
+
+    // Listen for storage changes to update tables when data changes
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'campaign_tree_groups') {
+        console.log('Campaign data changed, reloading campaigns table...');
+        loadCampaigns();
+      }
+      if (e.key === 'adgroups_data_v1') {
+        console.log('Ad group data changed, reloading ad groups table...');
+        loadAdGroups();
+      }
+    });
+
+    // Also expose functions globally so they can be called from other scripts
+    window.refreshCampaignsTable = loadCampaigns;
+    window.refreshAdGroupsTable = loadAdGroups;
+
+    // Poll for changes every 2 seconds (for same-window updates)
+    let lastCampaignData = localStorage.getItem('campaign_tree_groups');
+    let lastAdGroupData = localStorage.getItem('adgroups_data_v1');
+    
+    setInterval(() => {
+      const currentCampaignData = localStorage.getItem('campaign_tree_groups');
+      const currentAdGroupData = localStorage.getItem('adgroups_data_v1');
+      
+      if (currentCampaignData !== lastCampaignData) {
+        console.log('Campaign data changed (polling), reloading...');
+        lastCampaignData = currentCampaignData;
+        loadCampaigns();
+      }
+      
+      if (currentAdGroupData !== lastAdGroupData) {
+        console.log('Ad group data changed (polling), reloading...');
+        lastAdGroupData = currentAdGroupData;
+        loadAdGroups();
+      }
+    }, 2000);
+  });
+  </script>
+
   <script src="./assets/sidebar.js" defer></script>
 </body>
 </html>

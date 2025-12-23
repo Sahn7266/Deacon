@@ -1846,6 +1846,65 @@ self.validateForm();
             this.renderPagination(result.total);
           },
 
+          getCampaignCount: function(advertiserId) {
+            try {
+              const campaignsData = localStorage.getItem('campaign_tree_groups');
+              if (!campaignsData) return 0;
+              
+              const data = JSON.parse(campaignsData);
+              let count = 0;
+              
+              // Count campaigns from top-level campaigns array
+              if (data.campaigns && Array.isArray(data.campaigns)) {
+                for (let i = 0; i < data.campaigns.length; i++) {
+                  if (String(data.campaigns[i].advertiserId) === String(advertiserId)) {
+                    count++;
+                  }
+                }
+              }
+              
+              // Count campaigns from groups
+              if (data.groups && Array.isArray(data.groups)) {
+                for (let i = 0; i < data.groups.length; i++) {
+                  const group = data.groups[i];
+                  if (group.campaigns && Array.isArray(group.campaigns)) {
+                    for (let j = 0; j < group.campaigns.length; j++) {
+                      if (String(group.campaigns[j].advertiserId) === String(advertiserId)) {
+                        count++;
+                      }
+                    }
+                  }
+                }
+              }
+              
+              return count;
+            } catch (e) {
+              console.error('Error counting campaigns:', e);
+              return 0;
+            }
+          },
+
+          getAdGroupCount: function(advertiserId) {
+            try {
+              const adGroupsData = localStorage.getItem('adgroups_data_v1');
+              if (!adGroupsData) return 0;
+              
+              const allAdGroups = JSON.parse(adGroupsData);
+              let count = 0;
+              
+              for (let i = 0; i < allAdGroups.length; i++) {
+                if (String(allAdGroups[i].advertiserId) === String(advertiserId)) {
+                  count++;
+                }
+              }
+              
+              return count;
+            } catch (e) {
+              console.error('Error counting ad groups:', e);
+              return 0;
+            }
+          },
+
           renderTable: function(data) {
             if (!this.elements.advertiserTableBody) {
               console.error('Table body not found');
@@ -1863,6 +1922,9 @@ self.validateForm();
             
             for (let i = 0; i < data.length; i++) {
               const adv = data[i];
+              const campaignCount = this.getCampaignCount(adv.id);
+              const adGroupCount = this.getAdGroupCount(adv.id);
+              
               const tr = document.createElement('tr');
               tr.dataset.advId = adv.id || '';
               tr.innerHTML = 
@@ -1872,8 +1934,8 @@ self.validateForm();
                 '</td>' +
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.account || '') + '</td>' +
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.status || '') + '</td>' +
-                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.campaign || '') + '</td>' +
-                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.adGroup || '') + '</td>' +
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500 tabular-nums">' + campaignCount + '</td>' +
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500 tabular-nums">' + adGroupCount + '</td>' +
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-center">' +
                   '<button class="text-red-600 hover:underline delete-advertiser" data-adv-id="' + (adv.id || '') + '" title="Delete Advertiser">Delete</button>' +
                 '</td>';

@@ -321,13 +321,7 @@
               <span data-link-label>Ad Groups</span>
             </a>
           </li>
-          <!-- CAD (added) -->
-          <li>
-            <a href="./CAD.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Blueprint.svg" class="w-6 h-6 mr-2" alt="CAD">
-              <span data-link-label>CAD</span>
-            </a>
-          </li>
+         
         </ul>
       </nav>
 
@@ -820,34 +814,6 @@
           { id: 'CAM-004', name: 'Thanksgiving Push', state: 'Active', dsp: 'DV360', adGroups: 5 },
           { id: 'CAM-005', name: 'Weekend Harvest', state: 'Inactive', dsp: 'Trade Desk', adGroups: 2 },
           { id: 'CAM-006', name: 'Last Call Harvest', state: 'Active', dsp: 'Trade Desk, Google Campaign Manager', adGroups: 4 }
-        ]
-      },
-      {
-        id: 'GRP-LUN',
-        name: 'Lunar Brand Lift',
-        expanded: false,
-        campaigns: [
-          { id: 'CAM-007', name: 'Moonlight Social', state: 'Active', dsp: 'Trade Desk', adGroups: 7 },
-          { id: 'CAM-008', name: 'Night Sky Video', state: 'Inactive', dsp: 'DV360', adGroups: 6 },
-          { id: 'CAM-009', name: 'Crater Display', state: 'Active', dsp: 'Google Campaign Manager', adGroups: 5 },
-          { id: 'CAM-010', name: 'Orbit Awareness', state: 'Active', dsp: 'DV360, Google Campaign Manager', adGroups: 8 },
-          { id: 'CAM-011', name: 'Eclipse Countdown', state: 'Inactive', dsp: 'Trade Desk', adGroups: 3 },
-          { id: 'CAM-012', name: 'Tidal Retargeting', state: 'Active', dsp: 'DV360', adGroups: 4 }
-        ]
-      },
-      {
-        id: 'GRP-VEL',
-        name: 'Velocity Retargeting',
-        expanded: true,
-        campaigns: [
-          { id: 'CAM-013', name: 'Cart Abandoners', state: 'Active', dsp: 'Google Campaign Manager', adGroups: 9 },
-          { id: 'CAM-014', name: 'Repeat Buyers', state: 'Active', dsp: 'Trade Desk', adGroups: 6 },
-          { id: 'CAM-015', name: 'Lookalike Sprint', state: 'Inactive', dsp: 'DV360', adGroups: 5 },
-          { id: 'CAM-016', name: 'Frequency Cap Tune', state: 'Active', dsp: 'Trade Desk, Google Campaign Manager', adGroups: 7 },
-          { id: 'CAM-017', name: 'Video Retarget', state: 'Active', dsp: 'DV360', adGroups: 8 },
-          { id: 'CAM-018', name: 'Search Warmup', state: 'Inactive', dsp: '', adGroups: 4 },
-          { id: 'CAM-019', name: 'Dynamic Creative', state: 'Active', dsp: 'Trade Desk', adGroups: 10 },
-          { id: 'CAM-020', name: 'High-Intent Pulse', state: 'Active', dsp: 'DV360, Google Campaign Manager', adGroups: 6 }
         ]
       }
     ];
@@ -2083,8 +2049,13 @@ function handleCampaignCreation(redirectToAdGroups) {
   const dspDisplay = dspList.length > 0 ? dspList.join(', ') : '';
   const adServerDisplay = adServerList.length > 0 ? adServerList.join(', ') : '';
   
+  // Get current advertiser ID
+  const advData = JSON.parse(localStorage.getItem('adv_selected_data') || '{}');
+  const advertiserId = advData.id || null;
+  
   const campaign = {
     id: 'CAM-' + Date.now(),
+    advertiserId: advertiserId, // Track which advertiser this campaign belongs to
     name: document.getElementById('campaignName')?.value || '',
     seed: document.getElementById('campaignSeed')?.value || '',
     organization: document.getElementById('campaignOrganization')?.value || '',

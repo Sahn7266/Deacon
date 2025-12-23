@@ -281,13 +281,7 @@
               <span data-link-label>Ad Groups</span>
             </a>
           </li>
-          <!-- CAD (added) -->
-          <li>
-            <a href="./CAD.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Blueprint.svg" class="w-6 h-6 mr-2" alt="CAD">
-              <span data-link-label>CAD</span>
-            </a>
-          </li>
+          
         </ul>
       </nav>
 
@@ -1709,8 +1703,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const idField = document.getElementById('beaconAdGroupId');
       const adGroupId = idField?.value || ('AG-' + Math.random().toString(36).substr(2, 6).toUpperCase());
       
+      // Get current advertiser ID
+      const advData = JSON.parse(localStorage.getItem('adv_selected_data') || '{}');
+      const advertiserId = advData.id || null;
+      
       const adGroup = {
         id: adGroupId,
+        advertiserId: advertiserId, // Track which advertiser this ad group belongs to
         // Beacon Fields
         name: document.getElementById('beaconAdGroupName')?.value?.trim() || '',
         campaign: document.getElementById('beaconCampaign')?.value || '',
