@@ -187,7 +187,7 @@
     <li>
       <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
         <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
-        <span data-link-label>Details</span>
+        <span data-link-label>Overview</span>
       </a>
     </li>
     <li>
@@ -226,6 +226,15 @@
 
       <!-- Main -->
       <main class="flex-1 overflow-y-auto p-6">
+        <!-- Breadcrumb Navigation -->
+        <nav class="mb-4 flex items-center text-sm text-gray-600">
+          <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+          <span class="font-semibold text-gray-900" id="breadcrumbAdvertiser">—</span>
+        </nav>
+
         <div class="bg-white rounded-lg shadow-sm">
           <div class="p-4 border-b border-gray-200">
             <div class="flex items-start gap-4 mb-3">
@@ -609,6 +618,14 @@
         if (!adv) {
           const advertisers = loadAdvertisersFromStorage();
           adv = (advertisers && advertisers.length) ? advertisers[0] : null;
+        }
+
+        // Populate breadcrumb
+        if (adv) {
+          const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
+          if (breadcrumbAdvertiser) {
+            breadcrumbAdvertiser.textContent = `Advertiser: ${adv.name || 'Unknown'}`;
+          }
         }
 
         if (adv) {

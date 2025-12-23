@@ -236,7 +236,7 @@
             <a href="./WFAdvertiserDetails.html" data-nav-link
                class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
               <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
-              <span data-link-label>Details</span>
+              <span data-link-label>Overview</span>
             </a>
           </li>
           <li>
@@ -278,6 +278,19 @@
 
       <!-- Main Content -->
       <main class="flex-1 overflow-y-auto p-6">
+        <!-- Breadcrumb Navigation -->
+        <nav class="mb-4 flex items-center text-sm text-gray-600">
+          <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+          <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+          <span class="font-semibold text-gray-900">Ad Groups</span>
+        </nav>
+
         <div class="app-card rounded-lg shadow-lg overflow-hidden">
           <!-- Advertiser Header -->
           <div class="px-4 pt-4">
@@ -1302,6 +1315,13 @@
           if (nameEl) nameEl.textContent = advertiser.name || 'Unknown Advertiser';
           if (accountEl) accountEl.textContent = advertiser.account || '—';
           if (idEl) idEl.textContent = advertiser.id || '—';
+          
+          // Populate breadcrumbs
+          const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
+          if (breadcrumbAdvertiser) {
+            breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
+            breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
+          }
         }
       } catch (e) {
         console.warn('Failed to load advertiser data:', e);

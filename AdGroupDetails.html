@@ -204,7 +204,7 @@
 <li>
   <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
         <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
-        <span data-link-label>Details</span>
+        <span data-link-label>Overview</span>
       </a>
     </li>
     <li>
@@ -243,6 +243,24 @@
 
       <!-- Main -->
       <main class="flex-1 overflow-y-auto p-6">
+        <!-- Breadcrumb Navigation -->
+        <nav class="mb-4 flex items-center text-sm text-gray-600" id="breadcrumbNav">
+          <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+          <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">Advertiser: —</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+          <!-- Dynamic middle section: either "Campaigns > Campaign: X" or just "Ad Groups" -->
+          <span id="breadcrumbMiddle"></span>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+          <span class="font-semibold text-gray-900" id="breadcrumbAdGroup">Ad Group: —</span>
+        </nav>
+
         <div class="bg-white rounded-lg shadow-sm">
           <div class="p-4 border-b border-gray-200">
             <div class="flex items-start gap-4 mb-3">
@@ -1699,6 +1717,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
+  const campaignId = params.get('campaignId');
+  const campaignName = params.get('campaignName');
 
   if (!id) return;
 
@@ -1714,6 +1734,86 @@ document.addEventListener('DOMContentLoaded', function () {
   const titleElement = document.getElementById('adGroupDetailsTitle');
   if (titleElement && adGroup.name) {
     titleElement.innerHTML = `<span style="color: #0F66A7;">${adGroup.name}</span>: Ad Group Details`;
+  }
+
+  // Populate breadcrumbs
+  try {
+    const selectedData = localStorage.getItem('adv_selected_data');
+    const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
+    const breadcrumbMiddle = document.getElementById('breadcrumbMiddle');
+    const breadcrumbAdGroup = document.getElementById('breadcrumbAdGroup');
+    
+    if (selectedData) {
+      const advertiser = JSON.parse(selectedData);
+      
+      // Update breadcrumb advertiser name and link
+      if (breadcrumbAdvertiser) {
+        breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
+        breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
+      }
+      
+      // Always try to find the campaign associated with this ad group
+      let relatedCampaignId = campaignId || adGroup.campaign || adGroup.campaignId;
+      let relatedCampaignName = campaignName;
+      
+      // If we have a campaign ID but no name, look it up
+      if (relatedCampaignId && !relatedCampaignName) {
+        try {
+          const campaignData = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
+          let campaigns = [];
+          
+          if (Array.isArray(campaignData)) {
+            campaignData.forEach(group => {
+              if (group.campaigns) campaigns = campaigns.concat(group.campaigns);
+            });
+          } else {
+            campaigns = Array.isArray(campaignData.campaigns) ? campaignData.campaigns : [];
+            if (Array.isArray(campaignData.groups)) {
+              campaignData.groups.forEach(group => {
+                if (group.campaigns) campaigns = campaigns.concat(group.campaigns);
+              });
+            }
+          }
+          
+          const campaign = campaigns.find(c => c.id === relatedCampaignId);
+          if (campaign) {
+            relatedCampaignName = campaign.beaconCampaignName || campaign.name;
+          }
+        } catch (e) {
+          console.warn('Failed to lookup campaign name:', e);
+        }
+      }
+      
+      // Build breadcrumb middle section
+      if (breadcrumbMiddle) {
+        if (relatedCampaignId && relatedCampaignName) {
+          // Path: Advertisers > Advertiser > Campaigns > Campaign > Ad Group
+          breadcrumbMiddle.innerHTML = `
+            <a href="./AdvertiserCampaigns.html?advertiserId=${advertiser.id}" class="hover:text-blue-600 transition-colors">Campaigns</a>
+            <svg class="w-4 h-4 mx-2 text-gray-400 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <a href="./CampaignDetails.html?campaignId=${relatedCampaignId}&campaignName=${encodeURIComponent(relatedCampaignName)}" class="hover:text-blue-600 transition-colors">Campaign: ${relatedCampaignName}</a>
+            <svg class="w-4 h-4 mx-2 text-gray-400 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <a href="./AdvertiserAdGroup.html?advertiserId=${advertiser.id}" class="hover:text-blue-600 transition-colors">Ad Groups</a>
+          `;
+        } else {
+          // Path: Advertisers > Advertiser > Ad Groups > Ad Group (no campaign association)
+          breadcrumbMiddle.innerHTML = `
+            <a href="./AdvertiserAdGroup.html?advertiserId=${advertiser.id}" class="hover:text-blue-600 transition-colors">Ad Groups</a>
+          `;
+        }
+      }
+    }
+    
+    // Update breadcrumb ad group name
+    if (breadcrumbAdGroup && adGroup.name) {
+      breadcrumbAdGroup.textContent = `Ad Group: ${adGroup.name}`;
+    }
+  } catch (e) {
+    console.warn('Failed to populate breadcrumbs:', e);
   }
 
   const fields = [
