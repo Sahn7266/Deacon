@@ -622,14 +622,14 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Seed</label>
-                <select id="campaignSeed" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <select id="campaignSeed" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">-- Select Seed --</option>
                   <option value="Default Seed List">Default Seed List</option>
                 </select>
               </div>
               <div class="xl:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">How would you like to organize your campaigns?</label>
-                <select id="campaignOrganization" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <select id="campaignOrganization" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">-- Select Organization --</option>
                   <option value="Create new campaign group">Create new campaign group</option>
                   <option value="Add campaigns to existing group">Add campaigns to existing group</option>
@@ -638,7 +638,7 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Pace Ahead</label>
-                <select id="campaignPacing" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <select id="campaignPacing" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">-- Select Pacing --</option>
                   <option value="Pace Ahead">Pace Ahead</option>
                   <option value="Pace Behind">Pace Behind</option>
@@ -646,7 +646,7 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
-                <select id="campaignTimezone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <select id="campaignTimezone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">-- Select Timezone --</option>
                   <option value="UTC">UTC (Coordinated Universal Time)</option>
                   <option value="EST">EST (Eastern Standard Time)</option>
@@ -657,15 +657,15 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Start Date (UTC)</label>
-                <input type="date" id="campaignStartDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <input type="date" id="campaignStartDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">End Date (UTC)</label>
-                <input type="date" id="campaignEndDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <input type="date" id="campaignEndDate" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Channel</label>
-                <select id="campaignChannel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <select id="campaignChannel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">-- Select Channel --</option>
                   <option value="Display">Display</option>
                   <option value="Video">Video</option>
@@ -675,7 +675,7 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Name</label>
-                <select id="campaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <select id="campaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">-- Select Campaign Name --</option>
                   <option value="Brand Awareness">Brand Awareness</option>
                   <option value="Persona">Persona</option>
@@ -686,12 +686,12 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Budget</label>
                 <div class="relative">
                   <span class="absolute left-3 top-2 text-gray-500">$</span>
-                  <input type="number" id="campaignBudget" class="w-full border border-gray-300 rounded-md pl-8 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" step="0.01" min="0" required>
+                  <input type="number" id="campaignBudget" class="w-full border border-gray-300 rounded-md pl-8 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" step="0.01" min="0">
                 </div>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Campaign KPI</label>
-                <select id="campaignKPI" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <select id="campaignKPI" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">-- Select KPI --</option>
                   <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
                   <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
@@ -700,7 +700,7 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">KPI Target</label>
                 <div class="relative">
-                  <input type="number" id="campaignKPITarget" class="w-full border border-gray-300 rounded-md pr-8 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" step="0.01" min="0" required>
+                  <input type="number" id="campaignKPITarget" class="w-full border border-gray-300 rounded-md pr-8 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" step="0.01" min="0">
                   <span class="absolute right-3 top-2 text-gray-500">%</span>
                 </div>
               </div>
@@ -719,7 +719,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Name</label>
-                <select id="adServerCampaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                <select id="adServerCampaignName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
                   <option value="">-- Select Campaign Name --</option>
                   <option value="Brandawareness">Brand Awareness</option>
                   <option value="Persona">Persona</option>
@@ -728,15 +728,15 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Schedule</label>
-                <input type="date" id="adServerSchedule" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                <input type="date" id="adServerSchedule" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Landing Page Name</label>
-                <input type="text" id="adServerLandingPageName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter landing page name" required>
+                <input type="text" id="adServerLandingPageName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter landing page name">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Landing Page URL</label>
-                <input type="text" id="adServerLandingPageURL" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter any URL or value" required>
+                <input type="text" id="adServerLandingPageURL" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter any URL or value">
               </div>
             </div>
           </div>

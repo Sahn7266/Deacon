@@ -82,6 +82,100 @@
       pointer-events: none;
     }
     select[aria-readonly="true"]:focus { border: none !important; outline: none !important; box-shadow: none !important; }
+
+    /* Search bar styling */
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border-radius: 0.375rem;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      height: 40px;
+      width: 50px;
+      overflow: hidden;
+    }
+
+    .search-wrapper.expanded {
+      width: 300px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 5px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease;
+    }
+
+    .search-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #666;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 8px 40px 8px 40px;
+      font-size: 14px;
+      color: #333;
+      opacity: 0;
+      transition: opacity 0.2s ease 0.1s;
+    }
+
+    .search-input::placeholder {
+      color: #999;
+    }
+
+    .search-wrapper.expanded .search-input {
+      opacity: 1;
+      background-color: white;
+      height: 80%;
+      border: #c5c4c4 1px solid;
+      border-radius: .375rem;
+    }
+
+    .clear-button {
+      position: absolute;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      z-index: 2;
+    }
+
+    .clear-button svg {
+      width: 100%;
+      height: 100%;
+      fill: #666;
+    }
+
+    .clear-button:hover svg {
+      fill: #333;
+    }
+
+    .clear-button.visible {
+      opacity: 1;
+      visibility: visible;
+    }
   </style>
 </head>
 
