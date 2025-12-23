@@ -1547,24 +1547,24 @@ function loadAdGroupConnections(adGroup) {
     return;
   }
 
-  // Platform configuration mapping
+  // Platform configuration mapping - using Title Case values
   const platformConfig = {
-    'trade-desk': {
+    'Trade Desk': {
       name: 'The Trade Desk',
       type: 'DSP',
       logo: './assets/svgs/TTD.svg'
     },
-    'dv360': {
+    'DV360': {
       name: 'Display & Video 360',
       type: 'DSP',
       logo: './assets/svgs/DV360.svg'
     },
-    'simplifi': {
+    'Simplifi': {
       name: 'Simplifi',
       type: 'DSP',
       logo: './assets/svgs/Simplifi.svg'
     },
-    'google-campaign-manager': {
+    'Google Campaign Manager': {
       name: 'Google Campaign Manager',
       type: 'Ad Server',
       logo: './assets/svgs/GCM.svg'
@@ -1573,9 +1573,17 @@ function loadAdGroupConnections(adGroup) {
 
   const connectedPlatforms = [];
   
-  // Collect DSP platforms
-  if (adGroup.connectors.dsp && Array.isArray(adGroup.connectors.dsp)) {
-    adGroup.connectors.dsp.forEach(dspValue => {
+  // Collect DSP platforms - handle both string (comma-separated) and array formats
+  if (adGroup.connectors.dsp) {
+    let dspValues = [];
+    if (typeof adGroup.connectors.dsp === 'string') {
+      // Split comma-separated string and trim whitespace
+      dspValues = adGroup.connectors.dsp.split(',').map(v => v.trim()).filter(v => v);
+    } else if (Array.isArray(adGroup.connectors.dsp)) {
+      dspValues = adGroup.connectors.dsp;
+    }
+    
+    dspValues.forEach(dspValue => {
       if (platformConfig[dspValue]) {
         connectedPlatforms.push({
           value: dspValue,
@@ -1588,9 +1596,17 @@ function loadAdGroupConnections(adGroup) {
     });
   }
   
-  // Collect Ad Server platforms
-  if (adGroup.connectors.adServer && Array.isArray(adGroup.connectors.adServer)) {
-    adGroup.connectors.adServer.forEach(adServerValue => {
+  // Collect Ad Server platforms - handle both string (comma-separated) and array formats
+  if (adGroup.connectors.adServer) {
+    let adServerValues = [];
+    if (typeof adGroup.connectors.adServer === 'string') {
+      // Split comma-separated string and trim whitespace
+      adServerValues = adGroup.connectors.adServer.split(',').map(v => v.trim()).filter(v => v);
+    } else if (Array.isArray(adGroup.connectors.adServer)) {
+      adServerValues = adGroup.connectors.adServer;
+    }
+    
+    adServerValues.forEach(adServerValue => {
       if (platformConfig[adServerValue]) {
         connectedPlatforms.push({
           value: adServerValue,
@@ -1711,12 +1727,12 @@ function handleConnectionAction(e) {
 
 // Handle edit connection
 function handleEditConnection(platformValue) {
-  // Platform name mapping
+  // Platform name mapping - using Title Case values
   const platformNames = {
-    'trade-desk': 'The Trade Desk',
-    'dv360': 'Display & Video 360',
-    'simplifi': 'Simplifi',
-    'google-campaign-manager': 'Google Campaign Manager'
+    'Trade Desk': 'The Trade Desk',
+    'DV360': 'Display & Video 360',
+    'Simplifi': 'Simplifi',
+    'Google Campaign Manager': 'Google Campaign Manager'
   };
   
   const platformName = platformNames[platformValue] || platformValue;
@@ -1731,67 +1747,66 @@ function handleEditConnection(platformValue) {
 
 // Handle delete connection
 function handleDeleteConnection(platformValue) {
-  // Platform name mapping
+  // Platform name mapping - using Title Case values
   const platformNames = {
-    'trade-desk': 'The Trade Desk',
-    'dv360': 'Display & Video 360',
-    'simplifi': 'Simplifi',
-    'google-campaign-manager': 'Google Campaign Manager'
+    'Trade Desk': 'The Trade Desk',
+    'DV360': 'Display & Video 360',
+    'Simplifi': 'Simplifi',
+    'Google Campaign Manager': 'Google Campaign Manager'
   };
   
   const platformName = platformNames[platformValue] || platformValue;
   
   // Confirm deletion
-  if (!confirm(`Are you sure you want to remove ${platformName} from this campaign?`)) {
+  if (!confirm(`Are you sure you want to remove ${platformName} from this ad group?`)) {
     return;
   }
   
-  // Get current campaign
+  // Get current ad group
   const urlParams = new URLSearchParams(window.location.search);
-  const campaignId = urlParams.get('campaignId');
+  const adGroupId = urlParams.get('id');
   
-  if (!campaignId) {
+  if (!adGroupId) {
     if (window.toast && typeof window.toast.error === 'function') {
-      window.toast.error('Campaign ID not found');
+      window.toast.error('Ad Group ID not found');
     }
     return;
   }
   
   try {
-    const data = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
-    let campaign = null;
-    let campaigns = Array.isArray(data.campaigns) ? data.campaigns : [];
-    let groups = Array.isArray(data.groups) ? data.groups : [];
+    const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+    const adGroup = adGroups.find(ag => ag.id === adGroupId);
     
-    // Find the campaign
-    campaign = campaigns.find(c => c.id === campaignId);
-    
-    if (!campaign) {
-      for (const group of groups) {
-        if (group.campaigns) {
-          campaign = group.campaigns.find(c => c.id === campaignId);
-          if (campaign) break;
-        }
-      }
-    }
-    
-    if (!campaign || !campaign.connectors) {
+    if (!adGroup || !adGroup.connectors) {
       if (window.toast && typeof window.toast.error === 'function') {
-        window.toast.error('Campaign not found');
+        window.toast.error('Ad Group not found');
       }
       return;
     }
     
-    // Remove the platform from connectors
-    if (campaign.connectors.dsp) {
-      campaign.connectors.dsp = campaign.connectors.dsp.filter(p => p !== platformValue);
+    // Remove the platform from connectors (handle both string and array formats)
+    if (adGroup.connectors.dsp) {
+      if (typeof adGroup.connectors.dsp === 'string') {
+        // Convert to array, filter, and convert back to string
+        const dspArray = adGroup.connectors.dsp.split(',').map(v => v.trim()).filter(v => v);
+        adGroup.connectors.dsp = dspArray.filter(p => p !== platformValue).join(', ');
+      } else if (Array.isArray(adGroup.connectors.dsp)) {
+        adGroup.connectors.dsp = adGroup.connectors.dsp.filter(p => p !== platformValue);
+      }
     }
-    if (campaign.connectors.adServer) {
-      campaign.connectors.adServer = campaign.connectors.adServer.filter(p => p !== platformValue);
+    
+    if (adGroup.connectors.adServer) {
+      if (typeof adGroup.connectors.adServer === 'string') {
+        // Convert to array, filter, and convert back to string
+        const adServerArray = adGroup.connectors.adServer.split(',').map(v => v.trim()).filter(v => v);
+        adGroup.connectors.adServer = adServerArray.filter(p => p !== platformValue).join(', ');
+      } else if (Array.isArray(adGroup.connectors.adServer)) {
+        adGroup.connectors.adServer = adGroup.connectors.adServer.filter(p => p !== platformValue);
+      }
     }
     
     // Save back to localStorage
-    localStorage.setItem('campaign_tree_groups', JSON.stringify(data));
+    localStorage.setItem('adgroups_data_v1', JSON.stringify(adGroups));
     
     // Show success message
     if (window.toast && typeof window.toast.success === 'function') {
@@ -1799,7 +1814,7 @@ function handleDeleteConnection(platformValue) {
     }
     
     // Reload the connections table
-    loadCampaignConnections(campaign);
+    loadAdGroupConnections(adGroup);
     
   } catch (error) {
     console.error('Error deleting connection:', error);
