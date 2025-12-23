@@ -205,6 +205,68 @@
     }
 
     .has-tooltip:focus-visible { box-shadow: 0 0 0 3px rgba(59,130,246,0.18); border-radius: 6px; }
+
+
+/* Wizard Modal Styles */
+    .wizard-step {
+      transition: all 0.2s ease;
+    }
+
+    .wizard-step.active .step-number {
+      transform: scale(1.1);
+    }
+
+    .wizard-step:hover:not(.active) {
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+
+    .wizard-step.completed .step-number {
+      background-color: #10b981;
+    }
+
+    .wizard-content {
+      display: none;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .wizard-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .connector-card {
+      transition: all 0.2s ease;
+    }
+
+    .connector-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .platform-config {
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        max-height: 0;
+      }
+      to {
+        opacity: 1;
+        max-height: 2000px;
+      }
+    }
+
   </style>
 </head>
 
@@ -438,56 +500,139 @@
     </div>
   </div>
 
-  <div id="createAdvertiserModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-6xl max-h-[90vh] p-6 relative mx-4">
-      <button id="closeModalX" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
+<div id="createAdvertiserModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-6xl max-h-[90vh] relative mx-4 overflow-hidden">
+      
+      <!-- Wizard Header -->
+      <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-semibold text-white">Create New Advertiser</h2>
+          </div>
+          <button id="closeModalX" class="text-white hover:text-blue-200 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
 
-      <h2 class="text-2xl font-bold text-gray-900 mb-4">Create New Advertiser</h2>
-
-      <form id="createAdvertiserForm" class="overflow-y-auto max-h-[75vh] pr-2">
+      <!-- Wizard Body -->
+      <div class="flex max-h-[calc(90vh-180px)]">
         
-        <!-- Beacon Fields Section -->
-        <div class="mb-4">
-          <h3 class="text-lg font-semibold text-gray-800 mb-3">Beacon Fields</h3>
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ID</label>
-                <input type="text" id="advertiserId" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 focus:outline-none" readonly>
-                <p class="text-xs text-gray-500 mt-1">System-generated identifier</p>
+        <!-- Left Sidebar - Steps Navigation -->
+        <div class="w-64 bg-gray-50 border-r border-gray-200 p-6 overflow-y-auto">
+          <nav class="space-y-2">
+            
+            <!-- Step 1 -->
+            <div class="wizard-step active" data-step="1">
+              <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold step-number">
+                  1
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-900 step-title">Advertiser Details</p>
+                  <p class="text-xs text-gray-500 step-subtitle">Basic information</p>
+                </div>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Account Number <span class="text-red-500" id="accountRequiredAsterisk">*</span>
-                </label>
-                <div class="flex items-center space-x-2">
+            </div>
+
+            <!-- Step 2 -->
+            <div class="wizard-step" data-step="2">
+              <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-semibold step-number">
+                  2
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-600 step-title">Platform Connectors</p>
+                  <p class="text-xs text-gray-500 step-subtitle">Select DSPs & Ad Servers</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="wizard-step" data-step="3">
+              <div class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-semibold step-number">
+                  3
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-600 step-title">Platform Configuration</p>
+                  <p class="text-xs text-gray-500 step-subtitle">Configure Platform Fields</p>
+                </div>
+              </div>
+            </div>
+
+          </nav>
+
+          <!-- Progress Indicator -->
+          <div class="mt-8 pt-6 border-t border-gray-200">
+            <div class="flex items-center justify-between text-xs text-gray-600 mb-2">
+              <span>Progress</span>
+              <span id="wizardProgressText">33%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div id="wizardProgressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 33%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="flex-1 p-6 overflow-y-auto">
+          <form id="createAdvertiserForm">
+            
+            <!-- STEP 1: Advertiser Details (Beacon Fields) -->
+            <div class="wizard-content active" data-content="1">
+              <div class="mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Advertiser Details</h3>
+                <p class="text-sm text-gray-600">Enter the basic information for the new advertiser</p>
+              </div>
+
+              <div class="space-y-5">
+                
+                <!-- ID Field -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Advertiser ID</label>
                   <input 
                     type="text" 
-                    id="accountNumber" 
-                    class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter account number"
+                    id="advertiserId" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                    placeholder="System-generated ID"
+                    readonly
                   />
-                  <button 
-                    type="button"
-                    id="lookupBtn" 
-                    class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors"
-                    title="Lookup account"
-                  >
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                  </button>
+                  <p class="mt-1 text-xs text-gray-500">Auto-generated unique identifier</p>
                 </div>
-                <p id="accountDupError" class="mt-2 text-sm text-red-600 hidden" role="alert" aria-live="assertive">
-                  An advertiser with this Account # already exists.
-                </p>
-              </div>
-              <div class="lg:col-span-2">
-                <div class="flex items-center mb-2">
+
+                <!-- Account Number -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Account Number <span class="text-red-500" id="accountRequiredAsterisk">*</span>
+                  </label>
+                  <div class="flex items-center space-x-2">
+                    <input 
+                      type="text" 
+                      id="accountNumber" 
+                      class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Enter account number"
+                    />
+                    <button 
+                      type="button"
+                      id="lookupBtn" 
+                      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      title="Lookup account"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <p id="accountDupError" class="mt-2 text-sm text-red-600 hidden" role="alert">
+                    An advertiser with this Account # already exists.
+                  </p>
+                </div>
+
+                <!-- No CRM Account Checkbox -->
+                <div class="flex items-center">
                   <input 
                     type="checkbox" 
                     id="noCrmAccount" 
@@ -497,290 +642,428 @@
                     Advertiser is Not Connected to a CRM Account
                   </label>
                 </div>
-              </div>
-              <div class="lg:col-span-2">
-                <label for="advertiserName" class="block text-sm font-medium text-gray-700 mb-1">
-                  Name <span class="text-red-500">*</span>
-                </label>
-                <input 
-                  type="text" 
-                  id="advertiserName" 
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100"
-                  placeholder="Enter advertiser name"
-                  disabled
-                />
-                <p id="nameDupError" class="mt-2 text-sm text-red-600 hidden" role="alert" aria-live="assertive">
-                  An advertiser with this Name already exists.
-                </p>
-                <div id="crmAccountDisplay" class="hidden mt-1 text-xs text-gray-500">
-                  CRM Account: <span id="crmAccountName"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Connectors Section -->
-        <div class="mb-4">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="text-lg font-semibold text-gray-800">Connectors</h3>
-            <button type="button" id="connectorsToggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false">
-              <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
-            </button>
-          </div>
-          <div id="connectorsContent" class="hidden">
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <!-- DSP Options -->
+                <!-- Advertiser Name -->
                 <div>
-                  <label class="block text-sm font-bold text-gray-700 mb-2">DSP (Data Service Provider)</label>
-                  <div class="flex flex-wrap gap-2">
-                    <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-blue-300 cursor-pointer transition-colors">
-                      <input type="checkbox" id="dsp-trade-desk" name="dsp" value="trade-desk" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                      <span class="text-sm font-medium text-gray-700">The Trade Desk</span>
-                    </label>
+                  <label for="advertiserName" class="block text-sm font-medium text-gray-700 mb-2">
+                    Name <span class="text-red-500">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="advertiserName" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-100"
+                    placeholder="Enter advertiser name"
+                    disabled
+                  />
+                  <p id="nameDupError" class="mt-2 text-sm text-red-600 hidden" role="alert">
+                    An advertiser with this Name already exists.
+                  </p>
+                  <div id="crmAccountDisplay" class="hidden mt-1 text-xs text-gray-500">
+                    CRM Account: <span id="crmAccountName"></span>
                   </div>
                 </div>
 
-                <!-- Ad Server Options -->
-                <div>
-                  <label class="block text-sm font-bold text-gray-700 mb-2">Ad Server</label>
-                  <div class="flex flex-wrap gap-2">
-                    <label class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg px-3 py-2 hover:border-green-300 cursor-pointer transition-colors">
-                      <input type="checkbox" id="adserver-gcm" name="adserver" value="google-campaign-manager" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
-                      <span class="text-sm font-medium text-gray-700">Google Campaign Manager</span>
-                    </label>
-                  </div>
-                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- DSP Fields Section (The Trade Desk) -->
-        <div id="dspFieldsSection" class="hidden mb-3">
-          <div class="bg-white border border-blue-200 rounded-lg shadow-sm">
-            <div class="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 border-b border-blue-200 rounded-t-lg">
-              <h4 class="font-semibold text-blue-900 text-sm uppercase tracking-wide">DSP Fields • The Trade Desk</h4>
-            </div>
-            <div class="p-4">
-              <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                  <input type="text" id="dspName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter DSP name">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Partner</label>
-                  <select id="dspPartner" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">-- Select Partner --</option>
-                    <option value="Multiview">Multiview</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Domain Address</label>
-                  <input type="text" id="dspDomain" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter domain">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Advertiser Country</label>
-                  <select id="dspCountry" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">-- Select Country --</option>
-                    <option value="United States">United States</option>
-                    <option value="Canada">Canada</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Are you targeting anyone in the EU</label>
-                  <select id="dspEuTargeting" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">-- Select --</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Industry Category</label>
-                  <select id="dspIndustry" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">-- Select Industry --</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Retail">Retail</option>
-                    <option value="Automotive">Automotive</option>
-                    <option value="Travel">Travel</option>
-                    <option value="Education">Education</option>
-                    <option value="Entertainment">Entertainment</option>
-                  </select>
-                </div>
+            <!-- STEP 2: Platform Connectors -->
+            <div class="wizard-content" data-content="2">
+              <div class="mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Platform Connectors</h3>
+                <p class="text-sm text-gray-600">Select which DSPs and Ad Servers to connect</p>
+              </div>
+
+              <div class="space-y-4">
                 
-                <!-- Attribution Windows -->
-                <div class="xl:col-span-3">
-                  <label class="block text-sm font-bold text-gray-700 mb-2 mt-2">Attribution Windows</label>
-                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">Click</label>
-                      <div class="flex gap-2">
-                        <input type="number" id="dspAttrClickValue" class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="90">
-                        <select id="dspAttrClickUnit" class="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                          <option value="Days" selected>Days</option>
-                          <option value="Weeks">Weeks</option>
-                          <option value="Months">Months</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">Impression</label>
-                      <div class="flex gap-2">
-                        <input type="number" id="dspAttrImpressionValue" class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="90">
-                        <select id="dspAttrImpressionUnit" class="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                          <option value="Days" selected>Days</option>
-                          <option value="Weeks">Weeks</option>
-                          <option value="Months">Months</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- De-Duplication Windows -->
-                <div class="xl:col-span-3">
-                  <label class="block text-sm font-bold text-gray-700 mb-2 mt-2">De-Duplication Windows</label>
-                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">Click</label>
-                      <div class="flex items-center gap-2">
-                        <input type="number" id="dspDedupClick" class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="7">
-                        <span class="text-sm text-gray-600">Seconds</span>
-                      </div>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">Conversion</label>
-                      <div class="flex items-center gap-2">
-                        <input type="number" id="dspDedupConversion" class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="7">
-                        <span class="text-sm text-gray-600">Seconds</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Yahoo Integration</label>
-                  <select id="dspYahoo" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">-- Select --</option>
-                    <option value="Enabled">Enabled</option>
-                    <option value="Disabled">Disabled</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Ad Server Fields Section (Google Campaign Manager) -->
-        <div id="adServerFieldsSection" class="hidden mb-3">
-          <div class="bg-white border border-green-200 rounded-lg shadow-sm">
-            <div class="bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 border-b border-green-200 rounded-t-lg">
-              <h4 class="font-semibold text-green-900 text-sm uppercase tracking-wide">Ad Server Fields • Google Campaign Manager</h4>
-            </div>
-            <div class="p-4">
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Advertiser Name</label>
-                  <input type="text" id="adServerAdvertiserName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Enter advertiser name">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Advertiser Vertical</label>
-                  <select id="adServerVertical" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                    <option value="">-- Select Vertical --</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Retail">Retail</option>
-                    <option value="Automotive">Automotive</option>
-                    <option value="Travel">Travel</option>
-                    <option value="Education">Education</option>
-                    <option value="Entertainment">Entertainment</option>
-                  </select>
-                </div>
-                
-                <!-- Declarations -->
-                <div class="lg:col-span-2">
-                  <label class="block text-sm font-bold text-gray-700 mb-2 mt-2">Declarations</label>
+                <!-- Toggle All Connectors -->
+                <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">EU Political Ads</label>
-                    <select id="adServerEuPolitical" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                      <option value="">-- Select --</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </select>
+                    <p class="text-sm font-medium text-gray-900">Enable Platform Connectors</p>
+                    <p class="text-xs text-gray-600 mt-1">Toggle to mark selected platforms as Connected</p>
+                  </div>
+                  <button type="button" id="connectorsToggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false">
+                    <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                  </button>
+                </div>
+
+                <!-- Connectors Content -->
+                <div id="connectorsContent" class="space-y-4">
+                  
+                  <!-- DSP Section Header -->
+                  <div class="pt-2">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+                      <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                      </svg>
+                      DSP (Demand-Side Platform)
+                    </h4>
+                  </div>
+
+                  <!-- The Trade Desk -->
+                  <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="tradeDesk">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-3">
+                        <input 
+                          type="checkbox" 
+                          id="dsp-trade-desk" 
+                          name="dsp" 
+                          value="trade-desk"
+                          class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <div>
+                          <p class="text-sm font-semibold text-gray-900">The Trade Desk</p>
+                          <p class="text-xs text-gray-500">Programmatic advertising platform</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center space-x-2">
+                        <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status">Not Connected</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Ad Server Section Header -->
+                  <div class="pt-4">
+                    <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+                      <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                      </svg>
+                      Ad Server
+                    </h4>
+                  </div>
+
+                  <!-- Google Campaign Manager -->
+                  <div class="connector-card border-2 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-300 hover:shadow-md" data-connector="gcm">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-3">
+                        <input 
+                          type="checkbox" 
+                          id="adserver-gcm" 
+                          name="adserver" 
+                          value="google-campaign-manager"
+                          class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <div>
+                          <p class="text-sm font-semibold text-gray-900">Google Campaign Manager</p>
+                          <p class="text-xs text-gray-500">Ad serving and campaign management</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center space-x-2">
+                        <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status">Not Connected</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            <!-- STEP 3: Platform Configuration -->
+            <div class="wizard-content" data-content="3">
+              <div class="mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Platform Configuration</h3>
+                <p class="text-sm text-gray-600">Configure settings for selected platforms</p>
+              </div>
+
+              <!-- The Trade Desk Configuration -->
+              <div id="dspFieldsSection" class="platform-config mb-6 hidden">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 rounded-t-lg">
+                  <h4 class="font-semibold flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                    </svg>
+                    The Trade Desk Configuration
+                  </h4>
+                </div>
+                <div class="border border-gray-200 rounded-b-lg p-6 bg-white">
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                      <input type="text" id="dspName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter DSP name">
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Partner</label>
+                      <select id="dspPartner" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">-- Select Partner --</option>
+                        <option value="Multiview">Multiview</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Domain Address</label>
+                      <input type="text" id="dspDomain" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="https://example.com">
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Advertiser Country</label>
+                      <select id="dspCountry" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">-- Select Country --</option>
+                        <option value="United States">United States</option>
+                        <option value="Canada">Canada</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Germany">Germany</option>
+                        <option value="France">France</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Targeting EU?</label>
+                      <select id="dspEu" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">-- Select --</option>
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Industry Category</label>
+                      <select id="dspIndustry" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">-- Select Industry --</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Education">Education</option>
+                        <option value="Entertainment">Entertainment</option>
+                      </select>
+                    </div>
+
+                    <!-- Attribution Windows -->
+                    <div class="lg:col-span-2 pt-4 border-t border-gray-200">
+                      <h5 class="text-sm font-semibold text-gray-900 mb-4">Attribution Windows</h5>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Click Window</label>
+                      <div class="flex gap-2">
+                        <input type="number" id="dspAttrClickValue" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="90">
+                        <select id="dspAttrClickUnit" class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                          <option value="Days" selected>Days</option>
+                          <option value="Weeks">Weeks</option>
+                          <option value="Months">Months</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Impression Window</label>
+                      <div class="flex gap-2">
+                        <input type="number" id="dspAttrImpressionValue" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="90">
+                        <select id="dspAttrImpressionUnit" class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                          <option value="Days" selected>Days</option>
+                          <option value="Weeks">Weeks</option>
+                          <option value="Months">Months</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <!-- De-Duplication Windows -->
+                    <div class="lg:col-span-2 pt-4 border-t border-gray-200">
+                      <h5 class="text-sm font-semibold text-gray-900 mb-4">De-Duplication Windows</h5>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Click</label>
+                      <div class="flex items-center gap-2">
+                        <input type="number" id="dspDedupClick" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="7">
+                        <span class="text-sm text-gray-600 w-20">Seconds</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Conversion</label>
+                      <div class="flex items-center gap-2">
+                        <input type="number" id="dspDedupConversion" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="7">
+                        <span class="text-sm text-gray-600 w-20">Seconds</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Yahoo Integration</label>
+                      <select id="dspYahoo" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">-- Select --</option>
+                        <option value="Enabled">Enabled</option>
+                        <option value="Disabled">Disabled</option>
+                      </select>
+                    </div>
+
                   </div>
                 </div>
               </div>
+
+              <!-- Google Campaign Manager Configuration -->
+              <div id="adServerFieldsSection" class="platform-config mb-6 hidden">
+                <div class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 rounded-t-lg">
+                  <h4 class="font-semibold flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 14a2 2 0 00-2-2h-4a2 2 0 100 4h4a2 2 0 002-2z"></path>
+                    </svg>
+                    Google Campaign Manager Configuration
+                  </h4>
+                </div>
+                <div class="border border-gray-200 rounded-b-lg p-6 bg-white">
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Advertiser Name</label>
+                      <input type="text" id="adServerAdvertiserName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Enter advertiser name">
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Advertiser Vertical</label>
+                      <select id="adServerVertical" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <option value="">-- Select Vertical --</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Education">Education</option>
+                        <option value="Entertainment">Entertainment</option>
+                      </select>
+                    </div>
+
+                    <!-- Declarations -->
+                    <div class="lg:col-span-2 pt-4 border-t border-gray-200">
+                      <h5 class="text-sm font-semibold text-gray-900 mb-4">Declarations</h5>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">EU Political Ads</label>
+                        <select id="adServerEuPolitical" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                          <option value="">-- Select --</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- No Platforms Selected Message -->
+              <div id="noPlatformsMessage" class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No platforms selected</h3>
+                <p class="mt-1 text-sm text-gray-500">Go back to step 2 to select at least one platform connector.</p>
+              </div>
+
             </div>
-          </div>
+
+          </form>
         </div>
 
-        <div class="flex justify-end space-x-3 pt-3 border-t border-gray-200">
-          <button type="button" id="cancelModalBtn" class="px-6 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">Cancel</button>
-          <button type="submit" id="createAdvertiserBtn" class="px-6 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>Create Advertiser</button>
-        </div>
-      </form>
-    </div>
-  </div>
+      </div>
 
+      <!-- Wizard Footer - Navigation Buttons -->
+      <div class="border-t border-gray-200 px-6 py-4 bg-gray-50 flex items-center justify-between">
+        <button 
+          type="button" 
+          id="wizardPrevBtn"
+          class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled
+        >
+          <svg class="inline-block w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Previous
+        </button>
+
+        <div class="text-sm text-gray-600">
+          Step <span id="wizardCurrentStep">1</span> of 3
+        </div>
+
+        <div class="space-x-3">
+          <button 
+            type="button" 
+            id="cancelModalBtn"
+            class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          
+          <button 
+            type="button" 
+            id="wizardNextBtn"
+            class="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Next
+            <svg class="inline-block w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+
+          <button 
+            type="submit" 
+            id="createAdvertiserBtn"
+            class="hidden px-6 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            disabled
+          >
+            <svg class="inline-block w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Create Advertiser
+          </button>
+        </div>
+      </div>
+
+      <!-- Account Lookup Modal -->
   <div id="accountLookupModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style="z-index: 9999;">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col">
       <div class="flex items-center justify-between p-6 border-b border-gray-200">
         <h3 class="text-lg font-semibold text-gray-900">Select an account to connect to this advertiser:</h3>
-        <button-type id="closeLookupX" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <button type="button" id="closeLookupX" class="text-gray-400 hover:text-gray-600 transition-colors">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
       </div>
 
-      <div class="p-4 border-b border-gray-200">
-        <input 
-          type="text" 
-          id="lookupSearch" 
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Search account number or name"
-        />
+      <div class="p-6 space-y-4 flex-1 overflow-hidden flex flex-col">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="lookupSearch" 
+            class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+            placeholder="Search by account number or name..."
+          />
+          <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+
+        <div class="flex-1 overflow-auto border border-gray-200 rounded-lg">
+          <table class="w-full">
+            <thead class="bg-gray-50 sticky top-0">
+              <tr>
+                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-700">Account Number</th>
+                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-700">Account Name</th>
+              </tr>
+            </thead>
+            <tbody id="lookupResults">
+              <!-- Results populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="flex-1 overflow-auto">
-        <table class="w-full">
-          <thead class="bg-gray-50 sticky top-0">
-            <tr>
-              <th class="text-left py-3 px-4 text-sm font-medium text-gray-700">Account Number</th>
-              <th class="text-left py-3 px-4 text-sm font-medium text-gray-700">Account Name</th>
-            </tr>
-          </thead>
-          <tbody id="lookupResults" class="divide-y divide-gray-200">
-          </tbody>
-        </table>
-      </div>
-
-      <div class="flex items-center justify-end space-x-3 p-4 border-t border-gray-200">
-        <button 
-          id="cancelLookupBtn" 
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-        >
-          Cancel
-        </button>
-        <button 
-          id="selectAccountBtn" 
-          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-          disabled
-        >
-          Select
-        </button>
+      <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+        <button type="button" id="cancelLookupBtn" class="px-6 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+        <button type="button" id="selectAccountBtn" class="px-6 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>Select Account</button>
       </div>
     </div>
   </div>
 
+    </div>
+  </div>
   <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
   <script>
@@ -1369,40 +1652,6 @@ self.validateForm();
               });
             }
 
-            // Connectors toggle
-            const connectorsToggle = document.getElementById('connectorsToggle');
-            const connectorsContent = document.getElementById('connectorsContent');
-            if (connectorsToggle && connectorsContent) {
-              connectorsToggle.addEventListener('click', function() {
-                const isChecked = this.getAttribute('aria-checked') === 'true';
-                const newState = !isChecked;
-                
-                this.setAttribute('aria-checked', newState);
-                const slider = this.querySelector('span');
-                if (newState) {
-                  this.classList.remove('bg-gray-200');
-                  this.classList.add('bg-blue-600');
-                  if (slider) slider.classList.add('translate-x-5');
-                  connectorsContent.classList.remove('hidden');
-                } else {
-                  this.classList.add('bg-gray-200');
-                  this.classList.remove('bg-blue-600');
-                  if (slider) slider.classList.remove('translate-x-5');
-                  connectorsContent.classList.add('hidden');
-                  // Hide DSP and Ad Server sections when connectors are disabled
-                  const dspSection = document.getElementById('dspFieldsSection');
-                  const adServerSection = document.getElementById('adServerFieldsSection');
-                  if (dspSection) dspSection.classList.add('hidden');
-                  if (adServerSection) adServerSection.classList.add('hidden');
-                  // Uncheck connector checkboxes
-                  const dspCheckbox = document.getElementById('dsp-trade-desk');
-                  const adServerCheckbox = document.getElementById('adserver-gcm');
-                  if (dspCheckbox) dspCheckbox.checked = false;
-                  if (adServerCheckbox) adServerCheckbox.checked = false;
-                }
-              });
-            }
-
             // DSP and Ad Server checkbox toggles
             const dspCheckbox = document.getElementById('dsp-trade-desk');
             const adServerCheckbox = document.getElementById('adserver-gcm');
@@ -1915,7 +2164,7 @@ return false;
               dspData.partner = document.getElementById('dspPartner')?.value || '';
               dspData.domain = document.getElementById('dspDomain')?.value || '';
               dspData.country = document.getElementById('dspCountry')?.value || '';
-              dspData.euTargeting = document.getElementById('dspEuTargeting')?.value || '';
+              dspData.euTargeting = document.getElementById('dspEu')?.value || '';
               dspData.industry = document.getElementById('dspIndustry')?.value || '';
               dspData.attributionWindows = {
                 click: {
@@ -2043,11 +2292,271 @@ return false;
           }
         };
 
-        app.init();
+app.init();
+
+        // === WIZARD NAVIGATION ===
+        const wizard = {
+          currentStep: 1,
+          totalSteps: 3,
+          isInitialized: false,
+
+init: function() {
+            if (!this.isInitialized) {
+              this.isInitialized = true;
+            }
+            this.setupEventListeners();
+            this.updateUI();
+          },
+
+          setupEventListeners: function() {
+            const self = this;
+            
+            // Navigation buttons - Clone to remove any existing listeners
+            const nextBtn = document.getElementById('wizardNextBtn');
+            const prevBtn = document.getElementById('wizardPrevBtn');
+            
+            if (nextBtn) {
+              const newNextBtn = nextBtn.cloneNode(true);
+              nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+              newNextBtn.addEventListener('click', () => self.nextStep());
+            }
+            
+            if (prevBtn) {
+              const newPrevBtn = prevBtn.cloneNode(true);
+              prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+              newPrevBtn.addEventListener('click', () => self.prevStep());
+            }
+            
+            // Step indicators (click to navigate to completed steps)
+            document.querySelectorAll('.wizard-step').forEach(step => {
+              step.addEventListener('click', function() {
+                const targetStep = parseInt(this.dataset.step);
+                if (targetStep <= self.currentStep) {
+                  self.goToStep(targetStep);
+                }
+              });
+            });
+
+            // Platform checkboxes
+            document.getElementById('dsp-trade-desk')?.addEventListener('change', (e) => {
+              self.updatePlatformConfigVisibility();
+            });
+            
+            document.getElementById('adserver-gcm')?.addEventListener('change', (e) => {
+              self.updatePlatformConfigVisibility();
+            });
+
+            // Connector cards - toggle checkbox on card click
+            document.querySelectorAll('.connector-card').forEach(card => {
+              card.addEventListener('click', function(e) {
+                if (e.target.type !== 'checkbox') {
+                  const checkbox = this.querySelector('input[type="checkbox"]');
+                  if (checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                  }
+                }
+              });
+            });
+
+            // Connectors toggle
+            const connectorsToggle = document.getElementById('connectorsToggle');
+            if (connectorsToggle) {
+              connectorsToggle.addEventListener('click', function() {
+                const isEnabled = this.getAttribute('aria-checked') === 'true';
+                const newState = !isEnabled;
+                
+                this.setAttribute('aria-checked', newState);
+                if (newState) {
+                  this.classList.add('bg-blue-600');
+                  this.classList.remove('bg-gray-200');
+                  this.querySelector('span').classList.add('translate-x-5');
+                  this.querySelector('span').classList.remove('translate-x-0');
+                } else {
+                  this.classList.remove('bg-blue-600');
+                  this.classList.add('bg-gray-200');
+                  this.querySelector('span').classList.remove('translate-x-5');
+                  this.querySelector('span').classList.add('translate-x-0');
+                }
+
+                // Update connection status for all connector cards
+                document.querySelectorAll('.connector-card').forEach(card => {
+                  const statusBadge = card.querySelector('.connector-status');
+                  if (statusBadge) {
+                    if (newState) {
+                      statusBadge.textContent = 'Connected';
+                      statusBadge.className = 'px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full connector-status';
+                    } else {
+                      statusBadge.textContent = 'Not Connected';
+                      statusBadge.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status';
+                    }
+                  }
+                });
+              });
+            }
+          },
+
+          updatePlatformConfigVisibility: function() {
+            const dspChecked = document.getElementById('dsp-trade-desk')?.checked;
+            const adServerChecked = document.getElementById('adserver-gcm')?.checked;
+
+            const dspSection = document.getElementById('dspFieldsSection');
+            const adServerSection = document.getElementById('adServerFieldsSection');
+            const noPlat = document.getElementById('noPlatformsMessage');
+
+            if (dspSection) dspSection.classList.toggle('hidden', !dspChecked);
+            if (adServerSection) adServerSection.classList.toggle('hidden', !adServerChecked);
+            
+            const anySelected = dspChecked || adServerChecked;
+            if (noPlat) noPlat.style.display = anySelected ? 'none' : 'block';
+          },
+
+nextStep: function() {
+            console.log('Next button clicked, current step:', this.currentStep);
+            if (this.currentStep < this.totalSteps) {
+              const isValid = this.validateStep(this.currentStep);
+              console.log('Validation result:', isValid);
+              if (isValid) {
+                this.goToStep(this.currentStep + 1);
+              }
+            }
+          },
+
+          prevStep: function() {
+            if (this.currentStep > 1) {
+              this.goToStep(this.currentStep - 1);
+            }
+          },
+
+          goToStep: function(stepNumber) {
+            console.log('goToStep called with stepNumber:', stepNumber);
+            this.currentStep = stepNumber;
+            console.log('currentStep set to:', this.currentStep);
+            this.updateUI();
+            console.log('updateUI called');
+          },
+
+          validateStep: function(step) {
+            console.log('Validating step:', step);
+            if (step === 1) {
+              const accountNumber = document.getElementById('accountNumber')?.value.trim();
+              const noCrm = document.getElementById('noCrmAccount')?.checked;
+              const advertiserName = document.getElementById('advertiserName')?.value.trim();
+
+              console.log('Account Number:', accountNumber);
+              console.log('No CRM checked:', noCrm);
+              console.log('Advertiser Name:', advertiserName);
+
+              if (!accountNumber && !noCrm) {
+                console.log('VALIDATION FAILED: No account number and noCRM not checked');
+                alert('Please enter an account number or check "No CRM Account"');
+                return false;
+              }
+
+              if (!advertiserName) {
+                console.log('VALIDATION FAILED: No advertiser name');
+                alert('Please enter an advertiser name');
+                return false;
+              }
+
+              console.log('Validation passed!');
+            }
+            return true;
+          },
+
+          updateUI: function() {
+            // Update step indicators
+            document.querySelectorAll('.wizard-step').forEach(step => {
+              const stepNum = parseInt(step.dataset.step);
+              const stepNumber = step.querySelector('.step-number');
+              const stepTitle = step.querySelector('.step-title');
+              
+              if (stepNum === this.currentStep) {
+                step.classList.add('active');
+                stepNumber.classList.remove('bg-gray-300', 'text-gray-600', 'bg-green-500');
+                stepNumber.classList.add('bg-blue-600', 'text-white');
+                stepNumber.textContent = stepNum;
+                stepTitle.classList.remove('text-gray-600', 'text-green-700');
+                stepTitle.classList.add('text-gray-900');
+              } else if (stepNum < this.currentStep) {
+                step.classList.remove('active');
+                step.classList.add('completed');
+                stepNumber.classList.remove('bg-gray-300', 'text-gray-600', 'bg-blue-600', 'text-white');
+                stepNumber.classList.add('bg-green-500', 'text-white');
+                stepNumber.innerHTML = '✓';
+                stepTitle.classList.remove('text-gray-600', 'text-gray-900');
+                stepTitle.classList.add('text-green-700');
+              } else {
+                step.classList.remove('active', 'completed');
+                stepNumber.classList.remove('bg-blue-600', 'text-white', 'bg-green-500');
+                stepNumber.classList.add('bg-gray-300', 'text-gray-600');
+                stepNumber.textContent = stepNum;
+                stepTitle.classList.remove('text-gray-900', 'text-green-700');
+                stepTitle.classList.add('text-gray-600');
+              }
+            });
+
+            // Update content panels
+            document.querySelectorAll('.wizard-content').forEach(content => {
+              const contentStep = parseInt(content.dataset.content);
+              console.log('Content panel step:', contentStep, 'Current step:', this.currentStep);
+              if (contentStep === this.currentStep) {
+                content.classList.add('active');
+                console.log('Added active to step', contentStep);
+                
+                // Ensure connectors content is visible when on step 2
+                if (contentStep === 2) {
+                  const connectorsContent = document.getElementById('connectorsContent');
+                  if (connectorsContent) {
+                    connectorsContent.classList.remove('hidden');
+                  }
+                }
+              } else {
+                content.classList.remove('active');
+                console.log('Removed active from step', contentStep);
+              }
+            });
+
+            // Update navigation buttons
+            const prevBtn = document.getElementById('wizardPrevBtn');
+            const nextBtn = document.getElementById('wizardNextBtn');
+            const createBtn = document.getElementById('createAdvertiserBtn');
+            const currentStepSpan = document.getElementById('wizardCurrentStep');
+
+            if (prevBtn) prevBtn.disabled = this.currentStep === 1;
+            
+            if (this.currentStep === this.totalSteps) {
+              if (nextBtn) nextBtn.style.display = 'none';
+              if (createBtn) createBtn.classList.remove('hidden');
+            } else {
+              if (nextBtn) nextBtn.style.display = 'inline-flex';
+              if (createBtn) createBtn.classList.add('hidden');
+            }
+
+            if (currentStepSpan) currentStepSpan.textContent = this.currentStep;
+
+            // Update progress bar
+            const progress = (this.currentStep / this.totalSteps) * 100;
+            const progressBar = document.getElementById('wizardProgressBar');
+            const progressText = document.getElementById('wizardProgressText');
+            if (progressBar) progressBar.style.width = `${progress}%`;
+            if (progressText) progressText.textContent = `${Math.round(progress)}%`;
+          }
+        };
+
+        // Hook wizard initialization into modal open
+        const originalShowCreateModal = app.showCreateModal;
+        app.showCreateModal = function() {
+          originalShowCreateModal.call(this);
+          setTimeout(() => {
+            console.log('Initializing wizard...');
+            wizard.currentStep = 1; // Reset to step 1
+            wizard.init();
+          }, 100);
+        };
 
         
-      } catch (error) {
-        console.error('Failed to initialize app:', error);
+      } catch (error) {        console.error('Failed to initialize app:', error);
         const tableBody = document.getElementById('advertiserTableBody');
         if (tableBody) {
           tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-2 text-center text-red-600">Error loading advertisers. Check console for details.</td></tr>';
