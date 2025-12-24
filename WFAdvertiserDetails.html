@@ -209,12 +209,6 @@
       </a>
     </li>
     <li>
-      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
-        <span data-link-label>Connections (P2)</span>
-      </a>
-    </li>
-    <li>
       <a href="./AdvertiserCampaigns.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
         <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
         <span data-link-label>Campaigns</span>
@@ -226,7 +220,12 @@
         <span data-link-label>Ad Groups</span>
       </a>
     </li>
-   
+    <li>
+      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+        <span data-link-label>Connections</span>
+      </a>
+    </li>
   </ul>
 </nav>
 
@@ -536,13 +535,12 @@
               <div class="overflow-x-auto border border-default rounded-md">
                 <table id="campaignTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
                   <colgroup>
-                    <col style="width: 10%;">
+                    <col style="width: 15%;">
                     <col style="width: 25%;">
                     <col style="width: 10%;">
-                    <col style="width: 15%;">
-                    <col style="width: 15%;">
+                    <col style="width: 20%;">
+                    <col style="width: 20%;">
                     <col style="width: 10%;">
-                    <col style="width: 15%;">
                   </colgroup>
                   <thead class="tbl-head">
                     <tr>
@@ -581,9 +579,6 @@
                           <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
                         </button>
                       </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
-                        <span class="px-6 py-2 block">Actions</span>
-                      </th>
                     </tr>
                   </thead>
                   <tbody id="campaignTableBody" class="divide-y">
@@ -603,11 +598,10 @@
               <div class="overflow-x-auto border border-default rounded-md">
                 <table id="adGroupTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
                   <colgroup>
-                    <col style="width: 10%;">
-                    <col style="width: 25%;">
                     <col style="width: 15%;">
+                    <col style="width: 30%;">
                     <col style="width: 20%;">
-                    <col style="width: 15%;">
+                    <col style="width: 20%;">
                     <col style="width: 15%;">
                   </colgroup>
                   <thead class="tbl-head">
@@ -636,9 +630,6 @@
                         <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="campaign">
                           <span>Campaign</span>
                         </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <span class="px-6 py-2 block">Actions</span>
                       </th>
                     </tr>
                   </thead>
@@ -1361,7 +1352,7 @@
       try {
         const campaignsData = localStorage.getItem('campaign_tree_groups');
         if (!campaignsData) {
-          campaignTableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No campaigns found</td></tr>';
+          campaignTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No campaigns found</td></tr>';
           return;
         }
 
@@ -1390,7 +1381,7 @@
         console.log('Found campaigns:', campaigns.length);
 
         if (campaigns.length === 0) {
-          campaignTableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No campaigns for this advertiser</td></tr>';
+          campaignTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No campaigns for this advertiser</td></tr>';
           return;
         }
 
@@ -1409,33 +1400,13 @@
             <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
             <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
             <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.adServer || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums border-r border-default">${c.liveAdGroupCount !== undefined ? c.liveAdGroupCount : (c.adGroups ?? 0)}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums">${c.liveAdGroupCount !== undefined ? c.liveAdGroupCount : (c.adGroups ?? 0)}</td>
           `;
-          
-          // Add Actions column
-          const tdActions = document.createElement('td');
-          tdActions.className = 'px-6 py-1 whitespace-nowrap text-sm text-center flex gap-3 justify-center items-center';
-          
-          const exportLink = document.createElement('a');
-          exportLink.href = '#';
-          exportLink.className = 'text-blue-600 hover:underline export-btn';
-          exportLink.textContent = 'Export';
-          exportLink.dataset.campaignId = c.id;
-          
-          const deleteBtn = document.createElement('button');
-          deleteBtn.className = 'text-red-600 hover:underline delete-btn';
-          deleteBtn.textContent = 'Delete';
-          deleteBtn.dataset.campaignId = c.id;
-          
-          tdActions.appendChild(exportLink);
-          tdActions.appendChild(deleteBtn);
-          tr.appendChild(tdActions);
-          
           campaignTableBody.appendChild(tr);
         });
       } catch (e) {
         console.error('Error loading campaigns:', e);
-        campaignTableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Error loading campaigns</td></tr>';
+        campaignTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Error loading campaigns</td></tr>';
       }
     }
 
@@ -1447,7 +1418,7 @@
       try {
         const adGroupsData = localStorage.getItem('adgroups_data_v1');
         if (!adGroupsData) {
-          adGroupTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No ad groups found</td></tr>';
+          adGroupTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No ad groups found</td></tr>';
           return;
         }
 
@@ -1458,7 +1429,7 @@
         console.log('Found ad groups:', adGroups.length);
 
         if (adGroups.length === 0) {
-          adGroupTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No ad groups for this advertiser</td></tr>';
+          adGroupTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No ad groups for this advertiser</td></tr>';
           return;
         }
 
@@ -1475,16 +1446,13 @@
             </td>
             <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.dsp || ''}</td>
             <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.campaign || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-center border-r border-gray-200">
-              <button class="text-red-600 hover:underline" onclick="deleteAdGroup('${ag.id}')">Delete</button>
-            </td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900">${ag.campaign || ''}</td>
           `;
           adGroupTableBody.appendChild(tr);
         });
       } catch (e) {
         console.error('Error loading ad groups:', e);
-        adGroupTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Error loading ad groups</td></tr>';
+        adGroupTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">Error loading ad groups</td></tr>';
       }
     }
 
