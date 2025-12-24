@@ -91,7 +91,7 @@
     <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
       <div class="flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-3">
-          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+          <img src="./assets/BeaconLogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
         </div>
 
         <nav class="flex items-center gap-3 ml-auto">
@@ -300,7 +300,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayBeaconCampaignId" class="text-gray-800 break-words">N/A</span>
-                            <input id="beaconCampaignId" type="text" class="hidden campaign-details-input bg-gray-100 cursor-not-allowed" readonly />
+                            <input id="beaconCampaignId" type="text" class="hidden campaign-details-input bg-gray-100 cursor-not-allowed" readonly aria-label="Beacon Campaign ID" title="Beacon Campaign ID" />
                           </td>
                         </tr>
 
@@ -311,7 +311,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayBeaconCampaignName" class="text-gray-800 break-words">N/A</span>
-                            <input id="beaconCampaignName" type="text" class="hidden campaign-details-input" />
+                            <input id="beaconCampaignName" type="text" class="hidden campaign-details-input" aria-label="Beacon Campaign Name" title="Beacon Campaign Name" />
                           </td>
                         </tr>
 
@@ -365,7 +365,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignSeed" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignSeed" class="hidden campaign-details-input">
+                            <select id="campaignSeed" class="hidden campaign-details-input" aria-label="Select Campaign Seed" title="Select Campaign Seed">
                               <option value="">-- Select Seed --</option>
                               <option value="Default Seed List">Default Seed List</option>
                             </select>
@@ -379,7 +379,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignOrganization" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignOrganization" class="hidden campaign-details-input">
+                            <select id="campaignOrganization" class="hidden campaign-details-input" aria-label="Select Campaign Organization" title="Select Campaign Organization">
                               <option value="">-- Select Organization --</option>
                               <option value="Create new campaign group">Create new campaign group</option>
                               <option value="Add campaigns to existing group">Add campaigns to existing group</option>
@@ -395,7 +395,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignPacing" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignPacing" class="hidden campaign-details-input">
+                            <select id="campaignPacing" class="hidden campaign-details-input" aria-label="Select Campaign Pacing" title="Select Campaign Pacing">
                               <option value="">-- Select Pacing --</option>
                               <option value="Pace Ahead">Pace Ahead</option>
                               <option value="Pace Behind">Pace Behind</option>
@@ -410,7 +410,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignTimezone" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignTimezone" class="hidden campaign-details-input">
+                            <select id="campaignTimezone" class="hidden campaign-details-input" aria-label="Select Campaign Timezone" title="Select Campaign Timezone">
                               <option value="">-- Select Timezone --</option>
                               <option value="UTC">UTC (Coordinated Universal Time)</option>
                               <option value="EST">EST (Eastern Standard Time)</option>
@@ -428,7 +428,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignStartDate" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignStartDate" type="date" class="hidden campaign-details-input" />
+                            <input id="campaignStartDate" type="date" class="hidden campaign-details-input" aria-label="Select Campaign Start Date" title="Select Campaign Start Date" />
                           </td>
                         </tr>
 
@@ -439,7 +439,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignEndDate" class="text-gray-800 break-words">N/A</span>
-                            <input id="campaignEndDate" type="date" class="hidden campaign-details-input" />
+                            <input id="campaignEndDate" type="date" class="hidden campaign-details-input" aria-label="Select Campaign End Date" title="Select Campaign End Date" />
                           </td>
                         </tr>
 
@@ -450,7 +450,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignChannel" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignChannel" class="hidden campaign-details-input">
+                            <select id="campaignChannel" class="hidden campaign-details-input" aria-label="Select Campaign Channel" title="Select Campaign Channel">
                               <option value="">-- Select Channel --</option>
                               <option value="Display">Display</option>
                               <option value="Video">Video</option>
@@ -467,7 +467,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignName" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignName" class="hidden campaign-details-input">
+                            <select id="campaignName" class="hidden campaign-details-input" aria-label="Select Campaign Name" title="Select Campaign Name">
                               <option value="">-- Select Campaign Name --</option>
                               <option value="Brand Awareness">Brand Awareness</option>
                               <option value="Persona">Persona</option>
@@ -494,7 +494,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayCampaignKPI" class="text-gray-800 break-words">N/A</span>
-                            <select id="campaignKPI" class="hidden campaign-details-input">
+                            <select id="campaignKPI" class="hidden campaign-details-input" aria-label="Select Campaign KPI" title="Select Campaign KPI">
                               <option value="">-- Select KPI --</option>
                               <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
                               <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
@@ -540,7 +540,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerCampaignName" class="text-gray-800 break-words">N/A</span>
-                            <select id="adServerCampaignName" class="hidden campaign-details-input">
+                            <select id="adServerCampaignName" class="hidden campaign-details-input" aria-label="Select Ad Server Campaign Name" title="Select Ad Server Campaign Name">
                               <option value="">-- Select Campaign Name --</option>
                               <option value="Brandawareness">Brandawareness</option>
                               <option value="Persona">Persona</option>
@@ -556,7 +556,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerSchedule" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerSchedule" type="date" class="hidden campaign-details-input" />
+                            <input id="adServerSchedule" type="date" class="hidden campaign-details-input" aria-label="Select Ad Server Schedule" title="Select Ad Server Schedule" />
                           </td>
                         </tr>
 
@@ -578,7 +578,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerLandingPageURL" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerLandingPageURL" type="text" class="hidden campaign-details-input" placeholder="Enter any URL or value" />
+                            <input id="adServerLandingPageURL" type="text" class="hidden campaign-details-input" placeholder="Enter any URL or value" aria-label="Enter Ad Server Landing Page URL" title="Enter Ad Server Landing Page URL" />
                           </td>
                         </tr>
 

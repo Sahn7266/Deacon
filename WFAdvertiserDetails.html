@@ -76,7 +76,7 @@
     <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
       <div class="flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-3">
-          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+          <img src="./assets/BeaconLogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
         </div>
 
         <nav class="flex items-center gap-3 ml-auto">
@@ -302,14 +302,14 @@
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">Name</td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdvertiserName" data-bind="adv.name" class="text-gray-800 break-words">—</span>
-                            <input id="inputAdvertiserName" type="text" data-bind="adv.name" class="hidden adgroup-details-input">
+                            <input id="inputAdvertiserName" type="text" data-bind="adv.name" class="hidden adgroup-details-input" aria-label="Advertiser Name" title="Advertiser Name">
                           </td>
                         </tr>
                         <tr class="border-b border-default">
                           <td class="px-3 py-1 text-sm font-medium border-r border-default">State</td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayState" data-bind="adv.state" class="text-gray-800 break-words">—</span>
-                            <select id="inputState" data-bind="adv.state" class="hidden adgroup-details-input w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-300">
+                            <select id="inputState" data-bind="adv.state" class="hidden adgroup-details-input w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-300" aria-label="Advertiser State" title="Advertiser State"  >
                               <option value="Active">Active</option>
                               <option value="Inactive">Inactive</option>
                             </select>
