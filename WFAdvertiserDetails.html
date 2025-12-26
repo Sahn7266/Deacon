@@ -1345,6 +1345,28 @@
     console.log('Loading data for advertiser:', adv);
 
     // Load and populate campaigns
+    // Get live ad group count for a campaign
+    function getAdGroupCount(campaignId, campaignName) {
+      try {
+        const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+        return adGroups.filter(ag => {
+          // Check multiple possible campaign reference formats
+          const agCampaignId = ag.campaignId || ag.campaign;
+          
+          // Direct match by ID
+          if (agCampaignId === campaignId) return true;
+          
+          // Match by campaign name
+          if (agCampaignId === campaignName) return true;
+          
+          return false;
+        }).length;
+      } catch (e) {
+        console.warn('Failed to count ad groups:', e);
+        return 0;
+      }
+    }
+
     function loadCampaigns() {
       const campaignTableBody = document.getElementById('campaignTableBody');
       if (!campaignTableBody) return;
@@ -1387,6 +1409,9 @@
 
         campaignTableBody.innerHTML = '';
         campaigns.forEach(c => {
+          // Calculate live ad group count
+          const adGroupCount = getAdGroupCount(c.id, c.beaconCampaignName || c.name);
+          
           const tr = document.createElement('tr');
           tr.className = 'hover:bg-gray-50 campaign-row';
           tr.dataset.campaignId = c.id;
@@ -1400,7 +1425,7 @@
             <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
             <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
             <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.adServer || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums">${c.liveAdGroupCount !== undefined ? c.liveAdGroupCount : (c.adGroups ?? 0)}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums">${adGroupCount}</td>
           `;
           campaignTableBody.appendChild(tr);
         });
