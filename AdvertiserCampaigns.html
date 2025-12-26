@@ -1230,7 +1230,22 @@ if (this.elements.manageCampaignGroupBtn) {
         // Build visible rows (individual campaigns + group headers + children)
         getVisibleRows: function() {
           const q = this.searchQuery.trim().toLowerCase();
+          
+          // Get current advertiser ID
+          let currentAdvertiserId = null;
+          try {
+            const selectedData = localStorage.getItem('adv_selected_data');
+            if (selectedData) {
+              const advertiser = JSON.parse(selectedData);
+              currentAdvertiserId = advertiser.id;
+            }
+          } catch (e) {
+            console.warn('Failed to load advertiser ID:', e);
+          }
+          
           const filterBy = (c) => {
+            // Filter by advertiser ID first
+            if (currentAdvertiserId && String(c.advertiserId) !== String(currentAdvertiserId)) return false;
             if (this.filters.state !== 'All' && c.state !== this.filters.state) return false;
             if (this.filters.dsp !== 'All' && (!c.dsp || !c.dsp.includes(this.filters.dsp))) return false;
             if (!q) return true;
@@ -1290,9 +1305,23 @@ if (this.elements.manageCampaignGroupBtn) {
           const q = this.searchQuery.trim().toLowerCase();
           let total = 0;
           
+          // Get current advertiser ID
+          let currentAdvertiserId = null;
+          try {
+            const selectedData = localStorage.getItem('adv_selected_data');
+            if (selectedData) {
+              const advertiser = JSON.parse(selectedData);
+              currentAdvertiserId = advertiser.id;
+            }
+          } catch (e) {
+            console.warn('Failed to load advertiser ID:', e);
+          }
+          
           // Count individual campaigns
           if (this.campaigns) {
             for (const c of this.campaigns) {
+              // Filter by advertiser ID first
+              if (currentAdvertiserId && String(c.advertiserId) !== String(currentAdvertiserId)) continue;
               const matchesState = this.filters.state === 'All' || c.state === this.filters.state;
               const matchesDsp = this.filters.dsp === 'All' || (c.dsp && c.dsp.includes(this.filters.dsp));
               const matchesSearch = !q || (c.id?.toLowerCase().includes(q) || c.beaconCampaignName?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q) || c.dsp?.toLowerCase().includes(q));
@@ -1303,6 +1332,8 @@ if (this.elements.manageCampaignGroupBtn) {
           // Count grouped campaigns
           for (const g of this.groups) {
             for (const c of g.campaigns) {
+              // Filter by advertiser ID first
+              if (currentAdvertiserId && String(c.advertiserId) !== String(currentAdvertiserId)) continue;
               const matchesState = this.filters.state === 'All' || c.state === this.filters.state;
               const matchesDsp = this.filters.dsp === 'All' || (c.dsp && c.dsp.includes(this.filters.dsp));
               const matchesSearch = !q || (c.id?.toLowerCase().includes(q) || c.beaconCampaignName?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q) || c.dsp?.toLowerCase().includes(q) || g.name.toLowerCase().includes(q));

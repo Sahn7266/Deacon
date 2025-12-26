@@ -1178,6 +1178,23 @@
         getFilteredAdGroups: function() {
           let filtered = [...this.adgroups];
 
+          // Get current advertiser ID and filter by it first
+          let currentAdvertiserId = null;
+          try {
+            const selectedData = localStorage.getItem('adv_selected_data');
+            if (selectedData) {
+              const advertiser = JSON.parse(selectedData);
+              currentAdvertiserId = advertiser.id;
+            }
+          } catch (e) {
+            console.warn('Failed to load advertiser ID:', e);
+          }
+          
+          // Filter by advertiser ID
+          if (currentAdvertiserId) {
+            filtered = filtered.filter(ag => String(ag.advertiserId) === String(currentAdvertiserId));
+          }
+
           if (this.searchQuery.trim()) {
             const q = this.searchQuery.toLowerCase();
             filtered = filtered.filter(ag =>
