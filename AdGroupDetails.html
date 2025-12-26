@@ -91,7 +91,7 @@
     <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
       <div class="flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-3">
-          <img src="./assets/BeaconLogo.png" alt="Beacon Logo" class="h-9 w-auto" />
+          <img src="./assets/BeaconLogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
         </div>
 
         <nav class="flex items-center gap-3 ml-auto">
@@ -304,7 +304,7 @@
                         </td>
                         <td class="px-6 py-1 text-sm">
                           <span id="displayAdGroupName" class="text-gray-800 break-words">N/A</span>
-                          <input id="inputAdGroupName" type="text" class="hidden adgroup-details-input" />
+                          <input id="inputAdGroupName" type="text" class="hidden adgroup-details-input" title="Ad Group Name input" aria-label="Enter ad group name" />
                         </td>
                       </tr>
 
@@ -315,7 +315,7 @@
                         </td>
                         <td class="px-6 py-1 text-sm">
                           <span id="displayCampaign" class="text-gray-800 break-words">N/A</span>
-                          <select id="inputCampaign" class="hidden adgroup-details-input">
+                          <select id="inputCampaign" class="hidden adgroup-details-input" title="Campaign selection" aria-label="Select campaign">
                             <option value="">Select campaign</option>
                           </select>
                         </td>
@@ -328,7 +328,7 @@
                         </td>
                         <td class="px-6 py-1 text-sm">
                           <span id="displayMultiviewClassification" class="text-gray-800 break-words">N/A</span>
-                          <select id="inputMultiviewClassification" class="hidden adgroup-details-input">
+                          <select id="inputMultiviewClassification" class="hidden adgroup-details-input" title="Multiview Classification selection" aria-label="Select multiview classification">
                             <option value="">-- Select --</option>
                             <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
@@ -343,7 +343,7 @@
                         </td>
                         <td class="px-6 py-1 text-sm">
                           <span id="displayMultiviewTactic" class="text-gray-800 break-words">N/A</span>
-                          <select id="inputMultiviewTactic" class="hidden adgroup-details-input">
+                          <select id="inputMultiviewTactic" class="hidden adgroup-details-input" title="Multiview Tactic selection" aria-label="Select multiview tactic">
                             <option value="">-- Select --</option>
                             <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
@@ -358,7 +358,7 @@
                         </td>
                         <td class="px-6 py-1 text-sm">
                           <span id="displayBeaconAudience" class="text-gray-800 break-words">N/A</span>
-                          <input id="inputBeaconAudience" type="text" class="hidden adgroup-details-input" />
+                          <input id="inputBeaconAudience" type="text" class="hidden adgroup-details-input" title="Beacon Audience input" aria-label="Enter beacon audience" />
                         </td>
                       </tr>
 
@@ -394,7 +394,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayDspName" class="text-gray-800 break-words">N/A</span>
-                            <input id="adGroupNameInput" type="text" class="hidden adgroup-details-input" />
+                            <input id="adGroupNameInput" type="text" class="hidden adgroup-details-input" title="Ad Group Name input" aria-label="Enter ad group name" />
                           </td>
                         </tr>
 
@@ -405,7 +405,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayFunnelLocation" class="text-gray-800 break-words">N/A</span>
-                            <select id="funnelLocationInput" class="hidden adgroup-details-input">
+                            <select id="funnelLocationInput" class="hidden adgroup-details-input" title="Funnel Location selection" aria-label="Select funnel location">
                               <option value="">Select funnel location</option>
                               <option value="Awareness">Awareness</option>
                               <option value="Consideration">Consideration</option>
@@ -422,7 +422,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayChannel" class="text-gray-800 break-words">N/A</span>
-                            <select id="channelInput" class="hidden adgroup-details-input">
+                            <select id="channelInput" class="hidden adgroup-details-input" title="Channel selection" aria-label="Select channel">
                               <option value="">Select channel</option>
                               <option value="Display">Display</option>
                               <option value="Video">Video</option>
@@ -464,7 +464,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayPrimaryGoal" class="text-gray-800 break-words">N/A</span>
-                            <select id="primaryGoalInput" class="hidden adgroup-details-input">
+                            <select id="primaryGoalInput" class="hidden adgroup-details-input" title="Primary Goal selection" aria-label="Select primary goal">
                               <option value="">Select primary goal</option>
                               <option value="Cost per Acquisition (CPA)">Cost per Acquisition (CPA)</option>
                               <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
@@ -490,7 +490,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayDspAudience" class="text-gray-800 break-words">N/A</span>
-                            <select id="inputDspAudience" class="hidden adgroup-details-input">
+                            <select id="inputDspAudience" class="hidden adgroup-details-input" title="DSP Audience selection" aria-label="Select DSP audience">
                               <option value="">Select audience</option>
                               <option value="Apply a shared audience">Apply a shared audience</option>
                               <option value="Koa Audiences">Koa Audiences</option>
@@ -517,7 +517,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayGeos" class="text-gray-800 break-words">N/A</span>
-                            <select id="geosInput" class="hidden adgroup-details-input">
+                            <select id="geosInput" class="hidden adgroup-details-input" title="Geos selection" aria-label="Select geos">
                               <option value="">Select geos</option>
                               <option value="Specific Locations">Specific Locations</option>
                               <option value="Everywhere">Everywhere</option>
@@ -574,7 +574,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerName" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerNameInput" type="text" class="hidden adgroup-details-input" />
+                            <input id="adServerNameInput" type="text" class="hidden adgroup-details-input" title="Ad Server Name input" aria-label="Enter ad server name" />
                           </td>
                         </tr>
 
@@ -585,7 +585,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerStatus" class="text-gray-800 break-words">N/A</span>
-                            <select id="adServerStatusInput" class="hidden adgroup-details-input">
+                            <select id="adServerStatusInput" class="hidden adgroup-details-input" title="Ad Server Status selection" aria-label="Select ad server status">
                               <option value="">Select status</option>
                               <option value="Active">Active</option>
                               <option value="Inactive">Inactive</option>
@@ -600,7 +600,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerCompatibility" class="text-gray-800 break-words">N/A</span>
-                            <select id="adServerCompatibilityInput" class="hidden adgroup-details-input">
+                            <select id="adServerCompatibilityInput" class="hidden adgroup-details-input" title="Ad Server Compatibility selection" aria-label="Select ad server compatibility">
                               <option value="">Select compatibility</option>
                               <option value="Display">Display</option>
                               <option value="Persona">Persona</option>
@@ -628,7 +628,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerTestingStarts" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerTestingStartsInput" type="date" class="hidden adgroup-details-input" />
+                            <input id="adServerTestingStartsInput" type="date" class="hidden adgroup-details-input" title="Ad Server Testing Starts input" aria-label="Enter ad server testing starts date" />
                           </td>
                         </tr>
 
@@ -639,7 +639,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerStartDate" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerStartDateInput" type="date" class="hidden adgroup-details-input" />
+                            <input id="adServerStartDateInput" type="date" class="hidden adgroup-details-input" title="Ad Server Start Date input" aria-label="Enter ad server start date" />
                           </td>
                         </tr>
 
@@ -650,7 +650,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerEndDate" class="text-gray-800 break-words">N/A</span>
-                            <input id="adServerEndDateInput" type="date" class="hidden adgroup-details-input" />
+                            <input id="adServerEndDateInput" type="date" class="hidden adgroup-details-input" title="Ad Server End Date input" aria-label="Enter ad server end date" />
                           </td>
                         </tr>
 
@@ -661,7 +661,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerCostStructure" class="text-gray-800 break-words">N/A</span>
-                            <select id="adServerCostStructureInput" class="hidden adgroup-details-input">
+                            <select id="adServerCostStructureInput" class="hidden adgroup-details-input" title="Ad Server Cost Structure selection" aria-label="Select ad server cost structure">
                               <option value="">Select cost structure</option>
                               <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
                               <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
@@ -676,7 +676,7 @@
                           </td>
                           <td class="px-6 py-1 text-sm">
                             <span id="displayAdServerCapCost" class="text-gray-800 break-words">N/A</span>
-                            <select id="adServerCapCostInput" class="hidden adgroup-details-input">
+                            <select id="adServerCapCostInput" class="hidden adgroup-details-input" title="Ad Server Cap Cost selection" aria-label="Select ad server cap cost">
                               <option value="">Select cap cost</option>
                               <option value="OFF">OFF</option>
                               <option value="ON">ON</option>
