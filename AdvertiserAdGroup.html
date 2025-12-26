@@ -1994,6 +1994,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Need at least one campaign select to populate
   if (!campaignSelect && !beaconCampaignSelect) return;
 
+  // Get current advertiser ID
+  let currentAdvertiserId = null;
+  try {
+    const selectedData = localStorage.getItem('adv_selected_data');
+    if (selectedData) {
+      const advertiser = JSON.parse(selectedData);
+      currentAdvertiserId = advertiser.id;
+    }
+  } catch (e) {
+    console.warn('Failed to load advertiser ID:', e);
+  }
+
   // Populate campaign dropdown
   const stored = localStorage.getItem('campaign_tree_groups');
   let data = stored ? JSON.parse(stored) : { campaigns: [], groups: [] };
@@ -2014,6 +2026,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Add individual campaigns first (from top-level campaigns array)
     data.campaigns.forEach(campaign => {
+      // Filter by advertiser ID
+      if (currentAdvertiserId && String(campaign.advertiserId) !== String(currentAdvertiserId)) return;
+      
       const opt = document.createElement('option');
       opt.value = campaign.id;
       // Use Beacon Campaign Name instead of DSP Campaign Name
@@ -2024,6 +2039,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add campaigns from groups
     data.groups.forEach(group => {
       group.campaigns.forEach(campaign => {
+        // Filter by advertiser ID
+        if (currentAdvertiserId && String(campaign.advertiserId) !== String(currentAdvertiserId)) return;
+        
         const opt = document.createElement('option');
         opt.value = campaign.id;
         // Use Beacon Campaign Name instead of DSP Campaign Name
