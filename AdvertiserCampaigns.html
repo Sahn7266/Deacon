@@ -1279,11 +1279,11 @@ if (this.elements.createBtn) {
       const form = document.getElementById('createCampaignForm');
       if (form) form.reset();
       
-      // Reset connectors toggle
+      // Reset connectors toggle and status badges
       const connectorsContent = document.getElementById('connectorsContent');
       const connectorsToggle = document.getElementById('connectorsToggle');
       
-      if (connectorsToggle && connectorsContent) {
+      if (connectorsToggle) {
         connectorsToggle.classList.remove('bg-blue-600');
         connectorsToggle.classList.add('bg-gray-200');
         connectorsToggle.setAttribute('aria-checked', 'false');
@@ -1292,8 +1292,13 @@ if (this.elements.createBtn) {
           toggleSpan.classList.remove('translate-x-5');
           toggleSpan.classList.add('translate-x-0');
         }
-        connectorsContent.classList.add('hidden');
       }
+      
+      // Reset all connection status badges to "Not Connected"
+      document.querySelectorAll('.connector-status').forEach(badge => {
+        badge.textContent = 'Not Connected';
+        badge.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer';
+      });
       
       // Hide all expanded sections
       const dspFieldsSection = document.getElementById('dspFieldsSection');
@@ -2179,34 +2184,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const dspFieldsSection = document.getElementById('dspFieldsSection');
   const adServerFieldsSection = document.getElementById('adServerFieldsSection');
 
-  // Toggle state
-  let connectorsEnabled = false;
+  // Connectors are always visible - no need to toggle visibility
+  // connectorsContent is always shown
 
-  // Toggle functionality
+  // Toggle functionality - only updates connection status
   function toggleConnectors() {
-    connectorsEnabled = !connectorsEnabled;
+    const isEnabled = connectorsToggle.getAttribute('aria-checked') === 'true';
+    const newState = !isEnabled;
     
     // Update toggle appearance
-    if (connectorsEnabled) {
-      connectorsToggle.classList.remove('bg-gray-200');
+    connectorsToggle.setAttribute('aria-checked', newState);
+    if (newState) {
       connectorsToggle.classList.add('bg-blue-600');
-      connectorsToggle.setAttribute('aria-checked', 'true');
-      connectorsToggle.querySelector('span').classList.remove('translate-x-0');
+      connectorsToggle.classList.remove('bg-gray-200');
       connectorsToggle.querySelector('span').classList.add('translate-x-5');
-      connectorsContent.classList.remove('hidden');
+      connectorsToggle.querySelector('span').classList.remove('translate-x-0');
     } else {
       connectorsToggle.classList.remove('bg-blue-600');
       connectorsToggle.classList.add('bg-gray-200');
-      connectorsToggle.setAttribute('aria-checked', 'false');
       connectorsToggle.querySelector('span').classList.remove('translate-x-5');
       connectorsToggle.querySelector('span').classList.add('translate-x-0');
-      connectorsContent.classList.add('hidden');
-      
-      // Clear selections and hide fields when toggling off
-      dspCheckboxes.forEach(cb => cb.checked = false);
-      adServerCheckboxes.forEach(cb => cb.checked = false);
-      updateFieldsDisplay();
     }
+
+    // Update connection status for all connector cards
+    document.querySelectorAll('.connector-card').forEach(card => {
+      const statusBadge = card.querySelector('.connector-status');
+      if (statusBadge) {
+        if (newState) {
+          statusBadge.textContent = 'Connected';
+          statusBadge.className = 'px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full connector-status cursor-pointer';
+        } else {
+          statusBadge.textContent = 'Not Connected';
+          statusBadge.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer';
+        }
+      }
+    });
   }
 
   function updateFieldsDisplay() {
@@ -2243,6 +2255,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event listeners for modal
   connectorsToggle?.addEventListener('click', toggleConnectors);
 
+  // Add individual toggle functionality for each connector status badge
+  document.querySelectorAll('.connector-status').forEach(badge => {
+    badge.addEventListener('click', function(e) {
+      e.stopPropagation(); // Prevent card click event
+      
+      const isConnected = this.textContent.trim() === 'Connected';
+      
+      if (isConnected) {
+        // Change to Not Connected
+        this.textContent = 'Not Connected';
+        this.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer';
+      } else {
+        // Change to Connected
+        this.textContent = 'Connected';
+        this.className = 'px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full connector-status cursor-pointer';
+      }
+    });
+  });
+
   // Simple event listeners for opening/closing modal (like ad groups)
   const createBtn = document.getElementById('createBtn');
   if (createBtn && !createBtn.hasCustomListener) {
@@ -2263,11 +2294,8 @@ document.addEventListener('DOMContentLoaded', () => {
           campaignIdField.value = 'CAM-' + Math.random().toString(36).substr(2, 6).toUpperCase();
         }
         
-        // Reset connectors
-        const connectorsContent = document.getElementById('connectorsContent');
-        if (connectorsContent) connectorsContent.classList.add('hidden');
+        // Reset connectors toggle (but keep content visible)
         if (connectorsToggle) {
-          connectorsEnabled = false;
           connectorsToggle.classList.remove('bg-blue-600');
           connectorsToggle.classList.add('bg-gray-200');
           connectorsToggle.setAttribute('aria-checked', 'false');
@@ -2485,9 +2513,26 @@ document.getElementById('createAndAddAdGroup')?.addEventListener('click', functi
 
 // Unified campaign creation handler
 function handleCampaignCreation(redirectToAdGroups) {
-  // Get selected connectors
-  const selectedDSP = Array.from(document.querySelectorAll('input[name="dsp"]:checked')).map(cb => cb.value);
-  const selectedAdServer = Array.from(document.querySelectorAll('input[name="adserver"]:checked')).map(cb => cb.value);
+  // Get connectors based on connection status instead of checkbox selection
+  const connectedDSP = [];
+  const connectedAdServer = [];
+  
+  // Check each connector card for "Connected" status
+  document.querySelectorAll('.connector-card').forEach(card => {
+    const statusBadge = card.querySelector('.connector-status');
+    const checkbox = card.querySelector('input[type="checkbox"]');
+    
+    if (statusBadge && statusBadge.textContent.trim() === 'Connected' && checkbox) {
+      const connectorType = checkbox.name; // 'dsp' or 'adserver'
+      const connectorValue = checkbox.value;
+      
+      if (connectorType === 'dsp') {
+        connectedDSP.push(connectorValue);
+      } else if (connectorType === 'adserver') {
+        connectedAdServer.push(connectorValue);
+      }
+    }
+  });
   
   // Debug: Log form field values
   console.log('🔍 Form field values during creation:');
@@ -2495,6 +2540,8 @@ function handleCampaignCreation(redirectToAdGroups) {
   console.log('campaignName:', document.getElementById('campaignName')?.value);
   console.log('campaignSeed:', document.getElementById('campaignSeed')?.value);
   console.log('campaignBudget:', document.getElementById('campaignBudget')?.value);
+  console.log('Connected DSPs:', connectedDSP);
+  console.log('Connected Ad Servers:', connectedAdServer);
   
   // Create separate DSP and Ad Server display strings
   const dspLabels = {
@@ -2509,12 +2556,12 @@ function handleCampaignCreation(redirectToAdGroups) {
   const dspList = [];
   const adServerList = [];
   
-  selectedDSP.forEach(dsp => {
+  connectedDSP.forEach(dsp => {
     if (dspLabels[dsp]) {
       dspList.push(dspLabels[dsp]);
     }
   });
-  selectedAdServer.forEach(adServer => {
+  connectedAdServer.forEach(adServer => {
     if (adServerLabels[adServer]) {
       adServerList.push(adServerLabels[adServer]);
     }
@@ -2553,10 +2600,10 @@ function handleCampaignCreation(redirectToAdGroups) {
     adServerSchedule: document.getElementById('adServerSchedule')?.value || '',
     adServerLandingPageName: document.getElementById('adServerLandingPageName')?.value || '',
     adServerLandingPageURL: document.getElementById('adServerLandingPageURL')?.value || '',
-    // Connector information
+    // Connector information - using connection status
     connectors: {
-      dsp: selectedDSP,
-      adServer: selectedAdServer
+      dsp: connectedDSP,
+      adServer: connectedAdServer
     }
   };
 
