@@ -483,7 +483,7 @@
         },
 
         loadAdGroups: function() {
-          // First, try to load or initialize from advertiser data
+          // Load advertiser data
           const advertiserData = localStorage.getItem('adv_selected_data');
           let advertiser = null;
           
@@ -495,35 +495,99 @@
             console.warn('Failed to parse advertiser data:', e);
           }
 
+          // If advertiser has connectors data, build platform list from that
+          if (advertiser && advertiser.connectors && 
+              (advertiser.connectors.dsp || advertiser.connectors.adServer)) {
+            this.adgroups = this.buildPlatformsFromConnectors(advertiser);
+            this.saveAdGroups();
+            return;
+          }
+
+          // Otherwise use default or stored data
           try {
             const storedRaw = localStorage.getItem(CONFIG.STORAGE_KEYS.DATA);
             if (storedRaw) {
               const parsed = JSON.parse(storedRaw);
-              // Validate stored format: expect non-empty array of objects with platform & status & enabled_at
-              const valid = Array.isArray(parsed) && parsed.length > 0 && parsed.every(it => it && it.platform && it.status !== undefined && it.enabled_at !== undefined);
+              const valid = Array.isArray(parsed) && parsed.length > 0 && 
+                           parsed.every(it => it && it.platform && it.status !== undefined && it.enabled_at !== undefined);
               if (valid) {
                 this.adgroups = parsed;
-                // Update from advertiser platform connections if available
-                if (advertiser && advertiser.platformConnections) {
-                  this.updateConnectionsFromAdvertiser(advertiser);
-                }
                 return;
               }
             }
 
-            // No valid stored data — reset to DEFAULT_ADGROUPS and apply advertiser settings
+            // No valid stored data — use defaults
             this.adgroups = [...DEFAULT_ADGROUPS];
-            
-            // Update from advertiser platform connections if available
-            if (advertiser && advertiser.platformConnections) {
-              this.updateConnectionsFromAdvertiser(advertiser);
-            }
-            
             this.saveAdGroups();
           } catch (e) {
             console.warn('Failed to load ad groups, using defaults:', e);
             this.adgroups = [...DEFAULT_ADGROUPS];
           }
+        },
+
+        buildPlatformsFromConnectors: function(advertiser) {
+          const platforms = [];
+          const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+          
+          // Platform configuration mapping
+          const platformConfig = {
+            'trade-desk': {
+              name: 'The Trade Desk',
+              type: 'DSP'
+            },
+            'dv360': {
+              name: 'Display & Video 360',
+              type: 'DSP'
+            },
+            'simplifi': {
+              name: 'Simplifi',
+              type: 'DSP'
+            },
+            'google-campaign-manager': {
+              name: 'Google Campaign Manager',
+              type: 'Ad Server'
+            }
+          };
+          
+          // Process DSP platforms
+          if (advertiser.connectors.dsp && Array.isArray(advertiser.connectors.dsp)) {
+            advertiser.connectors.dsp.forEach(dspValue => {
+              if (platformConfig[dspValue]) {
+                const status = advertiser.connectors.status && advertiser.connectors.status[dspValue]
+                  ? (advertiser.connectors.status[dspValue] === 'Connected' ? 'ENABLED' : 'DISABLED')
+                  : 'ENABLED';
+                
+                platforms.push({
+                  platform: platformConfig[dspValue].name,
+                  platformType: platformConfig[dspValue].type,
+                  status: status,
+                  enabled_at: status === 'ENABLED' ? now : '—',
+                  disabled_at: status === 'DISABLED' ? now : null
+                });
+              }
+            });
+          }
+          
+          // Process Ad Server platforms
+          if (advertiser.connectors.adServer && Array.isArray(advertiser.connectors.adServer)) {
+            advertiser.connectors.adServer.forEach(adServerValue => {
+              if (platformConfig[adServerValue]) {
+                const status = advertiser.connectors.status && advertiser.connectors.status[adServerValue]
+                  ? (advertiser.connectors.status[adServerValue] === 'Connected' ? 'ENABLED' : 'DISABLED')
+                  : 'ENABLED';
+                
+                platforms.push({
+                  platform: platformConfig[adServerValue].name,
+                  platformType: platformConfig[adServerValue].type,
+                  status: status,
+                  enabled_at: status === 'ENABLED' ? now : '—',
+                  disabled_at: status === 'DISABLED' ? now : null
+                });
+              }
+            });
+          }
+          
+          return platforms.length > 0 ? platforms : [...DEFAULT_ADGROUPS];
         },
 
         updateConnectionsFromAdvertiser: function(advertiser) {
