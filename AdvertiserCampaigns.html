@@ -2513,24 +2513,30 @@ document.getElementById('createAndAddAdGroup')?.addEventListener('click', functi
 
 // Unified campaign creation handler
 function handleCampaignCreation(redirectToAdGroups) {
-  // Get connectors based on connection status instead of checkbox selection
-  const connectedDSP = [];
-  const connectedAdServer = [];
+  // Get selected platforms (checked checkboxes) and their connection status
+  const selectedDSP = [];
+  const selectedAdServer = [];
+  const connectionStatus = {}; // Track status for each platform
   
-  // Check each connector card for "Connected" status
+  // Check each connector card
   document.querySelectorAll('.connector-card').forEach(card => {
     const statusBadge = card.querySelector('.connector-status');
     const checkbox = card.querySelector('input[type="checkbox"]');
     
-    if (statusBadge && statusBadge.textContent.trim() === 'Connected' && checkbox) {
+    if (checkbox && checkbox.checked) {
       const connectorType = checkbox.name; // 'dsp' or 'adserver'
       const connectorValue = checkbox.value;
+      const isConnected = statusBadge && statusBadge.textContent.trim() === 'Connected';
       
+      // Add to selected arrays
       if (connectorType === 'dsp') {
-        connectedDSP.push(connectorValue);
+        selectedDSP.push(connectorValue);
       } else if (connectorType === 'adserver') {
-        connectedAdServer.push(connectorValue);
+        selectedAdServer.push(connectorValue);
       }
+      
+      // Track connection status
+      connectionStatus[connectorValue] = isConnected ? 'Connected' : 'Disconnected';
     }
   });
   
@@ -2540,8 +2546,9 @@ function handleCampaignCreation(redirectToAdGroups) {
   console.log('campaignName:', document.getElementById('campaignName')?.value);
   console.log('campaignSeed:', document.getElementById('campaignSeed')?.value);
   console.log('campaignBudget:', document.getElementById('campaignBudget')?.value);
-  console.log('Connected DSPs:', connectedDSP);
-  console.log('Connected Ad Servers:', connectedAdServer);
+  console.log('Selected DSPs:', selectedDSP);
+  console.log('Selected Ad Servers:', selectedAdServer);
+  console.log('Connection Status:', connectionStatus);
   
   // Create separate DSP and Ad Server display strings
   const dspLabels = {
@@ -2556,12 +2563,12 @@ function handleCampaignCreation(redirectToAdGroups) {
   const dspList = [];
   const adServerList = [];
   
-  connectedDSP.forEach(dsp => {
+  selectedDSP.forEach(dsp => {
     if (dspLabels[dsp]) {
       dspList.push(dspLabels[dsp]);
     }
   });
-  connectedAdServer.forEach(adServer => {
+  selectedAdServer.forEach(adServer => {
     if (adServerLabels[adServer]) {
       adServerList.push(adServerLabels[adServer]);
     }
@@ -2600,10 +2607,11 @@ function handleCampaignCreation(redirectToAdGroups) {
     adServerSchedule: document.getElementById('adServerSchedule')?.value || '',
     adServerLandingPageName: document.getElementById('adServerLandingPageName')?.value || '',
     adServerLandingPageURL: document.getElementById('adServerLandingPageURL')?.value || '',
-    // Connector information - using connection status
+    // Connector information - selected platforms and their status
     connectors: {
-      dsp: connectedDSP,
-      adServer: connectedAdServer
+      dsp: selectedDSP,
+      adServer: selectedAdServer,
+      status: connectionStatus // Store connection status for each platform
     }
   };
 

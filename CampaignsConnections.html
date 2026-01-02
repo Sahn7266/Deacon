@@ -1600,12 +1600,17 @@ function loadCampaignConnections(campaign) {
   if (campaign.connectors.dsp && Array.isArray(campaign.connectors.dsp)) {
     campaign.connectors.dsp.forEach(dspValue => {
       if (platformConfig[dspValue]) {
+        // Get status from saved status object, default to 'Connected' for backward compatibility
+        const status = campaign.connectors.status && campaign.connectors.status[dspValue] 
+          ? campaign.connectors.status[dspValue] 
+          : 'Connected';
+        
         connectedPlatforms.push({
           value: dspValue,
           ...platformConfig[dspValue],
-          status: 'Connected',
-          enabledAt: new Date().toLocaleDateString(),
-          disabledAt: '—'
+          status: status,
+          enabledAt: status === 'Connected' ? new Date().toLocaleDateString() : '—',
+          disabledAt: status === 'Disconnected' ? new Date().toLocaleDateString() : '—'
         });
       }
     });
@@ -1615,12 +1620,17 @@ function loadCampaignConnections(campaign) {
   if (campaign.connectors.adServer && Array.isArray(campaign.connectors.adServer)) {
     campaign.connectors.adServer.forEach(adServerValue => {
       if (platformConfig[adServerValue]) {
+        // Get status from saved status object, default to 'Connected' for backward compatibility
+        const status = campaign.connectors.status && campaign.connectors.status[adServerValue] 
+          ? campaign.connectors.status[adServerValue] 
+          : 'Connected';
+        
         connectedPlatforms.push({
           value: adServerValue,
           ...platformConfig[adServerValue],
-          status: 'Connected',
-          enabledAt: new Date().toLocaleDateString(),
-          disabledAt: '—'
+          status: status,
+          enabledAt: status === 'Connected' ? new Date().toLocaleDateString() : '—',
+          disabledAt: status === 'Disconnected' ? new Date().toLocaleDateString() : '—'
         });
       }
     });
@@ -1650,10 +1660,15 @@ function loadCampaignConnections(campaign) {
     row.className = 'border-b border-default hover:bg-gray-50 transition-colors';
     row.setAttribute('data-platform', platform.value);
     
-    // Status badge styling
-    const statusBadgeClass = platform.status === 'Connected' 
-      ? 'bg-green-100 text-green-800' 
-      : 'bg-gray-100 text-gray-800';
+    // Status badge styling - handle Connected, Disconnected, or other statuses
+    let statusBadgeClass;
+    if (platform.status === 'Connected') {
+      statusBadgeClass = 'bg-green-100 text-green-800';
+    } else if (platform.status === 'Disconnected') {
+      statusBadgeClass = 'bg-red-100 text-red-800';
+    } else {
+      statusBadgeClass = 'bg-gray-100 text-gray-800';
+    }
     
     row.innerHTML = `
       <td class="px-6 py-1 text-sm border-r border-default">
