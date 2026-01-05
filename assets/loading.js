@@ -66,14 +66,14 @@
   window.showLoadingOverlay = showLoadingOverlay;
   window.hideLoadingOverlay = hideLoadingOverlay;
 
-  // Wire the Admin menu by default when present
+  // Wire the Profile menu by default when present
   document.addEventListener('DOMContentLoaded', () => {
-    const adminLink = document.getElementById('menuAdmin');
-    if (adminLink) {
-      adminLink.addEventListener('click', (e) => {
+    const profileLink = document.getElementById('menuProfile');
+    if (profileLink) {
+      profileLink.addEventListener('click', (e) => {
         e.preventDefault();
         // Optionally read the href to navigate after loading
-        const href = adminLink.getAttribute('href');
+        const href = profileLink.getAttribute('href');
         showLoadingOverlay({ durationMs: 8000, navigateTo: href && href !== '#' ? href : null });
       });
     }
