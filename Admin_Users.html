@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Users</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: #f8fafc; color: #334155; line-height: 1.6; }
+        .dashboard-container { display: flex; min-height: 100vh; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #012456); padding: 24px 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .logo-section { padding: 0 24px 24px; border-bottom: 1px solid #334155; margin-bottom: 24px; }
+        .logo { display: flex; align-items: center; gap: 12px; color: white; font-size: 20px; font-weight: 700; }
+        .nav-menu { padding: 0 16px; }
+        .nav-group { margin-bottom: 32px; }
+        .nav-group-title { color: #FFFFFF; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 10px 8px; }
+        .nav-item { display: flex; align-items: center; gap: 11px; padding: 2px 16px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 4px; transition: all 0.2s ease; font-weight: 400; }
+        .nav-item:hover { background: #334155; color: white; transform: translateX(4px); }
+        .nav-item.active { background: linear-gradient(90deg, #4682B4); color: white; }
+        .nav-item i { width: 20px; font-size: 16px; }
+        .main-content { flex: 1; margin-left: 280px; padding: 24px 32px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 24px; border-bottom: 1px solid #e2e8f0; }
+        .header-left h1 { font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .header-left p { color: #64748b; font-size: 14px; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .search-box { position: relative; display: flex; align-items: center; }
+        .search-box input { padding: 10px 16px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 300px; background: white; transition: all 0.2s ease; }
+        .search-box input:focus { outline: none; border-color: #0a5f86; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .search-box i { position: absolute; left: 12px; color: #94a3b8; }
+        .user-profile { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; cursor: pointer; transition: all 0.2s ease; }
+        .user-profile:hover { border-color: #0ea5e9; }
+        .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, #0ea5e9, #06b6d4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
+        .content-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .card-title { font-size: 18px; font-weight: 600; color: #0f172a; }
+        .card-content { padding: 16px; }
+
+        /* Action Section */
+        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 16px; }
+        .action-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+        .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+        .action-btn:hover { border-color: #005EB8; color: #005EB8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 94, 184, 0.15); }
+        .action-btn.primary { background: #005EB8; color: white; border-color: #005EB8; }
+        .action-btn.primary:hover { background: #004a93; }
+
+        /* Stats Row */
+        .stats-row { display: flex; gap: 16px; margin-bottom: 16px; }
+        .stat-box { flex: 1; background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; text-align: center; }
+        .stat-box .number { font-size: 28px; font-weight: 700; color: #0f172a; }
+        .stat-box .label { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+        /* Filter Bar */
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+        .filter-bar select, .filter-bar input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; background: white; }
+        .filter-bar select:focus, .filter-bar input:focus { outline: none; border-color: #005EB8; }
+
+        /* Data Table */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: #f8fafc; padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .data-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .data-table tbody tr { transition: background 0.15s ease; }
+        .data-table tbody tr:hover { background: #f8fafc; }
+
+        /* User Cell */
+        .user-cell { display: flex; align-items: center; gap: 12px; }
+        .user-cell .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; color: white; }
+        .user-cell .info .name { font-weight: 500; color: #0f172a; }
+        .user-cell .info .email { font-size: 13px; color: #64748b; }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+        .badge-admin { background: #fef3c7; color: #92400e; }
+        .badge-user { background: #e0f2fe; color: #0369a1; }
+        .badge-active { background: #dcfce7; color: #166534; }
+        .badge-inactive { background: #fee2e2; color: #991b1b; }
+        .badge-invited { background: #f3e8ff; color: #7c3aed; }
+
+        /* Role Tag */
+        .role-tag { display: inline-block; padding: 4px 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; color: #475569; }
+
+        /* Info Icon + Tooltip */
+        .info-trigger { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; color: #94a3b8; cursor: pointer; transition: all 0.15s ease; }
+        .info-trigger:hover { background: #f1f5f9; color: #005EB8; }
+        .info-trigger .tooltip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 14px; border-radius: 8px; font-size: 12px; white-space: nowrap; opacity: 0; visibility: hidden; transition: all 0.2s ease; z-index: 100; pointer-events: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .info-trigger .tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #1e293b; }
+        .info-trigger:hover .tooltip { opacity: 1; visibility: visible; }
+        .tooltip-row { display: flex; gap: 8px; margin-bottom: 6px; }
+        .tooltip-row:last-child { margin-bottom: 0; }
+        .tooltip-label { color: #94a3b8; }
+        .tooltip-value { color: #fff; font-weight: 500; }
+
+        /* Action Icons */
+        .row-actions { display: flex; gap: 4px; }
+        .row-action { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.15s ease; border: none; background: transparent; }
+        .row-action:hover { background: #f1f5f9; color: #005EB8; }
+        .row-action.danger:hover { background: #fee2e2; color: #dc2626; }
+
+        /* Checkbox */
+        .checkbox { width: 18px; height: 18px; border: 2px solid #cbd5e1; border-radius: 4px; cursor: pointer; transition: all 0.15s ease; appearance: none; }
+        .checkbox:checked { background: #005EB8; border-color: #005EB8; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E"); background-size: 12px; background-position: center; background-repeat: no-repeat; }
+
+        /* Pagination */
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
+        .pagination-info { font-size: 14px; color: #64748b; }
+        .pagination-controls { display: flex; gap: 4px; }
+        .page-btn { min-width: 36px; height: 36px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; color: #475569; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; }
+        .page-btn:hover { border-color: #005EB8; color: #005EB8; }
+        .page-btn.active { background: #005EB8; border-color: #005EB8; color: white; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; width: 100%; max-width: 520px; max-height: 90vh; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: modalIn 0.2s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 18px; font-weight: 600; color: #0f172a; }
+        .modal-close { width: 32px; height: 32px; border: none; background: #f1f5f9; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b; transition: all 0.15s ease; }
+        .modal-close:hover { background: #e2e8f0; color: #0f172a; }
+        .modal-body { padding: 24px; overflow-y: auto; max-height: 60vh; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; }
+
+        /* Form */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; color: #334155; margin-bottom: 6px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: all 0.15s ease; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #005EB8; box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        @media (max-width: 1024px) { .sidebar { width: 240px; } .main-content { margin-left: 240px; padding: 16px 24px; } .stats-row { flex-wrap: wrap; } .stat-box { min-width: 140px; } }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; padding: 16px; } .header { flex-direction: column; gap: 16px; align-items: flex-start; } .search-box input { width: 100%; } .data-table { display: block; overflow-x: auto; } }
+    </style>
+</head>
+<body>
+
+
+  <div class="dashboard-container">
+    <nav class="sidebar">
+      <div class="logo-section"><div class="logo"><img src="./assets/Eye_Multiview.png" alt="Multiview Logo" style="height: 24px;"></div></div>
+      <div class="nav-menu">
+        <div class="nav-group">
+          <div class="nav-group-title">Overview</div>
+          <a href="Multiview_Admin_Template.html" class="nav-item"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+          <a href="#" class="nav-item"><i class="fas fa-heartbeat"></i><span>System Status</span></a>
+          <a href="#" class="nav-item"><i class="fas fa-bolt"></i><span>Quick Actions</span></a>
+          <a href="#" class="nav-item"><i class="fas fa-clock"></i><span>Recent Activity</span></a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">User Management</div>
+          <a href="Admin_Users.html" class="nav-item active"><i class="fas fa-users"></i><span>Users</span></a>
+          <a href="Admin_Roles_Permissions.html" class="nav-item"><i class="fas fa-user-tag"></i><span>Roles & Permissions</span></a>
+          <a href="Admin_User_Groups.html" class="nav-item"><i class="fas fa-users-cog"></i><span>User Groups</span></a>
+          <a href="Admin_Access_Control.html" class="nav-item"><i class="fas fa-key"></i><span>Access Control</span></a>
+          <a href="Admin_User_Activity_Logs.html" class="nav-item"><i class="fas fa-history"></i><span>User Activity Logs</span></a>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">Organization</div>
+          <a href="#" class="nav-item"><i class="fas fa-building"></i><span>Agencies</span></a>
+          <a href="#" class="nav-item"><i class="fas fa-handshake"></i><span>Client Accounts</span></a>
+          <a href="#" class="nav-item"><i class="fas fa-sitemap"></i><span>Hierarchy Management</span></a>
+          <a href="#" class="nav-item"><i class="fas fa-palette"></i><span>White-label Settings</span></a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <h1>Users</h1>
+          <p>Manage user accounts, roles, and access across the platform.</p>
+        </div>
+        <div class="header-right">
+          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="globalSearch" placeholder="Search users..."></div>
+          <div class="user-profile">
+            <div class="user-avatar">JD</div>
+            <div><div style="font-weight: 500; font-size: 14px;">John Doe - <span style="font-size: 12px; color: #64748b;">Super Admin</span></div></div>
+            <i class="fas fa-chevron-down" style="color: #94a3b8; font-size: 12px;"></i>
+          </div>
+        </div>
+      </header>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-box"><div class="number">247</div><div class="label">Total Users</div></div>
+        <div class="stat-box"><div class="number">218</div><div class="label">Active</div></div>
+        <div class="stat-box"><div class="number">12</div><div class="label">Invited</div></div>
+        <div class="stat-box"><div class="number">17</div><div class="label">Inactive</div></div>
+        <div class="stat-box"><div class="number">34</div><div class="label">Admins</div></div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="action-section">
+        <div class="action-grid">
+          <button class="action-btn primary" onclick="openModal('addUserModal')"><i class="fas fa-user-plus"></i> Add User</button>
+          <button class="action-btn" onclick="openModal('inviteModal')"><i class="fas fa-envelope"></i> Invite User</button>
+          <button class="action-btn"><i class="fas fa-file-import"></i> Import CSV</button>
+          <button class="action-btn"><i class="fas fa-download"></i> Export</button>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="content-card">
+        <div class="card-content">
+          <div class="filter-bar">
+            <select id="filterRole">
+              <option value="">All Roles</option>
+              <option value="super-admin">Super Admin</option>
+              <option value="agency-admin">Agency Admin</option>
+              <option value="standard-user">Standard User</option>
+              <option value="read-only">Read Only</option>
+            </select>
+            <select id="filterStatus">
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="invited">Invited</option>
+              <option value="inactive">Inactive</option>
+            </select>
+            <select id="filterType">
+              <option value="">All Types</option>
+              <option value="internal">Internal</option>
+              <option value="agency">Agency</option>
+            </select>
+            <input type="text" placeholder="Filter by name or email..." id="filterSearch" style="flex:1; min-width:200px;">
+            <button class="action-btn" style="padding:8px 12px;" onclick="clearFilters()"><i class="fas fa-times"></i> Clear</button>
+          </div>
+
+          <!-- Data Table -->
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox" class="checkbox" id="selectAll"></th>
+                <th>User</th>
+                <th>Role</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Last Active</th>
+                <th style="width:100px;">Audit</th>
+                <th style="width:120px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody">
+              <!-- Row 1 -->
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">JS</div>
+                    <div class="info">
+                      <div class="name">Jane Smith <span class="badge badge-admin"><i class="fas fa-shield-alt"></i> Admin</span></div>
+                      <div class="email">jane.smith@multiview.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-tag">Super Admin</span></td>
+                <td>Internal</td>
+                <td><span class="badge badge-active"><i class="fas fa-circle" style="font-size:6px;"></i> Active</span></td>
+                <td style="color:#64748b; font-size:13px;">2 hours ago</td>
+                <td>
+                  <div class="info-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="tooltip">
+                      <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Nov 14, 2024 by System</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Modified:</span><span class="tooltip-value">Dec 28, 2025 by John Doe</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Last Login:</span><span class="tooltip-value">Jan 2, 2026 10:14 AM</span></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action" title="Edit User"><i class="fas fa-pen"></i></button>
+                    <button class="row-action" title="View Activity"><i class="fas fa-history"></i></button>
+                    <button class="row-action" title="Manage Permissions"><i class="fas fa-key"></i></button>
+                    <button class="row-action danger" title="Deactivate"><i class="fas fa-ban"></i></button>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 2 -->
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">AJ</div>
+                    <div class="info">
+                      <div class="name">Alex Johnson <span class="badge badge-admin"><i class="fas fa-shield-alt"></i> Admin</span></div>
+                      <div class="email">alex.johnson@multiview.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-tag">Agency Admin</span></td>
+                <td>Internal</td>
+                <td><span class="badge badge-active"><i class="fas fa-circle" style="font-size:6px;"></i> Active</span></td>
+                <td style="color:#64748b; font-size:13px;">Yesterday</td>
+                <td>
+                  <div class="info-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="tooltip">
+                      <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Aug 3, 2023 by HR System</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Modified:</span><span class="tooltip-value">Jan 1, 2026 by Jane Smith</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Last Login:</span><span class="tooltip-value">Jan 1, 2026 4:32 PM</span></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action" title="Edit User"><i class="fas fa-pen"></i></button>
+                    <button class="row-action" title="View Activity"><i class="fas fa-history"></i></button>
+                    <button class="row-action" title="Manage Permissions"><i class="fas fa-key"></i></button>
+                    <button class="row-action danger" title="Deactivate"><i class="fas fa-ban"></i></button>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 3 -->
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">ML</div>
+                    <div class="info">
+                      <div class="name">Morgan Lee</div>
+                      <div class="email">morgan.lee@acmeagency.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-tag">Standard User</span></td>
+                <td>Agency</td>
+                <td><span class="badge badge-invited"><i class="fas fa-paper-plane" style="font-size:10px;"></i> Invited</span></td>
+                <td style="color:#64748b; font-size:13px;">—</td>
+                <td>
+                  <div class="info-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="tooltip">
+                      <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Dec 30, 2025 by Alex Johnson</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Invite Sent:</span><span class="tooltip-value">Dec 30, 2025</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Expires:</span><span class="tooltip-value">Jan 6, 2026</span></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action" title="Edit User"><i class="fas fa-pen"></i></button>
+                    <button class="row-action" title="Resend Invite"><i class="fas fa-redo"></i></button>
+                    <button class="row-action danger" title="Revoke Invite"><i class="fas fa-times"></i></button>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 4 -->
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">TP</div>
+                    <div class="info">
+                      <div class="name">Taylor Patel</div>
+                      <div class="email">taylor.patel@partnerco.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-tag">Read Only</span></td>
+                <td>Agency</td>
+                <td><span class="badge badge-active"><i class="fas fa-circle" style="font-size:6px;"></i> Active</span></td>
+                <td style="color:#64748b; font-size:13px;">3 days ago</td>
+                <td>
+                  <div class="info-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="tooltip">
+                      <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Sep 12, 2024 by Jane Smith</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Modified:</span><span class="tooltip-value">Nov 5, 2025 by System</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Last Login:</span><span class="tooltip-value">Dec 30, 2025 11:02 AM</span></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action" title="Edit User"><i class="fas fa-pen"></i></button>
+                    <button class="row-action" title="View Activity"><i class="fas fa-history"></i></button>
+                    <button class="row-action" title="Manage Permissions"><i class="fas fa-key"></i></button>
+                    <button class="row-action danger" title="Deactivate"><i class="fas fa-ban"></i></button>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 5 -->
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="user-cell">
+                    <div class="avatar" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">CB</div>
+                    <div class="info">
+                      <div class="name">Chris Brown</div>
+                      <div class="email">chris.brown@formerco.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-tag">Standard User</span></td>
+                <td>Agency</td>
+                <td><span class="badge badge-inactive"><i class="fas fa-circle" style="font-size:6px;"></i> Inactive</span></td>
+                <td style="color:#64748b; font-size:13px;">Oct 15, 2025</td>
+                <td>
+                  <div class="info-trigger">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="tooltip">
+                      <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Mar 22, 2023 by HR System</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Deactivated:</span><span class="tooltip-value">Oct 16, 2025 by Jane Smith</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Reason:</span><span class="tooltip-value">Account no longer needed</span></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action" title="View User"><i class="fas fa-eye"></i></button>
+                    <button class="row-action" title="Reactivate"><i class="fas fa-undo"></i></button>
+                    <button class="row-action danger" title="Delete"><i class="fas fa-trash"></i></button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <div class="pagination-info">Showing 1-5 of 247 users</div>
+            <div class="pagination-controls">
+              <button class="page-btn" disabled><i class="fas fa-chevron-left"></i></button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">...</button>
+              <button class="page-btn">50</button>
+              <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal-overlay" id="addUserModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Add New User</h2>
+        <button class="modal-close" onclick="closeModal('addUserModal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" placeholder="Enter first name"></div>
+          <div class="form-group"><label>Last Name</label><input type="text" placeholder="Enter last name"></div>
+        </div>
+        <div class="form-group"><label>Email Address</label><input type="email" placeholder="user@example.com"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Role</label>
+            <select>
+              <option>Select role...</option>
+              <option>Super Admin</option>
+              <option>Agency Admin</option>
+              <option>Standard User</option>
+              <option>Read Only</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>User Type</label>
+            <select>
+              <option>Internal</option>
+              <option>Agency</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Agency (if applicable)</label>
+          <select>
+            <option>None - Internal User</option>
+            <option>Acme Agency</option>
+            <option>Partner Co</option>
+            <option>Media Group LLC</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" class="checkbox" checked> Send welcome email with login instructions
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" onclick="closeModal('addUserModal')">Cancel</button>
+        <button class="action-btn primary">Create User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invite User Modal -->
+  <div class="modal-overlay" id="inviteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Invite User</h2>
+        <button class="modal-close" onclick="closeModal('inviteModal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label>Email Address</label><input type="email" placeholder="user@example.com"></div>
+        <div class="form-group">
+          <label>Role</label>
+          <select>
+            <option>Select role...</option>
+            <option>Agency Admin</option>
+            <option>Standard User</option>
+            <option>Read Only</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Agency</label>
+          <select>
+            <option>Select agency...</option>
+            <option>Acme Agency</option>
+            <option>Partner Co</option>
+            <option>Media Group LLC</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Personal Message (optional)</label>
+          <textarea style="width:100%; padding:10px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:14px; resize:vertical; min-height:80px;" placeholder="Add a personal note to the invitation email..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" onclick="closeModal('inviteModal')">Cancel</button>
+        <button class="action-btn primary"><i class="fas fa-paper-plane"></i> Send Invite</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        const href = (this.getAttribute('href') || '').trim();
+        if (href === '' || href === '#') {
+          e.preventDefault();
+          document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+          this.classList.add('active');
+        }
+      });
+    });
+
+    // Modal functions
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) closeModal(this.id);
+      });
+    });
+
+    // Select all checkbox
+    document.getElementById('selectAll').addEventListener('change', function() {
+      document.querySelectorAll('#userTableBody .checkbox').forEach(cb => cb.checked = this.checked);
+    });
+
+    // Filter functionality
+    function clearFilters() {
+      document.getElementById('filterRole').value = '';
+      document.getElementById('filterStatus').value = '';
+      document.getElementById('filterType').value = '';
+      document.getElementById('filterSearch').value = '';
+    }
+
+    // Search animation
+    const searchInput = document.querySelector('.search-box input');
+    searchInput.addEventListener('focus', function() { this.parentElement.style.transform = 'scale(1.02)'; });
+    searchInput.addEventListener('blur', function() { this.parentElement.style.transform = 'scale(1)'; });
+  </script>
+</body>
+</html>
