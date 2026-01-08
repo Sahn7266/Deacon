@@ -13,18 +13,19 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: #f8fafc; color: #334155; line-height: 1.6; }
-        .dashboard-container { display: flex; min-height: 100vh; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #012456); padding: 24px 0; position: fixed; height: 100vh; overflow-y: auto; }
-        .logo-section { padding: 0 24px 24px; border-bottom: 1px solid #334155; margin-bottom: 24px; }
-        .logo { display: flex; align-items: center; gap: 12px; color: white; font-size: 20px; font-weight: 700; }
-        .nav-menu { padding: 0 16px; }
-        .nav-group { margin-bottom: 32px; }
-        .nav-group-title { color: #FFFFFF; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 10px 8px; }
-        .nav-item { display: flex; align-items: center; gap: 11px; padding: 2px 16px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 4px; transition: all 0.2s ease; font-weight: 400; }
-        .nav-item:hover { background: #334155; color: white; transform: translateX(4px); }
-        .nav-item.active { background: linear-gradient(90deg, #4682B4); color: white; }
-        .nav-item i { width: 20px; font-size: 16px; }
-        .main-content { flex: 1; margin-left: 280px; padding: 24px 32px; }
+        .beacon-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        .dashboard-container { display: flex; min-height: 100vh; padding-top: 56px; }
+        .sidebar { width: 256px; background: white; padding: 16px; position: fixed; height: 100vh; overflow-y: auto; border-right: 1px solid #e5e7eb; top: 56px; }
+        .logo-section { padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb; margin-bottom: 16px; }
+        .logo { display: flex; align-items: center; gap: 12px; color: #1f2937; font-size: 18px; font-weight: 600; }
+        .nav-menu { }
+        .nav-group { margin-bottom: 24px; }
+        .nav-group-title { color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 4px 8px; }
+        .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 4px; color: #374151; text-decoration: none; border-radius: 6px; margin-bottom: 2px; transition: all 0.2s ease; font-weight: 400; font-size: 14px; }
+        .nav-item:hover { background: #eff6ff; color: #1f2937; }
+        .nav-item.active { background: #eff6ff; color: #1f2937; font-weight: 500; }
+        .nav-item i { width: 24px; height: 24px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .main-content { flex: 1; margin-left: 256px; padding: 24px 32px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 24px; border-bottom: 1px solid #e2e8f0; }
         .header-left h1 { font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
         .header-left p { color: #64748b; font-size: 14px; }
@@ -45,44 +46,46 @@
         .action-btn.small { padding: 6px 12px; font-size: 13px; }
 
         /* Tabs */
-        .tabs { display: flex; gap: 4px; margin-bottom: 24px; background: #f1f5f9; padding: 4px; border-radius: 10px; width: fit-content; }
+        .tabs { display: flex; gap: 4px; background: #f1f5f9; padding: 4px; border-radius: 10px; width: fit-content; }
         .tab { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #64748b; cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; }
         .tab:hover { color: #334155; }
         .tab.active { background: white; color: #005EB8; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 
-        /* Role Cards */
-        .roles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-        .role-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; transition: all 0.2s ease; }
-        .role-card:hover { border-color: #005EB8; box-shadow: 0 4px 16px rgba(0, 94, 184, 0.1); }
-        .role-card-header { padding: 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: flex-start; justify-content: space-between; }
-        .role-info { display: flex; align-items: center; gap: 14px; }
-        .role-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        /* Roles Table */
+        .roles-table { width: 100%; border-collapse: collapse; }
+        .roles-table th { background: #f8fafc; padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .roles-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .roles-table tbody tr { transition: background 0.15s ease; }
+        .roles-table tbody tr:hover { background: #f8fafc; }
+        
+        .role-cell { display: flex; align-items: center; gap: 12px; }
+        .role-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         .role-icon.super-admin { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; }
         .role-icon.agency-admin { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
         .role-icon.standard { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
         .role-icon.read-only { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #7c3aed; }
         .role-icon.custom { background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #0284c7; }
-        .role-name { font-size: 16px; font-weight: 600; color: #0f172a; margin-bottom: 2px; }
-        .role-description { font-size: 13px; color: #64748b; }
-        .role-menu { position: relative; }
-        .role-menu-btn { width: 32px; height: 32px; border: none; background: transparent; color: #94a3b8; cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; }
-        .role-menu-btn:hover { background: #f1f5f9; color: #475569; }
-
-        .role-card-body { padding: 20px; }
-        .role-stats { display: flex; gap: 24px; margin-bottom: 16px; }
+        .role-info-text { display: flex; flex-direction: column; }
+        .role-name { font-size: 15px; font-weight: 600; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+        .role-description { font-size: 13px; color: #64748b; margin-top: 2px; }
+        
+        .role-stats-cell { display: flex; gap: 24px; }
         .role-stat { text-align: center; }
-        .role-stat-value { font-size: 24px; font-weight: 700; color: #0f172a; }
-        .role-stat-label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+        .role-stat-value { font-size: 20px; font-weight: 700; color: #0f172a; display: block; }
+        .role-stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
 
-        /* Members Section */
-        .members-toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f8fafc; border-radius: 8px; cursor: pointer; transition: all 0.15s ease; margin-bottom: 12px; }
-        .members-toggle:hover { background: #f1f5f9; }
-        .members-toggle-text { font-size: 14px; font-weight: 500; color: #475569; display: flex; align-items: center; gap: 8px; }
-        .members-toggle-icon { transition: transform 0.2s ease; color: #94a3b8; }
-        .members-toggle.expanded .members-toggle-icon { transform: rotate(180deg); }
-        .members-list { display: none; margin-top: 12px; }
-        .members-list.visible { display: block; }
-        .member-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; transition: background 0.15s ease; }
+        /* Members Dropdown in Table */
+        .members-preview { display: flex; align-items: center; gap: -8px; }
+        .member-avatar-sm { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; border: 2px solid white; margin-left: -8px; }
+        .member-avatar-sm:first-child { margin-left: 0; }
+        .members-count { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; background: #f1f5f9; border-radius: 6px; font-size: 13px; font-weight: 500; color: #475569; cursor: pointer; transition: all 0.15s ease; margin-left: 12px; }
+        .members-count:hover { background: #e2e8f0; }
+        
+        .members-dropdown { position: relative; }
+        .members-dropdown-content { position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); min-width: 280px; max-height: 320px; overflow-y: auto; z-index: 50; display: none; }
+        .members-dropdown.active .members-dropdown-content { display: block; }
+        .members-dropdown-header { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 13px; font-weight: 600; color: #475569; }
+        .member-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; transition: background 0.15s ease; }
         .member-item:hover { background: #f8fafc; }
         .member-info { display: flex; align-items: center; gap: 10px; }
         .member-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white; }
@@ -90,8 +93,14 @@
         .member-email { font-size: 12px; color: #94a3b8; }
         .member-action { color: #94a3b8; font-size: 14px; cursor: pointer; padding: 6px; border-radius: 4px; transition: all 0.15s ease; }
         .member-action:hover { background: #fee2e2; color: #dc2626; }
-        .view-all-link { display: block; text-align: center; padding: 12px; color: #005EB8; font-size: 13px; font-weight: 500; text-decoration: none; border-top: 1px solid #f1f5f9; margin-top: 8px; transition: background 0.15s ease; }
+        .view-all-link { display: block; text-align: center; padding: 12px; color: #005EB8; font-size: 13px; font-weight: 500; text-decoration: none; border-top: 1px solid #f1f5f9; transition: background 0.15s ease; }
         .view-all-link:hover { background: #f8fafc; }
+        
+        /* Action Icons in Table */
+        .row-actions { display: flex; gap: 4px; }
+        .row-action { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.15s ease; border: none; background: transparent; }
+        .row-action:hover { background: #f1f5f9; color: #005EB8; }
+        .row-action.danger:hover { background: #fee2e2; color: #dc2626; }
 
         /* Permissions Matrix */
         .permissions-section { display: none; }
@@ -120,13 +129,54 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-overlay.active { display: flex; }
         .modal { background: white; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: modalIn 0.2s ease; }
+        .modal.large { max-width: 900px; }
         @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         .modal-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
         .modal-header h2 { font-size: 18px; font-weight: 600; color: #0f172a; }
+        .modal-header .role-badge { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
         .modal-close { width: 32px; height: 32px; border: none; background: #f1f5f9; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b; transition: all 0.15s ease; }
         .modal-close:hover { background: #e2e8f0; color: #0f172a; }
         .modal-body { padding: 24px; overflow-y: auto; max-height: 60vh; }
-        .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; gap: 12px; }
+        
+        /* Permissions Editor */
+        .permissions-editor { }
+        .permissions-search { margin-bottom: 20px; }
+        .permissions-search input { width: 100%; padding: 10px 16px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+        .permissions-search i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+        .permission-category { margin-bottom: 24px; }
+        .permission-category:last-child { margin-bottom: 0; }
+        .category-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f8fafc; border-radius: 8px; margin-bottom: 12px; cursor: pointer; transition: all 0.15s ease; }
+        .category-header:hover { background: #f1f5f9; }
+        .category-title { font-size: 14px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 8px; }
+        .category-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .category-icon.users { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
+        .category-icon.campaigns { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; }
+        .category-icon.reports { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
+        .category-icon.billing { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #7c3aed; }
+        .category-icon.settings { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; }
+        .category-count { font-size: 12px; color: #94a3b8; font-weight: 500; }
+        .category-toggle { color: #94a3b8; transition: transform 0.2s ease; }
+        .category-header.collapsed .category-toggle { transform: rotate(-90deg); }
+        .permission-list { display: block; }
+        .category-header.collapsed + .permission-list { display: none; }
+        .permission-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 8px; transition: background 0.15s ease; margin-bottom: 4px; }
+        .permission-item:hover { background: #f8fafc; }
+        .permission-item-info { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .permission-checkbox { width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 4px; cursor: pointer; accent-color: #005EB8; transition: all 0.15s ease; }
+        .permission-checkbox:checked { background: #005EB8; border-color: #005EB8; }
+        .permission-details { flex: 1; }
+        .permission-item-name { font-size: 14px; font-weight: 500; color: #0f172a; }
+        .permission-item-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
+        .permission-level { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+        .permission-level.full { background: #dcfce7; color: #166534; }
+        .permission-level.limited { background: #fef3c7; color: #92400e; }
+        .permission-level.none { background: #f1f5f9; color: #64748b; }
+        
+        .permissions-summary { display: flex; align-items: center; gap: 16px; padding: 12px 16px; background: #f8fafc; border-radius: 8px; }
+        .summary-item { display: flex; align-items: center; gap: 6px; }
+        .summary-count { font-size: 18px; font-weight: 700; color: #0f172a; }
+        .summary-label { font-size: 12px; color: #64748b; }
 
         /* Form */
         .form-group { margin-bottom: 16px; }
@@ -144,11 +194,20 @@
 
         @media (max-width: 1024px) { .sidebar { width: 240px; } .main-content { margin-left: 240px; padding: 16px 24px; } .roles-grid { grid-template-columns: 1fr; } }
         @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; padding: 16px; } .header { flex-direction: column; gap: 16px; align-items: flex-start; } }
-    </style>
+   
+   /* Action Section */
+        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 16px; }
+        .action-grid { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+        .action-btn:hover { border-color: #005EB8; color: #005EB8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 94, 184, 0.15); }
+        .action-btn.primary { background: #005EB8; color: white; border-color: #005EB8; }
+   
+   
+   </style>
 </head>
 <body>
   <!-- Beacon Header -->
-  <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
+  <header class="beacon-header border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
     <div class="flex items-center justify-between px-4 py-2">
       <div class="flex items-center gap-3">
         <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
@@ -205,12 +264,14 @@
 
   <div class="dashboard-container">
     <nav class="sidebar">
-      <div class="logo-section"><div class="logo"><img src="https://www.multiview.com/hubfs/Multiview%20Logo_horizontal_color_300x50.png" alt="Multiview Logo" style="height: 24px;"></div></div>
+      <div class="logo-section">
+          <h2 class="text-base font-semibold text-gray-800">User Management</h2>
+      </div>
       <div class="nav-menu">
         <div class="nav-group">
           
         <div class="nav-group">
-          <div class="nav-group-title">User Management</div>
+          
           <a href="Admin_Users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
           <a href="Admin_Roles_Permissions.html" class="nav-item active"><i class="fas fa-user-tag"></i><span>Roles & Permissions</span></a>
           <a href="Admin_User_Activity_Logs.html" class="nav-item"><i class="fas fa-history"></i><span>User Activity Logs</span></a>
@@ -223,229 +284,970 @@
     <main class="main-content">
       <header class="header">
         <div class="header-left">
-          <h1>Roles & Permissions</h1>
-          <p>Define roles and manage what users can access across the platform.</p>
+          <div id="mainHeader">
+            <h1>Roles & Permissions</h1>
+            <p>Define roles and manage what users can access across the platform.</p>
+          </div>
+          <div id="editHeader" style="display: none;">
+            <button class="action-btn" onclick="showRolesView()" style="margin-bottom: 12px;">
+              <i class="fas fa-arrow-left"></i> Back to Roles
+            </button>
+            <h1 id="editRoleTitle">Edit Role Permissions</h1>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+              <div class="role-icon" id="editRoleIcon" style="width: 32px; height: 32px; font-size: 14px;"><i class="fas fa-crown"></i></div>
+              <p id="editRoleDescription" style="margin: 0;"></p>
+            </div>
+          </div>
         </div>
         <div class="header-right">
-          <button class="action-btn primary" onclick="openModal('createRoleModal')"><i class="fas fa-plus"></i> Create Role</button>
-          <div class="user-profile">
-            <div class="user-avatar">JD</div>
-            <div><div style="font-weight: 500; font-size: 14px;">John Doe - <span style="font-size: 12px; color: #64748b;">Super Admin</span></div></div>
-            <i class="fas fa-chevron-down" style="color: #94a3b8; font-size: 12px;"></i>
-          </div>
+          
+          
         </div>
       </header>
 
-      <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab active" data-tab="roles">Roles</button>
-        <button class="tab" data-tab="permissions">Permissions Matrix</button>
+<!-- Action Bar -->
+      <div class="action-section" id="mainActions">
+        <div class="action-grid">
+          <button class="action-btn primary" onclick="openModal('createRoleModal')"><i class="fas fa-plus"></i> Create Role</button>
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="roles">Roles</button>
+  <button class="tab" data-tab="permissions">Permissions Matrix</button>
+</div>          <button class="action-btn" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button>
+        </div>
       </div>
+
+      <!-- Edit View Actions -->
+      <div class="action-section" id="editActions" style="display: none;">
+        <div class="action-grid">
+          <div class="permissions-summary">
+            <div class="summary-item">
+              <span class="summary-count" id="totalSelectedPermissions">0</span>
+              <span class="summary-label">permissions selected</span>
+            </div>
+          </div>
+          <button class="action-btn" onclick="showRolesView()" style="margin-left: auto;">Cancel</button>
+          <button class="action-btn primary" onclick="saveRolePermissions()"><i class="fas fa-check"></i> Save Permissions</button>
+        </div>
+      </div>
+
+     
 
       <!-- Roles View -->
       <div class="tab-content" id="rolesContent">
-        <div class="roles-grid">
-          <!-- Super Admin Role -->
-          <div class="role-card">
-            <div class="role-card-header">
-              <div class="role-info">
-                <div class="role-icon super-admin"><i class="fas fa-crown"></i></div>
-                <div>
-                  <div class="role-name">Super Admin <span class="badge badge-system"><i class="fas fa-lock"></i> System</span></div>
-                  <div class="role-description">Full system access with all permissions</div>
+        <div class="content-card">
+          <div class="card-content" style="padding:0; overflow-x:auto;">
+            <table class="roles-table">
+              <thead>
+                <tr>
+                  <th style="min-width:280px;">Role</th>
+                  <th style="text-align:center;">Users</th>
+                  <th style="text-align:center;">Permissions</th>
+                  <th style="min-width:200px;">Members</th>
+                  <th style="text-align:center; width:120px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Super Admin Role -->
+                <tr>
+                  <td>
+                    <div class="role-cell">
+                      <div class="role-icon super-admin"><i class="fas fa-crown"></i></div>
+                      <div class="role-info-text">
+                        <div class="role-name">
+                          Super Admin 
+                          <span class="badge badge-system"><i class="fas fa-lock"></i> System</span>
+                        </div>
+                        <div class="role-description">Full system access with all permissions</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="role-stat">
+                      <span class="role-stat-value">8</span>
+                      <span class="role-stat-label">Users</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="role-stat">
+                      <span class="role-stat-value">47</span>
+                      <span class="role-stat-label">Permissions</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="members-dropdown">
+                      <div class="members-preview">
+                        <div class="member-avatar-sm" style="background: linear-gradient(135deg, #667eea, #764ba2);">JS</div>
+                        <div class="member-avatar-sm" style="background: linear-gradient(135deg, #f093fb, #f5576c);">JD</div>
+                        <div class="member-avatar-sm" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">MK</div>
+                        <span class="members-count" onclick="toggleMembersDropdown(this)">
+                          <i class="fas fa-users"></i> 8 total
+                        </span>
+                      </div>
+                      <div class="members-dropdown-content">
+                        <div class="members-dropdown-header">Role Members</div>
+                        <div class="member-item">
+                          <div class="member-info">
+                            <div class="member-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">JS</div>
+                            <div><div class="member-name">Jane Smith</div><div class="member-email">jane.smith@multiview.com</div></div>
+                          </div>
+                          <i class="fas fa-times member-action" title="Remove from role"></i>
+                        </div>
+                        <div class="member-item">
+                          <div class="member-info">
+                            <div class="member-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">JD</div>
+                            <div><div class="member-name">John Doe</div><div class="member-email">john.doe@multiview.com</div></div>
+                          </div>
+                          <i class="fas fa-times member-action" title="Remove from role"></i>
+                        </div>
+                        <div class="member-item">
+                          <div class="member-info">
+                            <div class="member-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">MK</div>
+                            <div><div class="member-name">Mike Kumar</div><div class="member-email">mike.kumar@multiview.com</div></div>
+                          </div>
+                          <i class="fas fa-times member-action" title="Remove from role"></i>
+                        </div>
+                        <a href="Admin_Users.html?role=super-admin" class="view-all-link">View all 8 members →</a>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions" style="justify-content:center;">
+                      <button class="row-action" title="Edit Role"><i class="fas fa-pen"></i></button>
+                      <button class="row-action" title="View Permissions"><i class="fas fa-key"></i></button>
+                      <button class="row-action" title="Duplicate Role"><i class="fas fa-copy"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Agency Admin Role -->
+                <tr>
+                  <td>
+                    <div class="role-cell">
+                      <div class="role-icon agency-admin"><i class="fas fa-user-shield"></i></div>
+                      <div class="role-info-text">
+                        <div class="role-name">
+                          Agency Admin 
+                          <span class="badge badge-system"><i class="fas fa-lock"></i> System</span>
+                        </div>
+                        <div class="role-description">Manage agency users and campaigns</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="role-stat">
+                      <span class="role-stat-value">26</span>
+                      <span class="role-stat-label">Users</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="role-stat">
+                      <span class="role-stat-value">32</span>
+                      <span class="role-stat-label">Permissions</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="members-dropdown">
+                      <div class="members-preview">
+                        <div class="member-avatar-sm" style="background: linear-gradient(135deg, #f093fb, #f5576c);">AJ</div>
+                        <div class="member-avatar-sm" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">SR</div>
+                        <div class="member-avatar-sm" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">LW</div>
+                        <span class="members-count" onclick="toggleMembersDropdown(this)">
+                          <i class="fas fa-users"></i> 26 total
+                        </span>
+                      </div>
+                      <div class="members-dropdown-content">
+                        <div class="members-dropdown-header">Role Members</div>
+                        <div class="member-item">
+                          <div class="member-info">
+                            <div class="member-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">AJ</div>
+                            <div><div class="member-name">Alex Johnson</div><div class="member-email">alex.johnson@multiview.com</div></div>
+                          </div>
+                          <i class="fas fa-times member-action" title="Remove from role"></i>
+                        </div>
+                        <div class="member-item">
+                          <div class="member-info">
+                            <div class="member-avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">SR</div>
+                            <div><div class="member-name">Sam Rodriguez</div><div class="member-email">sam.r@acmeagency.com</div></div>
+                          </div>
+                          <i class="fas fa-times member-action" title="Remove from role"></i>
+                        </div>
+                        <div class="member-item">
+                          <div class="member-info">
+                            <div class="member-avatar" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">LW</div>
+                            <div><div class="member-name">Lisa Wong</div><div class="member-email">lisa.wong@partnerco.com</div></div>
+                          </div>
+                          <i class="fas fa-times member-action" title="Remove from role"></i>
+                        </div>
+                        <a href="Admin_Users.html?role=agency-admin" class="view-all-link">View all 26 members →</a>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions" style="justify-content:center;">
+                      <button class="row-action" title="Edit Role"><i class="fas fa-pen"></i></button>
+                      <button class="row-action" title="View Permissions"><i class="fas fa-key"></i></button>
+                      <button class="row-action" title="Duplicate Role"><i class="fas fa-copy"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Standard User Role -->
+                <tr>
+                  <td>
+                    <div class="role-cell">
+                      <div class="role-icon standard"><i class="fas fa-user"></i></div>
+                      <div class="role-info-text">
+                        <div class="role-name">
+                          Standard User 
+                          <span class="badge badge-system"><i class="fas fa-lock"></i> System</span>
+                        </div>
+                        <div class="role-description">Basic access to campaigns and reports</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="role-stat">
+                      <span class="role-stat-value">156</span>
+                      <span class="role-stat-label">Users</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="role-stat">
+                      <span class="role-stat-value">18</span>
+                      <span class="role-stat-label">Permissions</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="members-dropdown">
+                      <div class="members-preview">
+                        <div class="member-avatar-sm" style="background: linear-gradient(135deg, #667eea, #764ba2);">ML</div>
+                        <div class="member-avatar-sm" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">CB</div>
+                        <span class="members-count" onclick="toggleMembersDropdown(this)">
+                          <i class="fas fa-users"></i> 156 total
+                        </span>
+                      </div>
+                      <div class="members-dropdown-content">
+                        <div class="members-dropdown-header">Role Members</div>
+                        <div class="member-item">
+                          <div class="member-info">
+                            <div class="member-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">ML</div>
+                            <div><div class="member-name">Morgan Lee</div><div class="member-email">morgan.lee@acmeagency.com</div></div>
+                          </div>
+                          <i class="fas fa-times member-action" title="Remove from role"></i>
+                        </div>
+                        <div class="member-item">
+                          <div class="member-info">
+                            <div class="member-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">CB</div>
+                            <div><div class="member-name">Chris Brown</div><div class="member-email">chris.brown@formerco.com</div></div>
+                          </div>
+                          <i class="fas fa-times member-action" title="Remove from role"></i>
+                        </div>
+                        <a href="Admin_Users.html?role=standard-user" class="view-all-link">View all 156 members →</a>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions" style="justify-content:center;">
+                      <button class="row-action" title="Edit Role"><i class="fas fa-pen"></i></button>
+                      <button class="row-action" title="View Permissions"><i class="fas fa-key"></i></button>
+                      <button class="row-action" title="Duplicate Role"><i class="fas fa-copy"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Read Only Role -->
+                <tr>
+                  <td>
+                    <div class="role-cell">
+                      <div class="role-icon read-only"><i class="fas fa-eye"></i></div>
+                      <div class="role-info-text">
+                        <div class="role-name">
+                          Read Only 
+                          <span class="badge badge-system"><i class="fas fa-lock"></i> System</span>
+                        </div>
+                        <div class="role-description">View-only access to reports and data</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="role-stat">
+                      <span class="role-stat-value">57</span>
+                      <span class="role-stat-label">Users</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="role-stat">
+                      <span class="role-stat-value">8</span>
+                      <span class="role-stat-label">Permissions</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="members-dropdown">
+                      <div class="members-preview">
+                        <div class="member-avatar-sm" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">TP</div>
+                        <span class="members-count" onclick="toggleMembersDropdown(this)">
+                          <i class="fas fa-users"></i> 57 total
+                        </span>
+                      </div>
+                      <div class="members-dropdown-content">
+                        <div class="members-dropdown-header">Role Members</div>
+                        <div class="member-item">
+                          <div class="member-info">
+                            <div class="member-avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">TP</div>
+                            <div><div class="member-name">Taylor Patel</div><div class="member-email">taylor.patel@partnerco.com</div></div>
+                          </div>
+                          <i class="fas fa-times member-action" title="Remove from role"></i>
+                        </div>
+                        <a href="Admin_Users.html?role=read-only" class="view-all-link">View all 57 members →</a>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions" style="justify-content:center;">
+                      <button class="row-action" title="Edit Role"><i class="fas fa-pen"></i></button>
+                      <button class="row-action" title="View Permissions"><i class="fas fa-key"></i></button>
+                      <button class="row-action" title="Duplicate Role"><i class="fas fa-copy"></i></button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Custom Role Example -->
+                <tr>
+                  <td>
+                    <div class="role-cell">
+                      <div class="role-icon custom"><i class="fas fa-cog"></i></div>
+                      <div class="role-info-text">
+                        <div class="role-name">Campaign Manager</div>
+                        <div class="role-description">Full campaign management without billing</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="role-stat">
+                      <span class="role-stat-value">12</span>
+                      <span class="role-stat-label">Users</span>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <div class="role-stat">
+                      <span class="role-stat-value">24</span>
+                      <span class="role-stat-label">Permissions</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="members-dropdown">
+                      <div class="members-preview">
+                        <div class="member-avatar-sm" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">KC</div>
+                        <span class="members-count" onclick="toggleMembersDropdown(this)">
+                          <i class="fas fa-users"></i> 12 total
+                        </span>
+                      </div>
+                      <div class="members-dropdown-content">
+                        <div class="members-dropdown-header">Role Members</div>
+                        <div class="member-item">
+                          <div class="member-info">
+                            <div class="member-avatar" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">KC</div>
+                            <div><div class="member-name">Kim Chen</div><div class="member-email">kim.chen@multiview.com</div></div>
+                          </div>
+                          <i class="fas fa-times member-action" title="Remove from role"></i>
+                        </div>
+                        <a href="Admin_Users.html?role=campaign-manager" class="view-all-link">View all 12 members →</a>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="row-actions" style="justify-content:center;">
+                      <button class="row-action" title="Edit Role"><i class="fas fa-pen"></i></button>
+                      <button class="row-action" title="View Permissions"><i class="fas fa-key"></i></button>
+                      <button class="row-action danger" title="Delete Role"><i class="fas fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Role Edit View -->
+      <div class="tab-content" id="editRoleContent" style="display: none;">
+        <div class="content-card">
+          <div class="card-content">
+            <div class="permissions-editor">
+              <div class="permissions-search" style="position: relative; margin-bottom: 20px;">
+                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                <input type="text" id="permissionsSearchInput" placeholder="Search permissions..." oninput="filterPermissions(this.value)" style="width: 100%; padding: 10px 16px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+              </div>
+
+              <!-- User Management Category -->
+              <div class="permission-category" data-category="users">
+                <div class="category-header" onclick="toggleCategory(this)">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="category-icon users"><i class="fas fa-users"></i></div>
+                    <span class="category-title">User Management</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="category-count"><span class="selected-count">0</span> / 6 selected</span>
+                    <i class="fas fa-chevron-down category-toggle"></i>
+                  </div>
+                </div>
+                <div class="permission-list">
+                  <div class="permission-item" data-permission="view-users">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Users</div>
+                        <div class="permission-item-desc">View user list and profile details across the system</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="create-users">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Create Users</div>
+                        <div class="permission-item-desc">Add new user accounts to the system</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="edit-users">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Edit Users</div>
+                        <div class="permission-item-desc">Modify user profiles, settings, and account information</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="delete-users">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Delete Users</div>
+                        <div class="permission-item-desc">Remove user accounts from the system</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="assign-roles">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Assign Roles</div>
+                        <div class="permission-item-desc">Assign and modify user roles and permissions</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="view-activity">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Activity Logs</div>
+                        <div class="permission-item-desc">Access user activity logs and audit trails</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <button class="role-menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-            </div>
-            <div class="role-card-body">
-              <div class="role-stats">
-                <div class="role-stat"><div class="role-stat-value">8</div><div class="role-stat-label">Users</div></div>
-                <div class="role-stat"><div class="role-stat-value">47</div><div class="role-stat-label">Permissions</div></div>
+
+              <!-- Campaign Management Category -->
+              <div class="permission-category" data-category="campaigns">
+                <div class="category-header" onclick="toggleCategory(this)">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="category-icon campaigns"><i class="fas fa-bullhorn"></i></div>
+                    <span class="category-title">Campaign Management</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="category-count"><span class="selected-count">0</span> / 5 selected</span>
+                    <i class="fas fa-chevron-down category-toggle"></i>
+                  </div>
+                </div>
+                <div class="permission-list">
+                  <div class="permission-item" data-permission="view-campaigns">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Campaigns</div>
+                        <div class="permission-item-desc">Access campaign data and performance metrics</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="create-campaigns">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Create Campaigns</div>
+                        <div class="permission-item-desc">Create new advertising campaigns</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="edit-campaigns">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Edit Campaigns</div>
+                        <div class="permission-item-desc">Modify campaign settings and configurations</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="delete-campaigns">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Delete Campaigns</div>
+                        <div class="permission-item-desc">Remove campaigns from the system</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="approve-campaigns">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Approve Campaigns</div>
+                        <div class="permission-item-desc">Review and approve campaigns before launch</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="members-toggle" onclick="toggleMembers(this)">
-                <span class="members-toggle-text"><i class="fas fa-users"></i> View Members</span>
-                <i class="fas fa-chevron-down members-toggle-icon"></i>
+
+              <!-- Reports & Analytics Category -->
+              <div class="permission-category" data-category="reports">
+                <div class="category-header" onclick="toggleCategory(this)">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="category-icon reports"><i class="fas fa-chart-bar"></i></div>
+                    <span class="category-title">Reports & Analytics</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="category-count"><span class="selected-count">0</span> / 4 selected</span>
+                    <i class="fas fa-chevron-down category-toggle"></i>
+                  </div>
+                </div>
+                <div class="permission-list">
+                  <div class="permission-item" data-permission="view-reports">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Reports</div>
+                        <div class="permission-item-desc">Access standard reports and analytics dashboards</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="create-reports">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Create Custom Reports</div>
+                        <div class="permission-item-desc">Build and save custom report configurations</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="export-reports">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Export Reports</div>
+                        <div class="permission-item-desc">Download and export report data</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="view-analytics">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Advanced Analytics</div>
+                        <div class="permission-item-desc">Access advanced analytics and insights</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="members-list">
-                <div class="member-item">
-                  <div class="member-info">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">JS</div>
-                    <div><div class="member-name">Jane Smith</div><div class="member-email">jane.smith@multiview.com</div></div>
+
+              <!-- Billing & Finance Category -->
+              <div class="permission-category" data-category="billing">
+                <div class="category-header" onclick="toggleCategory(this)">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="category-icon billing"><i class="fas fa-dollar-sign"></i></div>
+                    <span class="category-title">Billing & Finance</span>
                   </div>
-                  <i class="fas fa-times member-action" title="Remove from role"></i>
-                </div>
-                <div class="member-item">
-                  <div class="member-info">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">JD</div>
-                    <div><div class="member-name">John Doe</div><div class="member-email">john.doe@multiview.com</div></div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="category-count"><span class="selected-count">0</span> / 4 selected</span>
+                    <i class="fas fa-chevron-down category-toggle"></i>
                   </div>
-                  <i class="fas fa-times member-action" title="Remove from role"></i>
                 </div>
-                <div class="member-item">
-                  <div class="member-info">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">MK</div>
-                    <div><div class="member-name">Mike Kumar</div><div class="member-email">mike.kumar@multiview.com</div></div>
+                <div class="permission-list">
+                  <div class="permission-item" data-permission="view-billing">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Billing</div>
+                        <div class="permission-item-desc">Access billing information and invoices</div>
+                      </div>
+                    </div>
                   </div>
-                  <i class="fas fa-times member-action" title="Remove from role"></i>
+                  <div class="permission-item" data-permission="manage-billing">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Manage Billing</div>
+                        <div class="permission-item-desc">Update billing settings and payment methods</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="view-budgets">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Budgets</div>
+                        <div class="permission-item-desc">Access budget allocations and spending data</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="manage-budgets">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Manage Budgets</div>
+                        <div class="permission-item-desc">Set and modify campaign budgets</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <a href="Admin_Users.html?role=super-admin" class="view-all-link">View all 8 members →</a>
+              </div>
+
+              <!-- System Settings Category -->
+              <div class="permission-category" data-category="settings">
+                <div class="category-header" onclick="toggleCategory(this)">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="category-icon settings"><i class="fas fa-cog"></i></div>
+                    <span class="category-title">System Settings</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="category-count"><span class="selected-count">0</span> / 3 selected</span>
+                    <i class="fas fa-chevron-down category-toggle"></i>
+                  </div>
+                </div>
+                <div class="permission-list">
+                  <div class="permission-item" data-permission="view-settings">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Settings</div>
+                        <div class="permission-item-desc">Access system configuration and settings</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="manage-settings">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Manage Settings</div>
+                        <div class="permission-item-desc">Modify system configurations and preferences</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="manage-integrations">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Manage Integrations</div>
+                        <div class="permission-item-desc">Configure third-party integrations and APIs</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Agency Admin Role -->
-          <div class="role-card">
-            <div class="role-card-header">
-              <div class="role-info">
-                <div class="role-icon agency-admin"><i class="fas fa-user-shield"></i></div>
-                <div>
-                  <div class="role-name">Agency Admin <span class="badge badge-system"><i class="fas fa-lock"></i> System</span></div>
-                  <div class="role-description">Manage agency users and campaigns</div>
-                </div>
+      <!-- Role Edit View -->
+      <div class="tab-content" id="editRoleContent" style="display: none;">
+        <div class="content-card">
+          <div class="card-content">
+            <div class="permissions-editor">
+              <div class="permissions-search" style="position: relative; margin-bottom: 20px;">
+                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                <input type="text" id="permissionsSearchInput" placeholder="Search permissions..." oninput="filterPermissions(this.value)" style="width: 100%; padding: 10px 16px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
               </div>
-              <button class="role-menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-            </div>
-            <div class="role-card-body">
-              <div class="role-stats">
-                <div class="role-stat"><div class="role-stat-value">26</div><div class="role-stat-label">Users</div></div>
-                <div class="role-stat"><div class="role-stat-value">32</div><div class="role-stat-label">Permissions</div></div>
-              </div>
-              <div class="members-toggle" onclick="toggleMembers(this)">
-                <span class="members-toggle-text"><i class="fas fa-users"></i> View Members</span>
-                <i class="fas fa-chevron-down members-toggle-icon"></i>
-              </div>
-              <div class="members-list">
-                <div class="member-item">
-                  <div class="member-info">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">AJ</div>
-                    <div><div class="member-name">Alex Johnson</div><div class="member-email">alex.johnson@multiview.com</div></div>
-                  </div>
-                  <i class="fas fa-times member-action" title="Remove from role"></i>
-                </div>
-                <div class="member-item">
-                  <div class="member-info">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">SR</div>
-                    <div><div class="member-name">Sam Rodriguez</div><div class="member-email">sam.r@acmeagency.com</div></div>
-                  </div>
-                  <i class="fas fa-times member-action" title="Remove from role"></i>
-                </div>
-                <div class="member-item">
-                  <div class="member-info">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">LW</div>
-                    <div><div class="member-name">Lisa Wong</div><div class="member-email">lisa.wong@partnerco.com</div></div>
-                  </div>
-                  <i class="fas fa-times member-action" title="Remove from role"></i>
-                </div>
-                <a href="Admin_Users.html?role=agency-admin" class="view-all-link">View all 26 members →</a>
-              </div>
-            </div>
-          </div>
 
-          <!-- Standard User Role -->
-          <div class="role-card">
-            <div class="role-card-header">
-              <div class="role-info">
-                <div class="role-icon standard"><i class="fas fa-user"></i></div>
-                <div>
-                  <div class="role-name">Standard User <span class="badge badge-system"><i class="fas fa-lock"></i> System</span></div>
-                  <div class="role-description">Basic access to campaigns and reports</div>
-                </div>
-              </div>
-              <button class="role-menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-            </div>
-            <div class="role-card-body">
-              <div class="role-stats">
-                <div class="role-stat"><div class="role-stat-value">156</div><div class="role-stat-label">Users</div></div>
-                <div class="role-stat"><div class="role-stat-value">18</div><div class="role-stat-label">Permissions</div></div>
-              </div>
-              <div class="members-toggle" onclick="toggleMembers(this)">
-                <span class="members-toggle-text"><i class="fas fa-users"></i> View Members</span>
-                <i class="fas fa-chevron-down members-toggle-icon"></i>
-              </div>
-              <div class="members-list">
-                <div class="member-item">
-                  <div class="member-info">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">ML</div>
-                    <div><div class="member-name">Morgan Lee</div><div class="member-email">morgan.lee@acmeagency.com</div></div>
+              <!-- User Management Category -->
+              <div class="permission-category" data-category="users">
+                <div class="category-header" onclick="toggleCategory(this)">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="category-icon users"><i class="fas fa-users"></i></div>
+                    <span class="category-title">User Management</span>
                   </div>
-                  <i class="fas fa-times member-action" title="Remove from role"></i>
-                </div>
-                <div class="member-item">
-                  <div class="member-info">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">CB</div>
-                    <div><div class="member-name">Chris Brown</div><div class="member-email">chris.brown@formerco.com</div></div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="category-count"><span class="selected-count">0</span> / 6 selected</span>
+                    <i class="fas fa-chevron-down category-toggle"></i>
                   </div>
-                  <i class="fas fa-times member-action" title="Remove from role"></i>
                 </div>
-                <a href="Admin_Users.html?role=standard-user" class="view-all-link">View all 156 members →</a>
+                <div class="permission-list">
+                  <div class="permission-item" data-permission="view-users">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Users</div>
+                        <div class="permission-item-desc">View user list and profile details across the system</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="create-users">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Create Users</div>
+                        <div class="permission-item-desc">Add new user accounts to the system</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="edit-users">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Edit Users</div>
+                        <div class="permission-item-desc">Modify user profiles, settings, and account information</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="delete-users">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Delete Users</div>
+                        <div class="permission-item-desc">Remove user accounts from the system</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="assign-roles">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Assign Roles</div>
+                        <div class="permission-item-desc">Assign and modify user roles and permissions</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="view-activity">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Activity Logs</div>
+                        <div class="permission-item-desc">Access user activity logs and audit trails</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <!-- Read Only Role -->
-          <div class="role-card">
-            <div class="role-card-header">
-              <div class="role-info">
-                <div class="role-icon read-only"><i class="fas fa-eye"></i></div>
-                <div>
-                  <div class="role-name">Read Only <span class="badge badge-system"><i class="fas fa-lock"></i> System</span></div>
-                  <div class="role-description">View-only access to reports and data</div>
-                </div>
-              </div>
-              <button class="role-menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-            </div>
-            <div class="role-card-body">
-              <div class="role-stats">
-                <div class="role-stat"><div class="role-stat-value">57</div><div class="role-stat-label">Users</div></div>
-                <div class="role-stat"><div class="role-stat-value">8</div><div class="role-stat-label">Permissions</div></div>
-              </div>
-              <div class="members-toggle" onclick="toggleMembers(this)">
-                <span class="members-toggle-text"><i class="fas fa-users"></i> View Members</span>
-                <i class="fas fa-chevron-down members-toggle-icon"></i>
-              </div>
-              <div class="members-list">
-                <div class="member-item">
-                  <div class="member-info">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">TP</div>
-                    <div><div class="member-name">Taylor Patel</div><div class="member-email">taylor.patel@partnerco.com</div></div>
+              <!-- Campaign Management Category -->
+              <div class="permission-category" data-category="campaigns">
+                <div class="category-header" onclick="toggleCategory(this)">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="category-icon campaigns"><i class="fas fa-bullhorn"></i></div>
+                    <span class="category-title">Campaign Management</span>
                   </div>
-                  <i class="fas fa-times member-action" title="Remove from role"></i>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="category-count"><span class="selected-count">0</span> / 5 selected</span>
+                    <i class="fas fa-chevron-down category-toggle"></i>
+                  </div>
                 </div>
-                <a href="Admin_Users.html?role=read-only" class="view-all-link">View all 57 members →</a>
+                <div class="permission-list">
+                  <div class="permission-item" data-permission="view-campaigns">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Campaigns</div>
+                        <div class="permission-item-desc">Access campaign data and performance metrics</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="create-campaigns">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Create Campaigns</div>
+                        <div class="permission-item-desc">Create new advertising campaigns</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="edit-campaigns">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Edit Campaigns</div>
+                        <div class="permission-item-desc">Modify campaign settings and configurations</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="delete-campaigns">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Delete Campaigns</div>
+                        <div class="permission-item-desc">Remove campaigns from the system</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="approve-campaigns">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Approve Campaigns</div>
+                        <div class="permission-item-desc">Review and approve campaigns before launch</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <!-- Custom Role Example -->
-          <div class="role-card">
-            <div class="role-card-header">
-              <div class="role-info">
-                <div class="role-icon custom"><i class="fas fa-cog"></i></div>
-                <div>
-                  <div class="role-name">Campaign Manager</div>
-                  <div class="role-description">Full campaign management without billing</div>
-                </div>
-              </div>
-              <button class="role-menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-            </div>
-            <div class="role-card-body">
-              <div class="role-stats">
-                <div class="role-stat"><div class="role-stat-value">12</div><div class="role-stat-label">Users</div></div>
-                <div class="role-stat"><div class="role-stat-value">24</div><div class="role-stat-label">Permissions</div></div>
-              </div>
-              <div class="members-toggle" onclick="toggleMembers(this)">
-                <span class="members-toggle-text"><i class="fas fa-users"></i> View Members</span>
-                <i class="fas fa-chevron-down members-toggle-icon"></i>
-              </div>
-              <div class="members-list">
-                <div class="member-item">
-                  <div class="member-info">
-                    <div class="member-avatar" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">KC</div>
-                    <div><div class="member-name">Kim Chen</div><div class="member-email">kim.chen@multiview.com</div></div>
+              <!-- Reports & Analytics Category -->
+              <div class="permission-category" data-category="reports">
+                <div class="category-header" onclick="toggleCategory(this)">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="category-icon reports"><i class="fas fa-chart-bar"></i></div>
+                    <span class="category-title">Reports & Analytics</span>
                   </div>
-                  <i class="fas fa-times member-action" title="Remove from role"></i>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="category-count"><span class="selected-count">0</span> / 4 selected</span>
+                    <i class="fas fa-chevron-down category-toggle"></i>
+                  </div>
                 </div>
-                <a href="Admin_Users.html?role=campaign-manager" class="view-all-link">View all 12 members →</a>
+                <div class="permission-list">
+                  <div class="permission-item" data-permission="view-reports">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Reports</div>
+                        <div class="permission-item-desc">Access standard reports and analytics dashboards</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="create-reports">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Create Custom Reports</div>
+                        <div class="permission-item-desc">Build and save custom report configurations</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="export-reports">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Export Reports</div>
+                        <div class="permission-item-desc">Download and export report data</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="view-analytics">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Advanced Analytics</div>
+                        <div class="permission-item-desc">Access advanced analytics and insights</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Billing & Finance Category -->
+              <div class="permission-category" data-category="billing">
+                <div class="category-header" onclick="toggleCategory(this)">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="category-icon billing"><i class="fas fa-dollar-sign"></i></div>
+                    <span class="category-title">Billing & Finance</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="category-count"><span class="selected-count">0</span> / 4 selected</span>
+                    <i class="fas fa-chevron-down category-toggle"></i>
+                  </div>
+                </div>
+                <div class="permission-list">
+                  <div class="permission-item" data-permission="view-billing">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Billing</div>
+                        <div class="permission-item-desc">Access billing information and invoices</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="manage-billing">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Manage Billing</div>
+                        <div class="permission-item-desc">Update billing settings and payment methods</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="view-budgets">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Budgets</div>
+                        <div class="permission-item-desc">Access budget allocations and spending data</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="manage-budgets">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Manage Budgets</div>
+                        <div class="permission-item-desc">Set and modify campaign budgets</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- System Settings Category -->
+              <div class="permission-category" data-category="settings">
+                <div class="category-header" onclick="toggleCategory(this)">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="category-icon settings"><i class="fas fa-cog"></i></div>
+                    <span class="category-title">System Settings</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="category-count"><span class="selected-count">0</span> / 3 selected</span>
+                    <i class="fas fa-chevron-down category-toggle"></i>
+                  </div>
+                </div>
+                <div class="permission-list">
+                  <div class="permission-item" data-permission="view-settings">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">View Settings</div>
+                        <div class="permission-item-desc">Access system configuration and settings</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="manage-settings">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Manage Settings</div>
+                        <div class="permission-item-desc">Modify system configurations and preferences</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="permission-item" data-permission="manage-integrations">
+                    <div class="permission-item-info">
+                      <input type="checkbox" class="permission-checkbox" onchange="updatePermissionCount()">
+                      <div class="permission-details">
+                        <div class="permission-item-name">Manage Integrations</div>
+                        <div class="permission-item-desc">Configure third-party integrations and APIs</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -592,7 +1394,6 @@
   </div>
 
   <script>
-    // Navigation
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', function(e) {
         const href = (this.getAttribute('href') || '').trim();
@@ -620,12 +1421,28 @@
       });
     });
 
-    // Toggle members list
-    function toggleMembers(el) {
-      el.classList.toggle('expanded');
-      const list = el.nextElementSibling;
-      list.classList.toggle('visible');
+    // Toggle members dropdown in table
+    function toggleMembersDropdown(button) {
+      const dropdown = button.closest('.members-dropdown');
+      const wasActive = dropdown.classList.contains('active');
+      
+      // Close all other dropdowns
+      document.querySelectorAll('.members-dropdown').forEach(d => d.classList.remove('active'));
+      
+      // Toggle this dropdown
+      if (!wasActive) {
+        dropdown.classList.add('active');
+      }
     }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.members-dropdown')) {
+        document.querySelectorAll('.members-dropdown').forEach(d => d.classList.remove('active'));
+      }
+      if (menuDropdown) menuDropdown.classList.add('hidden');
+      if (notificationDropdown) notificationDropdown.classList.add('hidden');
+    });
 
     // Modal functions
     function openModal(id) {
@@ -673,9 +1490,201 @@
       });
     }
 
-    document.addEventListener('click', function() {
-      if (menuDropdown) menuDropdown.classList.add('hidden');
-      if (notificationDropdown) notificationDropdown.classList.add('hidden');
+    // Role permissions configuration
+    const rolePermissions = {
+      'super-admin': {
+        name: 'Super Admin',
+        icon: 'super-admin',
+        iconClass: 'fa-crown',
+        permissions: ['view-users', 'create-users', 'edit-users', 'delete-users', 'assign-roles', 'view-activity', 
+                      'view-campaigns', 'create-campaigns', 'edit-campaigns', 'delete-campaigns', 'approve-campaigns',
+                      'view-reports', 'create-reports', 'export-reports', 'view-analytics',
+                      'view-billing', 'manage-billing', 'view-budgets', 'manage-budgets',
+                      'view-settings', 'manage-settings', 'manage-integrations']
+      },
+      'agency-admin': {
+        name: 'Agency Admin',
+        icon: 'agency-admin',
+        iconClass: 'fa-user-shield',
+        permissions: ['view-users', 'create-users', 'edit-users', 'assign-roles',
+                      'view-campaigns', 'create-campaigns', 'edit-campaigns', 'delete-campaigns', 'approve-campaigns',
+                      'view-reports', 'create-reports', 'export-reports',
+                      'view-billing', 'view-budgets']
+      },
+      'standard-user': {
+        name: 'Standard User',
+        icon: 'standard',
+        iconClass: 'fa-user',
+        permissions: ['view-users', 'view-campaigns', 'create-campaigns', 'edit-campaigns',
+                      'view-reports', 'export-reports']
+      },
+      'read-only': {
+        name: 'Read Only',
+        icon: 'read-only',
+        iconClass: 'fa-eye',
+        permissions: ['view-campaigns', 'view-reports']
+      },
+      'campaign-manager': {
+        name: 'Campaign Manager',
+        icon: 'custom',
+        iconClass: 'fa-cog',
+        permissions: ['view-users', 'view-campaigns', 'create-campaigns', 'edit-campaigns', 'delete-campaigns', 'approve-campaigns',
+                      'view-reports', 'create-reports', 'export-reports', 'view-budgets', 'manage-budgets']
+      }
+    };
+
+    // Open role permissions editor (switch to edit view)
+    function openRolePermissions(roleKey) {
+      const role = rolePermissions[roleKey];
+      if (!role) return;
+
+      // Update edit view header
+      document.getElementById('editRoleTitle').innerHTML = `Edit ${role.name} Permissions`;
+      document.getElementById('editRoleDescription').textContent = role.name;
+      const iconElement = document.getElementById('editRoleIcon');
+      iconElement.className = `role-icon ${role.icon}`;
+      iconElement.innerHTML = `<i class="fas ${role.iconClass}"></i>`;
+      iconElement.style.width = '32px';
+      iconElement.style.height = '32px';
+      iconElement.style.fontSize = '14px';
+
+      // Reset all checkboxes
+      document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = false);
+
+      // Check permissions for this role
+      role.permissions.forEach(permissionKey => {
+        const permissionItem = document.querySelector(`[data-permission="${permissionKey}"]`);
+        if (permissionItem) {
+          const checkbox = permissionItem.querySelector('.permission-checkbox');
+          if (checkbox) checkbox.checked = true;
+        }
+      });
+
+      // Update counts
+      updatePermissionCount();
+
+      // Switch to edit view
+      showEditView();
+    }
+
+    // Toggle category collapse
+    function toggleCategory(header) {
+      header.classList.toggle('collapsed');
+    }
+
+    // Update permission counts
+    function updatePermissionCount() {
+      let totalSelected = 0;
+      
+      document.querySelectorAll('.permission-category').forEach(category => {
+        const checkboxes = category.querySelectorAll('.permission-checkbox');
+        const selectedInCategory = Array.from(checkboxes).filter(cb => cb.checked).length;
+        
+        const countSpan = category.querySelector('.selected-count');
+        if (countSpan) {
+          countSpan.textContent = selectedInCategory;
+        }
+        
+        totalSelected += selectedInCategory;
+      });
+      
+      const totalSpan = document.getElementById('totalSelectedPermissions');
+      if (totalSpan) {
+        totalSpan.textContent = totalSelected;
+      }
+    }
+
+    // Filter permissions by search
+    function filterPermissions(searchTerm) {
+      const term = searchTerm.toLowerCase();
+      
+      document.querySelectorAll('.permission-item').forEach(item => {
+        const name = item.querySelector('.permission-item-name').textContent.toLowerCase();
+        const desc = item.querySelector('.permission-item-desc').textContent.toLowerCase();
+        
+        if (name.includes(term) || desc.includes(term)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      // Show/hide categories based on visible items
+      document.querySelectorAll('.permission-category').forEach(category => {
+        const visibleItems = Array.from(category.querySelectorAll('.permission-item'))
+          .filter(item => item.style.display !== 'none');
+        
+        if (visibleItems.length > 0 || term === '') {
+          category.style.display = '';
+        } else {
+          category.style.display = 'none';
+        }
+      });
+    }
+
+    // Save role permissions
+    function saveRolePermissions() {
+      // Get all selected permissions
+      const selectedPermissions = [];
+      document.querySelectorAll('.permission-checkbox:checked').forEach(cb => {
+        const item = cb.closest('.permission-item');
+        const permissionKey = item.getAttribute('data-permission');
+        selectedPermissions.push(permissionKey);
+      });
+
+      console.log('Saving permissions:', selectedPermissions);
+      
+      // Show success notification
+      showNotification('Role permissions updated successfully', 'success');
+      
+      // Return to roles view
+      showRolesView();
+    }
+
+    // Show edit view
+    function showEditView() {
+      document.getElementById('rolesContent').style.display = 'none';
+      document.getElementById('permissionsContent').style.display = 'none';
+      document.getElementById('editRoleContent').style.display = 'block';
+      document.getElementById('mainHeader').style.display = 'none';
+      document.getElementById('editHeader').style.display = 'block';
+      document.getElementById('mainActions').style.display = 'none';
+      document.getElementById('editActions').style.display = 'block';
+    }
+
+    // Show roles view
+    function showRolesView() {
+      document.getElementById('rolesContent').style.display = 'block';
+      document.getElementById('permissionsContent').style.display = 'none';
+      document.getElementById('editRoleContent').style.display = 'none';
+      document.getElementById('mainHeader').style.display = 'block';
+      document.getElementById('editHeader').style.display = 'none';
+      document.getElementById('mainActions').style.display = 'block';
+      document.getElementById('editActions').style.display = 'none';
+      
+      // Clear search
+      const searchInput = document.getElementById('permissionsSearchInput');
+      if (searchInput) searchInput.value = '';
+      filterPermissions('');
+    }
+
+    // Add click handlers to role rows to open permissions
+    document.addEventListener('DOMContentLoaded', function() {
+      // Make role rows clickable
+      const roleRows = document.querySelectorAll('.roles-table tbody tr');
+      roleRows.forEach((row, index) => {
+        const roleKeys = ['super-admin', 'agency-admin', 'standard-user', 'read-only', 'campaign-manager'];
+        row.style.cursor = 'pointer';
+        
+        row.addEventListener('click', function(e) {
+          // Don't trigger if clicking on action buttons or member dropdown
+          if (e.target.closest('.row-action') || e.target.closest('.members-count') || e.target.closest('.members-dropdown-content')) {
+            return;
+          }
+          
+          openRolePermissions(roleKeys[index]);
+        });
+      });
     });
   </script>
 </body>
