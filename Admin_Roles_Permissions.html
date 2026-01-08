@@ -312,7 +312,8 @@
 <!-- Action Bar -->
       <div class="action-section" id="mainActions">
         <div class="action-grid">
-          <button class="action-btn primary small" onclick="openModal('createRoleModal')"><i class="fas fa-plus"></i> Create Role</button>
+          <button class="action-btn primary small" id="createRoleBtn" onclick="openModal('createRoleModal')"><i class="fas fa-plus"></i> Create Role</button>
+          <button class="action-btn primary small" id="createPermissionBtn" style="display: none;" onclick="openModal('createPermissionModal')"><i class="fas fa-plus"></i> Create Permission</button>
 <!-- Tabs -->
 <div class="tabs">
   <button class="tab active" data-tab="roles">Roles</button>
@@ -418,9 +419,7 @@
                   </td>
                   <td>
                     <div class="row-actions" style="justify-content:center;">
-                      <button class="row-action" title="Edit Role"><i class="fas fa-pen"></i></button>
-                      <button class="row-action" title="View Permissions"><i class="fas fa-key"></i></button>
-                      <button class="row-action" title="Duplicate Role"><i class="fas fa-copy"></i></button>
+                      <button class="row-action danger" title="Delete Role"><i class="fas fa-trash"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -490,9 +489,7 @@
                   </td>
                   <td>
                     <div class="row-actions" style="justify-content:center;">
-                      <button class="row-action" title="Edit Role"><i class="fas fa-pen"></i></button>
-                      <button class="row-action" title="View Permissions"><i class="fas fa-key"></i></button>
-                      <button class="row-action" title="Duplicate Role"><i class="fas fa-copy"></i></button>
+                      <button class="row-action danger" title="Delete Role"><i class="fas fa-trash"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -554,9 +551,7 @@
                   </td>
                   <td>
                     <div class="row-actions" style="justify-content:center;">
-                      <button class="row-action" title="Edit Role"><i class="fas fa-pen"></i></button>
-                      <button class="row-action" title="View Permissions"><i class="fas fa-key"></i></button>
-                      <button class="row-action" title="Duplicate Role"><i class="fas fa-copy"></i></button>
+                      <button class="row-action danger" title="Delete Role"><i class="fas fa-trash"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -610,9 +605,7 @@
                   </td>
                   <td>
                     <div class="row-actions" style="justify-content:center;">
-                      <button class="row-action" title="Edit Role"><i class="fas fa-pen"></i></button>
-                      <button class="row-action" title="View Permissions"><i class="fas fa-key"></i></button>
-                      <button class="row-action" title="Duplicate Role"><i class="fas fa-copy"></i></button>
+                      <button class="row-action danger" title="Delete Role"><i class="fas fa-trash"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -663,8 +656,6 @@
                   </td>
                   <td>
                     <div class="row-actions" style="justify-content:center;">
-                      <button class="row-action" title="Edit Role"><i class="fas fa-pen"></i></button>
-                      <button class="row-action" title="View Permissions"><i class="fas fa-key"></i></button>
                       <button class="row-action danger" title="Delete Role"><i class="fas fa-trash"></i></button>
                     </div>
                   </td>
@@ -1302,6 +1293,7 @@
                   <td style="text-align:center;"><span class="permission-badge limited">Agency Only</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('create-users')"><i class="fas fa-trash"></i></button></td>
                 </tr>
                 <tr>
                   <td><div class="permission-name">Edit Users</div><div class="permission-desc">Modify user profiles and settings</div></td>
@@ -1309,6 +1301,7 @@
                   <td style="text-align:center;"><span class="permission-badge limited">Agency Only</span></td>
                   <td style="text-align:center;"><span class="permission-badge limited">Self</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('edit-users')"><i class="fas fa-trash"></i></button></td>
                 </tr>
                 <tr>
                   <td><div class="permission-name">Delete Users</div><div class="permission-desc">Remove user accounts</div></td>
@@ -1316,6 +1309,7 @@
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('delete-users')"><i class="fas fa-trash"></i></button></td>
                 </tr>
                 <tr>
                   <td><div class="permission-name">View Campaigns</div><div class="permission-desc">Access campaign data</div></td>
@@ -1323,6 +1317,7 @@
                   <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
                   <td style="text-align:center;"><span class="permission-badge limited">Assigned</span></td>
                   <td style="text-align:center;"><span class="permission-badge limited">Assigned</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('view-campaigns')"><i class="fas fa-trash"></i></button></td>
                 </tr>
                 <tr>
                   <td><div class="permission-name">Create Campaigns</div><div class="permission-desc">Create new campaigns</div></td>
@@ -1330,6 +1325,7 @@
                   <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
                   <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('create-campaigns')"><i class="fas fa-trash"></i></button></td>
                 </tr>
                 <tr>
                   <td><div class="permission-name">Manage Billing</div><div class="permission-desc">Access billing and invoices</div></td>
@@ -1337,6 +1333,7 @@
                   <td style="text-align:center;"><span class="permission-badge limited">View Only</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('manage-billing')"><i class="fas fa-trash"></i></button></td>
                 </tr>
                 <tr>
                   <td><div class="permission-name">System Settings</div><div class="permission-desc">Configure platform settings</div></td>
@@ -1344,6 +1341,7 @@
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('system-settings')"><i class="fas fa-trash"></i></button></td>
                 </tr>
               </tbody>
             </table>
@@ -1400,6 +1398,30 @@
     </div>
   </div>
 
+  <!-- Create Permission Modal -->
+  <div class="modal-overlay" id="createPermissionModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Create New Permission</h2>
+        <button class="modal-close" onclick="closeModal('createPermissionModal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Permission Name</label>
+          <input type="text" placeholder="e.g., Edit Budgets">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea placeholder="Describe what this permission allows..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" onclick="closeModal('createPermissionModal')">Cancel</button>
+        <button class="action-btn primary">Create Permission</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', function(e) {
@@ -1422,10 +1444,14 @@
           document.getElementById('rolesContent').style.display = 'block';
           document.getElementById('permissionsContent').classList.remove('active');
           document.getElementById('permissionsContent').style.display = 'none';
+          document.getElementById('createRoleBtn').style.display = 'inline-flex';
+          document.getElementById('createPermissionBtn').style.display = 'none';
         } else {
           document.getElementById('rolesContent').style.display = 'none';
           document.getElementById('permissionsContent').classList.add('active');
           document.getElementById('permissionsContent').style.display = 'block';
+          document.getElementById('createRoleBtn').style.display = 'none';
+          document.getElementById('createPermissionBtn').style.display = 'inline-flex';
         }
       });
     });
