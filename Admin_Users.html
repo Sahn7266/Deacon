@@ -39,15 +39,16 @@
         .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, #0ea5e9, #06b6d4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
         .content-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
         .card-title { font-size: 18px; font-weight: 600; color: #0f172a; }
-        .card-content { padding: 16px; }
+        .card-content { padding: 12px; }
 
         /* Action Section */
-        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 16px; }
-        .action-grid { display: flex; gap: 12px; flex-wrap: wrap; }
-        .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 13.5px 10px; margin-bottom: 12px; }
+        .action-grid { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
         .action-btn:hover { border-color: #005EB8; color: #005EB8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 94, 184, 0.15); }
         .action-btn.primary { background: #005EB8; color: white; border-color: #005EB8; }
         .action-btn.primary:hover { background: #004a93; }
+        .action-btn.small { padding: 6px 12px; font-size: 13px; }
 
         /* Stats Row */
         .stats-row { display: flex; gap: 16px; margin-bottom: 16px; }
@@ -62,19 +63,20 @@
 
         /* Data Table */
         .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th { background: #f8fafc; padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
-        .data-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .data-table th { background: #f8fafc; padding: 8px 12px; text-align: left; font-weight: 600; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .data-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         .data-table tbody tr { transition: background 0.15s ease; }
         .data-table tbody tr:hover { background: #f8fafc; }
 
         /* User Cell */
-        .user-cell { display: flex; align-items: center; gap: 12px; }
-        .user-cell .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; color: white; }
-        .user-cell .info .name { font-weight: 500; color: #0f172a; }
-        .user-cell .info .email { font-size: 13px; color: #64748b; }
+        .user-cell { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .user-cell:hover { opacity: 0.8; }
+        .user-cell .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; color: white; }
+        .user-cell .info .name { font-weight: 500; color: #0f172a; font-size: 13px; line-height: 1.3; }
+        .user-cell .info .email { font-size: 12px; color: #64748b; line-height: 1.3; }
 
         /* Badges */
-        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; }
         .badge-admin { background: #fef3c7; color: #92400e; }
         .badge-user { background: #e0f2fe; color: #0369a1; }
         .badge-active { background: #dcfce7; color: #166534; }
@@ -82,7 +84,7 @@
         .badge-invited { background: #f3e8ff; color: #7c3aed; }
 
         /* Role Tag */
-        .role-tag { display: inline-block; padding: 4px 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; color: #475569; }
+        .role-tag { display: inline-block; padding: 3px 8px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; color: #475569; }
 
         /* Info Icon + Tooltip */
         .info-trigger { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; color: #94a3b8; cursor: pointer; transition: all 0.15s ease; }
@@ -97,7 +99,7 @@
 
         /* Action Icons */
         .row-actions { display: flex; gap: 4px; }
-        .row-action { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.15s ease; border: none; background: transparent; }
+        .row-action { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.15s ease; border: none; background: transparent; }
         .row-action:hover { background: #f1f5f9; color: #005EB8; }
         .row-action.danger:hover { background: #fee2e2; color: #dc2626; }
 
@@ -133,6 +135,38 @@
         .form-group input:focus, .form-group select:focus { outline: none; border-color: #005EB8; box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.1); }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
+        /* User Details View */
+        .user-details-view { display: none; }
+        .user-details-view.active { display: block; }
+        
+        .user-details-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; padding: 12px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .user-details-header .avatar-large { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 20px; color: white; }
+        .user-details-info h2 { font-size: 20px; font-weight: 600; color: #0f172a; margin: 0; }
+        .user-details-info .email { color: #64748b; font-size: 14px; margin-top: 4px; }
+        .user-details-info .meta { display: flex; gap: 12px; margin-top: 8px; font-size: 13px; color: #64748b; }
+        
+        .roles-assignment-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; max-width: 700px; margin: 0 auto; }
+        .roles-assignment-header { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .roles-assignment-header h3 { font-size: 16px; font-weight: 600; color: #0f172a; margin: 0; }
+        .roles-count { font-size: 13px; color: #64748b; }
+        
+        .roles-table-compact { width: 100%; border-collapse: collapse; }
+        .roles-table-compact th { background: #f8fafc; padding: 10px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .roles-table-compact td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .roles-table-compact tbody tr { transition: background 0.15s ease; }
+        .roles-table-compact tbody tr:hover { background: #f8fafc; }
+        
+        .role-name-cell { display: flex; align-items: center; gap: 10px; }
+        .role-icon-sm { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .role-icon-sm.super-admin { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
+        .role-icon-sm.agency-admin { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+        .role-icon-sm.campaign-manager { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+        .role-icon-sm.standard-user { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .role-icon-sm.read-only { background: linear-gradient(135deg, #64748b, #475569); color: white; }
+        
+        .role-text-info .role-title { font-weight: 500; color: #0f172a; font-size: 14px; }
+        .role-text-info .role-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
+        
         @media (max-width: 1024px) { .sidebar { width: 240px; } .main-content { margin-left: 240px; padding: 16px 24px; } .stats-row { flex-wrap: wrap; } .stat-box { min-width: 140px; } }
         @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; padding: 16px; } .header { flex-direction: column; gap: 16px; align-items: flex-start; } .search-box input { width: 100%; } .data-table { display: block; overflow-x: auto; } }
     </style>
@@ -215,8 +249,16 @@
     <main class="main-content">
       <header class="header">
         <div class="header-left">
-          <h1>Users</h1>
-          <p>Manage user accounts, roles, and access across the platform.</p>
+          <div id="mainHeader">
+            <h1>Users</h1>
+            <p>Manage user accounts, roles, and access across the platform.</p>
+          </div>
+          <div id="userDetailsHeader" style="display: none;">
+            <button class="action-btn" onclick="showUsersView()" style="margin-bottom: 12px;">
+              <i class="fas fa-arrow-left"></i> Back to Users
+            </button>
+            <h1 id="userDetailsTitle">User Details</h1>
+          </div>
         </div>
         <div class="header-right">
           <div class="search-box"><i class="fas fa-search"></i><input type="text" id="globalSearch" placeholder="Search users..."></div>
@@ -227,18 +269,20 @@
       <!-- Stats Row -->
       
 
-      <!-- Action Bar -->
-      <div class="action-section">
-        <div class="action-grid">
-          <button class="action-btn primary" onclick="openModal('addUserModal')"><i class="fas fa-user-plus"></i> Add User</button>
-          
-          <button class="action-btn" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button>
+      <!-- Users List View -->
+      <div id="usersListView">
+        <!-- Action Bar -->
+        <div class="action-section">
+          <div class="action-grid">
+            <button class="action-btn primary small" onclick="openModal('addUserModal')"><i class="fas fa-user-plus"></i> Add User</button>
+            
+            <button class="action-btn small" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button>
+          </div>
         </div>
-      </div>
 
-      <!-- Filter Bar -->
-      <div class="content-card">
-        <div class="card-content">
+        <!-- Filter Bar -->
+        <div class="content-card">
+          <div class="card-content">
           <div class="filter-bar">
             <select id="filterRole">
               <option value="">All Roles</option>
@@ -269,8 +313,6 @@
                 <th style="width:40px;"><input type="checkbox" class="checkbox" id="selectAll"></th>
                 <th>User</th>
                 <th>Role</th>
-                <th>Type</th>
-                <th>Status</th>
                 <th>Last Active</th>
                 <th style="width:100px;">Audit</th>
                 <th style="width:120px;">Actions</th>
@@ -281,7 +323,7 @@
               <tr>
                 <td><input type="checkbox" class="checkbox"></td>
                 <td>
-                  <div class="user-cell">
+                  <div class="user-cell" onclick='viewUserDetails("Jane Smith", "jane.smith@multiview.com", "JS", "linear-gradient(135deg, #667eea, #764ba2)", ["super-admin"])'>
                     <div class="avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">JS</div>
                     <div class="info">
                       <div class="name">Jane Smith <span class="badge badge-admin"><i class="fas fa-shield-alt"></i> Admin</span></div>
@@ -290,8 +332,6 @@
                   </div>
                 </td>
                 <td><span class="role-tag">Super Admin</span></td>
-                <td>Internal</td>
-                <td><span class="badge badge-active"><i class="fas fa-circle" style="font-size:6px;"></i> Active</span></td>
                 <td style="color:#64748b; font-size:13px;">2 hours ago</td>
                 <td>
                   <div class="info-trigger">
@@ -305,9 +345,9 @@
                 </td>
                 <td>
                   <div class="row-actions">
-                    <button class="row-action" title="Edit User"><i class="fas fa-pen"></i></button>
+                    <button class="row-action" title="Edit User" onclick='viewUserDetails("Jane Smith", "jane.smith@multiview.com", "JS", "linear-gradient(135deg, #667eea, #764ba2)", ["super-admin"])'><i class="fas fa-pen"></i></button>
                     <button class="row-action" title="View Activity"><i class="fas fa-history"></i></button>
-                    <button class="row-action" title="Manage Permissions"><i class="fas fa-key"></i></button>
+                    <button class="row-action" title="Manage Roles"><i class="fas fa-key"></i></button>
                     <button class="row-action danger" title="Deactivate"><i class="fas fa-ban"></i></button>
                   </div>
                 </td>
@@ -316,7 +356,7 @@
               <tr>
                 <td><input type="checkbox" class="checkbox"></td>
                 <td>
-                  <div class="user-cell">
+                  <div class="user-cell" onclick='viewUserDetails("Alex Johnson", "alex.johnson@multiview.com", "AJ", "linear-gradient(135deg, #f093fb, #f5576c)", ["agency-admin"])'>
                     <div class="avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">AJ</div>
                     <div class="info">
                       <div class="name">Alex Johnson <span class="badge badge-admin"><i class="fas fa-shield-alt"></i> Admin</span></div>
@@ -325,8 +365,6 @@
                   </div>
                 </td>
                 <td><span class="role-tag">Agency Admin</span></td>
-                <td>Internal</td>
-                <td><span class="badge badge-active"><i class="fas fa-circle" style="font-size:6px;"></i> Active</span></td>
                 <td style="color:#64748b; font-size:13px;">Yesterday</td>
                 <td>
                   <div class="info-trigger">
@@ -340,9 +378,9 @@
                 </td>
                 <td>
                   <div class="row-actions">
-                    <button class="row-action" title="Edit User"><i class="fas fa-pen"></i></button>
+                    <button class="row-action" title="Edit User" onclick='viewUserDetails("Alex Johnson", "alex.johnson@multiview.com", "AJ", "linear-gradient(135deg, #f093fb, #f5576c)", ["agency-admin"])'><i class="fas fa-pen"></i></button>
                     <button class="row-action" title="View Activity"><i class="fas fa-history"></i></button>
-                    <button class="row-action" title="Manage Permissions"><i class="fas fa-key"></i></button>
+                    <button class="row-action" title="Manage Roles"><i class="fas fa-key"></i></button>
                     <button class="row-action danger" title="Deactivate"><i class="fas fa-ban"></i></button>
                   </div>
                 </td>
@@ -351,7 +389,7 @@
               <tr>
                 <td><input type="checkbox" class="checkbox"></td>
                 <td>
-                  <div class="user-cell">
+                  <div class="user-cell" onclick='viewUserDetails("Morgan Lee", "morgan.lee@acmeagency.com", "ML", "linear-gradient(135deg, #4facfe, #00f2fe)", ["standard-user"])'>
                     <div class="avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">ML</div>
                     <div class="info">
                       <div class="name">Morgan Lee</div>
@@ -360,8 +398,6 @@
                   </div>
                 </td>
                 <td><span class="role-tag">Standard User</span></td>
-                <td>Agency</td>
-                <td><span class="badge badge-invited"><i class="fas fa-paper-plane" style="font-size:10px;"></i> Invited</span></td>
                 <td style="color:#64748b; font-size:13px;">—</td>
                 <td>
                   <div class="info-trigger">
@@ -375,8 +411,9 @@
                 </td>
                 <td>
                   <div class="row-actions">
-                    <button class="row-action" title="Edit User"><i class="fas fa-pen"></i></button>
+                    <button class="row-action" title="Edit User" onclick='viewUserDetails("Morgan Lee", "morgan.lee@acmeagency.com", "ML", "linear-gradient(135deg, #4facfe, #00f2fe)", ["standard-user"])'><i class="fas fa-pen"></i></button>
                     <button class="row-action" title="Resend Invite"><i class="fas fa-redo"></i></button>
+                    <button class="row-action" title="View Pending Roles"><i class="fas fa-key"></i></button>
                     <button class="row-action danger" title="Revoke Invite"><i class="fas fa-times"></i></button>
                   </div>
                 </td>
@@ -385,7 +422,7 @@
               <tr>
                 <td><input type="checkbox" class="checkbox"></td>
                 <td>
-                  <div class="user-cell">
+                  <div class="user-cell" onclick='viewUserDetails("Taylor Patel", "taylor.patel@partnerco.com", "TP", "linear-gradient(135deg, #a8edea, #fed6e3)", ["read-only"])'>
                     <div class="avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">TP</div>
                     <div class="info">
                       <div class="name">Taylor Patel</div>
@@ -394,24 +431,22 @@
                   </div>
                 </td>
                 <td><span class="role-tag">Read Only</span></td>
-                <td>Agency</td>
-                <td><span class="badge badge-active"><i class="fas fa-circle" style="font-size:6px;"></i> Active</span></td>
                 <td style="color:#64748b; font-size:13px;">3 days ago</td>
                 <td>
                   <div class="info-trigger">
                     <i class="fas fa-info-circle"></i>
                     <div class="tooltip">
                       <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Sep 12, 2024 by Jane Smith</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Modified:</span><span class="tooltip-value">Nov 5, 2025 by System</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Last Login:</span><span class="tooltip-value">Dec 30, 2025 11:02 AM</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Modified:</span><span class="tooltip-value">Dec 10, 2025 by Alex Johnson</span></div>
+                      <div class="tooltip-row"><span class="tooltip-label">Last Login:</span><span class="tooltip-value">Dec 15, 2025 9:22 AM</span></div>
                     </div>
                   </div>
                 </td>
                 <td>
                   <div class="row-actions">
-                    <button class="row-action" title="Edit User"><i class="fas fa-pen"></i></button>
+                    <button class="row-action" title="Edit User" onclick='viewUserDetails("Taylor Patel", "taylor.patel@partnerco.com", "TP", "linear-gradient(135deg, #a8edea, #fed6e3)", ["read-only"])'><i class="fas fa-pen"></i></button>
                     <button class="row-action" title="View Activity"><i class="fas fa-history"></i></button>
-                    <button class="row-action" title="Manage Permissions"><i class="fas fa-key"></i></button>
+                    <button class="row-action" title="Manage Roles"><i class="fas fa-key"></i></button>
                     <button class="row-action danger" title="Deactivate"><i class="fas fa-ban"></i></button>
                   </div>
                 </td>
@@ -420,7 +455,7 @@
               <tr>
                 <td><input type="checkbox" class="checkbox"></td>
                 <td>
-                  <div class="user-cell">
+                  <div class="user-cell" onclick='viewUserDetails("Chris Brown", "chris.brown@formerco.com", "CB", "linear-gradient(135deg, #ffecd2, #fcb69f)", ["standard-user"])'>
                     <div class="avatar" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">CB</div>
                     <div class="info">
                       <div class="name">Chris Brown</div>
@@ -429,8 +464,6 @@
                   </div>
                 </td>
                 <td><span class="role-tag">Standard User</span></td>
-                <td>Agency</td>
-                <td><span class="badge badge-inactive"><i class="fas fa-circle" style="font-size:6px;"></i> Inactive</span></td>
                 <td style="color:#64748b; font-size:13px;">Oct 15, 2025</td>
                 <td>
                   <div class="info-trigger">
@@ -444,9 +477,9 @@
                 </td>
                 <td>
                   <div class="row-actions">
-                    <button class="row-action" title="View User"><i class="fas fa-eye"></i></button>
+                    <button class="row-action" title="View User" onclick='viewUserDetails("Chris Brown", "chris.brown@formerco.com", "CB", "linear-gradient(135deg, #ffecd2, #fcb69f)", ["standard-user"])'><i class="fas fa-eye"></i></button>
                     <button class="row-action" title="Reactivate"><i class="fas fa-undo"></i></button>
-                    <button class="row-action danger" title="Delete"><i class="fas fa-trash"></i></button>
+                    <button class="row-action" title="Delete"><i class="fas fa-trash"></i></button>
                   </div>
                 </td>
               </tr>
@@ -468,6 +501,51 @@
           </div>
         </div>
       </div>
+      </div><!-- End usersListView -->
+
+      <!-- User Details View -->
+      <div id="userDetailsView" class="user-details-view">
+        <!-- Action Bar -->
+        <div class="action-section">
+          <div class="action-grid">
+            <button class="action-btn small" onclick="showUsersView()">Cancel</button>
+            <button class="action-btn danger small" onclick="deleteUser()" style="margin-left: auto;"><i class="fas fa-trash"></i> Delete User</button>
+            <button class="action-btn primary small" onclick="saveUserRoles()"><i class="fas fa-check"></i> Save Changes</button>
+          </div>
+        </div>
+
+        <!-- User Details Header -->
+        <div class="user-details-header">
+          <div class="avatar-large" id="userDetailAvatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">JS</div>
+          <div class="user-details-info">
+            <h2 id="userDetailName">Jane Smith</h2>
+            <div class="email" id="userDetailEmail">jane.smith@multiview.com</div>
+            <div class="meta">
+              <span><i class="fas fa-building"></i> Internal</span>
+              <span>•</span>
+              <span><i class="fas fa-circle" style="font-size:6px; color:#10b981;"></i> Active</span>
+              <span>•</span>
+              <span>Last active: 2 hours ago</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Assignment Card -->
+        <div class="roles-assignment-card">
+          <div class="roles-assignment-header">
+            <h3>Assigned Roles</h3>
+            <span class="roles-count"><span id="assignedRolesCount">0</span> roles assigned</span>
+          </div>
+          <div class="card-content">
+            <table class="roles-table-compact">
+              <tbody id="rolesAssignmentBody">
+                <!-- Roles will be populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div><!-- End userDetailsView -->
+
     </main>
   </div>
 
@@ -638,6 +716,158 @@
       if (menuDropdown) menuDropdown.classList.add('hidden');
       if (notificationDropdown) notificationDropdown.classList.add('hidden');
     });
+
+    // Available roles data
+    const allRoles = [
+      {
+        id: 'super-admin',
+        name: 'Super Admin',
+        description: 'Full system access with all permissions',
+        icon: 'fas fa-crown',
+        iconClass: 'super-admin',
+        permissions: 47
+      },
+      {
+        id: 'agency-admin',
+        name: 'Agency Admin',
+        description: 'Manage agency users and campaigns',
+        icon: 'fas fa-user-tie',
+        iconClass: 'agency-admin',
+        permissions: 28
+      },
+      {
+        id: 'campaign-manager',
+        name: 'Campaign Manager',
+        description: 'Create and manage advertising campaigns',
+        icon: 'fas fa-bullhorn',
+        iconClass: 'campaign-manager',
+        permissions: 18
+      },
+      {
+        id: 'standard-user',
+        name: 'Standard User',
+        description: 'View and edit assigned campaigns',
+        icon: 'fas fa-user',
+        iconClass: 'standard-user',
+        permissions: 12
+      },
+      {
+        id: 'read-only',
+        name: 'Read Only',
+        description: 'View-only access to campaigns and reports',
+        icon: 'fas fa-eye',
+        iconClass: 'read-only',
+        permissions: 5
+      }
+    ];
+
+    // Current user's assigned roles
+    let currentUserRoles = [];
+
+    // View user details function
+    function viewUserDetails(name, email, initials, avatarGradient, assignedRoles) {
+      console.log('viewUserDetails called with:', { name, email, initials, avatarGradient, assignedRoles });
+      
+      // Hide users list view
+      document.getElementById('usersListView').style.display = 'none';
+      document.getElementById('mainHeader').style.display = 'none';
+      
+      // Show user details view
+      const userDetailsView = document.getElementById('userDetailsView');
+      console.log('userDetailsView element:', userDetailsView);
+      userDetailsView.classList.add('active');
+      userDetailsView.style.display = 'block'; // Force display
+      document.getElementById('userDetailsHeader').style.display = 'block';
+      
+      // Update user details header
+      document.getElementById('userDetailAvatar').textContent = initials;
+      document.getElementById('userDetailAvatar').style.background = avatarGradient;
+      document.getElementById('userDetailName').textContent = name;
+      document.getElementById('userDetailEmail').textContent = email;
+      
+      // Store current user's roles
+      currentUserRoles = assignedRoles || [];
+      console.log('Current user roles:', currentUserRoles);
+      
+      // Populate roles table
+      populateRolesTable();
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    // Show users list view
+    function showUsersView() {
+      const userDetailsView = document.getElementById('userDetailsView');
+      userDetailsView.classList.remove('active');
+      userDetailsView.style.display = 'none'; // Explicitly hide
+      document.getElementById('userDetailsHeader').style.display = 'none';
+      document.getElementById('usersListView').style.display = 'block';
+      document.getElementById('mainHeader').style.display = 'block';
+    }
+
+    // Populate roles table
+    function populateRolesTable() {
+      const tbody = document.getElementById('rolesAssignmentBody');
+      tbody.innerHTML = '';
+      
+      allRoles.forEach(role => {
+        const isAssigned = currentUserRoles.includes(role.id);
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="text-align:center;">
+            <input type="checkbox" class="checkbox role-checkbox" data-role-id="${role.id}" ${isAssigned ? 'checked' : ''} onchange="updateAssignedRolesCount()">
+          </td>
+          <td>
+            <div class="role-name-cell">
+              <div class="role-icon-sm ${role.iconClass}">
+                <i class="${role.icon}"></i>
+              </div>
+              <div class="role-text-info">
+                <div class="role-title">${role.name}</div>
+                <div class="role-desc">${role.description}</div>
+              </div>
+            </div>
+          </td>
+          <td style="color:#64748b; font-size:13px;">${role.permissions} permissions</td>
+        `;
+        
+        tbody.appendChild(row);
+      });
+      
+      updateAssignedRolesCount();
+    }
+
+    // Update assigned roles count
+    function updateAssignedRolesCount() {
+      const checkedBoxes = document.querySelectorAll('.role-checkbox:checked');
+      document.getElementById('assignedRolesCount').textContent = checkedBoxes.length;
+    }
+
+    // Save user roles
+    function saveUserRoles() {
+      const checkedBoxes = document.querySelectorAll('.role-checkbox:checked');
+      const selectedRoles = Array.from(checkedBoxes).map(cb => cb.dataset.roleId);
+      
+      // Here you would normally save to backend
+      console.log('Saving roles:', selectedRoles);
+      
+      // Show success message (you can integrate with toast notification)
+      alert('User roles updated successfully!');
+      
+      // Return to users view
+      showUsersView();
+    }
+
+    // Delete user function (placeholder)
+    function deleteUser() {
+      if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        console.log('Deleting user...');
+        alert('User deleted successfully!');
+        showUsersView();
+      }
+    }
   </script>
 </body>
 </html>

@@ -34,71 +34,72 @@
         .user-profile:hover { border-color: #0ea5e9; }
         .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, #0ea5e9, #06b6d4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
         .content-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 24px; }
-        .card-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        .card-title { font-size: 18px; font-weight: 600; color: #0f172a; }
+        .card-header { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-size: 16px; font-weight: 600; color: #0f172a; }
         .card-content { padding: 24px; }
+        #editRoleContent .card-content { padding: 12px; }
 
         /* Action Buttons */
-        .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+        .action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
         .action-btn:hover { border-color: #005EB8; color: #005EB8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 94, 184, 0.15); }
         .action-btn.primary { background: #005EB8; color: white; border-color: #005EB8; }
         .action-btn.primary:hover { background: #004a93; }
         .action-btn.small { padding: 6px 12px; font-size: 13px; }
 
         /* Tabs */
-        .tabs { display: flex; gap: 4px; background: #f1f5f9; padding: 4px; border-radius: 10px; width: fit-content; }
-        .tab { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #64748b; cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; }
+        .tabs { display: flex; gap: 3px; background: #f1f5f9; padding: 3px; border-radius: 8px; width: fit-content; }
+        .tab { padding: 7px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #64748b; cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; }
         .tab:hover { color: #334155; }
         .tab.active { background: white; color: #005EB8; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 
         /* Roles Table */
         .roles-table { width: 100%; border-collapse: collapse; }
-        .roles-table th { background: #f8fafc; padding: 12px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
-        .roles-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .roles-table th { background: #f8fafc; padding: 8px 12px; text-align: left; font-weight: 600; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .roles-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         .roles-table tbody tr { transition: background 0.15s ease; }
         .roles-table tbody tr:hover { background: #f8fafc; }
         
-        .role-cell { display: flex; align-items: center; gap: 12px; }
-        .role-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .role-cell { display: flex; align-items: center; gap: 8px; }
+        .role-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
         .role-icon.super-admin { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; }
         .role-icon.agency-admin { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
         .role-icon.standard { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
         .role-icon.read-only { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #7c3aed; }
         .role-icon.custom { background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #0284c7; }
         .role-info-text { display: flex; flex-direction: column; }
-        .role-name { font-size: 15px; font-weight: 600; color: #0f172a; display: flex; align-items: center; gap: 8px; }
-        .role-description { font-size: 13px; color: #64748b; margin-top: 2px; }
+        .role-name { font-size: 13px; font-weight: 600; color: #0f172a; display: flex; align-items: center; gap: 6px; line-height: 1.3; }
+        .role-description { font-size: 12px; color: #64748b; margin-top: 1px; line-height: 1.3; }
         
-        .role-stats-cell { display: flex; gap: 24px; }
+        .role-stats-cell { display: flex; gap: 20px; }
         .role-stat { text-align: center; }
-        .role-stat-value { font-size: 20px; font-weight: 700; color: #0f172a; display: block; }
-        .role-stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+        .role-stat-value { font-size: 16px; font-weight: 700; color: #0f172a; display: block; line-height: 1.2; }
+        .role-stat-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
 
         /* Members Dropdown in Table */
-        .members-preview { display: flex; align-items: center; gap: -8px; }
-        .member-avatar-sm { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; border: 2px solid white; margin-left: -8px; }
+        .members-preview { display: flex; align-items: center; gap: -6px; }
+        .member-avatar-sm { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: white; border: 2px solid white; margin-left: -6px; }
         .member-avatar-sm:first-child { margin-left: 0; }
-        .members-count { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; background: #f1f5f9; border-radius: 6px; font-size: 13px; font-weight: 500; color: #475569; cursor: pointer; transition: all 0.15s ease; margin-left: 12px; }
+        .members-count { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; background: #f1f5f9; border-radius: 6px; font-size: 12px; font-weight: 500; color: #475569; cursor: pointer; transition: all 0.15s ease; margin-left: 8px; }
         .members-count:hover { background: #e2e8f0; }
         
         .members-dropdown { position: relative; }
         .members-dropdown-content { position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); min-width: 280px; max-height: 320px; overflow-y: auto; z-index: 50; display: none; }
         .members-dropdown.active .members-dropdown-content { display: block; }
-        .members-dropdown-header { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 13px; font-weight: 600; color: #475569; }
-        .member-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; transition: background 0.15s ease; }
+        .members-dropdown-header { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 12px; font-weight: 600; color: #475569; }
+        .member-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; transition: background 0.15s ease; }
         .member-item:hover { background: #f8fafc; }
-        .member-info { display: flex; align-items: center; gap: 10px; }
-        .member-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white; }
-        .member-name { font-size: 14px; font-weight: 500; color: #334155; }
-        .member-email { font-size: 12px; color: #94a3b8; }
-        .member-action { color: #94a3b8; font-size: 14px; cursor: pointer; padding: 6px; border-radius: 4px; transition: all 0.15s ease; }
+        .member-info { display: flex; align-items: center; gap: 8px; }
+        .member-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; }
+        .member-name { font-size: 13px; font-weight: 500; color: #334155; line-height: 1.3; }
+        .member-email { font-size: 11px; color: #94a3b8; line-height: 1.3; }
+        .member-action { color: #94a3b8; font-size: 13px; cursor: pointer; padding: 4px; border-radius: 4px; transition: all 0.15s ease; }
         .member-action:hover { background: #fee2e2; color: #dc2626; }
-        .view-all-link { display: block; text-align: center; padding: 12px; color: #005EB8; font-size: 13px; font-weight: 500; text-decoration: none; border-top: 1px solid #f1f5f9; transition: background 0.15s ease; }
+        .view-all-link { display: block; text-align: center; padding: 10px; color: #005EB8; font-size: 12px; font-weight: 500; text-decoration: none; border-top: 1px solid #f1f5f9; transition: background 0.15s ease; }
         .view-all-link:hover { background: #f8fafc; }
         
         /* Action Icons in Table */
         .row-actions { display: flex; gap: 4px; }
-        .row-action { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.15s ease; border: none; background: transparent; }
+        .row-action { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.15s ease; border: none; background: transparent; }
         .row-action:hover { background: #f1f5f9; color: #005EB8; }
         .row-action.danger:hover { background: #fee2e2; color: #dc2626; }
 
@@ -106,11 +107,11 @@
         .permissions-section { display: none; }
         .permissions-section.active { display: block; }
         .permission-table { width: 100%; border-collapse: collapse; }
-        .permission-table th { background: #f8fafc; padding: 14px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
-        .permission-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .permission-table th { background: #f8fafc; padding: 8px 12px; text-align: left; font-weight: 600; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .permission-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         .permission-table tbody tr:hover { background: #f8fafc; }
-        .permission-name { font-weight: 500; color: #0f172a; }
-        .permission-desc { font-size: 13px; color: #64748b; margin-top: 2px; }
+        .permission-name { font-weight: 500; color: #0f172a; font-size: 13px; }
+        .permission-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
         .permission-toggle { position: relative; width: 44px; height: 24px; border-radius: 999px; background: #e2e8f0; cursor: pointer; transition: background 0.2s ease; }
         .permission-toggle.active { background: #005EB8; }
         .permission-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
@@ -141,15 +142,15 @@
         
         /* Permissions Editor */
         .permissions-editor { }
-        .permissions-search { margin-bottom: 20px; }
-        .permissions-search input { width: 100%; padding: 10px 16px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
-        .permissions-search i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-        .permission-category { margin-bottom: 24px; }
+        .permissions-search { margin-bottom: 12px; position: relative; }
+        .permissions-search input { width: 100%; padding: 6px 12px 6px 32px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; }
+        .permissions-search i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 12px; }
+        .permission-category { margin-bottom: 12px; }
         .permission-category:last-child { margin-bottom: 0; }
-        .category-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f8fafc; border-radius: 8px; margin-bottom: 12px; cursor: pointer; transition: all 0.15s ease; }
+        .category-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s ease; }
         .category-header:hover { background: #f1f5f9; }
-        .category-title { font-size: 14px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 8px; }
-        .category-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .category-title { font-size: 13px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; }
+        .category-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
         .category-icon.users { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
         .category-icon.campaigns { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; }
         .category-icon.reports { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
@@ -160,23 +161,26 @@
         .category-header.collapsed .category-toggle { transform: rotate(-90deg); }
         .permission-list { display: block; }
         .category-header.collapsed + .permission-list { display: none; }
-        .permission-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 8px; transition: background 0.15s ease; margin-bottom: 4px; }
+        .permission-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; border-radius: 6px; transition: background 0.15s ease; margin-bottom: 2px; }
         .permission-item:hover { background: #f8fafc; }
-        .permission-item-info { display: flex; align-items: center; gap: 12px; flex: 1; }
-        .permission-checkbox { width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 4px; cursor: pointer; accent-color: #005EB8; transition: all 0.15s ease; }
+        .permission-item:hover .permission-delete { opacity: 1; }
+        .permission-item-info { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .permission-checkbox { width: 16px; height: 16px; border: 2px solid #cbd5e1; border-radius: 3px; cursor: pointer; accent-color: #005EB8; transition: all 0.15s ease; }
         .permission-checkbox:checked { background: #005EB8; border-color: #005EB8; }
         .permission-details { flex: 1; }
-        .permission-item-name { font-size: 14px; font-weight: 500; color: #0f172a; }
-        .permission-item-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
+        .permission-item-name { font-size: 13px; font-weight: 500; color: #0f172a; }
+        .permission-item-desc { font-size: 11px; color: #64748b; margin-top: 1px; }
+        .permission-delete { opacity: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 4px; cursor: pointer; color: #94a3b8; transition: all 0.15s ease; }
+        .permission-delete:hover { background: #fee2e2; color: #dc2626; }
         .permission-level { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; }
         .permission-level.full { background: #dcfce7; color: #166534; }
         .permission-level.limited { background: #fef3c7; color: #92400e; }
         .permission-level.none { background: #f1f5f9; color: #64748b; }
         
-        .permissions-summary { display: flex; align-items: center; gap: 16px; padding: 12px 16px; background: #f8fafc; border-radius: 8px; }
-        .summary-item { display: flex; align-items: center; gap: 6px; }
-        .summary-count { font-size: 18px; font-weight: 700; color: #0f172a; }
-        .summary-label { font-size: 12px; color: #64748b; }
+        .permissions-summary { display: flex; align-items: center; gap: 12px; padding: 6px 12px; background: #f8fafc; border-radius: 6px; }
+        .summary-item { display: flex; align-items: center; gap: 4px; }
+        .summary-count { font-size: 14px; font-weight: 700; color: #0f172a; }
+        .summary-label { font-size: 11px; color: #64748b; }
 
         /* Form */
         .form-group { margin-bottom: 16px; }
@@ -196,8 +200,8 @@
         @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; padding: 16px; } .header { flex-direction: column; gap: 16px; align-items: flex-start; } }
    
    /* Action Section */
-        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 16px; }
-        .action-grid { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px; margin-bottom: 12px; }
+        .action-grid { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
         .action-btn:hover { border-color: #005EB8; color: #005EB8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 94, 184, 0.15); }
         .action-btn.primary { background: #005EB8; color: white; border-color: #005EB8; }
@@ -308,12 +312,12 @@
 <!-- Action Bar -->
       <div class="action-section" id="mainActions">
         <div class="action-grid">
-          <button class="action-btn primary" onclick="openModal('createRoleModal')"><i class="fas fa-plus"></i> Create Role</button>
+          <button class="action-btn primary small" onclick="openModal('createRoleModal')"><i class="fas fa-plus"></i> Create Role</button>
 <!-- Tabs -->
 <div class="tabs">
   <button class="tab active" data-tab="roles">Roles</button>
   <button class="tab" data-tab="permissions">Permissions Matrix</button>
-</div>          <button class="action-btn" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button>
+</div>          <button class="action-btn small" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button>
         </div>
       </div>
 
@@ -326,8 +330,9 @@
               <span class="summary-label">permissions selected</span>
             </div>
           </div>
-          <button class="action-btn" onclick="showRolesView()" style="margin-left: auto;">Cancel</button>
-          <button class="action-btn primary" onclick="saveRolePermissions()"><i class="fas fa-check"></i> Save Permissions</button>
+          <button class="action-btn small" onclick="showRolesView()" style="margin-left: auto;">Cancel</button>
+          <button class="action-btn danger small" onclick="deleteRole()"><i class="fas fa-trash"></i> Delete Role</button>
+          <button class="action-btn primary small" onclick="saveRolePermissions()"><i class="fas fa-check"></i> Save Permissions</button>
         </div>
       </div>
 
@@ -675,9 +680,9 @@
         <div class="content-card">
           <div class="card-content">
             <div class="permissions-editor">
-              <div class="permissions-search" style="position: relative; margin-bottom: 20px;">
-                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-                <input type="text" id="permissionsSearchInput" placeholder="Search permissions..." oninput="filterPermissions(this.value)" style="width: 100%; padding: 10px 16px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+              <div class="permissions-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="permissionsSearchInput" placeholder="Search permissions..." oninput="filterPermissions(this.value)">
               </div>
 
               <!-- User Management Category -->
@@ -967,9 +972,9 @@
         <div class="content-card">
           <div class="card-content">
             <div class="permissions-editor">
-              <div class="permissions-search" style="position: relative; margin-bottom: 20px;">
-                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-                <input type="text" id="permissionsSearchInput" placeholder="Search permissions..." oninput="filterPermissions(this.value)" style="width: 100%; padding: 10px 16px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+              <div class="permissions-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="permissionsSearchInput" placeholder="Search permissions..." oninput="filterPermissions(this.value)">
               </div>
 
               <!-- User Management Category -->
@@ -1259,8 +1264,8 @@
         <div class="content-card">
           <div class="card-header">
             <div class="card-title">Permissions by Role</div>
-            <div style="display:flex; gap:8px;">
-              <select style="padding:8px 12px; border:1px solid #e2e8f0; border-radius:6px; font-size:14px;">
+            <div style="display:flex; gap:6px;">
+              <select style="padding:6px 10px; border:1px solid #e2e8f0; border-radius:6px; font-size:13px;">
                 <option>All Modules</option>
                 <option>User Management</option>
                 <option>Campaigns</option>
@@ -1279,6 +1284,7 @@
                   <th style="text-align:center; min-width:100px;">Agency Admin</th>
                   <th style="text-align:center; min-width:100px;">Standard</th>
                   <th style="text-align:center; min-width:100px;">Read Only</th>
+                  <th style="text-align:center; width:80px;">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -1288,6 +1294,7 @@
                   <td style="text-align:center;"><span class="permission-badge limited">Agency Only</span></td>
                   <td style="text-align:center;"><span class="permission-badge limited">Self</span></td>
                   <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('view-users')"><i class="fas fa-trash"></i></button></td>
                 </tr>
                 <tr>
                   <td><div class="permission-name">Create Users</div><div class="permission-desc">Add new user accounts</div></td>
@@ -1414,9 +1421,11 @@
         if (tabId === 'roles') {
           document.getElementById('rolesContent').style.display = 'block';
           document.getElementById('permissionsContent').classList.remove('active');
+          document.getElementById('permissionsContent').style.display = 'none';
         } else {
           document.getElementById('rolesContent').style.display = 'none';
           document.getElementById('permissionsContent').classList.add('active');
+          document.getElementById('permissionsContent').style.display = 'block';
         }
       });
     });

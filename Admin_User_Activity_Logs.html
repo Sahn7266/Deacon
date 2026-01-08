@@ -19,7 +19,7 @@
         .logo-section { padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb; margin-bottom: 16px; }
         .logo { display: flex; align-items: center; gap: 12px; color: #1f2937; font-size: 18px; font-weight: 600; }
         .nav-menu { }
-        .nav-group { margin-bottom: 24px; }
+        .nav-group { margin-bottom: 20px; }
         .nav-group-title { color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 4px 8px; }
         .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 4px; color: #374151; text-decoration: none; border-radius: 6px; margin-bottom: 2px; transition: all 0.2s ease; font-weight: 400; font-size: 14px; }
         .nav-item:hover { background: #eff6ff; color: #1f2937; }
@@ -39,15 +39,15 @@
         .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, #0ea5e9, #06b6d4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
         .content-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
         .card-title { font-size: 18px; font-weight: 600; color: #0f172a; }
-        .card-content { padding: 16px; }
+        .card-content { padding: 12px; }
         @media (max-width: 1024px) { .sidebar { width: 240px; } .main-content { margin-left: 240px; padding: 16px 24px; } }
         @media (max-width: 768px) { .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; } .main-content { margin-left: 0; padding: 16px; } .header { flex-direction: column; gap: 16px; align-items: flex-start; } .search-box input { width: 100%; } }
     
     
     /* Action Section */
-        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 16px; }
-        .action-grid { display: flex; gap: 12px; flex-wrap: wrap; }
-        .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px; margin-bottom: 12px; }
+        .action-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+        .action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
         .action-btn:hover { border-color: #005EB8; color: #005EB8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 94, 184, 0.15); }
         .action-btn.primary { background: #005EB8; color: white; border-color: #005EB8; }
     
@@ -146,32 +146,32 @@
           </div>
 
           <div style="border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;">
-            <div style="display:flex; gap:12px; padding: 10px 12px; background:#f1f5f9; font-weight:600; color:#0f172a;">
+            <div style="display:flex; gap:12px; padding: 8px 12px; background:#f1f5f9; font-weight:600; color:#0f172a; font-size:12px;">
               <div style="flex: 1;">Time</div>
               <div style="flex: 1;">Actor</div>
               <div style="flex: 2;">Action</div>
               <div style="flex: 1;">Target</div>
             </div>
 
-            <div style="display:flex; gap:12px; padding: 10px 12px; border-top: 1px solid #e2e8f0;">
-              <div style="flex: 1; color:#64748b;">2026-01-02 09:14</div>
-              <div style="flex: 1;">John Doe</div>
-              <div style="flex: 2;">Updated role</div>
-              <div style="flex: 1;">Jane Smith</div>
+            <div style="display:flex; gap:12px; padding: 8px 12px; border-top: 1px solid #e2e8f0;">
+              <div style="flex: 1; color:#64748b; font-size:12px;">2026-01-02 09:14</div>
+              <div style="flex: 1; font-size:13px;">John Doe</div>
+              <div style="flex: 2; font-size:13px;">Updated role</div>
+              <div style="flex: 1; font-size:13px;">Jane Smith</div>
             </div>
 
-            <div style="display:flex; gap:12px; padding: 10px 12px; border-top: 1px solid #e2e8f0;">
-              <div style="flex: 1; color:#64748b;">2026-01-02 08:47</div>
-              <div style="flex: 1;">System</div>
-              <div style="flex: 2;">MFA challenge passed</div>
-              <div style="flex: 1;">Alex Johnson</div>
+            <div style="display:flex; gap:12px; padding: 8px 12px; border-top: 1px solid #e2e8f0;">
+              <div style="flex: 1; color:#64748b; font-size:12px;">2026-01-02 08:47</div>
+              <div style="flex: 1; font-size:13px;">System</div>
+              <div style="flex: 2; font-size:13px;">MFA challenge passed</div>
+              <div style="flex: 1; font-size:13px;">Alex Johnson</div>
             </div>
 
-            <div style="display:flex; gap:12px; padding: 10px 12px; border-top: 1px solid #e2e8f0;">
-              <div style="flex: 1; color:#64748b;">2026-01-01 17:22</div>
-              <div style="flex: 1;">Agency Admin</div>
-              <div style="flex: 2;">Invited user</div>
-              <div style="flex: 1;">Morgan Lee</div>
+            <div style="display:flex; gap:12px; padding: 8px 12px; border-top: 1px solid #e2e8f0;">
+              <div style="flex: 1; color:#64748b; font-size:12px;">2026-01-01 17:22</div>
+              <div style="flex: 1; font-size:13px;">Agency Admin</div>
+              <div style="flex: 2; font-size:13px;">Invited user</div>
+              <div style="flex: 1; font-size:13px;">Morgan Lee</div>
             </div>
           </div>
         </div>
