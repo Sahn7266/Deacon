@@ -44,6 +44,14 @@
         /* Action Section */
         .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 13.5px 10px; margin-bottom: 12px; }
         .action-grid { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .action-grid select, .action-grid input[type="text"] { padding: 7px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; background: white; color: #334155; font-weight: 500; transition: all 0.2s ease; }
+        .action-grid select:focus, .action-grid input[type="text"]:focus { outline: none; border-color: #005EB8; box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.1); }
+        .action-grid select:hover, .action-grid input[type="text"]:hover { border-color: #005EB8; }
+        .search-container { position: relative; flex: 1; min-width: 200px; }
+        .search-container input { width: 100%; padding-right: 32px; }
+        .search-clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: #94a3b8; cursor: pointer; padding: 4px; display: none; transition: color 0.15s ease; }
+        .search-clear:hover { color: #64748b; }
+        .search-container input:not(:placeholder-shown) ~ .search-clear { display: block; }
         .action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
         .action-btn:hover { border-color: #005EB8; color: #005EB8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 94, 184, 0.15); }
         .action-btn.primary { background: #005EB8; color: white; border-color: #005EB8; }
@@ -61,12 +69,12 @@
         .filter-bar select, .filter-bar input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; background: white; }
         .filter-bar select:focus, .filter-bar input:focus { outline: none; border-color: #005EB8; }
 
-        /* Data Table */
-        .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th { background: #f8fafc; padding: 8px 12px; text-align: left; font-weight: 600; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
-        .data-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        .data-table tbody tr { transition: background 0.15s ease; }
-        .data-table tbody tr:hover { background: #f8fafc; }
+        /* Roles Table */
+        .roles-table { width: 100%; border-collapse: collapse; }
+        .roles-table th { background: #f8fafc; padding: 8px 12px; text-align: left; font-weight: 600; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .roles-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .roles-table tbody tr { transition: background 0.15s ease; }
+        .roles-table tbody tr:hover { background: #f8fafc; }
 
         /* User Cell */
         .user-cell { display: flex; align-items: center; gap: 8px; cursor: pointer; }
@@ -108,8 +116,8 @@
         .checkbox:checked { background: #005EB8; border-color: #005EB8; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E"); background-size: 12px; background-position: center; background-repeat: no-repeat; }
 
         /* Pagination */
-        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
-        .pagination-info { font-size: 14px; color: #64748b; }
+        .pagination { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-top: 2px solid #e2e8f0; background: #f8fafc; }
+        .pagination-info { font-size: 12px; color: #475569; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
         .pagination-controls { display: flex; gap: 4px; }
         .page-btn { min-width: 36px; height: 36px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; color: #475569; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; }
         .page-btn:hover { border-color: #005EB8; color: #005EB8; }
@@ -261,7 +269,7 @@
           </div>
         </div>
         <div class="header-right">
-          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="globalSearch" placeholder="Search users..."></div>
+          
           
         </div>
       </header>
@@ -275,15 +283,6 @@
         <div class="action-section">
           <div class="action-grid">
             <button class="action-btn primary small" onclick="openModal('addUserModal')"><i class="fas fa-user-plus"></i> Add User</button>
-            
-            <button class="action-btn small" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button>
-          </div>
-        </div>
-
-        <!-- Filter Bar -->
-        <div class="content-card">
-          <div class="card-content">
-          <div class="filter-bar">
             <select id="filterRole">
               <option value="">All Roles</option>
               <option value="super-admin">Super Admin</option>
@@ -291,31 +290,27 @@
               <option value="standard-user">Standard User</option>
               <option value="read-only">Read Only</option>
             </select>
-            <select id="filterStatus">
-              <option value="">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="invited">Invited</option>
-              <option value="inactive">Inactive</option>
-            </select>
-            <select id="filterType">
-              <option value="">All Types</option>
-              <option value="internal">Internal</option>
-              <option value="agency">Agency</option>
-            </select>
-            <input type="text" placeholder="Filter by name or email..." id="filterSearch" style="flex:1; min-width:200px;">
-            <button class="action-btn" style="padding:8px 12px;" onclick="clearFilters()"><i class="fas fa-times"></i> Clear</button>
+            <div class="search-container">
+              <input type="text" placeholder="Filter by name or email..." id="filterSearch">
+              <i class="fas fa-times search-clear" onclick="clearFilters()"></i>
+            </div>
+            <button class="action-btn small" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button>
           </div>
+        </div>
 
-          <!-- Data Table -->
-          <table class="data-table">
+        <!-- Data Table -->
+        <div class="content-card">
+          <div class="card-content" style="padding:0; overflow-x:auto;">
+          <table class="roles-table">
             <thead>
               <tr>
                 <th style="width:40px;"><input type="checkbox" class="checkbox" id="selectAll"></th>
                 <th>User</th>
-                <th>Role</th>
-                <th>Last Active</th>
-                <th style="width:100px;">Audit</th>
-                <th style="width:120px;">Actions</th>
+                <th style="min-width:280px;">Roles</th>
+                <th style="min-width:160px;">Created On</th>
+                <th style="min-width:180px;">Created By</th>
+                <th style="min-width:160px;">Modified On</th>
+                <th style="min-width:180px;">Modified By</th>
               </tr>
             </thead>
             <tbody id="userTableBody">
@@ -323,7 +318,7 @@
               <tr>
                 <td><input type="checkbox" class="checkbox"></td>
                 <td>
-                  <div class="user-cell" onclick='viewUserDetails("Jane Smith", "jane.smith@multiview.com", "JS", "linear-gradient(135deg, #667eea, #764ba2)", ["super-admin"])'>
+                  <div class="user-cell" onclick='viewUserDetails("Jane Smith", "jane.smith@multiview.com", "JS", "linear-gradient(135deg, #667eea, #764ba2)", ["super-admin", "agency-admin", "standard-user", "read-only"])'>
                     <div class="avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">JS</div>
                     <div class="info">
                       <div class="name">Jane Smith <span class="badge badge-admin"><i class="fas fa-shield-alt"></i> Admin</span></div>
@@ -331,29 +326,17 @@
                     </div>
                   </div>
                 </td>
-                <td><span class="role-tag">Super Admin</span></td>
-                <td style="color:#64748b; font-size:13px;">2 hours ago</td>
-                <td>
-                  <div class="info-trigger">
-                    <i class="fas fa-info-circle"></i>
-                    <div class="tooltip">
-                      <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Nov 14, 2024 by System</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Modified:</span><span class="tooltip-value">Dec 28, 2025 by John Doe</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Last Login:</span><span class="tooltip-value">Jan 2, 2026 10:14 AM</span></div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="row-actions">
-                    <button class="row-action danger" title="Delete User"><i class="fas fa-trash"></i></button>
-                  </div>
-                </td>
+                <td style="text-align:left;"><span class="role-tag">Super Admin</span> <span class="role-tag">Agency Admin</span> <span class="role-tag">Standard User</span> <span class="role-tag">Read Only</span></td>
+                <td style="color:#64748b; font-size:13px;">11/14/2024 3:22:15 PM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+                <td style="color:#64748b; font-size:13px;">12/28/2025 9:47:33 AM</td>
+                <td style="color:#64748b; font-size:13px;">gjones@multiview.com</td>
               </tr>
               <!-- Row 2 -->
               <tr>
                 <td><input type="checkbox" class="checkbox"></td>
                 <td>
-                  <div class="user-cell" onclick='viewUserDetails("Alex Johnson", "alex.johnson@multiview.com", "AJ", "linear-gradient(135deg, #f093fb, #f5576c)", ["agency-admin"])'>
+                  <div class="user-cell" onclick='viewUserDetails("Alex Johnson", "alex.johnson@multiview.com", "AJ", "linear-gradient(135deg, #f093fb, #f5576c)", ["agency-admin", "standard-user", "read-only"])'>
                     <div class="avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">AJ</div>
                     <div class="info">
                       <div class="name">Alex Johnson <span class="badge badge-admin"><i class="fas fa-shield-alt"></i> Admin</span></div>
@@ -361,29 +344,17 @@
                     </div>
                   </div>
                 </td>
-                <td><span class="role-tag">Agency Admin</span></td>
-                <td style="color:#64748b; font-size:13px;">Yesterday</td>
-                <td>
-                  <div class="info-trigger">
-                    <i class="fas fa-info-circle"></i>
-                    <div class="tooltip">
-                      <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Aug 3, 2023 by HR System</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Modified:</span><span class="tooltip-value">Jan 1, 2026 by Jane Smith</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Last Login:</span><span class="tooltip-value">Jan 1, 2026 4:32 PM</span></div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="row-actions">
-                    <button class="row-action danger" title="Delete User"><i class="fas fa-trash"></i></button>
-                  </div>
-                </td>
+                <td style="text-align:left;"><span class="role-tag">Agency Admin</span> <span class="role-tag">Standard User</span> <span class="role-tag">Read Only</span></td>
+                <td style="color:#64748b; font-size:13px;">8/3/2023 10:15:42 AM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+                <td style="color:#64748b; font-size:13px;">1/1/2026 2:18:55 PM</td>
+                <td style="color:#64748b; font-size:13px;">david.deherrera@multiview.com</td>
               </tr>
               <!-- Row 3 -->
               <tr>
                 <td><input type="checkbox" class="checkbox"></td>
                 <td>
-                  <div class="user-cell" onclick='viewUserDetails("Morgan Lee", "morgan.lee@acmeagency.com", "ML", "linear-gradient(135deg, #4facfe, #00f2fe)", ["standard-user"])'>
+                  <div class="user-cell" onclick='viewUserDetails("Morgan Lee", "morgan.lee@acmeagency.com", "ML", "linear-gradient(135deg, #4facfe, #00f2fe)", ["standard-user", "read-only"])'>
                     <div class="avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">ML</div>
                     <div class="info">
                       <div class="name">Morgan Lee</div>
@@ -391,23 +362,11 @@
                     </div>
                   </div>
                 </td>
-                <td><span class="role-tag">Standard User</span></td>
-                <td style="color:#64748b; font-size:13px;">—</td>
-                <td>
-                  <div class="info-trigger">
-                    <i class="fas fa-info-circle"></i>
-                    <div class="tooltip">
-                      <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Dec 30, 2025 by Alex Johnson</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Invite Sent:</span><span class="tooltip-value">Dec 30, 2025</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Expires:</span><span class="tooltip-value">Jan 6, 2026</span></div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="row-actions">
-                    <button class="row-action danger" title="Delete User"><i class="fas fa-trash"></i></button>
-                  </div>
-                </td>
+                <td style="text-align:left;"><span class="role-tag">Standard User</span> <span class="role-tag">Read Only</span></td>
+                <td style="color:#64748b; font-size:13px;">12/30/2025 8:03:27 AM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+                <td style="color:#64748b; font-size:13px;">12/30/2025 8:03:27 AM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
               </tr>
               <!-- Row 4 -->
               <tr>
@@ -421,29 +380,17 @@
                     </div>
                   </div>
                 </td>
-                <td><span class="role-tag">Read Only</span></td>
-                <td style="color:#64748b; font-size:13px;">3 days ago</td>
-                <td>
-                  <div class="info-trigger">
-                    <i class="fas fa-info-circle"></i>
-                    <div class="tooltip">
-                      <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Sep 12, 2024 by Jane Smith</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Modified:</span><span class="tooltip-value">Dec 10, 2025 by Alex Johnson</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Last Login:</span><span class="tooltip-value">Dec 15, 2025 9:22 AM</span></div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="row-actions">
-                    <button class="row-action danger" title="Delete User"><i class="fas fa-trash"></i></button>
-                  </div>
-                </td>
+                <td style="text-align:left;"><span class="role-tag">Read Only</span></td>
+                <td style="color:#64748b; font-size:13px;">9/12/2024 1:45:18 PM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+                <td style="color:#64748b; font-size:13px;">12/10/2025 11:29:04 AM</td>
+                <td style="color:#64748b; font-size:13px;">gjones@multiview.com</td>
               </tr>
               <!-- Row 5 -->
               <tr>
                 <td><input type="checkbox" class="checkbox"></td>
                 <td>
-                  <div class="user-cell" onclick='viewUserDetails("Chris Brown", "chris.brown@formerco.com", "CB", "linear-gradient(135deg, #ffecd2, #fcb69f)", ["standard-user"])'>
+                  <div class="user-cell" onclick='viewUserDetails("Chris Brown", "chris.brown@formerco.com", "CB", "linear-gradient(135deg, #ffecd2, #fcb69f)", ["standard-user", "read-only"])'>
                     <div class="avatar" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">CB</div>
                     <div class="info">
                       <div class="name">Chris Brown</div>
@@ -451,23 +398,11 @@
                     </div>
                   </div>
                 </td>
-                <td><span class="role-tag">Standard User</span></td>
-                <td style="color:#64748b; font-size:13px;">Oct 15, 2025</td>
-                <td>
-                  <div class="info-trigger">
-                    <i class="fas fa-info-circle"></i>
-                    <div class="tooltip">
-                      <div class="tooltip-row"><span class="tooltip-label">Created:</span><span class="tooltip-value">Mar 22, 2023 by HR System</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Deactivated:</span><span class="tooltip-value">Oct 16, 2025 by Jane Smith</span></div>
-                      <div class="tooltip-row"><span class="tooltip-label">Reason:</span><span class="tooltip-value">Account no longer needed</span></div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="row-actions">
-                    <button class="row-action danger" title="Delete User"><i class="fas fa-trash"></i></button>
-                  </div>
-                </td>
+                <td style="text-align:left;"><span class="role-tag">Standard User</span> <span class="role-tag">Read Only</span></td>
+                <td style="color:#64748b; font-size:13px;">3/22/2023 4:56:39 PM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+                <td style="color:#64748b; font-size:13px;">10/16/2025 7:12:51 AM</td>
+                <td style="color:#64748b; font-size:13px;">david.deherrera@multiview.com</td>
               </tr>
             </tbody>
           </table>
@@ -666,15 +601,10 @@
     // Filter functionality
     function clearFilters() {
       document.getElementById('filterRole').value = '';
-      document.getElementById('filterStatus').value = '';
-      document.getElementById('filterType').value = '';
       document.getElementById('filterSearch').value = '';
     }
 
-    // Search animation
-    const searchInput = document.querySelector('.search-box input');
-    searchInput.addEventListener('focus', function() { this.parentElement.style.transform = 'scale(1.02)'; });
-    searchInput.addEventListener('blur', function() { this.parentElement.style.transform = 'scale(1)'; });
+    // Search animation (removed - no longer using .search-box)
 
     // Header menu functionality
     const menuButton = document.getElementById('menuButton');
