@@ -747,8 +747,11 @@
                         <p class="text-xs text-gray-500">Programmatic advertising platform</p>
                       </div>
                     </div>
-                    <div class="flex items-center space-x-2">
-                      <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer">Not Connected</span>
+                    <div class="flex items-center space-x-3">
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Connected</span>
+                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="tradeDesk">
+                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -769,8 +772,11 @@
                         <p class="text-xs text-gray-500">Google Display & Video 360</p>
                       </div>
                     </div>
-                    <div class="flex items-center space-x-2">
-                      <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer">Not Connected</span>
+                    <div class="flex items-center space-x-3">
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Connected</span>
+                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="dv360">
+                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -791,8 +797,11 @@
                         <p class="text-xs text-gray-500">Local advertising platform</p>
                       </div>
                     </div>
-                    <div class="flex items-center space-x-2">
-                      <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer">Not Connected</span>
+                    <div class="flex items-center space-x-3">
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Connected</span>
+                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="simplifi">
+                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -823,8 +832,11 @@
                         <p class="text-xs text-gray-500">Ad serving and campaign management</p>
                       </div>
                     </div>
-                    <div class="flex items-center space-x-2">
-                      <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer">Not Connected</span>
+                    <div class="flex items-center space-x-3">
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Connected</span>
+                      <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="gcm">
+                        <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1273,10 +1285,23 @@ if (this.elements.createBtn) {
         }
       }
       
-      // Reset all connection status badges to "Not Connected"
-      document.querySelectorAll('.connector-status').forEach(badge => {
-        badge.textContent = 'Not Connected';
-        badge.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer';
+      // Reset all connection toggles to "Not Connected"
+      document.querySelectorAll('.connector-toggle').forEach(toggle => {
+        toggle.setAttribute('aria-checked', 'false');
+        toggle.classList.remove('bg-green-500');
+        toggle.classList.add('bg-gray-200');
+        const toggleSwitch = toggle.querySelector('span');
+        if (toggleSwitch) {
+          toggleSwitch.classList.remove('translate-x-5');
+          toggleSwitch.classList.add('translate-x-0');
+        }
+      });
+      
+      // Reset all connection status labels to "Not Connected"
+      document.querySelectorAll('.connector-status-label').forEach(label => {
+        label.textContent = 'Not Connected';
+        label.classList.remove('text-green-700');
+        label.classList.add('text-gray-600');
       });
       
       // Hide all expanded sections
@@ -2185,16 +2210,38 @@ document.addEventListener('DOMContentLoaded', () => {
       connectorsToggle.querySelector('span').classList.add('translate-x-0');
     }
 
-    // Update connection status for all connector cards
-    document.querySelectorAll('.connector-card').forEach(card => {
-      const statusBadge = card.querySelector('.connector-status');
-      if (statusBadge) {
-        if (newState) {
-          statusBadge.textContent = 'Connected';
-          statusBadge.className = 'px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full connector-status cursor-pointer';
-        } else {
-          statusBadge.textContent = 'Not Connected';
-          statusBadge.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer';
+    // Update connection status for all connector toggles and labels
+    document.querySelectorAll('.connector-toggle').forEach(toggle => {
+      const label = toggle.parentElement.querySelector('.connector-status-label');
+      const toggleSwitch = toggle.querySelector('span');
+      
+      if (newState) {
+        // Set all to Connected
+        toggle.setAttribute('aria-checked', 'true');
+        toggle.classList.remove('bg-gray-200');
+        toggle.classList.add('bg-green-500');
+        if (toggleSwitch) {
+          toggleSwitch.classList.remove('translate-x-0');
+          toggleSwitch.classList.add('translate-x-5');
+        }
+        if (label) {
+          label.textContent = 'Connected';
+          label.classList.remove('text-gray-600');
+          label.classList.add('text-green-700');
+        }
+      } else {
+        // Set all to Not Connected
+        toggle.setAttribute('aria-checked', 'false');
+        toggle.classList.remove('bg-green-500');
+        toggle.classList.add('bg-gray-200');
+        if (toggleSwitch) {
+          toggleSwitch.classList.remove('translate-x-5');
+          toggleSwitch.classList.add('translate-x-0');
+        }
+        if (label) {
+          label.textContent = 'Not Connected';
+          label.classList.remove('text-green-700');
+          label.classList.add('text-gray-600');
         }
       }
     });
@@ -2234,21 +2281,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event listeners for modal
   connectorsToggle?.addEventListener('click', toggleConnectors);
 
-  // Add individual toggle functionality for each connector status badge
-  document.querySelectorAll('.connector-status').forEach(badge => {
-    badge.addEventListener('click', function(e) {
+  // Add individual toggle functionality for each connector
+  document.querySelectorAll('.connector-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function(e) {
       e.stopPropagation(); // Prevent card click event
       
-      const isConnected = this.textContent.trim() === 'Connected';
+      const isConnected = this.getAttribute('aria-checked') === 'true';
+      const label = this.parentElement.querySelector('.connector-status-label');
+      const toggleSwitch = this.querySelector('span');
       
       if (isConnected) {
         // Change to Not Connected
-        this.textContent = 'Not Connected';
-        this.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer';
+        this.setAttribute('aria-checked', 'false');
+        this.classList.remove('bg-green-500');
+        this.classList.add('bg-gray-200');
+        toggleSwitch.classList.remove('translate-x-5');
+        toggleSwitch.classList.add('translate-x-0');
+        if (label) {
+          label.textContent = 'Not Connected';
+          label.classList.remove('text-green-700');
+          label.classList.add('text-gray-600');
+        }
       } else {
         // Change to Connected
-        this.textContent = 'Connected';
-        this.className = 'px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full connector-status cursor-pointer';
+        this.setAttribute('aria-checked', 'true');
+        this.classList.remove('bg-gray-200');
+        this.classList.add('bg-green-500');
+        toggleSwitch.classList.remove('translate-x-0');
+        toggleSwitch.classList.add('translate-x-5');
+        if (label) {
+          label.textContent = 'Connected';
+          label.classList.remove('text-gray-600');
+          label.classList.add('text-green-700');
+        }
       }
     });
   });
@@ -2499,13 +2564,13 @@ function handleCampaignCreation(redirectToAdGroups) {
   
   // Check each connector card
   document.querySelectorAll('.connector-card').forEach(card => {
-    const statusBadge = card.querySelector('.connector-status');
+    const connectorToggle = card.querySelector('.connector-toggle');
     const checkbox = card.querySelector('input[type="checkbox"]');
     
     if (checkbox && checkbox.checked) {
       const connectorType = checkbox.name; // 'dsp' or 'adserver'
       const connectorValue = checkbox.value;
-      const isConnected = statusBadge && statusBadge.textContent.trim() === 'Connected';
+      const isConnected = connectorToggle && connectorToggle.getAttribute('aria-checked') === 'true';
       
       // Add to selected arrays
       if (connectorType === 'dsp') {
