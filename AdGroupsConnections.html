@@ -1585,12 +1585,14 @@ function loadAdGroupConnections(adGroup) {
     
     dspValues.forEach(dspValue => {
       if (platformConfig[dspValue]) {
+        // Get connection status from saved connectionStatus object, default to 'Not Connected'
+        const connectionStatus = adGroup.connectionStatus?.[dspValue] || 'Not Connected';
         connectedPlatforms.push({
           value: dspValue,
           ...platformConfig[dspValue],
-          status: 'Connected',
-          enabledAt: new Date().toLocaleDateString(),
-          disabledAt: '—'
+          status: connectionStatus,
+          enabledAt: connectionStatus === 'Connected' ? new Date().toLocaleDateString() : '—',
+          disabledAt: connectionStatus === 'Not Connected' ? new Date().toLocaleDateString() : '—'
         });
       }
     });
@@ -1608,12 +1610,14 @@ function loadAdGroupConnections(adGroup) {
     
     adServerValues.forEach(adServerValue => {
       if (platformConfig[adServerValue]) {
+        // Get connection status from saved connectionStatus object, default to 'Not Connected'
+        const connectionStatus = adGroup.connectionStatus?.[adServerValue] || 'Not Connected';
         connectedPlatforms.push({
           value: adServerValue,
           ...platformConfig[adServerValue],
-          status: 'Connected',
-          enabledAt: new Date().toLocaleDateString(),
-          disabledAt: '—'
+          status: connectionStatus,
+          enabledAt: connectionStatus === 'Connected' ? new Date().toLocaleDateString() : '—',
+          disabledAt: connectionStatus === 'Not Connected' ? new Date().toLocaleDateString() : '—'
         });
       }
     });
