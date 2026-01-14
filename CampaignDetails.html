@@ -319,24 +319,6 @@
                     </table>
                   </div>
 
-                  <!-- Ad Groups Table -->
-                  <div class="overflow-x-auto border border-default rounded-md">
-                    <table class="w-full tbl tbl-row-hover table-fixed campaign-details-table">
-                      <colgroup>
-                        <col class="w-full">
-                      </colgroup>
-                      <thead style="background-color: #f3e8ff;">
-                        <tr>
-                          <th class="px-6 py-2 text-left text-sm font-medium text-purple-900 uppercase tracking-wider">
-                            AD GROUPS
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody id="adGroupsTableBody" class="divide-y border-default">
-                        <!-- Ad groups will be populated here by JavaScript -->
-                      </tbody>
-                    </table>
-                  </div>
                 </div>
 
                 <!-- Right Column - DSP and Ad Server Fields -->
@@ -1637,70 +1619,6 @@ window.addEventListener('DOMContentLoaded', () => {
   safeInput('adServerSchedule', campaign.adServerSchedule);
   safeInput('adServerLandingPageName', campaign.adServerLandingPageName);
   safeInput('adServerLandingPageURL', campaign.adServerLandingPageURL);
-
-  // Load and display associated ad groups
-  loadAdGroupsForCampaign(campaignId);
-});
-
-// Function to load ad groups associated with the current campaign
-function loadAdGroupsForCampaign(campaignId) {
-  const adGroupsTableBody = document.getElementById('adGroupsTableBody');
-  if (!adGroupsTableBody) return;
-
-  try {
-    const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-    const associatedAdGroups = adGroups.filter(adGroup => 
-      adGroup.campaign === campaignId || adGroup.campaignId === campaignId
-    );
-
-    // Clear existing content
-    adGroupsTableBody.innerHTML = '';
-
-    if (associatedAdGroups.length === 0) {
-      // Show empty state
-      const emptyRow = document.createElement('tr');
-      emptyRow.innerHTML = `
-        <td class="px-6 py-3 text-sm text-gray-500 italic text-center">
-          No ad groups associated with this campaign
-        </td>
-      `;
-      adGroupsTableBody.appendChild(emptyRow);
-    } else {
-      // Populate with ad groups
-      associatedAdGroups.forEach(adGroup => {
-        const row = document.createElement('tr');
-        row.className = 'border-b border-default hover:bg-gray-50';
-        row.innerHTML = `
-          <td class="px-6 py-2 text-sm">
-            <a href="./AdGroupDetails.html?id=${encodeURIComponent(adGroup.id)}&campaignId=${encodeURIComponent(campaignId)}" 
-               class="text-blue-600 hover:text-blue-800 hover:underline font-medium"
-               title="View details for ${adGroup.name}">
-              ${adGroup.name || 'Unnamed Ad Group'}
-            </a>
-          </td>
-        `;
-        adGroupsTableBody.appendChild(row);
-      });
-    }
-  } catch (error) {
-    console.error('Error loading ad groups for campaign:', error);
-    adGroupsTableBody.innerHTML = `
-      <tr>
-        <td class="px-6 py-3 text-sm text-red-500 text-center">
-          Error loading ad groups
-        </td>
-      </tr>
-    `;
-  }
-}
-
-// Listen for ad group updates to refresh the table
-window.addEventListener('adGroupsUpdated', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const campaignId = urlParams.get('campaignId');
-  if (campaignId) {
-    loadAdGroupsForCampaign(campaignId);
-  }
 });
 
 
