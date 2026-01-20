@@ -395,7 +395,7 @@
           <!-- Toolbar -->
           <div class="px-6 py-3">
             <div class="mb-4">
-              <div class="flex items-center space-x-3 bg-[var(--tbl-head-bg)] border border-gray-300 rounded-md">
+              <div class="flex items-center justify-between bg-[var(--tbl-head-bg)] border border-gray-300 rounded-md">
                 <!-- New Campaign Button -->
                 <button id="createBtn" class="flex items-center h-10 px-3 rounded-md hover:bg-gray-50 transition" title="Create New Campaign">
                   <span class="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-gray-400 mr-2">
@@ -479,6 +479,14 @@
                     </div>
                   </div>
                 </div>
+
+                <!-- Universal Export Button -->
+                <button id="universalExportBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors ml-auto mr-2" title="Export all campaigns and ad groups">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  <span>Export</span>
+                </button>
               </div>
             </div>
 
@@ -2735,6 +2743,7 @@ function handleCampaignCreation(redirectToAdGroups) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Individual campaign export
   document.addEventListener('click', function (e) {
     const exportBtn = e.target.closest('[data-export]');
     if (!exportBtn) return;
@@ -2755,6 +2764,100 @@ document.addEventListener('DOMContentLoaded', function () {
       advertiserAccount: advAccount
     });
   });
+
+  // Universal export button
+  const universalExportBtn = document.getElementById('universalExportBtn');
+  if (universalExportBtn) {
+    universalExportBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Get current advertiser from selected data (same as the page uses)
+      const selectedData = localStorage.getItem('adv_selected_data');
+      let advertiserId = null;
+      let advName = 'Unknown Advertiser';
+      let advAccount = 'N/A';
+      
+      if (selectedData) {
+        try {
+          const advertiser = JSON.parse(selectedData);
+          advertiserId = advertiser.id;
+          advName = advertiser.name || 'Unknown Advertiser';
+          advAccount = advertiser.account || 'N/A';
+          console.log('Current advertiser:', advertiserId, advName);
+        } catch (err) {
+          console.error('Error parsing selected advertiser data:', err);
+        }
+      }
+      
+      // Get all campaigns for this advertiser (matching page's logic)
+      const campaignData = localStorage.getItem('campaign_tree_groups');
+      let allCampaignIds = [];
+      
+      if (campaignData) {
+        try {
+          const data = JSON.parse(campaignData);
+          
+          // Handle both old and new data structures (matching getCounts function)
+          let campaigns = [];
+          
+          if (Array.isArray(data)) {
+            // Old structure - extract campaigns from groups
+            data.forEach(group => {
+              if (group.campaigns) {
+                campaigns.push(...group.campaigns);
+              }
+            });
+          } else {
+            // New structure - get campaigns from both arrays
+            if (Array.isArray(data.campaigns)) {
+              campaigns.push(...data.campaigns);
+            }
+            if (Array.isArray(data.groups)) {
+              data.groups.forEach(group => {
+                if (group.campaigns) {
+                  campaigns.push(...group.campaigns);
+                }
+              });
+            }
+          }
+          
+          console.log('Total campaigns found:', campaigns.length);
+          
+          // Filter campaigns for this advertiser (using String comparison like the page does)
+          allCampaignIds = campaigns
+            .filter(c => {
+              const matches = advertiserId && String(c.advertiserId) === String(advertiserId);
+              return matches;
+            })
+            .map(c => c.id);
+          
+          console.log('Filtered campaigns for advertiser', advertiserId, ':', allCampaignIds.length);
+            
+        } catch (err) {
+          console.error('Error parsing campaign data:', err);
+        }
+      }
+      
+      if (!advertiserId) {
+        alert('Could not determine current advertiser. Please make sure you are on an advertiser page.');
+        return;
+      }
+      
+      if (allCampaignIds.length === 0) {
+        alert(`No campaigns found for this advertiser (${advName}).`);
+        console.log('Debug: Advertiser ID:', advertiserId);
+        console.log('Debug: Campaign data exists:', !!campaignData);
+        return;
+      }
+      
+      // Open universal drawer with all campaign IDs
+      audit.openUniversalDrawer({
+        campaignIds: allCampaignIds,
+        advertiserName: advName,
+        advertiserAccount: advAccount
+      });
+    });
+  }
 });
 
 
