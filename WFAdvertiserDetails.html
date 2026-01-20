@@ -562,8 +562,8 @@
                         </button>
                       </th>
                       <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp" aria-label="Sort by Connectors">
-                          <span>Connectors</span>
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp" aria-label="Sort by DSP">
+                          <span>DSP</span>
                           <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
                         </button>
                       </th>
@@ -598,11 +598,12 @@
               <div class="overflow-x-auto border border-default rounded-md">
                 <table id="adGroupTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
                   <colgroup>
+                    <col style="width: 12%;">
+                    <col style="width: 25%;">
                     <col style="width: 15%;">
-                    <col style="width: 30%;">
-                    <col style="width: 20%;">
-                    <col style="width: 20%;">
                     <col style="width: 15%;">
+                    <col style="width: 15%;">
+                    <col style="width: 18%;">
                   </colgroup>
                   <thead class="tbl-head">
                     <tr>
@@ -619,6 +620,11 @@
                       <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
                         <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp">
                           <span>DSP</span>
+                        </button>
+                      </th>
+                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adServer">
+                          <span>Ad Server</span>
                         </button>
                       </th>
                       <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
@@ -1469,15 +1475,16 @@
                 ${ag.name || ''}
               </a>
             </td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.dsp || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${(ag.connectors && ag.connectors.dsp) || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${(ag.connectors && ag.connectors.adServer) || ''}</td>
+            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ag.multiviewClassification || ''}</td>
             <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900">${ag.campaign || ''}</td>
           `;
           adGroupTableBody.appendChild(tr);
         });
       } catch (e) {
         console.error('Error loading ad groups:', e);
-        adGroupTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">Error loading ad groups</td></tr>';
+        adGroupTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Error loading ad groups</td></tr>';
       }
     }
 
