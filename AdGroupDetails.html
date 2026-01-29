@@ -239,13 +239,25 @@
       <main class="flex-1 overflow-y-auto p-6">
         <div class="bg-white rounded-lg shadow-sm">
           <div class="p-4 border-b border-gray-200">
-            <div class="flex items-start gap-4 mb-3">
-              <div class="flex-1">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <!-- Left Column: Advertiser Name & Account # -->
+              <div>
                 <h1 id="advertiserHeader" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
-
-                <div class="flex justify-between items-center">
-                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
-                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+              </div>
+              <!-- Right Column: Ad Group IDs -->
+              <div class="text-right">
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <span id="adGroupDeliveryId" class="text-sm text-gray-500 w-40 text-left">—</span>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <span id="adGroupReportingId" class="text-sm text-gray-500 w-40 text-left">—</span>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">ID:</span>
+                  <span id="adGroupIdDisplay" class="text-sm text-gray-500 w-40 text-left">—</span>
                 </div>
               </div>
             </div>
@@ -1705,6 +1717,35 @@ document.addEventListener('DOMContentLoaded', function () {
     console.warn('Ad group not found');
     return;
   }
+
+  // Generate and persist ad group Delivery/Reporting IDs if they don't exist
+  let needsUpdate = false;
+  if (!adGroup.deliveryId) {
+    adGroup.deliveryId = 'DLV-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    needsUpdate = true;
+  }
+  if (!adGroup.reportingId) {
+    adGroup.reportingId = 'RPT-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    needsUpdate = true;
+  }
+  
+  // Save back to localStorage if IDs were generated
+  if (needsUpdate) {
+    const adgroupsToUpdate = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+    const idx = adgroupsToUpdate.findIndex(ag => ag.id === adGroup.id);
+    if (idx !== -1) {
+      adgroupsToUpdate[idx] = adGroup;
+      localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroupsToUpdate));
+    }
+  }
+  
+  // Display ad group IDs in header
+  const adGroupIdEl = document.getElementById('adGroupIdDisplay');
+  const deliveryIdEl = document.getElementById('adGroupDeliveryId');
+  const reportingIdEl = document.getElementById('adGroupReportingId');
+  if (adGroupIdEl) adGroupIdEl.textContent = adGroup.id || '—';
+  if (deliveryIdEl) deliveryIdEl.textContent = adGroup.deliveryId || '—';
+  if (reportingIdEl) reportingIdEl.textContent = adGroup.reportingId || '—';
 
   // Update the page title with ad group name
   const titleElement = document.getElementById('adGroupDetailsTitle');

@@ -371,12 +371,25 @@
        <div class="app-card rounded-lg shadow-lg overflow-hidden">
           <!-- Advertiser Header -->
           <div class="px-4 pt-4">
-            <div class="flex items-start gap-4 mb-3">
-              <div class="flex-1">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <!-- Left Column: Advertiser Name & Account # -->
+              <div>
                 <h1 data-bind="adv.name" class="text-xl md:text-2xl font-semibold text-gray-900">Loading…</h1>
-                <div class="flex justify-between items-center">
-                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
-                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+              </div>
+              <!-- Right Column: IDs -->
+              <div class="text-right">
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <span data-bind="adv.deliveryId" class="text-sm text-gray-500 w-28 text-left">—</span>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <span data-bind="adv.reportingId" class="text-sm text-gray-500 w-28 text-left">—</span>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">ID:</span>
+                  <span data-bind="adv.id" class="text-sm text-gray-500 w-28 text-left">—</span>
                 </div>
               </div>
             </div>
@@ -2142,10 +2155,14 @@ tr.appendChild(tdActions);
           const nameEl = document.querySelector('[data-bind="adv.name"]');
           const accountEl = document.querySelector('[data-bind="adv.account"]');
           const idEl = document.querySelector('[data-bind="adv.id"]');
+          const deliveryIdEl = document.querySelector('[data-bind="adv.deliveryId"]');
+          const reportingIdEl = document.querySelector('[data-bind="adv.reportingId"]');
           
           if (nameEl) nameEl.textContent = advertiser.name || 'Unknown Advertiser';
           if (accountEl) accountEl.textContent = advertiser.account || '—';
           if (idEl) idEl.textContent = advertiser.id || '—';
+          if (deliveryIdEl) deliveryIdEl.textContent = advertiser.deliveryId || '—';
+          if (reportingIdEl) reportingIdEl.textContent = advertiser.reportingId || '—';
           
           // Populate breadcrumbs
           const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');

@@ -366,12 +366,25 @@
         <div class="app-card rounded-lg shadow-lg overflow-hidden">
           <!-- Advertiser Header -->
           <div class="px-4 pt-4">
-            <div class="flex items-start gap-4 mb-3">
-              <div class="flex-1">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <!-- Left Column: Advertiser Name & Account # -->
+              <div>
                 <h1 data-bind="adv.name" class="text-xl md:text-2xl font-semibold text-gray-900">Loading…</h1>
-                <div class="flex justify-between items-center">
-                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
-                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+              </div>
+              <!-- Right Column: Campaign IDs -->
+              <div class="text-right">
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <span id="campaignDeliveryId" class="text-sm text-gray-500 w-40 text-left">—</span>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <span id="campaignReportingId" class="text-sm text-gray-500 w-40 text-left">—</span>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">ID:</span>
+                  <span id="campaignIdDisplay" class="text-sm text-gray-500 w-40 text-left">—</span>
                 </div>
               </div>
             </div>
@@ -2235,6 +2248,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   if (!campaign) return;
+
+  // Display campaign IDs in header (IDs are generated on CampaignDetails page)
+  const campaignIdEl = document.getElementById('campaignIdDisplay');
+  const deliveryIdEl = document.getElementById('campaignDeliveryId');
+  const reportingIdEl = document.getElementById('campaignReportingId');
+  if (campaignIdEl) campaignIdEl.textContent = campaign.id || '—';
+  if (deliveryIdEl) deliveryIdEl.textContent = campaign.deliveryId || '—';
+  if (reportingIdEl) reportingIdEl.textContent = campaign.reportingId || '—';
 
   const safeSet = (id, value, format = 'none') => {
     const el = document.getElementById(id);
