@@ -402,36 +402,57 @@
                             <div class="card-title">Field Help Text</div>
                             <div class="card-description">Configure tooltips and help text for form fields</div>
                         </div>
+                        <button class="btn btn-primary btn-sm" onclick="openAddHelpTextModal()"><i class="fas fa-plus"></i> Add Help Text</button>
                     </div>
                     <div class="card-content">
-                        <table class="config-table">
+                        <table class="config-table" id="helpTextTable">
                             <thead>
                                 <tr>
                                     <th>Field Name</th>
                                     <th>Help Text</th>
-                                    <th style="width: 100px;">Actions</th>
+                                    <th style="width: 120px;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td><span class="field-name">Delivery ID</span></td>
                                     <td><span class="field-value">Unique identifier from the DSP for delivery tracking</span></td>
-                                    <td><button class="btn btn-secondary btn-sm" onclick="openHelpTextModal('Delivery ID')"><i class="fas fa-edit"></i></button></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="openHelpTextModal('Delivery ID', 'Unique identifier from the DSP for delivery tracking')"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteHelpText('Delivery ID', this)"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td><span class="field-name">Reporting ID</span></td>
                                     <td><span class="field-value">Unique identifier for reporting and analytics platforms</span></td>
-                                    <td><button class="btn btn-secondary btn-sm" onclick="openHelpTextModal('Reporting ID')"><i class="fas fa-edit"></i></button></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="openHelpTextModal('Reporting ID', 'Unique identifier for reporting and analytics platforms')"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteHelpText('Reporting ID', this)"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td><span class="field-name">Industry Category</span></td>
                                     <td><span class="field-value">Primary business sector classification for targeting purposes</span></td>
-                                    <td><button class="btn btn-secondary btn-sm" onclick="openHelpTextModal('Industry Category')"><i class="fas fa-edit"></i></button></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="openHelpTextModal('Industry Category', 'Primary business sector classification for targeting purposes')"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteHelpText('Industry Category', this)"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td><span class="field-name">Campaign Budget</span></td>
                                     <td><span class="field-value">Total allocated budget for the entire campaign duration</span></td>
-                                    <td><button class="btn btn-secondary btn-sm" onclick="openHelpTextModal('Campaign Budget')"><i class="fas fa-edit"></i></button></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="openHelpTextModal('Campaign Budget', 'Total allocated budget for the entire campaign duration')"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteHelpText('Campaign Budget', this)"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -545,6 +566,42 @@
         </div>
     </div>
 
+    <!-- Add Help Text Modal -->
+    <div class="modal-overlay" id="addHelpTextModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Help Text</h2>
+                <button class="modal-close" onclick="closeModal('addHelpTextModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Select Field</label>
+                    <select class="form-input" id="newHelpFieldName">
+                        <option value="">-- Select a field --</option>
+                        <option value="Advertiser Name">Advertiser Name</option>
+                        <option value="Account Number">Account Number</option>
+                        <option value="Campaign Name">Campaign Name</option>
+                        <option value="Flight Dates">Flight Dates</option>
+                        <option value="Ad Group Name">Ad Group Name</option>
+                        <option value="Bid Strategy">Bid Strategy</option>
+                        <option value="Target Audience">Target Audience</option>
+                        <option value="Creative Format">Creative Format</option>
+                    </select>
+                    <div class="form-help">Select the field you want to add help text for</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Help Text</label>
+                    <textarea class="form-input form-textarea" id="newHelpText" placeholder="Enter help text or tooltip content"></textarea>
+                    <div class="form-help">Provide clear, concise guidance for users filling out this field</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addHelpTextModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="addNewHelpText()"><i class="fas fa-plus"></i> Add Help Text</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Add Dropdown Value Modal -->
     <div class="modal-overlay" id="addValueModal">
         <div class="modal">
@@ -571,6 +628,32 @@
         </div>
     </div>
 
+    <!-- Edit Dropdown Value Modal -->
+    <div class="modal-overlay" id="editValueModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Edit Dropdown Option</h2>
+                <button class="modal-close" onclick="closeModal('editValueModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Option Value</label>
+                    <input type="text" class="form-input" id="editOptionValue" placeholder="Enter option value">
+                    <div class="form-help">This value will appear in the dropdown list</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Display Order</label>
+                    <input type="number" class="form-input" id="editOptionOrder" value="1" min="1">
+                    <div class="form-help">Position in the dropdown list (lower numbers appear first)</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editValueModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEditedDropdownValue()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Tab switching
         document.querySelectorAll('.tab').forEach(tab => {
@@ -593,9 +676,57 @@
             document.getElementById('editFieldModal').classList.add('active');
         }
 
-        function openHelpTextModal(fieldName) {
+        function openHelpTextModal(fieldName, currentText) {
             document.getElementById('helpFieldName').value = fieldName;
+            document.getElementById('helpText').value = currentText || '';
             document.getElementById('helpTextModal').classList.add('active');
+        }
+
+        function openAddHelpTextModal() {
+            document.getElementById('newHelpFieldName').value = '';
+            document.getElementById('newHelpText').value = '';
+            document.getElementById('addHelpTextModal').classList.add('active');
+        }
+
+        function addNewHelpText() {
+            const fieldName = document.getElementById('newHelpFieldName').value;
+            const helpText = document.getElementById('newHelpText').value;
+            
+            if (!fieldName) {
+                showToast({ message: 'Please select a field', type: 'error', duration: 3000 });
+                return;
+            }
+            
+            if (!helpText.trim()) {
+                showToast({ message: 'Please enter help text', type: 'error', duration: 3000 });
+                return;
+            }
+            
+            // Add new row to table
+            const tbody = document.querySelector('#helpTextTable tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><span class="field-name">${fieldName}</span></td>
+                <td><span class="field-value">${helpText}</span></td>
+                <td>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-secondary btn-sm btn-icon" onclick="openHelpTextModal('${fieldName}', '${helpText.replace(/'/g, "\\'")}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteHelpText('${fieldName}', this)"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+            
+            showToast({ message: 'Help text added for: ' + fieldName, type: 'success', duration: 3000 });
+            closeModal('addHelpTextModal');
+        }
+
+        function deleteHelpText(fieldName, button) {
+            if (confirm('Are you sure you want to remove help text for "' + fieldName + '"?')) {
+                const row = button.closest('tr');
+                row.remove();
+                showToast({ message: 'Help text removed for: ' + fieldName, type: 'success', duration: 3000 });
+            }
         }
 
         function openAddValueModal(category) {
@@ -603,7 +734,7 @@
         }
 
         function openSystemSettingModal(settingName) {
-            showToast('System Setting Editor', 'Opening editor for: ' + settingName, 'info');
+            showToast({ message: 'Opening editor for: ' + settingName, type: 'info', title: 'System Setting Editor', duration: 3000 });
         }
 
         function closeModal(modalId) {
@@ -612,32 +743,42 @@
 
         function saveFieldLabel() {
             const label = document.getElementById('displayLabel').value;
-            showToast('Success', 'Field label updated to: ' + label, 'success');
+            showToast({ message: 'Field label updated to: ' + label, type: 'success', duration: 3000 });
             closeModal('editFieldModal');
         }
 
         function saveHelpText() {
             const text = document.getElementById('helpText').value;
-            showToast('Success', 'Help text has been updated', 'success');
+            showToast({ message: 'Help text has been updated', type: 'success', duration: 3000 });
             closeModal('helpTextModal');
         }
 
         function addDropdownValue() {
             const value = document.getElementById('newOptionValue').value;
             if (value) {
-                showToast('Success', 'Added new option: ' + value, 'success');
+                showToast({ message: 'Added new option: ' + value, type: 'success', duration: 3000 });
                 closeModal('addValueModal');
                 document.getElementById('newOptionValue').value = '';
             }
         }
 
         function editDropdownValue(value) {
-            showToast('Edit Option', 'Editing: ' + value, 'info');
+            document.getElementById('editOptionValue').value = value;
+            document.getElementById('editOptionOrder').value = 1;
+            document.getElementById('editValueModal').classList.add('active');
+        }
+
+        function saveEditedDropdownValue() {
+            const value = document.getElementById('editOptionValue').value;
+            if (value) {
+                showToast({ message: 'Updated option to: ' + value, type: 'success', duration: 3000 });
+                closeModal('editValueModal');
+            }
         }
 
         function deleteDropdownValue(value) {
             if (confirm('Are you sure you want to delete "' + value + '"?')) {
-                showToast('Success', 'Option deleted: ' + value, 'success');
+                showToast({ message: 'Option deleted: ' + value, type: 'success', duration: 3000 });
             }
         }
 
