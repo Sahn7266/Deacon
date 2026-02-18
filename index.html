@@ -473,9 +473,6 @@
                         <span>Ad Groups</span><span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
                       </button>
                     </th>
-                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
-                      <span class="px-6 py-3 block">Actions</span>
-                    </th>
                   </tr>
                 </thead>
                 <tbody id="advertiserTableBody" class="bg-white divide-y divide-gray-200">
@@ -1417,18 +1414,6 @@
             // Table clicks
             if (this.elements.advertiserTableBody) {
               this.elements.advertiserTableBody.addEventListener('click', function(e) {
-                // Handle delete button
-                const deleteBtn = e.target.closest('.delete-advertiser');
-                if (deleteBtn) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const advId = deleteBtn.getAttribute('data-adv-id');
-                  if (advId) {
-                    self.deleteAdvertiser(advId);
-                  }
-                  return;
-                }
-                
                 const link = e.target.closest('a[data-adv-id]');
                 if (link) {
                   e.preventDefault();
@@ -1921,7 +1906,7 @@ self.validateForm();
             
             if (data.length === 0) {
               const tr = document.createElement('tr');
-              tr.innerHTML = '<td colspan="7" class="px-6 py-2 text-center text-gray-500">No advertisers found</td>';
+              tr.innerHTML = '<td colspan="6" class="px-6 py-2 text-center text-gray-500">No advertisers found</td>';
               this.elements.advertiserTableBody.appendChild(tr);
               return;
             }
@@ -1941,10 +1926,7 @@ self.validateForm();
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.account || '') + '</td>' +
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.status || '') + '</td>' +
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500 tabular-nums">' + campaignCount + '</td>' +
-                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500 tabular-nums">' + adGroupCount + '</td>' +
-                '<td class="px-6 py-2 whitespace-nowrap text-sm text-center">' +
-                  '<button class="text-red-600 hover:underline delete-advertiser" data-adv-id="' + (adv.id || '') + '" title="Delete Advertiser">Delete</button>' +
-                '</td>';
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500 tabular-nums">' + adGroupCount + '</td>';
               this.elements.advertiserTableBody.appendChild(tr);
             }
           },
