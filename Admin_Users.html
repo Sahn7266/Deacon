@@ -41,7 +41,7 @@
         .card-content { padding: 12px; }
 
         /* Action Section */
-        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 13.5px 10px; margin-bottom: 12px; }
+        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 9px; margin-bottom: 12px; }
         .action-grid { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         .action-grid select, .action-grid input[type="text"] { padding: 7px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; background: white; color: #334155; font-weight: 500; transition: all 0.2s ease; }
         .action-grid select:focus, .action-grid input[type="text"]:focus { outline: none; border-color: #005EB8; box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.1); }
@@ -245,7 +245,8 @@
         <div class="nav-group">
          
           <a href="Admin_Users.html" class="nav-item active"><i class="fas fa-users"></i><span>Users</span></a>
-          <a href="Admin_Roles_Permissions.html" class="nav-item"><i class="fas fa-user-tag"></i><span>Roles & Permissions</span></a>
+          <a href="Admin_Roles_Permissions.html" class="nav-item"><i class="fas fa-user-tag"></i><span>Roles</span></a>
+          <a href="Admin_Permissions.html" class="nav-item"><i class="fas fa-key"></i><span>Permissions</span></a>
           <a href="Admin_User_Activity_Logs.html" class="nav-item"><i class="fas fa-history"></i><span>User Activity Logs</span></a>
           <a href="Admin_Configuration_Console.html" class="nav-item"><i class="fas fa-cogs"></i><span>Configuration Console</span></a>
         </div>
@@ -265,7 +266,7 @@
             <button class="action-btn" onclick="showUsersView()" style="margin-bottom: 12px;">
               <i class="fas fa-arrow-left"></i> Back to Users
             </button>
-            <h1 id="userDetailsTitle">User Details</h1>
+            <h1 id="userDetailsTitle">User Overview</h1>
           </div>
         </div>
         <div class="header-right">
@@ -294,7 +295,7 @@
               <input type="text" placeholder="Filter by name or email..." id="filterSearch">
               <i class="fas fa-times search-clear" onclick="clearFilters()"></i>
             </div>
-            <button class="action-btn small" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button>
+            <!-- <button class="action-btn small" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button> -->
           </div>
         </div>
 

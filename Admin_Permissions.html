@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Permissions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./assets/toast.css">
+    <script src="./assets/toast.js" defer></script>
+    <link rel="stylesheet" href="./assets/loading.css">
+    <script src="./assets/loading.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: #f8fafc; color: #334155; line-height: 1.6; }
+        .beacon-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        .dashboard-container { display: flex; min-height: 100vh; padding-top: 56px; }
+        .sidebar { width: 256px; background: white; padding: 16px; position: fixed; height: 100vh; overflow-y: auto; border-right: 1px solid #e5e7eb; top: 56px; }
+        .logo-section { padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb; margin-bottom: 16px; }
+        .logo { display: flex; align-items: center; gap: 12px; color: #1f2937; font-size: 18px; font-weight: 600; }
+        .nav-group { margin-bottom: 24px; }
+        .nav-group-title { color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 4px 8px; }
+        .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 4px; color: #374151; text-decoration: none; border-radius: 6px; margin-bottom: 2px; transition: all 0.2s ease; font-weight: 400; font-size: 14px; }
+        .nav-item:hover { background: #eff6ff; color: #1f2937; }
+        .nav-item.active { background: #eff6ff; color: #1f2937; font-weight: 500; }
+        .nav-item i { width: 24px; height: 24px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .main-content { flex: 1; margin-left: 256px; padding: 24px 32px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 24px; border-bottom: 1px solid #e2e8f0; }
+        .header-left h1 { font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .header-left p { color: #64748b; font-size: 14px; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; cursor: pointer; transition: all 0.2s ease; }
+        .user-profile:hover { border-color: #0ea5e9; }
+        .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, #0ea5e9, #06b6d4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
+        .content-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 24px; }
+        .card-header { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-size: 16px; font-weight: 600; color: #0f172a; }
+        .card-content { padding: 24px; }
+        #editRoleContent .card-content { padding: 12px; }
+
+        /* Action Buttons */
+        .action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+        .action-btn:hover { border-color: #005EB8; color: #005EB8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 94, 184, 0.15); }
+        .action-btn.primary { background: #005EB8; color: white; border-color: #005EB8; }
+        .action-btn.primary:hover { background: #004a93; }
+        .action-btn.small { padding: 6px 12px; font-size: 13px; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 3px; background: #f1f5f9; padding: 3px; border-radius: 8px; width: fit-content; }
+        .tab { padding: 7px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #64748b; cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; }
+        .tab:hover { color: #334155; }
+        .tab.active { background: white; color: #005EB8; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+        /* Roles Table */
+        .roles-table { width: 100%; border-collapse: collapse; }
+        .roles-table th { background: #f8fafc; padding: 8px 12px; text-align: left; font-weight: 600; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .roles-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .roles-table tbody tr { transition: background 0.15s ease; }
+        .roles-table tbody tr:hover { background: #f8fafc; }
+        
+        .role-cell { display: flex; align-items: center; gap: 8px; }
+        .role-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .role-icon.super-admin { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; }
+        .role-icon.agency-admin { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
+        .role-icon.standard { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
+        .role-icon.read-only { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #7c3aed; }
+        .role-icon.custom { background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #0284c7; }
+        .role-info-text { display: flex; flex-direction: column; }
+        .role-name { font-size: 13px; font-weight: 600; color: #0f172a; display: flex; align-items: center; gap: 6px; line-height: 1.3; }
+        .role-description { font-size: 12px; color: #64748b; margin-top: 1px; line-height: 1.3; }
+        
+        .role-stats-cell { display: flex; gap: 20px; }
+        .role-stat { text-align: center; }
+        .role-stat-value { font-size: 16px; font-weight: 700; color: #0f172a; display: block; line-height: 1.2; }
+        .role-stat-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+        /* Members Dropdown in Table */
+        .members-preview { display: flex; align-items: center; gap: -6px; }
+        .member-avatar-sm { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: white; border: 2px solid white; margin-left: -6px; }
+        .member-avatar-sm:first-child { margin-left: 0; }
+        .members-count { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; background: #f1f5f9; border-radius: 6px; font-size: 12px; font-weight: 500; color: #475569; cursor: pointer; transition: all 0.15s ease; margin-left: 8px; }
+        .members-count:hover { background: #e2e8f0; }
+        
+        .members-dropdown { position: relative; }
+        .members-dropdown-content { position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); min-width: 280px; max-height: 320px; overflow-y: auto; z-index: 50; display: none; }
+        .members-dropdown.active .members-dropdown-content { display: block; }
+        .members-dropdown-header { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 12px; font-weight: 600; color: #475569; }
+        .member-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; transition: background 0.15s ease; }
+        .member-item:hover { background: #f8fafc; }
+        .member-info { display: flex; align-items: center; gap: 8px; }
+        .member-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; }
+        .member-name { font-size: 13px; font-weight: 500; color: #334155; line-height: 1.3; }
+        .member-email { font-size: 11px; color: #94a3b8; line-height: 1.3; }
+        .member-action { color: #94a3b8; font-size: 13px; cursor: pointer; padding: 4px; border-radius: 4px; transition: all 0.15s ease; }
+        .member-action:hover { background: #fee2e2; color: #dc2626; }
+        .view-all-link { display: block; text-align: center; padding: 10px; color: #005EB8; font-size: 12px; font-weight: 500; text-decoration: none; border-top: 1px solid #f1f5f9; transition: background 0.15s ease; }
+        .view-all-link:hover { background: #f8fafc; }
+        
+        /* Action Icons in Table */
+        .row-actions { display: flex; gap: 4px; }
+        .row-action { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.15s ease; border: none; background: transparent; }
+        .row-action:hover { background: #f1f5f9; color: #005EB8; }
+        .row-action.danger:hover { background: #fee2e2; color: #dc2626; }
+
+        /* Permissions Matrix */
+        .permissions-section { display: none; }
+        .permissions-section.active { display: block; }
+        .permission-table { width: 100%; border-collapse: collapse; }
+        .permission-table th { background: #f8fafc; padding: 8px 12px; text-align: left; font-weight: 600; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .permission-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .permission-table tbody tr:hover { background: #f8fafc; }
+        .permission-name { font-weight: 500; color: #0f172a; font-size: 13px; }
+        .permission-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
+        .permission-toggle { position: relative; width: 44px; height: 24px; border-radius: 999px; background: #e2e8f0; cursor: pointer; transition: background 0.2s ease; }
+        .permission-toggle.active { background: #005EB8; }
+        .permission-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .permission-toggle.active::after { transform: translateX(20px); }
+        .permission-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+        .permission-badge.full { background: #dcfce7; color: #166534; }
+        .permission-badge.limited { background: #fef3c7; color: #92400e; }
+        .permission-badge.none { background: #f1f5f9; color: #64748b; }
+
+        /* Badge */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+        .badge-count { background: #e0f2fe; color: #0369a1; }
+        .badge-system { background: #f1f5f9; color: #64748b; font-size: 11px; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: modalIn 0.2s ease; }
+        .modal.large { max-width: 900px; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 18px; font-weight: 600; color: #0f172a; }
+        .modal-header .role-badge { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .modal-close { width: 32px; height: 32px; border: none; background: #f1f5f9; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b; transition: all 0.15s ease; }
+        .modal-close:hover { background: #e2e8f0; color: #0f172a; }
+        .modal-body { padding: 24px; overflow-y: auto; max-height: 60vh; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; gap: 12px; }
+        
+        /* Permissions Editor */
+        .permissions-search { margin-bottom: 12px; position: relative; }
+        .permissions-search input { width: 100%; padding: 6px 12px 6px 32px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; }
+        .permissions-search i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 12px; }
+        .permission-category { margin-bottom: 12px; }
+        .permission-category:last-child { margin-bottom: 0; }
+        .category-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s ease; }
+        .category-header:hover { background: #f1f5f9; }
+        .category-title { font-size: 13px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; }
+        .category-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .category-icon.users { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
+        .category-icon.campaigns { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; }
+        .category-icon.reports { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
+        .category-icon.billing { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #7c3aed; }
+        .category-icon.settings { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; }
+        .category-count { font-size: 12px; color: #94a3b8; font-weight: 500; }
+        .category-toggle { color: #94a3b8; transition: transform 0.2s ease; }
+        .category-header.collapsed .category-toggle { transform: rotate(-90deg); }
+        .permission-list { display: block; }
+        .category-header.collapsed + .permission-list { display: none; }
+        .permission-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; border-radius: 6px; transition: background 0.15s ease; margin-bottom: 2px; }
+        .permission-item:hover { background: #f8fafc; }
+        .permission-item:hover .permission-delete { opacity: 1; }
+        .permission-item-info { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .permission-checkbox { width: 16px; height: 16px; border: 2px solid #cbd5e1; border-radius: 3px; cursor: pointer; accent-color: #005EB8; transition: all 0.15s ease; }
+        .permission-checkbox:checked { background: #005EB8; border-color: #005EB8; }
+        .permission-details { flex: 1; }
+        .permission-item-name { font-size: 13px; font-weight: 500; color: #0f172a; }
+        .permission-item-desc { font-size: 11px; color: #64748b; margin-top: 1px; }
+        .permission-delete { opacity: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 4px; cursor: pointer; color: #94a3b8; transition: all 0.15s ease; }
+        .permission-delete:hover { background: #fee2e2; color: #dc2626; }
+        .permission-level { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+        .permission-level.full { background: #dcfce7; color: #166534; }
+        .permission-level.limited { background: #fef3c7; color: #92400e; }
+        .permission-level.none { background: #f1f5f9; color: #64748b; }
+        
+        .permissions-summary { display: flex; align-items: center; gap: 12px; padding: 6px 12px; background: #f8fafc; border-radius: 6px; }
+        .summary-item { display: flex; align-items: center; gap: 4px; }
+        .summary-count { font-size: 14px; font-weight: 700; color: #0f172a; }
+        .summary-label { font-size: 11px; color: #64748b; }
+
+        /* Form */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; color: #334155; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: all 0.15s ease; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #005EB8; box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.1); }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+
+        /* Permission Checkboxes */
+        .permission-checkboxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+        .permission-check-item { display: flex; align-items: center; gap: 10px; padding: 12px; background: #f8fafc; border-radius: 8px; cursor: pointer; transition: background 0.15s ease; }
+        .permission-check-item:hover { background: #f1f5f9; }
+        .permission-check-item input[type="checkbox"] { width: 18px; height: 18px; border: 2px solid #cbd5e1; border-radius: 4px; cursor: pointer; accent-color: #005EB8; }
+        .permission-check-label { font-size: 14px; font-weight: 500; color: #334155; }
+
+        @media (max-width: 1024px) { .sidebar { width: 240px; } .main-content { margin-left: 240px; padding: 16px 24px; } .roles-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; padding: 16px; } .header { flex-direction: column; gap: 16px; align-items: flex-start; } }
+   
+   /* Action Section */
+        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 10px; margin-bottom: 12px; }
+        .action-grid { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+        .action-btn:hover { border-color: #005EB8; color: #005EB8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 94, 184, 0.15); }
+        .action-btn.primary { background: #005EB8; color: white; border-color: #005EB8; }
+   
+   
+   </style>
+</head>
+<body>
+  <!-- Beacon Header -->
+  <header class="beacon-header border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
+    <div class="flex items-center justify-between px-4 py-2">
+      <div class="flex items-center gap-3">
+        <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
+      </div>
+
+      <nav class="flex items-center gap-3 ml-auto">
+        <h3 class="text-base text-white" style="font-size: 1.5rem; padding-right: 15px;">Admin</h3>
+        <span class="text-white select-none">|</span>
+
+        <!-- Notifications -->
+        <div class="relative">
+          <button id="notificationButton" class="p-2 rounded-md text-white relative" title="Notifications" aria-label="View notifications">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+          </button>
+
+          <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+            <div class="p-3 border-b border-gray-200 bg-gray-50">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+              </div>
+            </div>
+            <div class="max-h-80 overflow-y-auto">
+              <div id="notificationList">
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Waffle Menu -->
+        <div class="relative">
+          <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+            </svg>
+          </button>
+          <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+            <a href="./index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+            <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+            <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+
+  <div class="dashboard-container">
+    <nav class="sidebar">
+      <div class="logo-section">
+          <h2 class="text-base font-semibold text-gray-800">User Management</h2>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-group">
+          
+        <div class="nav-group">
+          
+          <a href="Admin_Users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+          <a href="Admin_Roles_Permissions.html" class="nav-item"><i class="fas fa-user-tag"></i><span>Roles</span></a>
+          <a href="Admin_Permissions.html" class="nav-item active"><i class="fas fa-key"></i><span>Permissions</span></a>
+          <a href="Admin_User_Activity_Logs.html" class="nav-item"><i class="fas fa-history"></i><span>User Activity Logs</span></a>
+          <a href="Admin_Configuration_Console.html" class="nav-item"><i class="fas fa-cogs"></i><span>Configuration Console</span></a>
+        </div>
+        <div class="nav-group">
+          
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <div id="mainHeader">
+            <h1>Permissions</h1>
+            <p>Manage what users can access across the platform by role.</p>
+          </div>
+        </div>
+        <div class="header-right">
+          
+          
+        </div>
+      </header>
+
+<!-- Action Bar -->
+      <div class="action-section" id="mainActions">
+        <div class="action-grid">
+          <button class="action-btn primary small" id="createPermissionBtn" onclick="openModal('createPermissionModal')"><i class="fas fa-plus"></i> Create Permission</button>
+          <!-- <button class="action-btn small" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button> -->
+        </div>
+      </div>
+
+      <!-- Permissions Matrix View -->
+      <div class="tab-content permissions-section active" id="permissionsContent">
+        <div class="content-card">
+          <div class="card-header">
+            <div class="card-title">Permissions by Role</div>
+            <div style="display:flex; gap:6px;">
+              <select style="padding:6px 10px; border:1px solid #e2e8f0; border-radius:6px; font-size:13px;">
+                <option>All Modules</option>
+                <option>User Management</option>
+                <option>Campaigns</option>
+                <option>Reports</option>
+                <option>Billing</option>
+                <option>Settings</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-content" style="padding:0; overflow-x:auto;">
+            <table class="permission-table">
+              <thead>
+                <tr>
+                  <th style="min-width:280px;">Permission</th>
+                  <th style="text-align:center; min-width:100px;">Super Admin</th>
+                  <th style="text-align:center; min-width:100px;">Agency Admin</th>
+                  <th style="text-align:center; min-width:100px;">Standard</th>
+                  <th style="text-align:center; min-width:100px;">Read Only</th>
+                  <th style="text-align:center; width:80px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="permission-name">View Users</div><div class="permission-desc">View user list and details</div></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge limited">Agency Only</span></td>
+                  <td style="text-align:center;"><span class="permission-badge limited">Self</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('view-users')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="permission-name">Create Users</div><div class="permission-desc">Add new user accounts</div></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge limited">Agency Only</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('create-users')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="permission-name">Edit Users</div><div class="permission-desc">Modify user profiles and settings</div></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge limited">Agency Only</span></td>
+                  <td style="text-align:center;"><span class="permission-badge limited">Self</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('edit-users')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="permission-name">Delete Users</div><div class="permission-desc">Remove user accounts</div></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('delete-users')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="permission-name">View Campaigns</div><div class="permission-desc">Access campaign data</div></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge limited">Assigned</span></td>
+                  <td style="text-align:center;"><span class="permission-badge limited">Assigned</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('view-campaigns')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="permission-name">Create Campaigns</div><div class="permission-desc">Create new campaigns</div></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('create-campaigns')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="permission-name">Manage Billing</div><div class="permission-desc">Access billing and invoices</div></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge limited">View Only</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('manage-billing')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+                <tr>
+                  <td><div class="permission-name">System Settings</div><div class="permission-desc">Configure platform settings</div></td>
+                  <td style="text-align:center;"><span class="permission-badge full"><i class="fas fa-check"></i> Full</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><span class="permission-badge none">—</span></td>
+                  <td style="text-align:center;"><button class="row-action danger" title="Delete Permission" onclick="deleteMatrixPermission('system-settings')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create Permission Modal -->
+  <div class="modal-overlay" id="createPermissionModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Create New Permission</h2>
+        <button class="modal-close" onclick="closeModal('createPermissionModal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Permission Name</label>
+          <input type="text" placeholder="e.g., Edit Budgets">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea placeholder="Describe what this permission allows..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" onclick="closeModal('createPermissionModal')">Cancel</button>
+        <button class="action-btn primary">Create Permission</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        const href = (this.getAttribute('href') || '').trim();
+        if (href === '' || href === '#') {
+          e.preventDefault();
+          document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+          this.classList.add('active');
+        }
+      });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (menuDropdown) menuDropdown.classList.add('hidden');
+      if (notificationDropdown) notificationDropdown.classList.add('hidden');
+    });
+
+    // Modal functions
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) closeModal(this.id);
+      });
+    });
+
+    // Permission toggle simulation
+    document.querySelectorAll('.permission-toggle').forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+      });
+    });
+
+    // Header menu functionality
+    const menuButton = document.getElementById('menuButton');
+    const menuDropdown = document.getElementById('menuDropdown');
+    const notificationButton = document.getElementById('notificationButton');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+
+    if (menuButton && menuDropdown) {
+      menuButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        menuDropdown.classList.toggle('hidden');
+        if (notificationDropdown) notificationDropdown.classList.add('hidden');
+      });
+    }
+
+    if (notificationButton && notificationDropdown) {
+      notificationButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        notificationDropdown.classList.toggle('hidden');
+        if (menuDropdown) menuDropdown.classList.add('hidden');
+      });
+    }
+  </script>
+</body>
+</html>

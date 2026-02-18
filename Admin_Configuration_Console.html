@@ -30,23 +30,23 @@
         .header-left p { color: #64748b; font-size: 14px; }
         
         /* Tabs */
-        .tabs-container { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid #e2e8f0; }
-        .tab { padding: 12px 24px; background: transparent; border: none; color: #64748b; font-weight: 500; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s ease; }
+        .tabs-container { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; }
+        .tab { padding: 8px 16px; background: transparent; border: none; color: #64748b; font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s ease; }
         .tab:hover { color: #334155; background: #f8fafc; }
         .tab.active { color: #005EB8; border-bottom-color: #005EB8; }
         
         /* Content Cards */
-        .content-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 20px; }
-        .card-header { padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
-        .card-title { font-size: 16px; font-weight: 600; color: #0f172a; }
-        .card-description { font-size: 13px; color: #64748b; margin-top: 2px; }
+        .content-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 12px; }
+        .card-header { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
+        .card-title { font-size: 14px; font-weight: 600; color: #0f172a; }
+        .card-description { font-size: 12px; color: #64748b; margin-top: 1px; }
         .card-content { padding: 0; }
         
         /* Config Table */
         .config-table { width: 100%; }
         .config-table thead { background: #f8fafc; }
-        .config-table th { padding: 8px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid #e2e8f0; }
-        .config-table td { padding: 10px 14px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9; }
+        .config-table th { padding: 6px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid #e2e8f0; }
+        .config-table td { padding: 6px 12px; font-size: 13px; color: #334155; border-bottom: 1px solid #f1f5f9; }
         .config-table tr:last-child td { border-bottom: none; }
         .config-table tr:hover { background: #f8fafc; }
         
@@ -76,16 +76,16 @@
         .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; background: #f8fafc; }
         
         /* Form Elements */
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
-        .form-input { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; transition: all 0.2s ease; }
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 4px; }
+        .form-input { width: 100%; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s ease; }
         .form-input:focus { outline: none; border-color: #005EB8; box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.1); }
-        .form-textarea { min-height: 80px; resize: vertical; }
-        .form-help { font-size: 12px; color: #64748b; margin-top: 4px; }
+        .form-textarea { min-height: 60px; resize: vertical; }
+        .form-help { font-size: 11px; color: #64748b; margin-top: 3px; }
         
         /* Dropdown Values List */
         .dropdown-values { border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; }
-        .dropdown-value-item { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .dropdown-value-item { padding: 8px 12px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
         .dropdown-value-item:last-child { border-bottom: none; }
         .dropdown-value-item:hover { background: #f8fafc; }
         .drag-handle { cursor: move; color: #94a3b8; margin-right: 12px; }
@@ -143,9 +143,10 @@
             </div>
             <div class="nav-group">
                 <a href="Admin_Users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
-                <a href="Admin_Roles_Permissions.html" class="nav-item"><i class="fas fa-user-tag"></i><span>Roles & Permissions</span></a>
-                <a href="Admin_User_Activity_Logs.html" class="nav-item"><i class="fas fa-history"></i><span>User Activity Logs</span></a>
-                <a href="Admin_Configuration_Console.html" class="nav-item active"><i class="fas fa-cogs"></i><span>Configuration Console</span></a>
+          <a href="Admin_Roles_Permissions.html" class="nav-item"><i class="fas fa-user-tag"></i><span>Roles</span></a>
+          <a href="Admin_Permissions.html" class="nav-item"><i class="fas fa-key"></i><span>Permissions</span></a>
+          <a href="Admin_User_Activity_Logs.html" class="nav-item"><i class="fas fa-history"></i><span>User Activity Logs</span></a>
+          <a href="Admin_Configuration_Console.html" class="nav-item active"><i class="fas fa-cogs"></i><span>Configuration Console</span></a>
             </div>
         </nav>
 
@@ -162,8 +163,8 @@
             <div class="tabs-container">
                 <button class="tab active" data-tab="field-labels">Field Labels</button>
                 <button class="tab" data-tab="dropdown-values">Dropdown Values</button>
-                <button class="tab" data-tab="help-text">Help Text</button>
-                <button class="tab" data-tab="system-settings">System Settings</button>
+                <!-- <button class="tab" data-tab="help-text">Help Text</button>
+                <button class="tab" data-tab="system-settings">System Settings</button> -->
             </div>
 
             <!-- Field Labels Tab -->
@@ -271,6 +272,52 @@
                         </table>
                     </div>
                 </div>
+
+<div class="content-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Ad Group Fields</div>
+                            <div class="card-description">Customize display labels for ad group-related fields</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <table class="config-table">
+                            <thead>
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th>Current Label</th>
+                                    <th>Field Type</th>
+                                    <th>Status</th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="field-name">Ad Group Name</span></td>
+                                    <td><span class="field-value">Ad Group Name</span></td>
+                                    <td><span class="field-type">Text</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Ad Group Name', 'Ad Group Name', 'text')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Budget</span></td>
+                                    <td><span class="field-value">Total Budget</span></td>
+                                    <td><span class="field-type">Currency</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Budget', 'Total Budget', 'currency')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Flight Dates</span></td>
+                                    <td><span class="field-value">Flight Period</span></td>
+                                    <td><span class="field-type">Date Range</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Flight Dates', 'Flight Period', 'daterange')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Dropdown Values Tab -->
