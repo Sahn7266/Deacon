@@ -493,16 +493,15 @@
               <div class="overflow-x-auto border border-default rounded-md">
                 <table id="campaignTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
                   <colgroup>
-                    <col style="width:80px" />
                     <col style="width:40%" />
-                    <col style="width:25%" />
-                    <col style="width:35%" />
+                    <col style="width:15%" />
+                    <col style="width:15%" />
+                    <col style="width:15%" />
+                    <col style="width:15%" />
+                    <col style="width:80px" />
                   </colgroup>
                   <thead class="tbl-head">
                     <tr>
-                      <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
-                        <div class="px-6 py-2 whitespace-nowrap">Actions</div>
-                      </th>
                       <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
                         <div class="px-6 py-2 whitespace-nowrap">Platform</div>
                       </th>
@@ -510,13 +509,16 @@
                         <div class="px-6 py-2 whitespace-nowrap">Platform Type</div>
                       </th>
                       <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
-                        <div class="px-6 py-2 whitespace-nowrap">Status</div>
+                        <div class="px-6 py-2 whitespace-nowrap">Record ID</div>
                       </th>
                       <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
                         <div class="px-6 py-2 whitespace-nowrap">Enabled At</div>
                       </th>
-                      <th scope="col" class="text-sm font-medium uppercase tracking-wider">
+                      <th scope="col" class="text-sm font-medium uppercase tracking-wider border-r border-default">
                         <div class="px-6 py-2 whitespace-nowrap">Disabled At</div>
+                      </th>
+                      <th scope="col" class="text-sm font-medium uppercase tracking-wider">
+                        <div class="px-6 py-2 whitespace-nowrap">Actions</div>
                       </th>
                     </tr>
                   </thead>
@@ -590,9 +592,15 @@
 
           <!-- Right Content Area -->
           <div class="flex-1 p-6 overflow-y-auto">
-            <div class="mb-6">
-              <h3 class="text-xl font-semibold text-gray-900 mb-2">Platform Connectors</h3>
-              <p class="text-sm text-gray-600">Select which DSPs and Ad Servers to connect</p>
+            <div class="mb-6 flex items-start justify-between">
+              <div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Platform Connectors</h3>
+                <p class="text-sm text-gray-600">Select which DSPs and Ad Servers to connect</p>
+              </div>
+              <div class="flex items-center space-x-2">
+                <label for="editReportingId" class="text-sm font-medium text-gray-700 whitespace-nowrap">Reporting ID</label>
+                <input type="text" id="editReportingId" class="w-40 px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter ID" />
+              </div>
             </div>
 
             <div class="space-y-4">
@@ -612,7 +620,7 @@
               <div id="editConnectorsContent" class="space-y-4">
                 
                 <!-- DSP Section Header -->
-                <div class="pt-2">
+                <div id="editDspSection" class="pt-2">
                   <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
@@ -697,7 +705,7 @@
                 </div>
 
                 <!-- Ad Server Section Header -->
-                <div class="pt-4">
+                <div id="editAdServerSection" class="pt-4">
                   <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
@@ -2137,18 +2145,44 @@ function loadCampaignConnections(campaign) {
     row.className = 'border-b border-default hover:bg-gray-50 transition-colors';
     row.setAttribute('data-platform', platform.value);
     
-    // Status badge styling - handle Connected, Disconnected, or other statuses
-    let statusBadgeClass;
+    // Determine Record ID value based on platform type and connection status
+    let recordIdContent = '';
     if (platform.status === 'Connected') {
-      statusBadgeClass = 'bg-green-100 text-green-800';
-    } else if (platform.status === 'Disconnected') {
-      statusBadgeClass = 'bg-red-100 text-red-800';
+      // Connected - show appropriate ID based on platform type
+      if (platform.type === 'DSP') {
+        const deliveryId = campaign.deliveryId || '—';
+        recordIdContent = `<span class="text-sm text-gray-900">${deliveryId}</span>`;
+      } else if (platform.type === 'Ad Server') {
+        const reportingId = campaign.reportingId || '—';
+        recordIdContent = `<span class="text-sm text-gray-900">${reportingId}</span>`;
+      } else {
+        recordIdContent = `<span class="text-sm text-gray-900">—</span>`;
+      }
     } else {
-      statusBadgeClass = 'bg-gray-100 text-gray-800';
+      // Disconnected - show "Create" hyperlink
+      recordIdContent = `<a href="#" class="text-sm text-blue-600 hover:text-blue-800 hover:underline" data-action="create-connection" data-platform="${platform.value}" data-platform-type="${platform.type}">Create</a>`;
     }
     
     row.innerHTML = `
       <td class="px-6 py-1 text-sm border-r border-default">
+        <div class="flex items-center gap-3">
+          <img src="${platform.logo}" alt="${platform.name}" class="w-8 h-8" onerror="this.style.display='none'">
+          <span class="font-medium text-gray-900">${platform.name}</span>
+        </div>
+      </td>
+      <td class="px-6 py-1 text-sm text-gray-700 border-r border-default">
+        ${platform.type}
+      </td>
+      <td class="px-6 py-1 text-sm border-r border-default">
+        ${recordIdContent}
+      </td>
+      <td class="px-6 py-1 text-sm text-gray-700 border-r border-default">
+        ${platform.enabledAt}
+      </td>
+      <td class="px-6 py-1 text-sm text-gray-500 border-r border-default">
+        ${platform.disabledAt}
+      </td>
+      <td class="px-6 py-1 text-sm">
         <div class="flex items-center space-x-2">
           <button data-action="edit" data-platform="${platform.value}" title="Edit" class="p-1 rounded hover:bg-gray-100" type="button" aria-label="Edit">
             <!-- Pencil icon -->
@@ -2163,26 +2197,6 @@ function loadCampaignConnections(campaign) {
             </svg>
           </button>
         </div>
-      </td>
-      <td class="px-6 py-1 text-sm border-r border-default">
-        <div class="flex items-center gap-3">
-          <img src="${platform.logo}" alt="${platform.name}" class="w-8 h-8" onerror="this.style.display='none'">
-          <span class="font-medium text-gray-900">${platform.name}</span>
-        </div>
-      </td>
-      <td class="px-6 py-1 text-sm text-gray-700 border-r border-default">
-        ${platform.type}
-      </td>
-      <td class="px-6 py-1 text-sm border-r border-default">
-        <span class="px-2 py-1 rounded-full text-xs font-medium ${statusBadgeClass}">
-          ${platform.status}
-        </span>
-      </td>
-      <td class="px-6 py-1 text-sm text-gray-700 border-r border-default">
-        ${platform.enabledAt}
-      </td>
-      <td class="px-6 py-1 text-sm text-gray-500">
-        ${platform.disabledAt}
       </td>
     `;
     
@@ -2212,15 +2226,22 @@ function setupConnectionActions() {
 // Handle edit and delete actions
 function handleConnectionAction(e) {
   const btn = e.target.closest('button[data-action]');
-  if (!btn) return;
+  const link = e.target.closest('a[data-action]');
   
-  const action = btn.dataset.action;
-  const platformValue = btn.dataset.platform;
+  if (!btn && !link) return;
+  
+  const element = btn || link;
+  const action = element.dataset.action;
+  const platformValue = element.dataset.platform;
   
   if (action === 'edit') {
     handleEditConnection(platformValue);
   } else if (action === 'delete') {
     handleDeleteConnection(platformValue);
+  } else if (action === 'create-connection') {
+    e.preventDefault(); // Prevent the link from navigating
+    const platformType = element.dataset.platformType || null;
+    openEditConnectionsModal(platformType);
   }
 }
 
@@ -2230,12 +2251,42 @@ function handleEditConnection(platformValue) {
 }
 
 // Open Edit Connections Modal and populate with current table data
-function openEditConnectionsModal() {
+// platformTypeFilter: 'DSP', 'Ad Server', or null (show all)
+function openEditConnectionsModal(platformTypeFilter) {
   const modal = document.getElementById('editConnectionsModal');
   if (!modal) return;
 
   // Reset all checkboxes and toggles first
   resetEditConnectionsModal();
+
+  // Show/hide sections based on platform type filter
+  const dspSection = document.getElementById('editDspSection');
+  const adServerSection = document.getElementById('editAdServerSection');
+  
+  // Get all DSP connector cards
+  const dspCards = modal.querySelectorAll('.connector-card[data-connector="trade-desk"], .connector-card[data-connector="dv360"], .connector-card[data-connector="simplifi"]');
+  // Get all Ad Server connector cards
+  const adServerCards = modal.querySelectorAll('.connector-card[data-connector="google-campaign-manager"]');
+  
+  if (platformTypeFilter === 'DSP') {
+    // Show only DSP section
+    if (dspSection) dspSection.style.display = '';
+    dspCards.forEach(card => card.style.display = '');
+    if (adServerSection) adServerSection.style.display = 'none';
+    adServerCards.forEach(card => card.style.display = 'none');
+  } else if (platformTypeFilter === 'Ad Server') {
+    // Show only Ad Server section
+    if (dspSection) dspSection.style.display = 'none';
+    dspCards.forEach(card => card.style.display = 'none');
+    if (adServerSection) adServerSection.style.display = '';
+    adServerCards.forEach(card => card.style.display = '');
+  } else {
+    // Show all sections (no filter)
+    if (dspSection) dspSection.style.display = '';
+    dspCards.forEach(card => card.style.display = '');
+    if (adServerSection) adServerSection.style.display = '';
+    adServerCards.forEach(card => card.style.display = '');
+  }
 
   // Read current connections from the table
   const tableBody = document.getElementById('campaignTableBody');
@@ -2314,7 +2365,7 @@ function updateToggleState(toggle, isEnabled) {
       span.classList.add('translate-x-5');
     }
     if (statusLabel) {
-      statusLabel.textContent = 'Connected';
+      statusLabel.textContent = 'Synced';
       statusLabel.classList.remove('text-gray-600');
       statusLabel.classList.add('text-green-600');
     }
@@ -2327,7 +2378,7 @@ function updateToggleState(toggle, isEnabled) {
       span.classList.add('translate-x-0');
     }
     if (statusLabel) {
-      statusLabel.textContent = 'Not Connected';
+      statusLabel.textContent = 'Not Synced';
       statusLabel.classList.remove('text-green-600');
       statusLabel.classList.add('text-gray-600');
     }

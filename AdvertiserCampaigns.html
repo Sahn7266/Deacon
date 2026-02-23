@@ -732,7 +732,7 @@
               <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div>
                   <p class="text-sm font-medium text-gray-900">Enable Platform Connectors</p>
-                  <p class="text-xs text-gray-600 mt-1">Toggle to mark selected platforms as Connected</p>
+                  <p class="text-xs text-gray-600 mt-1">Toggle to mark selected platforms as Synced</p>
                 </div>
                 <button type="button" id="connectorsToggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false">
                   <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
@@ -769,7 +769,7 @@
                       </div>
                     </div>
                     <div class="flex items-center space-x-3">
-                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Connected</span>
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
                       <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="tradeDesk">
                         <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
                       </button>
@@ -794,7 +794,7 @@
                       </div>
                     </div>
                     <div class="flex items-center space-x-3">
-                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Connected</span>
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
                       <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="dv360">
                         <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
                       </button>
@@ -819,7 +819,7 @@
                       </div>
                     </div>
                     <div class="flex items-center space-x-3">
-                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Connected</span>
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
                       <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="simplifi">
                         <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
                       </button>
@@ -854,7 +854,7 @@
                       </div>
                     </div>
                     <div class="flex items-center space-x-3">
-                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Connected</span>
+                      <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
                       <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="gcm">
                         <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
                       </button>
@@ -1306,7 +1306,7 @@ if (this.elements.createBtn) {
         }
       }
       
-      // Reset all connection toggles to "Not Connected"
+      // Reset all connection toggles to "Not Synced"
       document.querySelectorAll('.connector-toggle').forEach(toggle => {
         toggle.setAttribute('aria-checked', 'false');
         toggle.classList.remove('bg-green-500');
@@ -1318,9 +1318,9 @@ if (this.elements.createBtn) {
         }
       });
       
-      // Reset all connection status labels to "Not Connected"
+      // Reset all connection status labels to "Not Synced"
       document.querySelectorAll('.connector-status-label').forEach(label => {
-        label.textContent = 'Not Connected';
+        label.textContent = 'Not Synced';
         label.classList.remove('text-green-700');
         label.classList.add('text-gray-600');
       });
@@ -2241,7 +2241,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const toggleSwitch = toggle.querySelector('span');
       
       if (newState) {
-        // Set all to Connected
+        // Set all to Synced
         toggle.setAttribute('aria-checked', 'true');
         toggle.classList.remove('bg-gray-200');
         toggle.classList.add('bg-green-500');
@@ -2250,12 +2250,12 @@ document.addEventListener('DOMContentLoaded', () => {
           toggleSwitch.classList.add('translate-x-5');
         }
         if (label) {
-          label.textContent = 'Connected';
+          label.textContent = 'Synced';
           label.classList.remove('text-gray-600');
           label.classList.add('text-green-700');
         }
       } else {
-        // Set all to Not Connected
+        // Set all to Not Synced
         toggle.setAttribute('aria-checked', 'false');
         toggle.classList.remove('bg-green-500');
         toggle.classList.add('bg-gray-200');
@@ -2264,7 +2264,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toggleSwitch.classList.add('translate-x-0');
         }
         if (label) {
-          label.textContent = 'Not Connected';
+          label.textContent = 'Not Synced';
           label.classList.remove('text-green-700');
           label.classList.add('text-gray-600');
         }
@@ -2316,26 +2316,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const toggleSwitch = this.querySelector('span');
       
       if (isConnected) {
-        // Change to Not Connected
+        // Change to Not Synced
         this.setAttribute('aria-checked', 'false');
         this.classList.remove('bg-green-500');
         this.classList.add('bg-gray-200');
         toggleSwitch.classList.remove('translate-x-5');
         toggleSwitch.classList.add('translate-x-0');
         if (label) {
-          label.textContent = 'Not Connected';
+          label.textContent = 'Not Synced';
           label.classList.remove('text-green-700');
           label.classList.add('text-gray-600');
         }
       } else {
-        // Change to Connected
+        // Change to Synced
         this.setAttribute('aria-checked', 'true');
         this.classList.remove('bg-gray-200');
         this.classList.add('bg-green-500');
         toggleSwitch.classList.remove('translate-x-0');
         toggleSwitch.classList.add('translate-x-5');
         if (label) {
-          label.textContent = 'Connected';
+          label.textContent = 'Synced';
           label.classList.remove('text-gray-600');
           label.classList.add('text-green-700');
         }
