@@ -21,6 +21,8 @@
   <script src="./assets/audit.js" defer></script>
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
+  <link rel="stylesheet" href="./assets/changeorder.css">
+  <script src="./assets/changeorder.js" defer></script>
 
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
@@ -91,7 +93,7 @@
     <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
       <div class="flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-3">
-          <img src="./assets/BeaconLogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
+          <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
         </div>
 
         <nav class="flex items-center gap-3 ml-auto">
@@ -171,8 +173,8 @@
             </button>
             <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
             </div>
           </div>
@@ -187,7 +189,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">Advertiser: —</a>
+        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -196,7 +198,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <span class="font-semibold text-gray-900" id="breadcrumbAdGroup">Ad Group: —</span>
+        <span class="font-semibold text-gray-900" id="breadcrumbAdGroup">—</span>
       </nav>
     </div>
 
@@ -239,13 +241,25 @@
       <main class="flex-1 overflow-y-auto p-6">
         <div class="bg-white rounded-lg shadow-sm">
           <div class="p-4 border-b border-gray-200">
-            <div class="flex items-start gap-4 mb-3">
-              <div class="flex-1">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <!-- Left Column: Advertiser Name & Account # -->
+              <div>
                 <h1 id="advertiserHeader" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
-
-                <div class="flex justify-between items-center">
-                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
-                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+              </div>
+              <!-- Right Column: Ad Group IDs -->
+              <div class="text-right">
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <a id="adGroupDeliveryId" href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <a id="adGroupReportingId" href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">ID:</span>
+                  <span id="adGroupIdDisplay" class="text-sm text-gray-500 w-40 text-left">—</span>
                 </div>
               </div>
             </div>
@@ -255,8 +269,16 @@
             <!-- Two-column ad group details layout -->
             <section>
               <div class="flex items-center justify-between mb-6">
-                <h1 id="adGroupDetailsTitle" class="text-2xl font-semibold text-gray-900 mx-2">AD GROUP DETAILS</h1>
+                <div>
+                  <h1 class="text-2xl font-semibold text-gray-900 mx-2">AD GROUP OVERVIEW</h1>
+                  <p id="adGroupDetailsSubtitle" class="text-sm text-gray-500 mx-2 mt-1"></p>
+                </div>
                 <div class="flex items-center gap-2">
+                  <!-- Add to Change Order Button -->
+                  <button id="addToCOBtn" onclick="openCOPickerModal()" class="text-sm px-3 py-1 bg-green-600 text-white border border-green-600 rounded-md hover:bg-green-700 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Add to Change Order
+                  </button>
                   <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                   <svg viewBox="0 0 24 24" height="16" width="16">
                     <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
@@ -379,7 +401,7 @@
                       <thead style="background-color: #dbeafe;">
                         <tr>
                           <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-blue-900 uppercase tracking-wider">
-                            DSP FIELDS
+                            DSP FIELDS • The Trade Desk
                           </th>
                         </tr>
                       </thead>
@@ -393,7 +415,7 @@
                             Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayDspName" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayDspName" class="text-gray-400 break-words">N/A</span>
                             <input id="adGroupNameInput" type="text" class="hidden adgroup-details-input" title="Ad Group Name input" aria-label="Enter ad group name" />
                           </td>
                         </tr>
@@ -404,7 +426,7 @@
                             Funnel Location
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayFunnelLocation" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayFunnelLocation" class="text-gray-400 break-words">N/A</span>
                             <select id="funnelLocationInput" class="hidden adgroup-details-input" title="Funnel Location selection" aria-label="Select funnel location">
                               <option value="">Select funnel location</option>
                               <option value="Awareness">Awareness</option>
@@ -421,7 +443,7 @@
                             Channel
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayChannel" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayChannel" class="text-gray-400 break-words">N/A</span>
                             <select id="channelInput" class="hidden adgroup-details-input" title="Channel selection" aria-label="Select channel">
                               <option value="">Select channel</option>
                               <option value="Display">Display</option>
@@ -441,7 +463,7 @@
                             Device Types
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayDeviceTypes" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayDeviceTypes" class="text-gray-400 break-words">N/A</span>
                             <input id="deviceTypesInput" type="text" class="hidden adgroup-details-input" placeholder="Comma-separated values" />
                           </td>
                         </tr>
@@ -452,7 +474,7 @@
                             Ad Environments
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdEnvironments" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdEnvironments" class="text-gray-400 break-words">N/A</span>
                             <input id="adEnvironmentsInput" type="text" class="hidden adgroup-details-input" placeholder="Comma-separated values" />
                           </td>
                         </tr>
@@ -463,7 +485,7 @@
                             Primary Goal
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayPrimaryGoal" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayPrimaryGoal" class="text-gray-400 break-words">N/A</span>
                             <select id="primaryGoalInput" class="hidden adgroup-details-input" title="Primary Goal selection" aria-label="Select primary goal">
                               <option value="">Select primary goal</option>
                               <option value="Cost per Acquisition (CPA)">Cost per Acquisition (CPA)</option>
@@ -478,7 +500,7 @@
                             Target
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayTarget" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayTarget" class="text-gray-400 break-words">N/A</span>
                             <input id="targetInput" type="text" class="hidden adgroup-details-input" placeholder="$0.00" />
                           </td>
                         </tr>
@@ -489,7 +511,7 @@
                             Audience
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayDspAudience" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayDspAudience" class="text-gray-400 break-words">N/A</span>
                             <select id="inputDspAudience" class="hidden adgroup-details-input" title="DSP Audience selection" aria-label="Select DSP audience">
                               <option value="">Select audience</option>
                               <option value="Apply a shared audience">Apply a shared audience</option>
@@ -505,7 +527,7 @@
                             Frequency
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayFrequency" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayFrequency" class="text-gray-400 break-words">N/A</span>
                             <input id="frequencyInput" type="text" class="hidden adgroup-details-input" placeholder="e.g., 4 ads per 1 day" />
                           </td>
                         </tr>
@@ -516,7 +538,7 @@
                             Geos
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayGeos" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayGeos" class="text-gray-400 break-words">N/A</span>
                             <select id="geosInput" class="hidden adgroup-details-input" title="Geos selection" aria-label="Select geos">
                               <option value="">Select geos</option>
                               <option value="Specific Locations">Specific Locations</option>
@@ -531,7 +553,7 @@
                             Base Bid
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayBaseBid" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayBaseBid" class="text-gray-400 break-words">N/A</span>
                             <input id="baseBidInput" type="text" class="hidden adgroup-details-input" placeholder="$0.00" />
                           </td>
                         </tr>
@@ -542,7 +564,7 @@
                             Max Bid
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayMaxBid" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayMaxBid" class="text-gray-400 break-words">N/A</span>
                             <input id="maxBidInput" type="text" class="hidden adgroup-details-input" placeholder="$0.00" />
                           </td>
                         </tr>
@@ -561,7 +583,7 @@
                       <thead style="background-color: #d1fae5;">
                         <tr>
                           <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-green-900 uppercase tracking-wider">
-                            AD SERVER FIELDS
+                            AD SERVER FIELDS • Google Campaign Manager
                           </th>
                         </tr>
                       </thead>
@@ -573,7 +595,7 @@
                             Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerName" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerName" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerNameInput" type="text" class="hidden adgroup-details-input" title="Ad Server Name input" aria-label="Enter ad server name" />
                           </td>
                         </tr>
@@ -584,7 +606,7 @@
                             Status
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerStatus" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerStatus" class="text-gray-400 break-words">N/A</span>
                             <select id="adServerStatusInput" class="hidden adgroup-details-input" title="Ad Server Status selection" aria-label="Select ad server status">
                               <option value="">Select status</option>
                               <option value="Active">Active</option>
@@ -599,7 +621,7 @@
                             Compatibility
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerCompatibility" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerCompatibility" class="text-gray-400 break-words">N/A</span>
                             <select id="adServerCompatibilityInput" class="hidden adgroup-details-input" title="Ad Server Compatibility selection" aria-label="Select ad server compatibility">
                               <option value="">Select compatibility</option>
                               <option value="Display">Display</option>
@@ -616,7 +638,7 @@
                             Dimensions
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerDimensions" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerDimensions" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerDimensionsInput" type="text" class="hidden adgroup-details-input" placeholder="Comma-separated values" />
                           </td>
                         </tr>
@@ -627,7 +649,7 @@
                             Testing Starts
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerTestingStarts" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerTestingStarts" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerTestingStartsInput" type="date" class="hidden adgroup-details-input" title="Ad Server Testing Starts input" aria-label="Enter ad server testing starts date" />
                           </td>
                         </tr>
@@ -638,7 +660,7 @@
                             Start Date
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerStartDate" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerStartDate" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerStartDateInput" type="date" class="hidden adgroup-details-input" title="Ad Server Start Date input" aria-label="Enter ad server start date" />
                           </td>
                         </tr>
@@ -649,7 +671,7 @@
                             End Date
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerEndDate" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerEndDate" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerEndDateInput" type="date" class="hidden adgroup-details-input" title="Ad Server End Date input" aria-label="Enter ad server end date" />
                           </td>
                         </tr>
@@ -660,7 +682,7 @@
                             Cost Structure
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerCostStructure" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerCostStructure" class="text-gray-400 break-words">N/A</span>
                             <select id="adServerCostStructureInput" class="hidden adgroup-details-input" title="Ad Server Cost Structure selection" aria-label="Select ad server cost structure">
                               <option value="">Select cost structure</option>
                               <option value="Cost Per Mille (CPM)">Cost Per Mille (CPM)</option>
@@ -675,7 +697,7 @@
                             Cap Cost
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerCapCost" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerCapCost" class="text-gray-400 break-words">N/A</span>
                             <select id="adServerCapCostInput" class="hidden adgroup-details-input" title="Ad Server Cap Cost selection" aria-label="Select ad server cap cost">
                               <option value="">Select cap cost</option>
                               <option value="OFF">OFF</option>
@@ -1706,10 +1728,39 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
-  // Update the page title with ad group name
-  const titleElement = document.getElementById('adGroupDetailsTitle');
-  if (titleElement && adGroup.name) {
-    titleElement.innerHTML = `<span style="color: #0F66A7;">${adGroup.name}</span>: Ad Group Details`;
+  // Generate and persist ad group Delivery/Reporting IDs if they don't exist
+  let needsUpdate = false;
+  if (!adGroup.deliveryId) {
+    adGroup.deliveryId = 'DLV-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    needsUpdate = true;
+  }
+  if (!adGroup.reportingId) {
+    adGroup.reportingId = 'RPT-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    needsUpdate = true;
+  }
+  
+  // Save back to localStorage if IDs were generated
+  if (needsUpdate) {
+    const adgroupsToUpdate = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+    const idx = adgroupsToUpdate.findIndex(ag => ag.id === adGroup.id);
+    if (idx !== -1) {
+      adgroupsToUpdate[idx] = adGroup;
+      localStorage.setItem('adgroups_data_v1', JSON.stringify(adgroupsToUpdate));
+    }
+  }
+  
+  // Display ad group IDs in header
+  const adGroupIdEl = document.getElementById('adGroupIdDisplay');
+  const deliveryIdEl = document.getElementById('adGroupDeliveryId');
+  const reportingIdEl = document.getElementById('adGroupReportingId');
+  if (adGroupIdEl) adGroupIdEl.textContent = adGroup.id || '—';
+  if (deliveryIdEl) deliveryIdEl.textContent = adGroup.deliveryId || '—';
+  if (reportingIdEl) reportingIdEl.textContent = adGroup.reportingId || '—';
+
+  // Update the page subtitle with ad group name
+  const subtitleElement = document.getElementById('adGroupDetailsSubtitle');
+  if (subtitleElement && adGroup.name) {
+    subtitleElement.innerHTML = `<span style="color: #0F66A7;">${adGroup.name}</span>`;
   }
 
   // Populate breadcrumbs
@@ -1724,7 +1775,7 @@ document.addEventListener('DOMContentLoaded', function () {
       
       // Update breadcrumb advertiser name and link
       if (breadcrumbAdvertiser) {
-        breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
+        breadcrumbAdvertiser.textContent = `${advertiser.name || 'Unknown'}`;
         breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
       }
       
@@ -1769,7 +1820,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <svg class="w-4 h-4 mx-2 text-gray-400 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-            <a href="./CampaignDetails.html?campaignId=${relatedCampaignId}&campaignName=${encodeURIComponent(relatedCampaignName)}" class="hover:text-blue-600 transition-colors">Campaign: ${relatedCampaignName}</a>
+            <a href="./CampaignDetails.html?campaignId=${relatedCampaignId}&campaignName=${encodeURIComponent(relatedCampaignName)}" class="hover:text-blue-600 transition-colors">${relatedCampaignName}</a>
             <svg class="w-4 h-4 mx-2 text-gray-400 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
@@ -1786,7 +1837,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // Update breadcrumb ad group name
     if (breadcrumbAdGroup && adGroup.name) {
-      breadcrumbAdGroup.textContent = `Ad Group: ${adGroup.name}`;
+      breadcrumbAdGroup.textContent = `${adGroup.name}`;
     }
   } catch (e) {
     console.warn('Failed to populate breadcrumbs:', e);

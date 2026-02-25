@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Console - System Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./assets/toast.css">
+    <script src="./assets/toast.js" defer></script>
+    <link rel="stylesheet" href="./assets/loading.css">
+    <script src="./assets/loading.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: #f8fafc; color: #334155; line-height: 1.6; }
+        .beacon-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        .dashboard-container { display: flex; min-height: 100vh; padding-top: 56px; }
+        .sidebar { width: 256px; background: white; padding: 16px; position: fixed; height: 100vh; overflow-y: auto; border-right: 1px solid #e5e7eb; top: 56px; }
+        .logo-section { padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb; margin-bottom: 16px; }
+        .logo { display: flex; align-items: center; gap: 12px; color: #1f2937; font-size: 18px; font-weight: 600; }
+        .nav-group { margin-bottom: 24px; }
+        .nav-group-title { color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 4px 8px; }
+        .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 4px; color: #374151; text-decoration: none; border-radius: 6px; margin-bottom: 2px; transition: all 0.2s ease; font-weight: 400; font-size: 14px; }
+        .nav-item:hover { background: #eff6ff; color: #1f2937; }
+        .nav-item.active { background: #eff6ff; color: #1f2937; font-weight: 500; }
+        .nav-item i { width: 24px; height: 24px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .main-content { flex: 1; margin-left: 256px; padding: 24px 32px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .header-left h1 { font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .header-left p { color: #64748b; font-size: 14px; }
+        
+        /* Tabs */
+        .tabs-container { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; }
+        .tab { padding: 8px 16px; background: transparent; border: none; color: #64748b; font-weight: 500; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s ease; }
+        .tab:hover { color: #334155; background: #f8fafc; }
+        .tab.active { color: #005EB8; border-bottom-color: #005EB8; }
+        
+        /* Content Cards */
+        .content-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 12px; }
+        .card-header { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
+        .card-title { font-size: 14px; font-weight: 600; color: #0f172a; }
+        .card-description { font-size: 12px; color: #64748b; margin-top: 1px; }
+        .card-content { padding: 0; }
+        
+        /* Config Table */
+        .config-table { width: 100%; }
+        .config-table thead { background: #f8fafc; }
+        .config-table th { padding: 6px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid #e2e8f0; }
+        .config-table td { padding: 6px 12px; font-size: 13px; color: #334155; border-bottom: 1px solid #f1f5f9; }
+        .config-table tr:last-child td { border-bottom: none; }
+        .config-table tr:hover { background: #f8fafc; }
+        
+        .field-name { font-weight: 500; color: #0f172a; }
+        .field-value { color: #64748b; font-size: 13px; }
+        .field-type { display: inline-block; padding: 4px 8px; background: #e0f2fe; color: #0369a1; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        
+        /* Buttons */
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: #005EB8; color: white; }
+        .btn-primary:hover { background: #004A8F; }
+        .btn-secondary { background: white; color: #334155; border: 1px solid #e2e8f0; }
+        .btn-secondary:hover { border-color: #005EB8; color: #005EB8; }
+        .btn-sm { padding: 6px 12px; font-size: 13px; }
+        .btn-icon { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: modalIn 0.2s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 18px; font-weight: 600; color: #0f172a; }
+        .modal-close { width: 32px; height: 32px; border: none; background: #f1f5f9; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b; transition: all 0.15s ease; }
+        .modal-close:hover { background: #e2e8f0; color: #0f172a; }
+        .modal-body { padding: 24px; overflow-y: auto; max-height: 60vh; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; background: #f8fafc; }
+        
+        /* Form Elements */
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 4px; }
+        .form-input { width: 100%; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; transition: all 0.2s ease; }
+        .form-input:focus { outline: none; border-color: #005EB8; box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.1); }
+        .form-textarea { min-height: 60px; resize: vertical; }
+        .form-help { font-size: 11px; color: #64748b; margin-top: 3px; }
+        
+        /* Dropdown Values List */
+        .dropdown-values { border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .dropdown-value-item { padding: 8px 12px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .dropdown-value-item:last-child { border-bottom: none; }
+        .dropdown-value-item:hover { background: #f8fafc; }
+        .drag-handle { cursor: move; color: #94a3b8; margin-right: 12px; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        
+        @media (max-width: 1024px) { .sidebar { width: 240px; } .main-content { margin-left: 240px; padding: 16px 24px; } }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; } .main-content { margin-left: 0; padding: 16px; } .header { flex-direction: column; gap: 16px; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+    <!-- Beacon Header -->
+    <header class="beacon-header border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
+        <div class="flex items-center justify-between px-4 py-2">
+            <div class="flex items-center gap-3">
+                <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
+            </div>
+            <nav class="flex items-center gap-3 ml-auto">
+                <h3 class="text-base text-white" style="font-size: 1.5rem; padding-right: 15px;">Admin</h3>
+                <span class="text-white select-none">|</span>
+                <div class="relative">
+                    <button id="notificationButton" class="p-2 rounded-md text-white relative">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="relative">
+                    <button class="p-0 rounded-md text-white" id="menuButton">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+                        </svg>
+                    </button>
+                    <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+                        <a href="./index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                        <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo-section">
+                <h2 class="text-base font-semibold text-gray-800">User Management</h2>
+            </div>
+            <div class="nav-group">
+                <a href="Admin_Users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+          <a href="Admin_Roles_Permissions.html" class="nav-item"><i class="fas fa-user-tag"></i><span>Roles</span></a>
+          <a href="Admin_Permissions.html" class="nav-item"><i class="fas fa-key"></i><span>Permissions</span></a>
+          <a href="Admin_User_Activity_Logs.html" class="nav-item"><i class="fas fa-history"></i><span>User Activity Logs</span></a>
+          <a href="Admin_Configuration_Console.html" class="nav-item active"><i class="fas fa-cogs"></i><span>Configuration Console</span></a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h1>Configuration Console</h1>
+                    <p>Manage field labels, dropdown options, and system settings</p>
+                </div>
+            </header>
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <button class="tab active" data-tab="field-labels">Field Labels</button>
+                <button class="tab" data-tab="dropdown-values">Dropdown Values</button>
+                <!-- <button class="tab" data-tab="help-text">Help Text</button>
+                <button class="tab" data-tab="system-settings">System Settings</button> -->
+            </div>
+
+            <!-- Field Labels Tab -->
+            <div id="field-labels" class="tab-content active">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Advertiser Fields</div>
+                            <div class="card-description">Customize display labels for advertiser-related fields</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <table class="config-table">
+                            <thead>
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th>Current Label</th>
+                                    <th>Field Type</th>
+                                    <th>Status</th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="field-name">Advertiser Name</span></td>
+                                    <td><span class="field-value">Advertiser Name</span></td>
+                                    <td><span class="field-type">Text</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Advertiser Name', 'Advertiser Name', 'text')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Account Number</span></td>
+                                    <td><span class="field-value">Account #</span></td>
+                                    <td><span class="field-type">Text</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Account Number', 'Account #', 'text')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Delivery ID</span></td>
+                                    <td><span class="field-value">Delivery ID</span></td>
+                                    <td><span class="field-type">Text</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Delivery ID', 'Delivery ID', 'text')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Reporting ID</span></td>
+                                    <td><span class="field-value">Reporting ID</span></td>
+                                    <td><span class="field-type">Text</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Reporting ID', 'Reporting ID', 'text')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Industry Category</span></td>
+                                    <td><span class="field-value">Industry</span></td>
+                                    <td><span class="field-type">Dropdown</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Industry Category', 'Industry', 'dropdown')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Campaign Fields</div>
+                            <div class="card-description">Customize display labels for campaign-related fields</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <table class="config-table">
+                            <thead>
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th>Current Label</th>
+                                    <th>Field Type</th>
+                                    <th>Status</th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="field-name">Campaign Name</span></td>
+                                    <td><span class="field-value">Campaign Name</span></td>
+                                    <td><span class="field-type">Text</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Campaign Name', 'Campaign Name', 'text')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Budget</span></td>
+                                    <td><span class="field-value">Total Budget</span></td>
+                                    <td><span class="field-type">Currency</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Budget', 'Total Budget', 'currency')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Flight Dates</span></td>
+                                    <td><span class="field-value">Flight Period</span></td>
+                                    <td><span class="field-type">Date Range</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Flight Dates', 'Flight Period', 'daterange')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+<div class="content-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Ad Group Fields</div>
+                            <div class="card-description">Customize display labels for ad group-related fields</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <table class="config-table">
+                            <thead>
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th>Current Label</th>
+                                    <th>Field Type</th>
+                                    <th>Status</th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="field-name">Ad Group Name</span></td>
+                                    <td><span class="field-value">Ad Group Name</span></td>
+                                    <td><span class="field-type">Text</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Ad Group Name', 'Ad Group Name', 'text')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Budget</span></td>
+                                    <td><span class="field-value">Total Budget</span></td>
+                                    <td><span class="field-type">Currency</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Budget', 'Total Budget', 'currency')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Flight Dates</span></td>
+                                    <td><span class="field-value">Flight Period</span></td>
+                                    <td><span class="field-type">Date Range</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openEditModal('Flight Dates', 'Flight Period', 'daterange')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Dropdown Values Tab -->
+            <div id="dropdown-values" class="tab-content">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Multiview Classification</div>
+                            <div class="card-description">Manage available industry category options</div>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="openAddValueModal('Industry')"><i class="fas fa-plus"></i> Add Option</button>
+                    </div>
+                    <div class="card-content" style="padding: 20px;">
+                        <div class="dropdown-values">
+                            <div class="dropdown-value-item">
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-grip-vertical drag-handle"></i>
+                                    <span>Association Affinity</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editDropdownValue('Technology')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteDropdownValue('Technology')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="dropdown-value-item">
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-grip-vertical drag-handle"></i>
+                                    <span>Audio</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editDropdownValue('Retail')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteDropdownValue('Retail')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="dropdown-value-item">
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-grip-vertical drag-handle"></i>
+                                    <span>Display</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editDropdownValue('Healthcare')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteDropdownValue('Healthcare')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="dropdown-value-item">
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-grip-vertical drag-handle"></i>
+                                    <span>Social</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editDropdownValue('Finance')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteDropdownValue('Finance')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="dropdown-value-item">
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-grip-vertical drag-handle"></i>
+                                    <span>Video</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editDropdownValue('Automotive')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteDropdownValue('Automotive')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Multiview Tactic</div>
+                            <div class="card-description">Manage available campaign status values</div>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="openAddValueModal('Status')"><i class="fas fa-plus"></i> Add Option</button>
+                    </div>
+                    <div class="card-content" style="padding: 20px;">
+                        <div class="dropdown-values">
+                            <div class="dropdown-value-item">
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-grip-vertical drag-handle"></i>
+                                    <span>Persona</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editDropdownValue('Active')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteDropdownValue('Active')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="dropdown-value-item">
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-grip-vertical drag-handle"></i>
+                                    <span>Keyword</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editDropdownValue('Paused')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteDropdownValue('Paused')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="dropdown-value-item">
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-grip-vertical drag-handle"></i>
+                                    <span>Site Retargeting</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editDropdownValue('Completed')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteDropdownValue('Completed')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="dropdown-value-item">
+                                <div style="display: flex; align-items: center;">
+                                    <i class="fas fa-grip-vertical drag-handle"></i>
+                                    <span>Data Onboarding</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="editDropdownValue('Scheduled')"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteDropdownValue('Scheduled')"><i class="fas fa-trash"></i></button>
+                                
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Text Tab -->
+            <div id="help-text" class="tab-content">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Field Help Text</div>
+                            <div class="card-description">Configure tooltips and help text for form fields</div>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="openAddHelpTextModal()"><i class="fas fa-plus"></i> Add Help Text</button>
+                    </div>
+                    <div class="card-content">
+                        <table class="config-table" id="helpTextTable">
+                            <thead>
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th>Help Text</th>
+                                    <th style="width: 120px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="field-name">Delivery ID</span></td>
+                                    <td><span class="field-value">Unique identifier from the DSP for delivery tracking</span></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="openHelpTextModal('Delivery ID', 'Unique identifier from the DSP for delivery tracking')"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteHelpText('Delivery ID', this)"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Reporting ID</span></td>
+                                    <td><span class="field-value">Unique identifier for reporting and analytics platforms</span></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="openHelpTextModal('Reporting ID', 'Unique identifier for reporting and analytics platforms')"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteHelpText('Reporting ID', this)"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Industry Category</span></td>
+                                    <td><span class="field-value">Primary business sector classification for targeting purposes</span></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="openHelpTextModal('Industry Category', 'Primary business sector classification for targeting purposes')"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteHelpText('Industry Category', this)"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Campaign Budget</span></td>
+                                    <td><span class="field-value">Total allocated budget for the entire campaign duration</span></td>
+                                    <td>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="openHelpTextModal('Campaign Budget', 'Total allocated budget for the entire campaign duration')"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteHelpText('Campaign Budget', this)"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Settings Tab -->
+            <div id="system-settings" class="tab-content">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">General System Settings</div>
+                            <div class="card-description">Configure global system behavior and defaults</div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <table class="config-table">
+                            <thead>
+                                <tr>
+                                    <th>Setting Name</th>
+                                    <th>Current Value</th>
+                                    <th>Description</th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="field-name">Default Currency</span></td>
+                                    <td><span class="field-value">USD</span></td>
+                                    <td><span class="field-value">Default currency for all financial fields</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openSystemSettingModal('Default Currency')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Date Format</span></td>
+                                    <td><span class="field-value">MM/DD/YYYY</span></td>
+                                    <td><span class="field-value">System-wide date display format</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openSystemSettingModal('Date Format')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Session Timeout</span></td>
+                                    <td><span class="field-value">30 minutes</span></td>
+                                    <td><span class="field-value">Automatic logout after period of inactivity</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openSystemSettingModal('Session Timeout')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="field-name">Max File Upload Size</span></td>
+                                    <td><span class="field-value">10 MB</span></td>
+                                    <td><span class="field-value">Maximum file size for uploads</span></td>
+                                    <td><button class="btn btn-secondary btn-sm" onclick="openSystemSettingModal('Max File Upload Size')"><i class="fas fa-edit"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Field Label Modal -->
+    <div class="modal-overlay" id="editFieldModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Edit Field Label</h2>
+                <button class="modal-close" onclick="closeModal('editFieldModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Field Name</label>
+                    <input type="text" class="form-input" id="fieldName" value="Advertiser Name" readonly style="background: #f8fafc;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Display Label</label>
+                    <input type="text" class="form-input" id="displayLabel" value="Advertiser Name" placeholder="Enter display label">
+                    <div class="form-help">This is how the label will appear in the interface</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Field Type</label>
+                    <input type="text" class="form-input" id="fieldType" value="Text" readonly style="background: #f8fafc;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editFieldModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveFieldLabel()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Help Text Modal -->
+    <div class="modal-overlay" id="helpTextModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Edit Help Text</h2>
+                <button class="modal-close" onclick="closeModal('helpTextModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Field Name</label>
+                    <input type="text" class="form-input" id="helpFieldName" value="Delivery ID" readonly style="background: #f8fafc;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Help Text</label>
+                    <textarea class="form-input form-textarea" id="helpText" placeholder="Enter help text or tooltip content">Unique identifier from the DSP for delivery tracking</textarea>
+                    <div class="form-help">Provide clear, concise guidance for users filling out this field</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('helpTextModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveHelpText()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Help Text Modal -->
+    <div class="modal-overlay" id="addHelpTextModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Help Text</h2>
+                <button class="modal-close" onclick="closeModal('addHelpTextModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Select Field</label>
+                    <select class="form-input" id="newHelpFieldName">
+                        <option value="">-- Select a field --</option>
+                        <option value="Advertiser Name">Advertiser Name</option>
+                        <option value="Account Number">Account Number</option>
+                        <option value="Campaign Name">Campaign Name</option>
+                        <option value="Flight Dates">Flight Dates</option>
+                        <option value="Ad Group Name">Ad Group Name</option>
+                        <option value="Bid Strategy">Bid Strategy</option>
+                        <option value="Target Audience">Target Audience</option>
+                        <option value="Creative Format">Creative Format</option>
+                    </select>
+                    <div class="form-help">Select the field you want to add help text for</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Help Text</label>
+                    <textarea class="form-input form-textarea" id="newHelpText" placeholder="Enter help text or tooltip content"></textarea>
+                    <div class="form-help">Provide clear, concise guidance for users filling out this field</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addHelpTextModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="addNewHelpText()"><i class="fas fa-plus"></i> Add Help Text</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Dropdown Value Modal -->
+    <div class="modal-overlay" id="addValueModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Dropdown Option</h2>
+                <button class="modal-close" onclick="closeModal('addValueModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Option Value</label>
+                    <input type="text" class="form-input" id="newOptionValue" placeholder="Enter option value">
+                    <div class="form-help">This value will appear in the dropdown list</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Display Order</label>
+                    <input type="number" class="form-input" id="optionOrder" value="1" min="1">
+                    <div class="form-help">Position in the dropdown list (lower numbers appear first)</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addValueModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="addDropdownValue()"><i class="fas fa-plus"></i> Add Option</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Dropdown Value Modal -->
+    <div class="modal-overlay" id="editValueModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Edit Dropdown Option</h2>
+                <button class="modal-close" onclick="closeModal('editValueModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Option Value</label>
+                    <input type="text" class="form-input" id="editOptionValue" placeholder="Enter option value">
+                    <div class="form-help">This value will appear in the dropdown list</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Display Order</label>
+                    <input type="number" class="form-input" id="editOptionOrder" value="1" min="1">
+                    <div class="form-help">Position in the dropdown list (lower numbers appear first)</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editValueModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEditedDropdownValue()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Modal functions
+        function openEditModal(fieldName, displayLabel, fieldType) {
+            document.getElementById('fieldName').value = fieldName;
+            document.getElementById('displayLabel').value = displayLabel;
+            document.getElementById('fieldType').value = fieldType.charAt(0).toUpperCase() + fieldType.slice(1);
+            document.getElementById('editFieldModal').classList.add('active');
+        }
+
+        function openHelpTextModal(fieldName, currentText) {
+            document.getElementById('helpFieldName').value = fieldName;
+            document.getElementById('helpText').value = currentText || '';
+            document.getElementById('helpTextModal').classList.add('active');
+        }
+
+        function openAddHelpTextModal() {
+            document.getElementById('newHelpFieldName').value = '';
+            document.getElementById('newHelpText').value = '';
+            document.getElementById('addHelpTextModal').classList.add('active');
+        }
+
+        function addNewHelpText() {
+            const fieldName = document.getElementById('newHelpFieldName').value;
+            const helpText = document.getElementById('newHelpText').value;
+            
+            if (!fieldName) {
+                showToast({ message: 'Please select a field', type: 'error', duration: 3000 });
+                return;
+            }
+            
+            if (!helpText.trim()) {
+                showToast({ message: 'Please enter help text', type: 'error', duration: 3000 });
+                return;
+            }
+            
+            // Add new row to table
+            const tbody = document.querySelector('#helpTextTable tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><span class="field-name">${fieldName}</span></td>
+                <td><span class="field-value">${helpText}</span></td>
+                <td>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-secondary btn-sm btn-icon" onclick="openHelpTextModal('${fieldName}', '${helpText.replace(/'/g, "\\'")}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary btn-sm btn-icon" onclick="deleteHelpText('${fieldName}', this)"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+            
+            showToast({ message: 'Help text added for: ' + fieldName, type: 'success', duration: 3000 });
+            closeModal('addHelpTextModal');
+        }
+
+        function deleteHelpText(fieldName, button) {
+            if (confirm('Are you sure you want to remove help text for "' + fieldName + '"?')) {
+                const row = button.closest('tr');
+                row.remove();
+                showToast({ message: 'Help text removed for: ' + fieldName, type: 'success', duration: 3000 });
+            }
+        }
+
+        function openAddValueModal(category) {
+            document.getElementById('addValueModal').classList.add('active');
+        }
+
+        function openSystemSettingModal(settingName) {
+            showToast({ message: 'Opening editor for: ' + settingName, type: 'info', title: 'System Setting Editor', duration: 3000 });
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function saveFieldLabel() {
+            const label = document.getElementById('displayLabel').value;
+            showToast({ message: 'Field label updated to: ' + label, type: 'success', duration: 3000 });
+            closeModal('editFieldModal');
+        }
+
+        function saveHelpText() {
+            const text = document.getElementById('helpText').value;
+            showToast({ message: 'Help text has been updated', type: 'success', duration: 3000 });
+            closeModal('helpTextModal');
+        }
+
+        function addDropdownValue() {
+            const value = document.getElementById('newOptionValue').value;
+            if (value) {
+                showToast({ message: 'Added new option: ' + value, type: 'success', duration: 3000 });
+                closeModal('addValueModal');
+                document.getElementById('newOptionValue').value = '';
+            }
+        }
+
+        function editDropdownValue(value) {
+            document.getElementById('editOptionValue').value = value;
+            document.getElementById('editOptionOrder').value = 1;
+            document.getElementById('editValueModal').classList.add('active');
+        }
+
+        function saveEditedDropdownValue() {
+            const value = document.getElementById('editOptionValue').value;
+            if (value) {
+                showToast({ message: 'Updated option to: ' + value, type: 'success', duration: 3000 });
+                closeModal('editValueModal');
+            }
+        }
+
+        function deleteDropdownValue(value) {
+            if (confirm('Are you sure you want to delete "' + value + '"?')) {
+                showToast({ message: 'Option deleted: ' + value, type: 'success', duration: 3000 });
+            }
+        }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // Header menu functionality
+        const menuButton = document.getElementById('menuButton');
+        const menuDropdown = document.getElementById('menuDropdown');
+        
+        menuButton.addEventListener('click', function() {
+            menuDropdown.classList.toggle('hidden');
+        });
+        
+        document.addEventListener('click', function(event) {
+            if (!menuButton.contains(event.target) && !menuDropdown.contains(event.target)) {
+                menuDropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -102,7 +102,7 @@
     <header class="border-b border-gray-200 shadow-sm app-header">
       <div class="flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-3">
-          <img src="./assets/BeaconLogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
+          <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
         </div>
 
         <nav class="flex items-center gap-3 ml-auto">
@@ -182,8 +182,8 @@
             </button>
             <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
             </div>
           </div>
@@ -233,22 +233,8 @@
           <li>
             <a href="./WFAdvertiserDetails.html" data-nav-link
                class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+              <img src="./assets/svgs/Details.svg" alt="Overview" class="w-6 h-6 mr-2" />
               <span data-link-label>Overview</span>
-            </a>
-          </li>
-          <li>
-            <a href="./AdvertiserSalesOrder.html" data-nav-link
-               class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
-              <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
-              <span data-link-label>Sales Orders</span>
-            </a>
-          </li>
-          <li>
-            <a href="./WFAdvertiserConnections.html" data-nav-link
-               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
-              <span data-link-label>Connections (P2)</span>
             </a>
           </li>
           <li>
@@ -259,12 +245,33 @@
             </a>
           </li>
           <li>
-            <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
+            <a href="./AdvertiserAdGroup.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
               <span data-link-label>Ad Groups</span>
             </a>
           </li>
-          
+          <li>
+            <a href="./ChangeOrderList.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/ChangeOrder.svg" alt="Change Orders" class="w-6 h-6 mr-2" />
+              <span data-link-label>Change Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="./WFAdvertiserConnections.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+              <span data-link-label>Connections</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserSalesOrder.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
+              <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
+              <span data-link-label>Sales Orders</span>
+            </a>
+          </li>
         </ul>
       </nav>
 
@@ -273,12 +280,25 @@
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
           <!-- Advertiser Header -->
           <div class="px-4 pt-4">
-            <div class="flex items-start gap-4 mb-3">
-              <div class="flex-1">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <!-- Left Column: Advertiser Name & Account # -->
+              <div>
                 <h1 data-bind="adv.name" class="text-xl md:text-2xl font-semibold text-gray-900">Loading…</h1>
-                <div class="flex justify-between items-center">
-                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
-                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+              </div>
+              <!-- Right Column: IDs -->
+              <div class="text-right">
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <a href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.deliveryId">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <a href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.reportingId">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">ID:</span>
+                  <span data-bind="adv.id" class="text-sm text-gray-500 w-28 text-left">—</span>
                 </div>
               </div>
             </div>
@@ -971,15 +991,19 @@ function fmtCurrency(n) {
           const nameEl = document.querySelector('[data-bind="adv.name"]');
           const accountEl = document.querySelector('[data-bind="adv.account"]');
           const idEl = document.querySelector('[data-bind="adv.id"]');
+          const deliveryIdEl = document.querySelector('[data-bind="adv.deliveryId"]');
+          const reportingIdEl = document.querySelector('[data-bind="adv.reportingId"]');
           
           if (nameEl) nameEl.textContent = advertiser.name || 'Unknown Advertiser';
           if (accountEl) accountEl.textContent = advertiser.account || '—';
           if (idEl) idEl.textContent = advertiser.id || '—';
+          if (deliveryIdEl) deliveryIdEl.textContent = advertiser.deliveryId || '—';
+          if (reportingIdEl) reportingIdEl.textContent = advertiser.reportingId || '—';
           
           // Populate breadcrumbs
           const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
           if (breadcrumbAdvertiser) {
-            breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
+            breadcrumbAdvertiser.textContent = `${advertiser.name || 'Unknown'}`;
             breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
           }
         }

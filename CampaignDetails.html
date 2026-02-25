@@ -21,6 +21,8 @@
   <script src="./assets/audit.js" defer></script>
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
+  <link rel="stylesheet" href="./assets/changeorder.css">
+  <script src="./assets/changeorder.js" defer></script>
 
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
@@ -91,7 +93,7 @@
     <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
       <div class="flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-3">
-          <img src="./assets/BeaconLogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
+          <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
         </div>
 
         <nav class="flex items-center gap-3 ml-auto">
@@ -171,8 +173,8 @@
             </button>
             <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
             </div>
           </div>
@@ -187,7 +189,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">Advertiser: —</a>
+        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -195,7 +197,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <span class="font-semibold text-gray-900" id="breadcrumbCampaign">Campaign: —</span>
+        <span class="font-semibold text-gray-900" id="breadcrumbCampaign">—</span>
       </nav>
     </div>
 
@@ -244,12 +246,25 @@
       <main class="flex-1 overflow-y-auto p-6">
         <div class="bg-white rounded-lg shadow-sm">
           <div class="p-4 border-b border-gray-200">
-            <div class="flex items-start gap-4 mb-3">
-              <div class="flex-1">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <!-- Left Column: Advertiser Name & Account # -->
+              <div>
                 <h1 data-bind="adv.name" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
-                <div class="flex justify-between items-center">
-                  <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
-                  <h3 class="text-sm font-semibold text-gray-600">ID: <span data-bind="adv.id" class="text-sm text-gray-500">—</span></h3>
+                <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+              </div>
+              <!-- Right Column: Campaign IDs -->
+              <div class="text-right">
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <a id="campaignDeliveryId" href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <a id="campaignReportingId" href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-40 text-left">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">ID:</span>
+                  <span id="campaignIdDisplay" class="text-sm text-gray-500 w-40 text-left">—</span>
                 </div>
               </div>
             </div>
@@ -259,8 +274,16 @@
             <!-- Two-column campaign details layout -->
             <section>
               <div class="flex items-center justify-between mb-6">
-                <h1 id="campaignDetailsTitle" class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGN DETAILS</h1>
+                <div>
+                  <h1 class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGN OVERVIEW</h1>
+                  <p id="campaignDetailsSubtitle" class="text-sm text-gray-500 mx-2 mt-1"></p>
+                </div>
                 <div class="flex items-center gap-2">
+                  <!-- Add to Change Order Button -->
+                  <button id="addToCOBtn" onclick="openCOPickerModal()" class="text-sm px-3 py-1 bg-green-600 text-white border border-green-600 rounded-md hover:bg-green-700 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Add to Change Order
+                  </button>
                   <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                   <svg viewBox="0 0 24 24" height="16" width="16">
                     <path fill="#454B57" d="M21.53 4.11l-1.64-1.64a1.57 1.57 0 00-2.22 0L4.74 15.4a2.41 2.41 0 00-.55.83L2 21.58a.32.32 0 00.3.43h.11l5.35-2.18a2.41 2.41 0 00.83-.55l4.14-4.14 8.79-8.79a1.56 1.56 0 00.01-2.24zM5 17l2 2-3.43 1.4zm7-2.59l-4.11 4.14-2.44-2.44L16 5.53 18.47 8zm8.79-8.79l-1.62 1.65-2.44-2.44 1.65-1.66a.59.59 0 01.4-.16.58.58 0 01.4.16l1.65 1.65a.58.58 0 01.16.4.59.59 0 01-.16.4z"></path>
@@ -319,24 +342,6 @@
                     </table>
                   </div>
 
-                  <!-- Ad Groups Table -->
-                  <div class="overflow-x-auto border border-default rounded-md">
-                    <table class="w-full tbl tbl-row-hover table-fixed campaign-details-table">
-                      <colgroup>
-                        <col class="w-full">
-                      </colgroup>
-                      <thead style="background-color: #f3e8ff;">
-                        <tr>
-                          <th class="px-6 py-2 text-left text-sm font-medium text-purple-900 uppercase tracking-wider">
-                            AD GROUPS
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody id="adGroupsTableBody" class="divide-y border-default">
-                        <!-- Ad groups will be populated here by JavaScript -->
-                      </tbody>
-                    </table>
-                  </div>
                 </div>
 
                 <!-- Right Column - DSP and Ad Server Fields -->
@@ -352,7 +357,7 @@
                       <thead style="background-color: #dbeafe;">
                         <tr>
                           <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-blue-900 uppercase tracking-wider">
-                            DSP FIELDS
+                            DSP FIELDS • The Trade Desk
                           </th>
                         </tr>
                       </thead>
@@ -364,7 +369,7 @@
                             Seed
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignSeed" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignSeed" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignSeed" class="hidden campaign-details-input" aria-label="Select Campaign Seed" title="Select Campaign Seed">
                               <option value="">-- Select Seed --</option>
                               <option value="Default Seed List">Default Seed List</option>
@@ -378,7 +383,7 @@
                             Campaign Organization
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignOrganization" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignOrganization" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignOrganization" class="hidden campaign-details-input" aria-label="Select Campaign Organization" title="Select Campaign Organization">
                               <option value="">-- Select Organization --</option>
                               <option value="Create new campaign group">Create new campaign group</option>
@@ -394,7 +399,7 @@
                             Pacing
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignPacing" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignPacing" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignPacing" class="hidden campaign-details-input" aria-label="Select Campaign Pacing" title="Select Campaign Pacing">
                               <option value="">-- Select Pacing --</option>
                               <option value="Pace Ahead">Pace Ahead</option>
@@ -409,7 +414,7 @@
                             Timezone
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignTimezone" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignTimezone" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignTimezone" class="hidden campaign-details-input" aria-label="Select Campaign Timezone" title="Select Campaign Timezone">
                               <option value="">-- Select Timezone --</option>
                               <option value="UTC">UTC (Coordinated Universal Time)</option>
@@ -427,7 +432,7 @@
                             Start Date (UTC)
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignStartDate" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignStartDate" class="text-gray-400 break-words">N/A</span>
                             <input id="campaignStartDate" type="date" class="hidden campaign-details-input" aria-label="Select Campaign Start Date" title="Select Campaign Start Date" />
                           </td>
                         </tr>
@@ -438,7 +443,7 @@
                             End Date (UTC)
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignEndDate" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignEndDate" class="text-gray-400 break-words">N/A</span>
                             <input id="campaignEndDate" type="date" class="hidden campaign-details-input" aria-label="Select Campaign End Date" title="Select Campaign End Date" />
                           </td>
                         </tr>
@@ -449,7 +454,7 @@
                             Campaign Channel
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignChannel" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignChannel" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignChannel" class="hidden campaign-details-input" aria-label="Select Campaign Channel" title="Select Campaign Channel">
                               <option value="">-- Select Channel --</option>
                               <option value="Display">Display</option>
@@ -466,7 +471,7 @@
                             Campaign Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignName" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignName" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignName" class="hidden campaign-details-input" aria-label="Select Campaign Name" title="Select Campaign Name">
                               <option value="">-- Select Campaign Name --</option>
                               <option value="Brand Awareness">Brand Awareness</option>
@@ -482,7 +487,7 @@
                             Campaign Budget
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignBudget" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignBudget" class="text-gray-400 break-words">N/A</span>
                             <input id="campaignBudget" type="number" step="0.01" min="0" class="hidden campaign-details-input" placeholder="0.00" />
                           </td>
                         </tr>
@@ -493,7 +498,7 @@
                             Campaign KPI
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignKPI" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignKPI" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignKPI" class="hidden campaign-details-input" aria-label="Select Campaign KPI" title="Select Campaign KPI">
                               <option value="">-- Select KPI --</option>
                               <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
@@ -508,7 +513,7 @@
                             KPI Target
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignKPITarget" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignKPITarget" class="text-gray-400 break-words">N/A</span>
                             <input id="campaignKPITarget" type="number" step="0.01" min="0" class="hidden campaign-details-input" placeholder="0.00" />
                           </td>
                         </tr>
@@ -527,7 +532,7 @@
                       <thead style="background-color: #d1fae5;">
                         <tr>
                           <th colspan="2" class="px-6 py-2 text-left text-sm font-medium text-green-900 uppercase tracking-wider">
-                            AD SERVER FIELDS
+                            AD SERVER FIELDS • Google Campaign Manager
                           </th>
                         </tr>
                       </thead>
@@ -539,7 +544,7 @@
                             Campaign Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerCampaignName" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerCampaignName" class="text-gray-400 break-words">N/A</span>
                             <select id="adServerCampaignName" class="hidden campaign-details-input" aria-label="Select Ad Server Campaign Name" title="Select Ad Server Campaign Name">
                               <option value="">-- Select Campaign Name --</option>
                               <option value="Brandawareness">Brandawareness</option>
@@ -555,7 +560,7 @@
                             Schedule
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerSchedule" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerSchedule" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerSchedule" type="date" class="hidden campaign-details-input" aria-label="Select Ad Server Schedule" title="Select Ad Server Schedule" />
                           </td>
                         </tr>
@@ -566,7 +571,7 @@
                             Landing Page Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerLandingPageName" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerLandingPageName" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerLandingPageName" type="text" class="hidden campaign-details-input" placeholder="Enter landing page name" />
                           </td>
                         </tr>
@@ -577,7 +582,7 @@
                             Landing Page URL
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerLandingPageURL" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerLandingPageURL" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerLandingPageURL" type="text" class="hidden campaign-details-input" placeholder="Enter any URL or value" aria-label="Enter Ad Server Landing Page URL" title="Enter Ad Server Landing Page URL" />
                           </td>
                         </tr>
@@ -1506,10 +1511,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const campaignId = urlParams.get('campaignId');
   const campaignName = urlParams.get('campaignName');
   
-  // Update the page title with campaign name
-  const titleElement = document.getElementById('campaignDetailsTitle');
-  if (titleElement && campaignName) {
-    titleElement.innerHTML = `<span style="color: #0F66A7;">${campaignName}</span>: Campaign Details`;
+  // Update the page subtitle with campaign name
+  const subtitleElement = document.getElementById('campaignDetailsSubtitle');
+  if (subtitleElement && campaignName) {
+    subtitleElement.innerHTML = `<span style="color: #0F66A7;">${campaignName}</span>`;
   }
 
   // Populate breadcrumbs
@@ -1521,7 +1526,7 @@ window.addEventListener('DOMContentLoaded', () => {
       // Update breadcrumb advertiser name and link
       const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
       if (breadcrumbAdvertiser) {
-        breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
+        breadcrumbAdvertiser.textContent = `${advertiser.name || 'Unknown'}`;
         breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
       }
       
@@ -1535,7 +1540,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Update breadcrumb campaign name
     const breadcrumbCampaign = document.getElementById('breadcrumbCampaign');
     if (breadcrumbCampaign && campaignName) {
-      breadcrumbCampaign.textContent = `Campaign: ${campaignName}`;
+      breadcrumbCampaign.textContent = `${campaignName}`;
     }
   } catch (e) {
     console.warn('Failed to populate breadcrumbs:', e);
@@ -1573,6 +1578,30 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   if (!campaign) return;
+
+  // Generate and persist campaign Delivery/Reporting IDs if they don't exist
+  let needsUpdate = false;
+  if (!campaign.deliveryId) {
+    campaign.deliveryId = 'DLV-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    needsUpdate = true;
+  }
+  if (!campaign.reportingId) {
+    campaign.reportingId = 'RPT-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    needsUpdate = true;
+  }
+  
+  // Save back to localStorage if IDs were generated
+  if (needsUpdate) {
+    localStorage.setItem('campaign_tree_groups', JSON.stringify(data));
+  }
+  
+  // Display campaign IDs in header
+  const campaignIdEl = document.getElementById('campaignIdDisplay');
+  const deliveryIdEl = document.getElementById('campaignDeliveryId');
+  const reportingIdEl = document.getElementById('campaignReportingId');
+  if (campaignIdEl) campaignIdEl.textContent = campaign.id || '—';
+  if (deliveryIdEl) deliveryIdEl.textContent = campaign.deliveryId || '—';
+  if (reportingIdEl) reportingIdEl.textContent = campaign.reportingId || '—';
 
   const safeSet = (id, value, format = 'none') => {
     const el = document.getElementById(id);
@@ -1637,70 +1666,6 @@ window.addEventListener('DOMContentLoaded', () => {
   safeInput('adServerSchedule', campaign.adServerSchedule);
   safeInput('adServerLandingPageName', campaign.adServerLandingPageName);
   safeInput('adServerLandingPageURL', campaign.adServerLandingPageURL);
-
-  // Load and display associated ad groups
-  loadAdGroupsForCampaign(campaignId);
-});
-
-// Function to load ad groups associated with the current campaign
-function loadAdGroupsForCampaign(campaignId) {
-  const adGroupsTableBody = document.getElementById('adGroupsTableBody');
-  if (!adGroupsTableBody) return;
-
-  try {
-    const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-    const associatedAdGroups = adGroups.filter(adGroup => 
-      adGroup.campaign === campaignId || adGroup.campaignId === campaignId
-    );
-
-    // Clear existing content
-    adGroupsTableBody.innerHTML = '';
-
-    if (associatedAdGroups.length === 0) {
-      // Show empty state
-      const emptyRow = document.createElement('tr');
-      emptyRow.innerHTML = `
-        <td class="px-6 py-3 text-sm text-gray-500 italic text-center">
-          No ad groups associated with this campaign
-        </td>
-      `;
-      adGroupsTableBody.appendChild(emptyRow);
-    } else {
-      // Populate with ad groups
-      associatedAdGroups.forEach(adGroup => {
-        const row = document.createElement('tr');
-        row.className = 'border-b border-default hover:bg-gray-50';
-        row.innerHTML = `
-          <td class="px-6 py-2 text-sm">
-            <a href="./AdGroupDetails.html?id=${encodeURIComponent(adGroup.id)}&campaignId=${encodeURIComponent(campaignId)}" 
-               class="text-blue-600 hover:text-blue-800 hover:underline font-medium"
-               title="View details for ${adGroup.name}">
-              ${adGroup.name || 'Unnamed Ad Group'}
-            </a>
-          </td>
-        `;
-        adGroupsTableBody.appendChild(row);
-      });
-    }
-  } catch (error) {
-    console.error('Error loading ad groups for campaign:', error);
-    adGroupsTableBody.innerHTML = `
-      <tr>
-        <td class="px-6 py-3 text-sm text-red-500 text-center">
-          Error loading ad groups
-        </td>
-      </tr>
-    `;
-  }
-}
-
-// Listen for ad group updates to refresh the table
-window.addEventListener('adGroupsUpdated', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const campaignId = urlParams.get('campaignId');
-  if (campaignId) {
-    loadAdGroupsForCampaign(campaignId);
-  }
 });
 
 
