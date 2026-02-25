@@ -357,6 +357,15 @@
             </a>
           </li>
           <li>
+            <a href="./AdvertiserChangeOrders.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <svg class="w-6 h-6 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <span data-link-label>Change Orders</span>
+            </a>
+          </li>
+          <li>
             <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
               <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
               <span data-link-label>Ad Groups</span>
@@ -493,8 +502,21 @@
                   </div>
                 </div>
 
+                <!-- New Change Order Button -->
+                <div class="flex-1"></div>
+                <button id="newChangeOrderBtn"
+                  class="flex items-center gap-1.5 h-8 px-3 rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors mr-2"
+                  onclick="document.getElementById('coPickerModal').classList.remove('hidden')"
+                  title="Create New Change Order">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  New Change Order
+                </button>
+                <div class="h-6 border-l border-gray-400 mx-1"></div>
+
                 <!-- Universal Export Button -->
-                <button id="universalExportBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors ml-auto mr-2" title="Export all campaigns and ad groups">
+                <button id="universalExportBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors mr-2" title="Export all campaigns and ad groups">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                   </svg>
@@ -2883,5 +2905,178 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   </script>
+
+<!-- Change Order Picker Modal -->
+<div id="coPickerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 overflow-hidden">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Add to Change Order</h2>
+      <button id="coPickerCloseBtn" class="text-gray-400 hover:text-gray-600 transition-colors" 
+        onclick="document.getElementById('coPickerModal').classList.add('hidden')" aria-label="Close">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
+      <p class="text-sm text-gray-500 mb-4">Select an existing Change Order or create a new one.</p>
+      
+      <!-- Create New Option -->
+      <div class="flex items-center gap-3 p-3 border-2 border-dashed border-green-400 rounded-lg mb-3 cursor-pointer hover:bg-green-50 transition-colors"
+        onclick="document.getElementById('coPickerModal').classList.add('hidden'); document.getElementById('entitySelectModal').classList.remove('hidden');">
+        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-green-100 text-green-600 font-bold text-lg">+</div>
+        <div>
+          <div class="text-sm font-semibold text-green-700">Create New Change Order</div>
+          <div class="text-xs text-gray-500">Start a blank Change Order for this advertiser</div>
+        </div>
+      </div>
+      
+      <!-- Existing CO: Draft -->
+      <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg mb-2 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors co-pick-item">
+        <input type="radio" name="coPickerRadio" class="w-4 h-4 text-blue-600 accent-blue-600">
+        <div class="flex-1">
+          <div class="text-sm font-semibold text-gray-800">Q2 Strategy A</div>
+          <div class="text-xs text-gray-500">CO-A8X2K1 · Draft · Feb 20, 2026 · 1C / 3AG</div>
+        </div>
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Draft</span>
+      </div>
+      
+      <!-- Existing CO: Draft -->
+      <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg mb-2 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors co-pick-item">
+        <input type="radio" name="coPickerRadio" class="w-4 h-4 text-blue-600 accent-blue-600">
+        <div class="flex-1">
+          <div class="text-sm font-semibold text-gray-800">Q2 Strategy B</div>
+          <div class="text-xs text-gray-500">CO-B3Y7M2 · Draft · Feb 20, 2026 · 2C / 5AG</div>
+        </div>
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Draft</span>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="flex justify-end gap-2 px-6 py-3 bg-gray-50 border-t border-gray-200">
+      <button class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+        onclick="document.getElementById('coPickerModal').classList.add('hidden')">Cancel</button>
+      <button class="px-4 py-2 text-sm text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700"
+        onclick="document.getElementById('coPickerModal').classList.add('hidden'); document.getElementById('entitySelectModal').classList.remove('hidden');">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Entity Selection Modal -->
+<div id="entitySelectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-xl mx-4 overflow-hidden">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Select Records to Include</h2>
+      <button class="text-gray-400 hover:text-gray-600 transition-colors"
+        onclick="document.getElementById('entitySelectModal').classList.add('hidden')" aria-label="Close">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
+      <p class="text-sm text-gray-500 mb-4">Choose which Campaigns and Ad Groups to include in this Change Order. The Advertiser is always included.</p>
+      
+      <!-- Entity Tree -->
+      <ul class="space-y-1">
+        <!-- Advertiser (locked/always included) -->
+        <li class="flex items-center gap-2 px-2 py-1.5 rounded-md opacity-60">
+          <input type="checkbox" checked disabled class="w-4 h-4 accent-blue-600">
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-900">ADV</span>
+          <span class="text-sm font-semibold text-gray-800">Goldmine Software Solutions</span>
+          <span class="text-[10px] text-gray-400 ml-1">always included</span>
+        </li>
+        
+        <!-- Campaign 1 with Ad Groups -->
+        <li class="ml-5">
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+            <input type="checkbox" checked class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="cam1-children">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+            <span class="text-sm text-gray-800">Tuscaloosa AL - Prog. Display</span>
+          </div>
+          <div id="cam1-children" class="ml-8 space-y-0.5">
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Local Consumers_Persona</span>
+            </div>
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Local Site Visitors_Retargeting</span>
+            </div>
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Local Consumers_Location Targeting</span>
+            </div>
+          </div>
+        </li>
+        
+        <!-- Campaign 2 with Ad Groups -->
+        <li class="ml-5">
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+            <input type="checkbox" class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="cam2-children">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+            <span class="text-sm text-gray-800">Tuscaloosa AL - Prog. Video</span>
+          </div>
+          <div id="cam2-children" class="ml-8 space-y-0.5">
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Video_Persona</span>
+            </div>
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Video_Retargeting</span>
+            </div>
+          </div>
+        </li>
+        
+        <!-- Campaign 3 (no ad groups) -->
+        <li class="ml-5">
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+            <input type="checkbox" class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="cam3-children">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+            <span class="text-sm text-gray-800">Tuscaloosa AL - Audio</span>
+          </div>
+          <div id="cam3-children" class="ml-8">
+            <div class="px-2 py-1 text-xs text-gray-400 italic">No ad groups</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="flex justify-end gap-2 px-6 py-3 bg-gray-50 border-t border-gray-200">
+      <button class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+        onclick="document.getElementById('entitySelectModal').classList.add('hidden')">Cancel</button>
+      <button class="px-4 py-2 text-sm text-white bg-green-600 border border-green-600 rounded-md hover:bg-green-700"
+        onclick="document.getElementById('entitySelectModal').classList.add('hidden'); window.location.href='./ChangeOrderDetails.html';">Create Change Order</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Campaign checkbox toggles all child AG checkboxes
+document.querySelectorAll('.entity-cam-check').forEach(cb => {
+  cb.addEventListener('change', function() {
+    const childrenId = this.getAttribute('data-children');
+    if (childrenId) {
+      document.querySelectorAll('#' + childrenId + ' input[type="checkbox"]').forEach(c => c.checked = this.checked);
+    }
+  });
+});
+</script>
+
 </body>
 </html>
