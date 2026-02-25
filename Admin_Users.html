@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Users</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./assets/toast.css">
+    <script src="./assets/toast.js" defer></script>
+    <link rel="stylesheet" href="./assets/loading.css">
+    <script src="./assets/loading.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: #f8fafc; color: #334155; line-height: 1.6; }
+        .beacon-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+        .dashboard-container { display: flex; min-height: 100vh; padding-top: 56px; }
+        .sidebar { width: 256px; background: white; padding: 16px; position: fixed; height: 100vh; overflow-y: auto; border-right: 1px solid #e5e7eb; top: 56px; }
+        .logo-section { padding-top: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb; margin-bottom: 16px; }
+        .logo { display: flex; align-items: center; gap: 12px; color: #1f2937; font-size: 18px; font-weight: 600; }
+        .nav-group { margin-bottom: 24px; }
+        .nav-group-title { color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 4px 8px; }
+        .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 4px; color: #374151; text-decoration: none; border-radius: 6px; margin-bottom: 2px; transition: all 0.2s ease; font-weight: 400; font-size: 14px; }
+        .nav-item:hover { background: #eff6ff; color: #1f2937; }
+        .nav-item.active { background: #eff6ff; color: #1f2937; font-weight: 500; }
+        .nav-item i { width: 24px; height: 24px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .main-content { flex: 1; margin-left: 256px; padding: 24px 32px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 24px; border-bottom: 1px solid #e2e8f0; }
+        .header-left h1 { font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .header-left p { color: #64748b; font-size: 14px; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .search-box { position: relative; display: flex; align-items: center; }
+        .search-box input { padding: 10px 16px 10px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; width: 300px; background: white; transition: all 0.2s ease; }
+        .search-box input:focus { outline: none; border-color: #0a5f86; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        .search-box i { position: absolute; left: 12px; color: #94a3b8; }
+        .user-profile { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; cursor: pointer; transition: all 0.2s ease; }
+        .user-profile:hover { border-color: #0ea5e9; }
+        .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(45deg, #0ea5e9, #06b6d4); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
+        .content-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .card-title { font-size: 18px; font-weight: 600; color: #0f172a; }
+        .card-content { padding: 12px; }
+
+        /* Action Section */
+        .action-section { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 9px; margin-bottom: 12px; }
+        .action-grid { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .action-grid select, .action-grid input[type="text"] { padding: 7px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; background: white; color: #334155; font-weight: 500; transition: all 0.2s ease; }
+        .action-grid select:focus, .action-grid input[type="text"]:focus { outline: none; border-color: #005EB8; box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.1); }
+        .action-grid select:hover, .action-grid input[type="text"]:hover { border-color: #005EB8; }
+        .search-container { position: relative; flex: 1; min-width: 200px; }
+        .search-container input { width: 100%; padding-right: 32px; }
+        .search-clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: #94a3b8; cursor: pointer; padding: 4px; display: none; transition: color 0.15s ease; }
+        .search-clear:hover { color: #64748b; }
+        .search-container input:not(:placeholder-shown) ~ .search-clear { display: block; }
+        .action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; color: #334155; text-decoration: none; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+        .action-btn:hover { border-color: #005EB8; color: #005EB8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 94, 184, 0.15); }
+        .action-btn.primary { background: #005EB8; color: white; border-color: #005EB8; }
+        .action-btn.primary:hover { background: #004a93; }
+        .action-btn.small { padding: 6px 12px; font-size: 13px; }
+
+        /* Stats Row */
+        .stats-row { display: flex; gap: 16px; margin-bottom: 16px; }
+        .stat-box { flex: 1; background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; text-align: center; }
+        .stat-box .number { font-size: 28px; font-weight: 700; color: #0f172a; }
+        .stat-box .label { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+        /* Filter Bar */
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+        .filter-bar select, .filter-bar input { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; background: white; }
+        .filter-bar select:focus, .filter-bar input:focus { outline: none; border-color: #005EB8; }
+
+        /* Roles Table */
+        .roles-table { width: 100%; border-collapse: collapse; }
+        .roles-table th { background: #f8fafc; padding: 8px 12px; text-align: left; font-weight: 600; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .roles-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .roles-table tbody tr { transition: background 0.15s ease; }
+        .roles-table tbody tr:hover { background: #f8fafc; }
+
+        /* User Cell */
+        .user-cell { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .user-cell:hover { opacity: 0.8; }
+        .user-cell .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; color: white; }
+        .user-cell .info .name { font-weight: 500; color: #0f172a; font-size: 13px; line-height: 1.3; }
+        .user-cell .info .email { font-size: 12px; color: #64748b; line-height: 1.3; }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; }
+        .badge-admin { background: #fef3c7; color: #92400e; }
+        .badge-user { background: #e0f2fe; color: #0369a1; }
+        .badge-active { background: #dcfce7; color: #166534; }
+        .badge-inactive { background: #fee2e2; color: #991b1b; }
+        .badge-invited { background: #f3e8ff; color: #7c3aed; }
+
+        /* Role Tag */
+        .role-tag { display: inline-block; padding: 3px 8px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; color: #475569; }
+
+        /* Info Icon + Tooltip */
+        .info-trigger { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; color: #94a3b8; cursor: pointer; transition: all 0.15s ease; }
+        .info-trigger:hover { background: #f1f5f9; color: #005EB8; }
+        .info-trigger .tooltip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 14px; border-radius: 8px; font-size: 12px; white-space: nowrap; opacity: 0; visibility: hidden; transition: all 0.2s ease; z-index: 100; pointer-events: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .info-trigger .tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #1e293b; }
+        .info-trigger:hover .tooltip { opacity: 1; visibility: visible; }
+        .tooltip-row { display: flex; gap: 8px; margin-bottom: 6px; }
+        .tooltip-row:last-child { margin-bottom: 0; }
+        .tooltip-label { color: #94a3b8; }
+        .tooltip-value { color: #fff; font-weight: 500; }
+
+        /* Action Icons */
+        .row-actions { display: flex; gap: 4px; }
+        .row-action { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.15s ease; border: none; background: transparent; }
+        .row-action:hover { background: #f1f5f9; color: #005EB8; }
+        .row-action.danger:hover { background: #fee2e2; color: #dc2626; }
+
+        /* Checkbox */
+        .checkbox { width: 18px; height: 18px; min-width: 18px; min-height: 18px; max-width: 18px; max-height: 18px; flex-shrink: 0; border: 2px solid #cbd5e1; border-radius: 4px; cursor: pointer; transition: all 0.15s ease; appearance: none; -webkit-appearance: none; -moz-appearance: none; }
+        .checkbox:checked { background: #005EB8; border-color: #005EB8; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E"); background-size: 12px; background-position: center; background-repeat: no-repeat; }
+
+        /* Pagination */
+        .pagination { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-top: 2px solid #e2e8f0; background: #f8fafc; }
+        .pagination-info { font-size: 12px; color: #475569; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+        .pagination-controls { display: flex; gap: 4px; }
+        .page-btn { min-width: 36px; height: 36px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; color: #475569; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; }
+        .page-btn:hover { border-color: #005EB8; color: #005EB8; }
+        .page-btn.active { background: #005EB8; border-color: #005EB8; color: white; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; width: 100%; max-width: 650px; max-height: 90vh; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: modalIn 0.2s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 18px; font-weight: 600; color: #0f172a; }
+        .modal-close { width: 32px; height: 32px; border: none; background: #f1f5f9; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b; transition: all 0.15s ease; }
+        .modal-close:hover { background: #e2e8f0; color: #0f172a; }
+        .modal-body { padding: 24px; overflow-y: auto; max-height: 60vh; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; }
+
+        /* Form */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 500; color: #334155; margin-bottom: 6px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: all 0.15s ease; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #005EB8; box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        /* User Details View */
+        .user-details-view { display: none; }
+        .user-details-view.active { display: block; }
+        
+        .user-details-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; padding: 12px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .user-details-header .avatar-large { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 20px; color: white; }
+        .user-details-info h2 { font-size: 20px; font-weight: 600; color: #0f172a; margin: 0; }
+        .user-details-info .email { color: #64748b; font-size: 14px; margin-top: 4px; }
+        .user-details-info .meta { display: flex; gap: 12px; margin-top: 8px; font-size: 13px; color: #64748b; }
+        
+        .roles-assignment-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; max-width: 700px; margin: 0 auto; }
+        .roles-assignment-header { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .roles-assignment-header h3 { font-size: 16px; font-weight: 600; color: #0f172a; margin: 0; }
+        .roles-count { font-size: 13px; color: #64748b; }
+        
+        .roles-table-compact { width: 100%; border-collapse: collapse; }
+        .roles-table-compact th { background: #f8fafc; padding: 10px 16px; text-align: left; font-weight: 600; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid #e2e8f0; }
+        .roles-table-compact td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .roles-table-compact tbody tr { transition: background 0.15s ease; }
+        .roles-table-compact tbody tr:hover { background: #f8fafc; }
+        
+        .role-name-cell { display: flex; align-items: center; gap: 10px; }
+        .role-icon-sm { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .role-icon-sm.super-admin { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
+        .role-icon-sm.agency-admin { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+        .role-icon-sm.campaign-manager { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+        .role-icon-sm.standard-user { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .role-icon-sm.read-only { background: linear-gradient(135deg, #64748b, #475569); color: white; }
+        
+        .role-text-info .role-title { font-weight: 500; color: #0f172a; font-size: 14px; }
+        .role-text-info .role-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
+        
+        @media (max-width: 1024px) { .sidebar { width: 240px; } .main-content { margin-left: 240px; padding: 16px 24px; } .stats-row { flex-wrap: wrap; } .stat-box { min-width: 140px; } }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; padding: 16px; } .header { flex-direction: column; gap: 16px; align-items: flex-start; } .search-box input { width: 100%; } .data-table { display: block; overflow-x: auto; } }
+    </style>
+</head>
+<body>
+  <!-- Beacon Header -->
+  <header class="beacon-header border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
+    <div class="flex items-center justify-between px-4 py-2">
+      <div class="flex items-center gap-3">
+        <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
+      </div>
+
+      <nav class="flex items-center gap-3 ml-auto">
+        <h3 class="text-base text-white" style="font-size: 1.5rem; padding-right: 15px;">Admin</h3>
+        <span class="text-white select-none">|</span>
+
+        <!-- Notifications -->
+        <div class="relative">
+          <button id="notificationButton" class="p-2 rounded-md text-white relative" title="Notifications" aria-label="View notifications">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+          </button>
+
+          <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+            <div class="p-3 border-b border-gray-200 bg-gray-50">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+              </div>
+            </div>
+            <div class="max-h-80 overflow-y-auto">
+              <div id="notificationList">
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Waffle Menu -->
+        <div class="relative">
+          <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+            </svg>
+          </button>
+          <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+            <a href="./index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+            <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+            <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+
+  <div class="dashboard-container">
+    <nav class="sidebar">
+        <div class="logo-section">
+          <h2 class="text-base font-semibold text-gray-800">User Management</h2>
+      </div>
+      <div class="nav-menu">
+        
+        <div class="nav-group">
+         
+          <a href="Admin_Users.html" class="nav-item active"><i class="fas fa-users"></i><span>Users</span></a>
+          <a href="Admin_Roles_Permissions.html" class="nav-item"><i class="fas fa-user-tag"></i><span>Roles</span></a>
+          <a href="Admin_Permissions.html" class="nav-item"><i class="fas fa-key"></i><span>Permissions</span></a>
+          <a href="Admin_User_Activity_Logs.html" class="nav-item"><i class="fas fa-history"></i><span>User Activity Logs</span></a>
+          <a href="Admin_Configuration_Console.html" class="nav-item"><i class="fas fa-cogs"></i><span>Configuration Console</span></a>
+        </div>
+        <div class="nav-group">
+          
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <div id="mainHeader">
+            <h1>Users</h1>
+            <p>Manage user accounts, roles, and access across the platform.</p>
+          </div>
+          <div id="userDetailsHeader" style="display: none;">
+            <button class="action-btn" onclick="showUsersView()" style="margin-bottom: 12px;">
+              <i class="fas fa-arrow-left"></i> Back to Users
+            </button>
+            <h1 id="userDetailsTitle">User Overview</h1>
+          </div>
+        </div>
+        <div class="header-right">
+          
+          
+        </div>
+      </header>
+
+      <!-- Stats Row -->
+      
+
+      <!-- Users List View -->
+      <div id="usersListView">
+        <!-- Action Bar -->
+        <div class="action-section">
+          <div class="action-grid">
+            <button class="action-btn primary small" onclick="openModal('addUserModal')"><i class="fas fa-user-plus"></i> Add User</button>
+            <select id="filterRole">
+              <option value="">All Roles</option>
+              <option value="super-admin">Super Admin</option>
+              <option value="agency-admin">Agency Admin</option>
+              <option value="standard-user">Standard User</option>
+              <option value="read-only">Read Only</option>
+            </select>
+            <div class="search-container">
+              <input type="text" placeholder="Filter by name or email..." id="filterSearch">
+              <i class="fas fa-times search-clear" onclick="clearFilters()"></i>
+            </div>
+            <!-- <button class="action-btn small" style="margin-left: auto;"><i class="fas fa-download"></i> Export</button> -->
+          </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="content-card">
+          <div class="card-content" style="padding:0; overflow-x:auto;">
+          <table class="roles-table">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox" class="checkbox" id="selectAll"></th>
+                <th>User</th>
+                <th style="min-width:280px;">Roles</th>
+                <th style="min-width:160px;">Created On</th>
+                <th style="min-width:180px;">Created By</th>
+                <th style="min-width:160px;">Modified On</th>
+                <th style="min-width:180px;">Modified By</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody">
+              <!-- Row 1 -->
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="user-cell" onclick='viewUserDetails("Jane Smith", "jane.smith@multiview.com", "JS", "linear-gradient(135deg, #667eea, #764ba2)", ["super-admin", "agency-admin", "standard-user", "read-only"])'>
+                    <div class="avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">JS</div>
+                    <div class="info">
+                      <div class="name">Jane Smith <span class="badge badge-admin"><i class="fas fa-shield-alt"></i> Admin</span></div>
+                      <div class="email">jane.smith@multiview.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="text-align:left;"><span class="role-tag">Super Admin</span> <span class="role-tag">Agency Admin</span> <span class="role-tag">Standard User</span> <span class="role-tag">Read Only</span></td>
+                <td style="color:#64748b; font-size:13px;">11/14/2024 3:22:15 PM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+                <td style="color:#64748b; font-size:13px;">12/28/2025 9:47:33 AM</td>
+                <td style="color:#64748b; font-size:13px;">gjones@multiview.com</td>
+              </tr>
+              <!-- Row 2 -->
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="user-cell" onclick='viewUserDetails("Alex Johnson", "alex.johnson@multiview.com", "AJ", "linear-gradient(135deg, #f093fb, #f5576c)", ["agency-admin", "standard-user", "read-only"])'>
+                    <div class="avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">AJ</div>
+                    <div class="info">
+                      <div class="name">Alex Johnson <span class="badge badge-admin"><i class="fas fa-shield-alt"></i> Admin</span></div>
+                      <div class="email">alex.johnson@multiview.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="text-align:left;"><span class="role-tag">Agency Admin</span> <span class="role-tag">Standard User</span> <span class="role-tag">Read Only</span></td>
+                <td style="color:#64748b; font-size:13px;">8/3/2023 10:15:42 AM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+                <td style="color:#64748b; font-size:13px;">1/1/2026 2:18:55 PM</td>
+                <td style="color:#64748b; font-size:13px;">david.deherrera@multiview.com</td>
+              </tr>
+              <!-- Row 3 -->
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="user-cell" onclick='viewUserDetails("Morgan Lee", "morgan.lee@acmeagency.com", "ML", "linear-gradient(135deg, #4facfe, #00f2fe)", ["standard-user", "read-only"])'>
+                    <div class="avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">ML</div>
+                    <div class="info">
+                      <div class="name">Morgan Lee</div>
+                      <div class="email">morgan.lee@acmeagency.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="text-align:left;"><span class="role-tag">Standard User</span> <span class="role-tag">Read Only</span></td>
+                <td style="color:#64748b; font-size:13px;">12/30/2025 8:03:27 AM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+                <td style="color:#64748b; font-size:13px;">12/30/2025 8:03:27 AM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+              </tr>
+              <!-- Row 4 -->
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="user-cell" onclick='viewUserDetails("Taylor Patel", "taylor.patel@partnerco.com", "TP", "linear-gradient(135deg, #a8edea, #fed6e3)", ["read-only"])'>
+                    <div class="avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">TP</div>
+                    <div class="info">
+                      <div class="name">Taylor Patel</div>
+                      <div class="email">taylor.patel@partnerco.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="text-align:left;"><span class="role-tag">Read Only</span></td>
+                <td style="color:#64748b; font-size:13px;">9/12/2024 1:45:18 PM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+                <td style="color:#64748b; font-size:13px;">12/10/2025 11:29:04 AM</td>
+                <td style="color:#64748b; font-size:13px;">gjones@multiview.com</td>
+              </tr>
+              <!-- Row 5 -->
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="user-cell" onclick='viewUserDetails("Chris Brown", "chris.brown@formerco.com", "CB", "linear-gradient(135deg, #ffecd2, #fcb69f)", ["standard-user", "read-only"])'>
+                    <div class="avatar" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">CB</div>
+                    <div class="info">
+                      <div class="name">Chris Brown</div>
+                      <div class="email">chris.brown@formerco.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="text-align:left;"><span class="role-tag">Standard User</span> <span class="role-tag">Read Only</span></td>
+                <td style="color:#64748b; font-size:13px;">3/22/2023 4:56:39 PM</td>
+                <td style="color:#64748b; font-size:13px;">system@multiview.com</td>
+                <td style="color:#64748b; font-size:13px;">10/16/2025 7:12:51 AM</td>
+                <td style="color:#64748b; font-size:13px;">david.deherrera@multiview.com</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <div class="pagination-info">Showing 1-5 of 247 users</div>
+            <div class="pagination-controls">
+              <button class="page-btn" disabled><i class="fas fa-chevron-left"></i></button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">...</button>
+              <button class="page-btn">50</button>
+              <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div><!-- End usersListView -->
+
+      <!-- User Details View -->
+      <div id="userDetailsView" class="user-details-view">
+        <!-- Action Bar -->
+        <div class="action-section">
+          <div class="action-grid">
+            <button class="action-btn small" onclick="showUsersView()">Cancel</button>
+            <button class="action-btn danger small" onclick="deleteUser()" style="margin-left: auto;"><i class="fas fa-trash"></i> Delete User</button>
+            <button class="action-btn primary small" onclick="saveUserRoles()"><i class="fas fa-check"></i> Save Changes</button>
+          </div>
+        </div>
+
+        <!-- User Details Header -->
+        <div class="user-details-header">
+          <div class="avatar-large" id="userDetailAvatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">JS</div>
+          <div class="user-details-info">
+            <h2 id="userDetailName">Jane Smith</h2>
+            <div class="email" id="userDetailEmail">jane.smith@multiview.com</div>
+            <div class="meta">
+              <span><i class="fas fa-building"></i> Internal</span>
+              <span>•</span>
+              <span><i class="fas fa-circle" style="font-size:6px; color:#10b981;"></i> Active</span>
+              <span>•</span>
+              <span>Last active: 2 hours ago</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Assignment Card -->
+        <div class="roles-assignment-card">
+          <div class="roles-assignment-header">
+            <h3>Assigned Roles</h3>
+            <span class="roles-count"><span id="assignedRolesCount">0</span> roles assigned</span>
+          </div>
+          <div class="card-content">
+            <table class="roles-table-compact">
+              <tbody id="rolesAssignmentBody">
+                <!-- Roles will be populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div><!-- End userDetailsView -->
+
+    </main>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal-overlay" id="addUserModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Add New User</h2>
+        <button class="modal-close" onclick="closeModal('addUserModal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" placeholder="Enter first name"></div>
+          <div class="form-group"><label>Last Name</label><input type="text" placeholder="Enter last name"></div>
+        </div>
+        <div class="form-group"><label>Email Address</label><input type="email" placeholder="user@example.com"></div>
+        <div class="form-group">
+          <label>Roles</label>
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" class="checkbox" value="super-admin">
+              <div>
+                <span style="font-weight: 500; color: #0f172a; font-size: 14px;">Super Admin</span>
+                <span style="color: #64748b; font-size: 12px; margin-left: 8px;">– Full system access with all permissions</span>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" class="checkbox" value="agency-admin">
+              <div>
+                <span style="font-weight: 500; color: #0f172a; font-size: 14px;">Agency Admin</span>
+                <span style="color: #64748b; font-size: 12px; margin-left: 8px;">– Manage agency users and campaigns</span>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" class="checkbox" value="campaign-manager">
+              <div>
+                <span style="font-weight: 500; color: #0f172a; font-size: 14px;">Campaign Manager</span>
+                <span style="color: #64748b; font-size: 12px; margin-left: 8px;">– Create and manage advertising campaigns</span>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" class="checkbox" value="standard-user">
+              <div>
+                <span style="font-weight: 500; color: #0f172a; font-size: 14px;">Standard User</span>
+                <span style="color: #64748b; font-size: 12px; margin-left: 8px;">– View and edit assigned campaigns</span>
+              </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" class="checkbox" value="read-only">
+              <div>
+                <span style="font-weight: 500; color: #0f172a; font-size: 14px;">Read Only</span>
+                <span style="color: #64748b; font-size: 12px; margin-left: 8px;">– View-only access to campaigns and reports</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" onclick="closeModal('addUserModal')">Cancel</button>
+        <button class="action-btn primary">Create User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invite User Modal -->
+  <div class="modal-overlay" id="inviteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Invite User</h2>
+        <button class="modal-close" onclick="closeModal('inviteModal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label>Email Address</label><input type="email" placeholder="user@example.com"></div>
+        <div class="form-group">
+          <label>Role</label>
+          <select>
+            <option>Select role...</option>
+            <option>Agency Admin</option>
+            <option>Standard User</option>
+            <option>Read Only</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Agency</label>
+          <select>
+            <option>Select agency...</option>
+            <option>Acme Agency</option>
+            <option>Partner Co</option>
+            <option>Media Group LLC</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Personal Message (optional)</label>
+          <textarea style="width:100%; padding:10px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:14px; resize:vertical; min-height:80px;" placeholder="Add a personal note to the invitation email..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" onclick="closeModal('inviteModal')">Cancel</button>
+        <button class="action-btn primary"><i class="fas fa-paper-plane"></i> Send Invite</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        const href = (this.getAttribute('href') || '').trim();
+        if (href === '' || href === '#') {
+          e.preventDefault();
+          document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+          this.classList.add('active');
+        }
+      });
+    });
+
+    // Modal functions
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) closeModal(this.id);
+      });
+    });
+
+    // Select all checkbox
+    document.getElementById('selectAll').addEventListener('change', function() {
+      document.querySelectorAll('#userTableBody .checkbox').forEach(cb => cb.checked = this.checked);
+    });
+
+    // Filter functionality
+    function clearFilters() {
+      document.getElementById('filterRole').value = '';
+      document.getElementById('filterSearch').value = '';
+    }
+
+    // Search animation (removed - no longer using .search-box)
+
+    // Header menu functionality
+    const menuButton = document.getElementById('menuButton');
+    const menuDropdown = document.getElementById('menuDropdown');
+    const notificationButton = document.getElementById('notificationButton');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+
+    if (menuButton && menuDropdown) {
+      menuButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        menuDropdown.classList.toggle('hidden');
+        if (notificationDropdown) notificationDropdown.classList.add('hidden');
+      });
+    }
+
+    if (notificationButton && notificationDropdown) {
+      notificationButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        notificationDropdown.classList.toggle('hidden');
+        if (menuDropdown) menuDropdown.classList.add('hidden');
+      });
+    }
+
+    document.addEventListener('click', function() {
+      if (menuDropdown) menuDropdown.classList.add('hidden');
+      if (notificationDropdown) notificationDropdown.classList.add('hidden');
+    });
+
+    // Available roles data
+    const allRoles = [
+      {
+        id: 'super-admin',
+        name: 'Super Admin',
+        description: 'Full system access with all permissions',
+        icon: 'fas fa-crown',
+        iconClass: 'super-admin',
+        permissions: 47
+      },
+      {
+        id: 'agency-admin',
+        name: 'Agency Admin',
+        description: 'Manage agency users and campaigns',
+        icon: 'fas fa-user-tie',
+        iconClass: 'agency-admin',
+        permissions: 28
+      },
+      {
+        id: 'campaign-manager',
+        name: 'Campaign Manager',
+        description: 'Create and manage advertising campaigns',
+        icon: 'fas fa-bullhorn',
+        iconClass: 'campaign-manager',
+        permissions: 18
+      },
+      {
+        id: 'standard-user',
+        name: 'Standard User',
+        description: 'View and edit assigned campaigns',
+        icon: 'fas fa-user',
+        iconClass: 'standard-user',
+        permissions: 12
+      },
+      {
+        id: 'read-only',
+        name: 'Read Only',
+        description: 'View-only access to campaigns and reports',
+        icon: 'fas fa-eye',
+        iconClass: 'read-only',
+        permissions: 5
+      }
+    ];
+
+    // Current user's assigned roles
+    let currentUserRoles = [];
+
+    // View user details function
+    function viewUserDetails(name, email, initials, avatarGradient, assignedRoles) {
+      console.log('viewUserDetails called with:', { name, email, initials, avatarGradient, assignedRoles });
+      
+      // Hide users list view
+      document.getElementById('usersListView').style.display = 'none';
+      document.getElementById('mainHeader').style.display = 'none';
+      
+      // Show user details view
+      const userDetailsView = document.getElementById('userDetailsView');
+      console.log('userDetailsView element:', userDetailsView);
+      userDetailsView.classList.add('active');
+      userDetailsView.style.display = 'block'; // Force display
+      document.getElementById('userDetailsHeader').style.display = 'block';
+      
+      // Update user details header
+      document.getElementById('userDetailAvatar').textContent = initials;
+      document.getElementById('userDetailAvatar').style.background = avatarGradient;
+      document.getElementById('userDetailName').textContent = name;
+      document.getElementById('userDetailEmail').textContent = email;
+      
+      // Store current user's roles
+      currentUserRoles = assignedRoles || [];
+      console.log('Current user roles:', currentUserRoles);
+      
+      // Populate roles table
+      populateRolesTable();
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    // Show users list view
+    function showUsersView() {
+      const userDetailsView = document.getElementById('userDetailsView');
+      userDetailsView.classList.remove('active');
+      userDetailsView.style.display = 'none'; // Explicitly hide
+      document.getElementById('userDetailsHeader').style.display = 'none';
+      document.getElementById('usersListView').style.display = 'block';
+      document.getElementById('mainHeader').style.display = 'block';
+    }
+
+    // Populate roles table
+    function populateRolesTable() {
+      const tbody = document.getElementById('rolesAssignmentBody');
+      tbody.innerHTML = '';
+      
+      allRoles.forEach(role => {
+        const isAssigned = currentUserRoles.includes(role.id);
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="text-align:center;">
+            <input type="checkbox" class="checkbox role-checkbox" data-role-id="${role.id}" ${isAssigned ? 'checked' : ''} onchange="updateAssignedRolesCount()">
+          </td>
+          <td>
+            <div class="role-name-cell">
+              <div class="role-icon-sm ${role.iconClass}">
+                <i class="${role.icon}"></i>
+              </div>
+              <div class="role-text-info">
+                <div class="role-title">${role.name}</div>
+                <div class="role-desc">${role.description}</div>
+              </div>
+            </div>
+          </td>
+          <td style="color:#64748b; font-size:13px;">${role.permissions} permissions</td>
+        `;
+        
+        tbody.appendChild(row);
+      });
+      
+      updateAssignedRolesCount();
+    }
+
+    // Update assigned roles count
+    function updateAssignedRolesCount() {
+      const checkedBoxes = document.querySelectorAll('.role-checkbox:checked');
+      document.getElementById('assignedRolesCount').textContent = checkedBoxes.length;
+    }
+
+    // Save user roles
+    function saveUserRoles() {
+      const checkedBoxes = document.querySelectorAll('.role-checkbox:checked');
+      const selectedRoles = Array.from(checkedBoxes).map(cb => cb.dataset.roleId);
+      
+      // Here you would normally save to backend
+      console.log('Saving roles:', selectedRoles);
+      
+      // Show success message (you can integrate with toast notification)
+      alert('User roles updated successfully!');
+      
+      // Return to users view
+      showUsersView();
+    }
+
+    // Delete user function (placeholder)
+    function deleteUser() {
+      if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        console.log('Deleting user...');
+        alert('User deleted successfully!');
+        showUsersView();
+      }
+    }
+  </script>
+</body>
+</html>

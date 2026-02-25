@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beacon - Change Order Detail</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./assets/toast.css">
+  <script src="./assets/toast.js" defer></script>
+  <link rel="stylesheet" href="./assets/theme.css">
+  <link rel="stylesheet" href="./assets/loading.css">
+  <script src="./assets/loading.js" defer></script>
+  <link rel="stylesheet" href="./assets/changeorder.css">
+  <script src="./assets/changeorder.js" defer></script>
+
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
+
+    /* Accordion collapse */
+    .co-entity-body.collapsed { display: none; }
+    .toggle-arrow { display: inline-block; width: 16px; transition: transform 0.15s; cursor: pointer; }
+    .toggle-arrow.open { transform: rotate(90deg); }
+  </style>
+</head>
+<body class="bg-gray-100 flex flex-col h-screen overflow-hidden">
+
+  <!-- Top Header Bar -->
+  <header class="text-white flex-shrink-0" style="background: var(--brand-800);">
+    <div class="flex items-center justify-between px-6 py-1">
+      <div class="flex items-center gap-3">
+        <img src="./assets/Eye_Multiview.png" alt="Multiview Logo" class="h-8" />
+        <h1 class="text-xl font-medium">Beacon</h1>
+      </div>
+      <nav class="flex items-center gap-4">
+        <div class="relative">
+          <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+            </svg>
+          </button>
+          <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+            <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Breadcrumb Bar -->
+  <div class="bg-white border-b border-gray-200 px-6 py-2">
+    <nav class="flex items-center text-sm text-gray-600">
+      <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
+      <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <a id="breadcrumbAdvertiser" href="./WFAdvertiserDetails.html" class="hover:text-blue-600 transition-colors">—</a>
+      <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <a id="breadcrumbCOList" href="./ChangeOrderList.html" class="hover:text-blue-600 transition-colors">Change Orders</a>
+      <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <span id="breadcrumbCOId" class="font-semibold text-gray-900">—</span>
+    </nav>
+  </div>
+
+  <!-- Body -->
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar (CO-specific) -->
+    <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
+      <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+        <div class="flex items-center gap-3">
+          <img src="./assets/svgs/ChangeOrder.svg" alt="Change Order" class="w-9 h-9 rounded-full" data-sidebar-avatar />
+          <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Change Order</h2>
+        </div>
+        <button id="sidebarToggle" class="p-1 rounded hover:bg-gray-100" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse/Expand">
+          <svg id="iconCollapse" class="w-5 h-5 text-gray-900" viewBox="0 0 26 26" fill="currentColor">
+            <path fill="#000000" d="M21.5 11.5h-8.793l3.035-3.035a.5.5 0 10-.707-.707l-3.888 3.888a.518.518 0 00-.109.163.505.505 0 000 .382.518.518 0 00.109.163l3.888 3.888a.5.5 0 00.707-.707L12.707 12.5H21.5a.5.5 0 000-1zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z"></path>
+          </svg>
+          <svg id="iconExpand" class="w-5 h-5 text-gray-900 hidden" viewBox="0 0 26 26" fill="currentColor">
+            <path fill="#000000" d="M21.962 12.191a.505.505 0 000-.382.518.518 0 00-.109-.163l-3.888-3.888a.5.5 0 10-.707.707l3.035 3.035H11.5a.5.5 0 000 1h8.793l-3.035 3.035a.5.5 0 10.707.707l3.888-3.888a.518.518 0 00.109-.163zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z"></path>
+          </svg>
+        </button>
+      </div>
+
+      <ul class="space-y-1 mt-4">
+        <li>
+          <a href="#" data-nav-link class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
+            <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+            <span data-link-label>Details</span>
+          </a>
+        </li>
+        <li>
+          <a href="./ChangeOrderList.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+            <svg class="w-6 h-6 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
+            <span data-link-label>Back to List</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <div class="bg-white rounded-lg shadow-sm">
+
+        <!-- Advertiser Header -->
+        <div class="p-4 border-b border-gray-200">
+          <div class="flex items-start justify-between gap-4 mb-3">
+            <div>
+              <h1 id="advName" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
+              <h3 class="text-sm font-semibold text-gray-600">Account #: <span id="advAccount" class="text-sm text-gray-500">—</span></h3>
+            </div>
+            <div class="text-right text-sm text-gray-500">
+              <div>CO ID: <span id="headerCOId" class="font-medium text-gray-700">—</span></div>
+              <div>Created: <span id="headerCreated">—</span></div>
+              <div>Owner: <span id="headerOwner">—</span></div>
+            </div>
+          </div>
+
+          <hr class="border-gray-300 mb-4 mt-2">
+
+          <!-- CO Detail Header -->
+          <div class="co-detail-header">
+            <input id="coNameInput" class="co-name-input" type="text" value="" placeholder="Change Order Name" />
+            <span id="coStatusBadge" class="co-badge co-badge-draft">Draft</span>
+            <div class="co-detail-actions">
+              <button id="manageEntitiesBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Manage Entities</button>
+              <button id="saveCOBtn" class="text-sm px-3 py-1 bg-blue-600 text-white border border-blue-600 rounded-md hover:bg-blue-700 flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Save
+              </button>
+              <button id="syncCOBtn" class="btn-sync text-sm px-3 py-1 rounded-md flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Sync
+              </button>
+              <button id="exportCOBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Export
+              </button>
+            </div>
+          </div>
+
+          <div class="co-req-legend"><span class="text-red-500 font-bold">*</span> = Required field</div>
+
+          <!-- Entity Sections Container -->
+          <div id="entitySections"></div>
+
+          <!-- General Notes -->
+          <div class="co-general-notes">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">General Notes / Cover Letter</label>
+            <textarea id="generalNotes" class="w-full border border-gray-300 rounded-md p-3 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" rows="4" placeholder="Add any overall notes or instructions that apply to this entire Change Order. This accompanies the export to SEPO."></textarea>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Page Script -->
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const coId = urlParams.get('coId');
+
+    // Load advertiser info
+    let adv = null;
+    try {
+      const raw = localStorage.getItem('adv_selected_data');
+      if (raw) adv = JSON.parse(raw);
+    } catch {}
+
+    if (adv) {
+      const nameEl = document.getElementById('advName');
+      const acctEl = document.getElementById('advAccount');
+      const bcAdv  = document.getElementById('breadcrumbAdvertiser');
+      if (nameEl) nameEl.textContent = adv.name || 'Unknown';
+      if (acctEl) acctEl.textContent = adv.account || adv.accountNumber || '—';
+      if (bcAdv) {
+        bcAdv.textContent = adv.name || 'Unknown';
+        bcAdv.href = `./WFAdvertiserDetails.html?advertiserId=${adv.id}`;
+      }
+    }
+
+    if (!coId) {
+      document.getElementById('entitySections').innerHTML = '<p class="text-gray-500 text-center py-8">No change order specified.</p>';
+      return;
+    }
+
+    const co = getChangeOrder(coId);
+    if (!co) {
+      document.getElementById('entitySections').innerHTML = '<p class="text-gray-500 text-center py-8">Change order not found.</p>';
+      return;
+    }
+
+    // Populate header
+    document.getElementById('breadcrumbCOId').textContent = co.id;
+    document.getElementById('headerCOId').textContent = co.id;
+    document.getElementById('headerCreated').textContent = fmtDate(co.createdDate);
+    document.getElementById('headerOwner').textContent = co.owner || '—';
+    document.getElementById('coNameInput').value = co.name || '';
+    document.getElementById('generalNotes').value = co.generalNotes || '';
+
+    // Status badge
+    const badgeEl = document.getElementById('coStatusBadge');
+    const s = (co.status || 'draft').toLowerCase();
+    badgeEl.className = `co-badge co-badge-${s}`;
+    badgeEl.textContent = s.charAt(0).toUpperCase() + s.slice(1);
+
+    // Build entity sections
+    buildEntitySections(co);
+
+    // Wire up buttons
+    document.getElementById('saveCOBtn').addEventListener('click', () => {
+      co.name = document.getElementById('coNameInput').value.trim() || co.name;
+      co.generalNotes = document.getElementById('generalNotes').value;
+      co.modifiedDate = new Date().toISOString();
+
+      // Collect ad group field values
+      document.querySelectorAll('[data-ag-field]').forEach(input => {
+        const agId = input.dataset.agId;
+        const field = input.dataset.agField;
+        const entity = co.entities.find(e => e.type === 'adgroup' && e.id === agId);
+        if (entity) {
+          if (!entity.fields) entity.fields = {};
+          entity.fields[field] = input.value;
+        }
+      });
+
+      saveChangeOrder(co);
+      if (typeof showToast === 'function') showToast('Change order saved', 'success');
+    });
+
+    document.getElementById('syncCOBtn').addEventListener('click', () => {
+      co.status = 'synced';
+      co.modifiedDate = new Date().toISOString();
+      saveChangeOrder(co);
+      const badge = document.getElementById('coStatusBadge');
+      badge.className = 'co-badge co-badge-synced';
+      badge.textContent = 'Synced';
+      if (typeof showToast === 'function') showToast('Change order synced', 'success');
+    });
+
+    document.getElementById('exportCOBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(co, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${co.id}_${(co.name || 'export').replace(/\s+/g, '_')}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      if (typeof showToast === 'function') showToast('Exported', 'success');
+    });
+
+    document.getElementById('manageEntitiesBtn').addEventListener('click', () => {
+      openEntitySelectModal(co.id);
+    });
+
+    // --- Helper functions ---
+
+    function fmtDate(d) {
+      if (!d) return '—';
+      try { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+      catch { return d; }
+    }
+
+    function entityPill(type) {
+      const map = {
+        advertiser: { label: 'ADV', bg: 'var(--brand-100, #dbeafe)', color: 'var(--brand-800, #014C86)' },
+        campaign:   { label: 'CAM', bg: '#e8e0f5', color: '#5a3d8a' },
+        adgroup:    { label: 'AG',  bg: '#fce8d5', color: '#8a5a2d' }
+      };
+      const p = map[type] || { label: type.toUpperCase(), bg: '#e5e7eb', color: '#374151' };
+      return `<span class="co-entity-pill" style="background:${p.bg};color:${p.color};">${p.label}</span>`;
+    }
+
+    function headerClass(type) {
+      const map = { advertiser: 'adv-header', campaign: 'cam-header', adgroup: 'ag-header' };
+      return map[type] || '';
+    }
+
+    function buildEntitySections(co) {
+      const container = document.getElementById('entitySections');
+      if (!co.entities || co.entities.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-8">No entities in this change order. Click "Manage Entities" to add some.</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+
+      // Group: advertiser first, then campaigns, then ad groups
+      const order = ['advertiser', 'campaign', 'adgroup'];
+      const sorted = [...co.entities].sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
+
+      sorted.forEach((entity, idx) => {
+        const secId = `sec-${entity.type}-${idx}`;
+        const isAdv = entity.type === 'advertiser';
+        const isAG  = entity.type === 'adgroup';
+
+        const section = document.createElement('div');
+        section.className = 'co-entity-section';
+        section.innerHTML = `
+          <div class="co-entity-header ${headerClass(entity.type)}" onclick="toggleSection('${secId}')">
+            <div class="entity-title">
+              <span class="toggle-arrow open" id="${secId}-arrow">▶</span>
+              ${entityPill(entity.type)}
+              ${entity.name || entity.id}
+            </div>
+            ${!isAdv ? `<span class="remove-btn" onclick="event.stopPropagation();removeEntity('${entity.type}','${entity.id}')">✕ Remove</span>` : ''}
+          </div>
+          <div class="co-entity-body" id="${secId}-body">
+            ${buildEntityBody(entity)}
+          </div>
+        `;
+        container.appendChild(section);
+      });
+    }
+
+    function buildEntityBody(entity) {
+      if (entity.type === 'advertiser') {
+        return `
+          <div class="flex gap-8 text-sm text-gray-600 mb-2">
+            <span><strong>Account #:</strong> ${adv ? (adv.account || adv.accountNumber || '—') : '—'}</span>
+            <span><strong>Name:</strong> ${entity.name || '—'}</span>
+          </div>
+          <p class="text-sm text-gray-400 italic">No changes requested at the advertiser level.</p>
+        `;
+      }
+
+      if (entity.type === 'campaign') {
+        // Look up campaign data  
+        let camData = {};
+        try {
+          const tree = JSON.parse(localStorage.getItem('campaign_tree_groups') || '{}');
+          let allCams = [];
+          if (tree.campaigns) allCams = allCams.concat(tree.campaigns);
+          if (tree.groups) tree.groups.forEach(g => { if (g.campaigns) allCams = allCams.concat(g.campaigns); });
+          camData = allCams.find(c => c.id === entity.id) || {};
+        } catch {}
+
+        return `
+          <div class="flex gap-8 text-sm text-gray-600 mb-2">
+            <span><strong>ID:</strong> ${entity.id}</span>
+            <span><strong>DSP:</strong> ${camData.dsp || '—'}</span>
+          </div>
+          <p class="text-sm text-gray-400 italic">No changes requested at the campaign level.</p>
+        `;
+      }
+
+      if (entity.type === 'adgroup') {
+        // Look up ad group data
+        let agData = {};
+        try {
+          const all = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
+          agData = all.find(a => a.id === entity.id) || {};
+        } catch {}
+
+        const fields = entity.fields || {};
+
+        return `
+          <div class="flex gap-8 text-sm text-gray-600 mb-4">
+            <span><strong>ID:</strong> ${entity.id}</span>
+            <span><strong>Classification:</strong> ${agData.classification || agData.multiviewClassification || '—'}</span>
+            <span><strong>Tactic:</strong> ${agData.multiviewTactic || '—'}</span>
+          </div>
+          <div class="co-fields-grid">
+            <div class="co-field-group">
+              <label>Start Date <span class="text-red-500 font-bold">*</span></label>
+              <input type="date" value="${fields.startDate || ''}" data-ag-id="${entity.id}" data-ag-field="startDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+            </div>
+            <div class="co-field-group">
+              <label>End Date <span class="text-red-500 font-bold">*</span></label>
+              <input type="date" value="${fields.endDate || ''}" data-ag-id="${entity.id}" data-ag-field="endDate" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+            </div>
+            <div class="co-field-group">
+              <label>Impressions <span class="text-red-500 font-bold">*</span></label>
+              <input type="text" value="${fields.impressions || ''}" placeholder="e.g. 500,000" data-ag-id="${entity.id}" data-ag-field="impressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm required-field" />
+            </div>
+            <div class="co-field-group">
+              <label>Monthly Impressions</label>
+              <input type="text" value="${fields.monthlyImpressions || ''}" placeholder="Optional" data-ag-id="${entity.id}" data-ag-field="monthlyImpressions" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" />
+            </div>
+            <div class="co-field-group" style="grid-column: 1 / -1;">
+              <label>Additional Notes / Instructions</label>
+              <textarea data-ag-id="${entity.id}" data-ag-field="notes" class="w-full border border-gray-300 rounded-md px-2 py-1 text-sm" rows="3" placeholder="Targeting instructions, day parting, special requests...">${fields.notes || ''}</textarea>
+            </div>
+          </div>
+        `;
+      }
+
+      return '';
+    }
+
+    // Toggle section visibility
+    window.toggleSection = function(secId) {
+      const body = document.getElementById(secId + '-body');
+      const arrow = document.getElementById(secId + '-arrow');
+      if (body) body.classList.toggle('collapsed');
+      if (arrow) arrow.classList.toggle('open');
+    };
+
+    // Remove entity from CO
+    window.removeEntity = function(type, id) {
+      if (!confirm(`Remove this ${type} from the change order?`)) return;
+      co.entities = co.entities.filter(e => !(e.type === type && e.id === id));
+      co.modifiedDate = new Date().toISOString();
+      saveChangeOrder(co);
+      buildEntitySections(co);
+      if (typeof showToast === 'function') showToast(`${type} removed`, 'info');
+    };
+
+    // Waffle menu toggle
+    const menuBtn = document.getElementById('menuButton');
+    const menuDrop = document.getElementById('menuDropdown');
+    if (menuBtn && menuDrop) {
+      menuBtn.addEventListener('click', () => menuDrop.classList.toggle('hidden'));
+      document.addEventListener('click', (e) => {
+        if (!menuBtn.contains(e.target) && !menuDrop.contains(e.target)) menuDrop.classList.add('hidden');
+      });
+    }
+  });
+  </script>
+
+  <script src="./assets/sidebar.js" defer></script>
+</body>
+</html>

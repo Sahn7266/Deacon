@@ -276,7 +276,7 @@
     <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
       <div class="flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-3">
-          <img src="./assets/BeaconLogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
+          <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
         </div>
 
         <nav class="flex items-center gap-3 ml-auto">
@@ -356,8 +356,8 @@
             </button>
             <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-              <a href="#" id="menuAdmin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
             </div>
           </div>
@@ -472,9 +472,6 @@
                       <button type="button" class="sort-btn flex w-full items-center px-6 py-3 space-x-2" data-sort-key="adGroups" aria-label="Sort by Ad Groups">
                         <span>Ad Groups</span><span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
                       </button>
-                    </th>
-                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
-                      <span class="px-6 py-3 block">Actions</span>
                     </th>
                   </tr>
                 </thead>
@@ -679,7 +676,7 @@
                 <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <div>
                     <p class="text-sm font-medium text-gray-900">Enable Platform Connectors</p>
-                    <p class="text-xs text-gray-600 mt-1">Toggle to mark selected platforms as Connected</p>
+                    <p class="text-xs text-gray-600 mt-1">Toggle to mark selected platforms as Synced</p>
                   </div>
                   <button type="button" id="connectorsToggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false">
                     <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
@@ -715,8 +712,11 @@
                           <p class="text-xs text-gray-500">Programmatic advertising platform</p>
                         </div>
                       </div>
-                      <div class="flex items-center space-x-2">
-                        <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer">Not Connected</span>
+                      <div class="flex items-center space-x-3">
+                        <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
+                        <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="tradeDesk">
+                          <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -747,8 +747,11 @@
                           <p class="text-xs text-gray-500">Ad serving and campaign management</p>
                         </div>
                       </div>
-                      <div class="flex items-center space-x-2">
-                        <span class="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer">Not Connected</span>
+                      <div class="flex items-center space-x-3">
+                        <span class="connector-status-label text-xs font-medium text-gray-600">Not Synced</span>
+                        <button type="button" class="connector-toggle relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false" data-connector="gcm">
+                          <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -780,7 +783,7 @@
                     
                     <div>
                       <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
-                      <input type="text" id="dspName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter DSP name">
+                      <input type="text" id="dspName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter Advertiser Name">
                     </div>
 
                     <div>
@@ -879,7 +882,7 @@
                     <div>
                       <label class="block text-sm font-medium text-gray-700 mb-2">Conversion</label>
                       <div class="flex items-center gap-2">
-                        <input type="number" id="dspDedupConversion" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="7">
+                        <input type="number" id="dspDedupConversion" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="60">
                         <span class="text-sm text-gray-600 w-20">Seconds</span>
                       </div>
                     </div>
@@ -1411,18 +1414,6 @@
             // Table clicks
             if (this.elements.advertiserTableBody) {
               this.elements.advertiserTableBody.addEventListener('click', function(e) {
-                // Handle delete button
-                const deleteBtn = e.target.closest('.delete-advertiser');
-                if (deleteBtn) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const advId = deleteBtn.getAttribute('data-adv-id');
-                  if (advId) {
-                    self.deleteAdvertiser(advId);
-                  }
-                  return;
-                }
-                
                 const link = e.target.closest('a[data-adv-id]');
                 if (link) {
                   e.preventDefault();
@@ -1915,7 +1906,7 @@ self.validateForm();
             
             if (data.length === 0) {
               const tr = document.createElement('tr');
-              tr.innerHTML = '<td colspan="7" class="px-6 py-2 text-center text-gray-500">No advertisers found</td>';
+              tr.innerHTML = '<td colspan="6" class="px-6 py-2 text-center text-gray-500">No advertisers found</td>';
               this.elements.advertiserTableBody.appendChild(tr);
               return;
             }
@@ -1935,10 +1926,7 @@ self.validateForm();
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.account || '') + '</td>' +
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500">' + (adv.status || '') + '</td>' +
                 '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500 tabular-nums">' + campaignCount + '</td>' +
-                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500 tabular-nums">' + adGroupCount + '</td>' +
-                '<td class="px-6 py-2 whitespace-nowrap text-sm text-center">' +
-                  '<button class="text-red-600 hover:underline delete-advertiser" data-adv-id="' + (adv.id || '') + '" title="Delete Advertiser">Delete</button>' +
-                '</td>';
+                '<td class="px-6 py-2 whitespace-nowrap text-sm text-black-500 tabular-nums">' + adGroupCount + '</td>';
               this.elements.advertiserTableBody.appendChild(tr);
             }
           },
@@ -2212,11 +2200,30 @@ return false;
             const advIdField = document.getElementById('advertiserId');
             const advertiserId = advIdField ? advIdField.value : ('ADV' + String(Date.now()).slice(-6));
 
-            // Get platform selections (but ignore if platforms are disabled)
-            const platformsEnabled = this.elements.platformToggle ? this.elements.platformToggle.checked : true;
-            const platformGCM = document.getElementById('platformGCM');
-            const platformTradeDesk = document.getElementById('platformTradeDesk');
-            const platformDV360 = document.getElementById('platformDV360');
+            // Get platform selections (checked checkboxes) and their connection status
+            const selectedDSP = [];
+            const selectedAdServer = [];
+            const connectionStatus = {}; // Track status for each platform
+            
+          // Check each connector card
+          document.querySelectorAll('.connector-card').forEach(card => {
+            const connectorToggle = card.querySelector('.connector-toggle');
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            
+            if (checkbox && checkbox.checked) {
+              const connectorType = checkbox.name; // 'dsp' or 'adserver'
+              const connectorValue = checkbox.value;
+              const isConnected = connectorToggle && connectorToggle.getAttribute('aria-checked') === 'true';                // Add to selected arrays
+                if (connectorType === 'dsp') {
+                  selectedDSP.push(connectorValue);
+                } else if (connectorType === 'adserver') {
+                  selectedAdServer.push(connectorValue);
+                }
+                
+                // Track connection status
+                connectionStatus[connectorValue] = isConnected ? 'Connected' : 'Disconnected';
+              }
+            });
 
             // Collect DSP fields
             const dspData = {};
@@ -2267,39 +2274,15 @@ return false;
               campaign: '0',
               adGroup: '0',
               owner: CONFIG.CURRENT_USER,
-              platforms: {
-                gcm: platformsEnabled ? (platformGCM ? platformGCM.checked : false) : false,
-                tradeDesk: platformsEnabled ? (platformTradeDesk ? platformTradeDesk.checked : false) : false,
-                dv360: platformsEnabled ? (platformDV360 ? platformDV360.checked : false) : false
-              },
-              // Capture platform connection status from Step 2
-              platformConnections: {
-                tradeDeskStatus: null,
-                gcmStatus: null
+              // Store selected platforms and their connection status
+              connectors: {
+                dsp: selectedDSP,
+                adServer: selectedAdServer,
+                status: connectionStatus // Store connection status for each platform
               },
               dsp: Object.keys(dspData).length > 0 ? dspData : null,
               adServer: Object.keys(adServerData).length > 0 ? adServerData : null
             };
-
-            // Get connection status from the connector badges
-            const tradeDeskCard = document.querySelector('[data-connector="ttd"]');
-            const gcmCard = document.querySelector('[data-connector="gcm"]');
-            
-            if (tradeDeskCard) {
-              const tradeDeskBadge = tradeDeskCard.querySelector('.connector-status');
-              if (tradeDeskBadge) {
-                const isConnected = tradeDeskBadge.textContent.trim() === 'Connected';
-                newAdvertiser.platformConnections.tradeDeskStatus = isConnected ? 'ENABLED' : 'DISABLED';
-              }
-            }
-            
-            if (gcmCard) {
-              const gcmBadge = gcmCard.querySelector('.connector-status');
-              if (gcmBadge) {
-                const isConnected = gcmBadge.textContent.trim() === 'Connected';
-                newAdvertiser.platformConnections.gcmStatus = isConnected ? 'ENABLED' : 'DISABLED';
-              }
-            }
 
             // Add to the main advertiser list (at the beginning so it appears first)
             try {
@@ -2466,36 +2449,76 @@ init: function() {
                   this.querySelector('span').classList.add('translate-x-0');
                 }
 
-                // Update connection status for all connector cards
-                document.querySelectorAll('.connector-card').forEach(card => {
-                  const statusBadge = card.querySelector('.connector-status');
-                  if (statusBadge) {
-                    if (newState) {
-                      statusBadge.textContent = 'Connected';
-                      statusBadge.className = 'px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full connector-status cursor-pointer';
-                    } else {
-                      statusBadge.textContent = 'Not Connected';
-                      statusBadge.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer';
+                // Update connection status for all connector toggles and labels
+                document.querySelectorAll('.connector-toggle').forEach(toggle => {
+                  const label = toggle.parentElement.querySelector('.connector-status-label');
+                  const toggleSwitch = toggle.querySelector('span');
+                  
+                  if (newState) {
+                    // Set all to Synced
+                    toggle.setAttribute('aria-checked', 'true');
+                    toggle.classList.remove('bg-gray-200');
+                    toggle.classList.add('bg-green-500');
+                    if (toggleSwitch) {
+                      toggleSwitch.classList.remove('translate-x-0');
+                      toggleSwitch.classList.add('translate-x-5');
+                    }
+                    if (label) {
+                      label.textContent = 'Synced';
+                      label.classList.remove('text-gray-600');
+                      label.classList.add('text-green-700');
+                    }
+                  } else {
+                    // Set all to Not Synced
+                    toggle.setAttribute('aria-checked', 'false');
+                    toggle.classList.remove('bg-green-500');
+                    toggle.classList.add('bg-gray-200');
+                    if (toggleSwitch) {
+                      toggleSwitch.classList.remove('translate-x-5');
+                      toggleSwitch.classList.add('translate-x-0');
+                    }
+                    if (label) {
+                      label.textContent = 'Not Synced';
+                      label.classList.remove('text-green-700');
+                      label.classList.add('text-gray-600');
                     }
                   }
                 });
               });
 
-              // Add individual toggle functionality for each connector status badge
-              document.querySelectorAll('.connector-status').forEach(badge => {
-                badge.addEventListener('click', function(e) {
+              // Add individual toggle functionality for each connector
+              document.querySelectorAll('.connector-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
                   e.stopPropagation(); // Prevent card click event
                   
-                  const isConnected = this.textContent.trim() === 'Connected';
+                  const isConnected = this.getAttribute('aria-checked') === 'true';
+                  const label = this.parentElement.querySelector('.connector-status-label');
+                  const toggleSwitch = this.querySelector('span');
                   
                   if (isConnected) {
-                    // Change to Not Connected
-                    this.textContent = 'Not Connected';
-                    this.className = 'px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full connector-status cursor-pointer';
+                    // Change to Not Synced
+                    this.setAttribute('aria-checked', 'false');
+                    this.classList.remove('bg-green-500');
+                    this.classList.add('bg-gray-200');
+                    toggleSwitch.classList.remove('translate-x-5');
+                    toggleSwitch.classList.add('translate-x-0');
+                    if (label) {
+                      label.textContent = 'Not Synced';
+                      label.classList.remove('text-green-700');
+                      label.classList.add('text-gray-600');
+                    }
                   } else {
-                    // Change to Connected
-                    this.textContent = 'Connected';
-                    this.className = 'px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full connector-status cursor-pointer';
+                    // Change to Synced
+                    this.setAttribute('aria-checked', 'true');
+                    this.classList.remove('bg-gray-200');
+                    this.classList.add('bg-green-500');
+                    toggleSwitch.classList.remove('translate-x-0');
+                    toggleSwitch.classList.add('translate-x-5');
+                    if (label) {
+                      label.textContent = 'Synced';
+                      label.classList.remove('text-gray-600');
+                      label.classList.add('text-green-700');
+                    }
                   }
                 });
               });

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beacon - Change Orders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./assets/toast.css">
+  <script src="./assets/toast.js" defer></script>
+  <link rel="stylesheet" href="./assets/theme.css">
+  <link rel="stylesheet" href="./assets/loading.css">
+  <script src="./assets/loading.js" defer></script>
+  <link rel="stylesheet" href="./assets/changeorder.css">
+  <script src="./assets/changeorder.js" defer></script>
+
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 flex flex-col h-screen overflow-hidden">
+
+  <!-- Top Header Bar -->
+    <!-- Header -->
+    <header class="border-b border-gray-200 shadow-sm" style="background-color: #004E8B;">
+      <div class="flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-3">
+          <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
+        </div>
+
+        <nav class="flex items-center gap-3 ml-auto">
+            <a href="./index.html" class="text-base text-white hover:text-blue-100" style="font-size: 1.5rem; padding-right: 15px;" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
+            Advertisers
+            </a>
+          <span class="text-white select-none">|</span>
+
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notificationButton" class="p-2 rounded-md  text-white relative" title="Notifications" aria-label="View notifications" onmouseover="this.style.backgroundColor=''" onmouseout="this.style.backgroundColor=''" >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+              <div class="p-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                  <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                </div>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div id="notificationList">
+                  <!-- Sample items -->
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">Campaign Performance Alert</p>
+                        <p class="text-xs text-gray-500 mt-1">"Summer Sale" exceeded budget by 15%</p>
+                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">New Advertiser Added</p>
+                        <p class="text-xs text-gray-500 mt-1">Stallion Services LLC onboarded</p>
+                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="true">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-700">Account Sync Complete</p>
+                        <p class="text-xs text-gray-500 mt-1">CRM sync finished for 12 accounts</p>
+                        <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waffle Menu -->
+          <div class="relative">
+            <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+              </svg>
+            </button>
+            <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+              <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+  <!-- Breadcrumb Bar -->
+  <div class="bg-white border-b border-gray-200 px-6 py-2">
+    <nav class="flex items-center text-sm text-gray-600">
+      <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
+      <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <a id="breadcrumbAdvertiser" href="./WFAdvertiserDetails.html" class="hover:text-blue-600 transition-colors">—</a>
+      <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <span class="font-semibold text-gray-900">Change Orders</span>
+    </nav>
+  </div>
+
+  <!-- Body -->
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
+      <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+        <div class="flex items-center gap-3">
+          <img src="./assets/advertiser.png" alt="Advertiser" class="w-9 h-9 rounded-full" data-sidebar-avatar />
+          <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Advertiser</h2>
+        </div>
+        <button id="sidebarToggle" class="p-1 rounded hover:bg-gray-100" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse/Expand">
+          <svg id="iconCollapse" class="w-5 h-5 text-gray-900" viewBox="0 0 26 26" fill="currentColor">
+            <path fill="#000000" d="M21.5 11.5h-8.793l3.035-3.035a.5.5 0 10-.707-.707l-3.888 3.888a.518.518 0 00-.109.163.505.505 0 000 .382.518.518 0 00.109.163l3.888 3.888a.5.5 0 00.707-.707L12.707 12.5H21.5a.5.5 0 000-1zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z"></path>
+          </svg>
+          <svg id="iconExpand" class="w-5 h-5 text-gray-900 hidden" viewBox="0 0 26 26" fill="currentColor">
+            <path fill="#000000" d="M21.962 12.191a.505.505 0 000-.382.518.518 0 00-.109-.163l-3.888-3.888a.5.5 0 10-.707.707l3.035 3.035H11.5a.5.5 0 000 1h8.793l-3.035 3.035a.5.5 0 10.707.707l3.888-3.888a.518.518 0 00.109-.163zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z"></path>
+          </svg>
+        </button>
+      </div>
+
+      <ul class="space-y-1 mt-4">
+        <li>
+          <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+            <img src="./assets/svgs/Details.svg" alt="Overview" class="w-6 h-6 mr-2" />
+            <span data-link-label>Overview</span>
+          </a>
+        </li>
+        <li>
+          <a href="./AdvertiserCampaigns.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+            <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
+            <span data-link-label>Campaigns</span>
+          </a>
+        </li>
+        <li>
+          <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+            <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
+            <span data-link-label>Ad Groups</span>
+          </a>
+        </li>
+        <li>
+          <a href="./ChangeOrderList.html" data-nav-link class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
+            <img src="./assets/svgs/ChangeOrder.svg" alt="Change Orders" class="w-6 h-6 mr-2" />
+            <span data-link-label>Change Orders</span>
+          </a>
+        </li>
+        <li>
+          <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+            <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+            <span data-link-label>Connections</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <div class="bg-white rounded-lg shadow-sm">
+
+        <!-- Advertiser Header -->
+        <div class="p-4 border-b border-gray-200">
+          <div class="flex items-start justify-between gap-4 mb-3">
+            <div>
+              <h1 id="advName" class="md:text-2xl font-semibold text-gray-900">Loading…</h1>
+              <h3 class="text-sm font-semibold text-gray-600">Account #: <span id="advAccount" class="text-sm text-gray-500">—</span></h3>
+            </div>
+            <div class="text-right">
+              <div class="flex justify-end gap-2">
+                <span class="text-sm font-semibold text-gray-600">ID:</span>
+                <span id="advId" class="text-sm text-gray-500 w-28 text-left">—</span>
+              </div>
+            </div>
+          </div>
+
+          <hr class="border-gray-300 mp-4 p-2">
+
+          <!-- Section Title -->
+          <section>
+            <div class="flex items-center justify-between mb-6">
+              <h1 class="text-2xl font-semibold text-gray-900 mx-2">CHANGE ORDERS</h1>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="flex items-center gap-3 mb-4 px-2">
+              <button id="newCOBtn" onclick="openCOPickerModal()" class="flex items-center gap-2 px-3 py-2 text-sm bg-green-600 text-white border border-green-600 rounded-md hover:bg-green-700 transition-colors" title="New Change Order">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>New Change Order</span>
+              </button>
+              <div class="h-6 w-px bg-gray-300"></div>
+              <select id="statusFilter" class="text-sm border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="draft,synced" selected>Draft &amp; Synced</option>
+                <option value="all">All Statuses</option>
+                <option value="draft">Draft</option>
+                <option value="synced">Synced</option>
+                <option value="active">Active</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <input id="searchInput" type="text" placeholder="Search..." class="text-sm border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-48" />
+              <span id="coCount" class="text-sm text-gray-500 ml-auto"></span>
+            </div>
+
+            <!-- Data Table -->
+            <div class="overflow-x-auto border border-default rounded-md mx-2">
+              <table id="coTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
+                <colgroup>
+                  <col style="width: 11%;">
+                  <col style="width: 20%;">
+                  <col style="width: 9%;">
+                  <col style="width: 12%;">
+                  <col style="width: 12%;">
+                  <col style="width: 12%;">
+                  <col style="width: 7%;">
+                  <col style="width: 7%;">
+                  <col style="width: 10%;">
+                </colgroup>
+                <thead class="tbl-head">
+                  <tr>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-4 py-2 space-x-2" data-sort-key="id">
+                        <span>ID</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-4 py-2 space-x-2" data-sort-key="name">
+                        <span>Name</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-4 py-2 space-x-2" data-sort-key="status">
+                        <span>Status</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-4 py-2 space-x-2" data-sort-key="modifiedDate">
+                        <span>Modified</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-4 py-2 space-x-2" data-sort-key="createdDate">
+                        <span>Created</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-4 py-2 space-x-2" data-sort-key="owner">
+                        <span>Owner</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-4 py-2 space-x-2" data-sort-key="campaigns">
+                        <span>Campaigns</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
+                      <button type="button" class="sort-btn flex w-full items-center px-4 py-2 space-x-2" data-sort-key="adGroups">
+                        <span>Ad Groups</span>
+                      </button>
+                    </th>
+                    <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
+                      <span class="px-4 py-2">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="coTableBody" class="divide-y">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Page Script -->
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Load advertiser info
+    let adv = null;
+    try {
+      const raw = localStorage.getItem('adv_selected_data');
+      if (raw) adv = JSON.parse(raw);
+    } catch {}
+
+    if (adv) {
+      const nameEl = document.getElementById('advName');
+      const acctEl = document.getElementById('advAccount');
+      const idEl   = document.getElementById('advId');
+      const bcAdv  = document.getElementById('breadcrumbAdvertiser');
+      if (nameEl) nameEl.textContent = adv.name || 'Unknown';
+      if (acctEl) acctEl.textContent = adv.account || adv.accountNumber || '—';
+      if (idEl)   idEl.textContent   = adv.id || '—';
+      if (bcAdv) {
+        bcAdv.textContent = adv.name || 'Unknown';
+        bcAdv.href = `./WFAdvertiserDetails.html?advertiserId=${adv.id}`;
+      }
+    }
+
+    // Status badge helper
+    function statusBadge(status) {
+      const s = (status || 'draft').toLowerCase();
+      return `<span class="co-badge co-badge-${s}">${s.charAt(0).toUpperCase() + s.slice(1)}</span>`;
+    }
+
+    // Format date helper
+    function fmtDate(d) {
+      if (!d) return '—';
+      try {
+        return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      } catch { return d; }
+    }
+
+    // Count entities helper
+    function countEntities(entities, type) {
+      if (!entities || !Array.isArray(entities)) return 0;
+      return entities.filter(e => e.type === type).length;
+    }
+
+    // Render table
+    function renderTable() {
+      const tbody = document.getElementById('coTableBody');
+      const countEl = document.getElementById('coCount');
+      if (!tbody) return;
+
+      const allCOs = getChangeOrders();
+      const filterVal = document.getElementById('statusFilter').value;
+      const searchVal = (document.getElementById('searchInput').value || '').toLowerCase();
+
+      // Filter by status
+      let filtered = allCOs;
+      if (filterVal !== 'all') {
+        const allowed = filterVal.split(',');
+        filtered = filtered.filter(co => allowed.includes((co.status || 'draft').toLowerCase()));
+      }
+
+      // Filter by search
+      if (searchVal) {
+        filtered = filtered.filter(co =>
+          (co.id || '').toLowerCase().includes(searchVal) ||
+          (co.name || '').toLowerCase().includes(searchVal) ||
+          (co.owner || '').toLowerCase().includes(searchVal)
+        );
+      }
+
+      // Sort by modified date descending
+      filtered.sort((a, b) => new Date(b.modifiedDate || 0) - new Date(a.modifiedDate || 0));
+
+      const hiddenCount = allCOs.length - filtered.length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-8 text-center text-gray-500">No change orders found</td></tr>';
+        if (countEl) countEl.textContent = allCOs.length === 0 ? '' : `0 showing (${hiddenCount} hidden by filter)`;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      filtered.forEach(co => {
+        const camCount = countEntities(co.entities, 'campaign');
+        const agCount  = countEntities(co.entities, 'adgroup');
+        const canDelete = (co.status || 'draft').toLowerCase() !== 'synced';
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50';
+        tr.innerHTML = `
+          <td class="px-4 py-1 whitespace-nowrap text-sm border-r border-default">
+            <a href="./ChangeOrderDetail.html?coId=${encodeURIComponent(co.id)}" class="text-blue-600 hover:underline">${co.id}</a>
+          </td>
+          <td class="px-4 py-1 whitespace-nowrap text-sm font-medium border-r border-default">${co.name || '—'}</td>
+          <td class="px-4 py-1 whitespace-nowrap text-sm border-r border-default">${statusBadge(co.status)}</td>
+          <td class="px-4 py-1 whitespace-nowrap text-sm border-r border-default">${fmtDate(co.modifiedDate)}</td>
+          <td class="px-4 py-1 whitespace-nowrap text-sm border-r border-default">${fmtDate(co.createdDate)}</td>
+          <td class="px-4 py-1 whitespace-nowrap text-sm border-r border-default">${co.owner || '—'}</td>
+          <td class="px-4 py-1 whitespace-nowrap text-sm text-right border-r border-default">${camCount}</td>
+          <td class="px-4 py-1 whitespace-nowrap text-sm text-right border-r border-default">${agCount}</td>
+          <td class="px-4 py-1 whitespace-nowrap text-sm">
+            <a href="./ChangeOrderDetail.html?coId=${encodeURIComponent(co.id)}" class="text-blue-600 hover:underline mr-2">View</a>
+            <span class="text-blue-600 hover:underline cursor-pointer mr-2" onclick="exportCO('${co.id}')">Export</span>
+            ${canDelete ? `<span class="text-red-600 hover:underline cursor-pointer" onclick="deleteCORow('${co.id}')">Delete</span>` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (countEl) {
+        countEl.textContent = `${filtered.length} change order${filtered.length !== 1 ? 's' : ''} showing` +
+          (hiddenCount > 0 ? ` (${hiddenCount} hidden)` : '');
+      }
+    }
+
+    // Wire up filter and search
+    document.getElementById('statusFilter').addEventListener('change', renderTable);
+    document.getElementById('searchInput').addEventListener('input', renderTable);
+
+    // Expose helpers globally
+    window.deleteCORow = function(id) {
+      if (confirm('Delete this change order? This cannot be undone.')) {
+        deleteChangeOrder(id);
+        renderTable();
+        if (typeof showToast === 'function') showToast('Change order deleted', 'success');
+      }
+    };
+
+    window.exportCO = function(id) {
+      const co = getChangeOrder(id);
+      if (!co) return;
+      const blob = new Blob([JSON.stringify(co, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${co.id}_${(co.name || 'export').replace(/\s+/g, '_')}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      if (typeof showToast === 'function') showToast('Change order exported', 'success');
+    };
+
+    // Initial render
+    renderTable();
+
+    // Re-render on storage changes
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'change_orders_data') renderTable();
+    });
+
+    // Waffle menu toggle
+    const menuBtn = document.getElementById('menuButton');
+    const menuDrop = document.getElementById('menuDropdown');
+    if (menuBtn && menuDrop) {
+      menuBtn.addEventListener('click', () => menuDrop.classList.toggle('hidden'));
+      document.addEventListener('click', (e) => {
+        if (!menuBtn.contains(e.target) && !menuDrop.contains(e.target)) menuDrop.classList.add('hidden');
+      });
+    }
+  });
+  </script>
+
+  <script src="./assets/sidebar.js" defer></script>
+</body>
+</html>
