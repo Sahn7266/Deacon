@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beacon - Change Orders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./assets/toast.css">
+  <script src="./assets/notifications.js"></script>
+  <script src="./assets/toast.js" defer></script>
+  <script src="./assets/sidebar.js" defer></script>
+  <link rel="stylesheet" href="./assets/theme.css">
+  <link rel="stylesheet" href="./assets/loading.css">
+  <script src="./assets/loading.js" defer></script>
+  <style>
+    body { font-family: 'apple-system', 'Segoe UI', 'Roboto', 'Inter', sans-serif; }
+
+    /* Search component styles */
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border-radius: 0.375rem;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      height: 40px;
+      width: 50px;
+      overflow: hidden;
+    }
+
+    .search-wrapper.expanded {
+      width: 300px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 5px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease;
+    }
+
+    .search-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #666;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 8px 40px 8px 40px;
+      font-size: 14px;
+      color: #333;
+      opacity: 0;
+      transition: opacity 0.2s ease 0.1s;
+    }
+
+    .search-input::placeholder {
+      color: #999;
+    }
+
+    .search-wrapper.expanded .search-input {
+      opacity: 1;
+      background-color: white;
+      height: 80%;
+      border: #c5c4c4 1px solid;
+      border-radius: .375rem;
+    }
+
+    .clear-button {
+      position: absolute;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s ease;
+      z-index: 2;
+    }
+
+    .clear-button svg {
+      width: 100%;
+      height: 100%;
+      fill: #666;
+    }
+
+    .clear-button:hover svg {
+      fill: #333;
+    }
+
+    .clear-button.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
+</head>
+
+<body class="font-inter">
+  <div class="flex h-screen flex-col">
+    <!-- Header -->
+    <header class="border-b border-strong shadow-sm app-header">
+      <div class="flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-3">
+          <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
+        </div>
+
+        <nav class="flex items-center gap-3 ml-auto">
+            <a href="./index.html" class="text-base text-white hover:text-blue-100" style="font-size: 1.5rem; padding-right: 15px;" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
+            Advertisers
+            </a>
+          <span class="text-white select-none">|</span>
+
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notificationButton" class="p-2 rounded-md  text-white relative" title="Notifications" aria-label="View notifications" onmouseover="this.style.backgroundColor=''" onmouseout="this.style.backgroundColor=''" >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+              <div class="p-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                  <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                </div>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div id="notificationList">
+                  <!-- Sample items -->
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">Campaign Performance Alert</p>
+                        <p class="text-xs text-gray-500 mt-1">"Summer Sale" exceeded budget by 15%</p>
+                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">New Advertiser Added</p>
+                        <p class="text-xs text-gray-500 mt-1">Stallion Services LLC onboarded</p>
+                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="true">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-700">Account Sync Complete</p>
+                        <p class="text-xs text-gray-500 mt-1">CRM sync finished for 12 accounts</p>
+                        <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waffle Menu -->
+          <div class="relative">
+            <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+              </svg>
+            </button>
+            <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+              <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Breadcrumb Bar -->
+    <div class="bg-white border-b border-gray-200 px-6 py-2">
+      <nav class="flex items-center text-sm text-gray-600">
+        <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <a href="./WFAdvertiserDetails.html" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <span class="font-semibold text-gray-900">Change Orders</span>
+      </nav>
+    </div>
+
+    <!-- Body -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+          <div class="flex items-center gap-3">
+            <img src="./assets/advertiser.png" alt="Advertiser" class="w-9 h-9 rounded-full" data-sidebar-avatar />
+            <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Advertiser</h2>
+          </div>
+          <button id="sidebarToggle" class="p-1 rounded hover:bg-gray-100" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse/Expand">
+            <!-- Shown when expanded (collapse icon) -->
+            <svg id="iconCollapse" class="w-5 h-5 text-gray-900" viewBox="0 0 26 26" fill="currentColor">
+              <path fill="#000000" d="M21.5 11.5h-8.793l3.035-3.035a.5.5 0 10-.707-.707l-3.888 3.888a.518.518 0 00-.109.163.505.505 0 000 .382.518.518 0 00.109.163l3.888 3.888a.5.5 0 00.707-.707L12.707 12.5H21.5a.5.5 0 000-1zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z">
+	            </path>
+            </svg>
+            <!-- Shown when collapsed (expand icon) -->
+            <svg id="iconExpand" class="w-5 h-5 text-gray-900 hidden" viewBox="0 0 26 26" fill="currentColor">
+              <path fill="#000000" d="M21.962 12.191a.505.505 0 000-.382.518.518 0 00-.109-.163l-3.888-3.888a.5.5 0 10-.707.707l3.035 3.035H11.5a.5.5 0 000 1h8.793l-3.035 3.035a.5.5 0 10.707.707l3.888-3.888a.518.518 0 00.109-.163zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z">
+	            </path>
+            </svg>
+          </button>
+        </div>
+
+        <ul class="space-y-1 mt-4">
+          <li>
+            <a href="./WFAdvertiserDetails.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+              <span data-link-label>Overview</span>
+            </a>
+          </li>
+          <li>
+            <a href="./WFAdvertiserConnections.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+              <span data-link-label>Connections</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserCampaigns.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
+              <span data-link-label>Campaigns</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserChangeOrders.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
+              <svg class="w-6 h-6 mr-2 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <span data-link-label>Change Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
+              <span data-link-label>Ad Groups</span>
+            </a>
+          </li>
+         
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+       <div class="app-card rounded-lg shadow-lg overflow-hidden">
+          <!-- Advertiser Header -->
+          <div class="px-4 pt-4">
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <!-- Left Column: Advertiser Name & Account # -->
+              <div>
+                <h1 data-bind="adv.name" class="text-xl md:text-2xl font-semibold text-gray-900">Loading…</h1>
+                <h3 class="text-sm font-semibold text-gray-600">Account #: <span data-bind="adv.account" class="text-sm text-gray-500">—</span></h3>
+              </div>
+              <!-- Right Column: IDs -->
+              <div class="text-right">
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Delivery ID:</span>
+                  <a href="https://www.thetradedesk.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.deliveryId">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">Reporting ID:</span>
+                  <a href="https://campaignmanager.google.com/" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 hover:underline w-28 text-left" data-bind="adv.reportingId">—</a>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <span class="text-sm font-semibold text-gray-600">ID:</span>
+                  <span data-bind="adv.id" class="text-sm text-gray-500 w-28 text-left">—</span>
+                </div>
+              </div>
+            </div>
+            <hr class="app-divider mp-4">
+          </div>
+
+          <!-- Page Header-->
+          <div class="px-4 pt-5">
+            <section class="space-y-2">
+              <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-semibold text-gray-900 mx-2">CHANGE ORDERS</h1>
+              </div>
+            </section>
+          </div>
+
+          <!-- Toolbar -->
+          <div class="px-6 py-3">
+            <div class="mb-4">
+              <div class="flex items-center justify-between bg-[var(--tbl-head-bg)] border border-gray-300 rounded-md">
+                
+                <!-- New Change Order Button -->
+                <button id="createBtn" class="flex items-center h-10 px-3 rounded-md hover:bg-gray-50 transition"
+                  title="Create New Change Order"
+                  onclick="document.getElementById('coPickerModal').classList.remove('hidden')">
+                  <span class="w-6 h-6 flex items-center justify-center rounded-full bg-white border border-gray-400 mr-2">
+                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                  </span>
+                  <span class="text-sm font-medium text-gray-700">New Change Order</span>
+                </button>
+                
+                <div class="h-6 border-l border-gray-400 mx-1"></div>
+                
+                <!-- Filters -->
+                <div class="flex items-center space-x-2">
+                  <div class="flex items-center px-2 h-10 rounded-md">
+                    <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01.293.707l-6.707 8.707V21l-4-2v-4.586L2.707 6.707A1 1 0 013 6V4z"></path>
+                    </svg>
+                  </div>
+                  
+                  <!-- Status Filter Chip -->
+                  <div class="relative">
+                    <button id="statusChip" class="flex items-center h-8 px-3 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition whitespace-nowrap" data-filter="status" title="Status filter">
+                      <span>Draft &amp; Synced</span>
+                      <svg class="w-3 h-3 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="statusMenu" class="hidden absolute left-0 mt-2 min-w-40 bg-white border border-gray-200 rounded-md shadow-lg z-20">
+                      <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="All">All Statuses</button>
+                      <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="DraftSynced">Draft &amp; Synced</button>
+                      <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Draft">Draft</button>
+                      <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Synced">Synced</button>
+                      <button class="block w-full text-left px-4 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap" data-value="Cancelled">Cancelled</button>
+                    </div>
+                  </div>
+                  
+                  <!-- Search -->
+                  <div class="search-container">
+                    <div class="search-wrapper" id="searchWrapper">
+                      <button id="searchToggle" class="search-icon" aria-label="Open search" type="button">
+                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 001.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 00-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 005.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                      </button>
+                      <input type="text" class="search-input" id="searchInput" placeholder="Search change orders...">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="flex-1"></div>
+                
+                <!-- Export Button -->
+                <button id="exportBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors mr-2" title="Export change orders">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <span class="text-sm font-medium text-gray-700">Export</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto border border-default rounded-md">
+              <table id="changeOrderTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
+                <colgroup>
+                  <col style="width: 10%;">  <!-- ID -->
+                  <col style="width: 18%;">  <!-- Name -->
+                  <col style="width: 8%;">   <!-- Status -->
+                  <col style="width: 12%;">  <!-- Modified -->
+                  <col style="width: 12%;">  <!-- Created -->
+                  <col style="width: 12%;">  <!-- Owner -->
+                  <col style="width: 7%;">   <!-- Campaigns -->
+                  <col style="width: 7%;">   <!-- Ad Groups -->
+                  <col style="width: 14%;">  <!-- Actions -->
+                </colgroup>
+                <thead class="tbl-head">
+                  <tr>
+                    <th><button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="id">
+                      <span class="text-xs font-medium uppercase tracking-wider">ID</span>
+                    </button></th>
+                    <th><button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="name">
+                      <span class="text-xs font-medium uppercase tracking-wider">Name</span>
+                    </button></th>
+                    <th><button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="status">
+                      <span class="text-xs font-medium uppercase tracking-wider">Status</span>
+                    </button></th>
+                    <th><button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="modified">
+                      <span class="text-xs font-medium uppercase tracking-wider">Modified</span>
+                    </button></th>
+                    <th><button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="created">
+                      <span class="text-xs font-medium uppercase tracking-wider">Created</span>
+                    </button></th>
+                    <th><button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="owner">
+                      <span class="text-xs font-medium uppercase tracking-wider">Owner</span>
+                    </button></th>
+                    <th><button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="campaigns">
+                      <span class="text-xs font-medium uppercase tracking-wider">Campaigns</span>
+                    </button></th>
+                    <th><button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adGroups">
+                      <span class="text-xs font-medium uppercase tracking-wider">Ad Groups</span>
+                    </button></th>
+                    <th class="px-6 py-2"><span class="text-xs font-medium uppercase tracking-wider">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody id="changeOrderTableBody" class="divide-y">
+                  <!-- Row 1: Draft -->
+                  <tr class="hover:bg-blue-50 cursor-pointer">
+                    <td class="px-6 py-2 text-sm"><a href="./ChangeOrderDetails.html" class="text-blue-600 hover:text-blue-800 hover:underline">CO-A8X2K1</a></td>
+                    <td class="px-6 py-2 text-sm text-gray-900">Q2 Strategy A</td>
+                    <td class="px-6 py-2"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Draft</span></td>
+                    <td class="px-6 py-2 text-sm text-gray-600">Feb 23, 2026</td>
+                    <td class="px-6 py-2 text-sm text-gray-600">Feb 20, 2026</td>
+                    <td class="px-6 py-2 text-sm text-gray-600">Matt Hunter</td>
+                    <td class="px-6 py-2 text-sm text-gray-600 text-center">1</td>
+                    <td class="px-6 py-2 text-sm text-gray-600 text-center">3</td>
+                    <td class="px-6 py-2 text-sm">
+                      <a href="./ChangeOrderDetails.html" class="text-blue-600 hover:text-blue-800 mr-2">View</a>
+                      <span class="text-blue-600 hover:text-blue-800 cursor-pointer mr-2">Export</span>
+                      <span class="text-red-600 hover:text-red-800 cursor-pointer">Delete</span>
+                    </td>
+                  </tr>
+                  <!-- Row 2: Draft -->
+                  <tr class="hover:bg-blue-50 cursor-pointer">
+                    <td class="px-6 py-2 text-sm"><a href="#" class="text-blue-600 hover:text-blue-800 hover:underline">CO-B3Y7M2</a></td>
+                    <td class="px-6 py-2 text-sm text-gray-900">Q2 Strategy B</td>
+                    <td class="px-6 py-2"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Draft</span></td>
+                    <td class="px-6 py-2 text-sm text-gray-600">Feb 22, 2026</td>
+                    <td class="px-6 py-2 text-sm text-gray-600">Feb 20, 2026</td>
+                    <td class="px-6 py-2 text-sm text-gray-600">Matt Hunter</td>
+                    <td class="px-6 py-2 text-sm text-gray-600 text-center">2</td>
+                    <td class="px-6 py-2 text-sm text-gray-600 text-center">5</td>
+                    <td class="px-6 py-2 text-sm">
+                      <span class="text-blue-600 hover:text-blue-800 cursor-pointer mr-2">View</span>
+                      <span class="text-blue-600 hover:text-blue-800 cursor-pointer mr-2">Export</span>
+                      <span class="text-red-600 hover:text-red-800 cursor-pointer">Delete</span>
+                    </td>
+                  </tr>
+                  <!-- Row 3: Synced -->
+                  <tr class="hover:bg-blue-50 cursor-pointer">
+                    <td class="px-6 py-2 text-sm"><a href="#" class="text-blue-600 hover:text-blue-800 hover:underline">CO-C1Z4N8</a></td>
+                    <td class="px-6 py-2 text-sm text-gray-900">Initial Setup</td>
+                    <td class="px-6 py-2"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Synced</span></td>
+                    <td class="px-6 py-2 text-sm text-gray-600">Feb 12, 2026</td>
+                    <td class="px-6 py-2 text-sm text-gray-600">Feb 10, 2026</td>
+                    <td class="px-6 py-2 text-sm text-gray-600">David DeHerrera</td>
+                    <td class="px-6 py-2 text-sm text-gray-600 text-center">1</td>
+                    <td class="px-6 py-2 text-sm text-gray-600 text-center">2</td>
+                    <td class="px-6 py-2 text-sm">
+                      <span class="text-blue-600 hover:text-blue-800 cursor-pointer mr-2">View</span>
+                      <span class="text-blue-600 hover:text-blue-800 cursor-pointer">Export</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="px-6 py-2 text-sm text-gray-500">3 change orders showing (1 cancelled hidden)</div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+<!-- Change Order Picker Modal -->
+<div id="coPickerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 overflow-hidden">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Add to Change Order</h2>
+      <button id="coPickerCloseBtn" class="text-gray-400 hover:text-gray-600 transition-colors" 
+        onclick="document.getElementById('coPickerModal').classList.add('hidden')" aria-label="Close">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
+      <p class="text-sm text-gray-500 mb-4">Select an existing Change Order or create a new one.</p>
+      
+      <!-- Create New Option -->
+      <div class="flex items-center gap-3 p-3 border-2 border-dashed border-green-400 rounded-lg mb-3 cursor-pointer hover:bg-green-50 transition-colors"
+        onclick="document.getElementById('coPickerModal').classList.add('hidden'); document.getElementById('entitySelectModal').classList.remove('hidden');">
+        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-green-100 text-green-600 font-bold text-lg">+</div>
+        <div>
+          <div class="text-sm font-semibold text-green-700">Create New Change Order</div>
+          <div class="text-xs text-gray-500">Start a blank Change Order for this advertiser</div>
+        </div>
+      </div>
+      
+      <!-- Existing CO: Draft -->
+      <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg mb-2 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors co-pick-item">
+        <input type="radio" name="coPickerRadio" class="w-4 h-4 text-blue-600 accent-blue-600">
+        <div class="flex-1">
+          <div class="text-sm font-semibold text-gray-800">Q2 Strategy A</div>
+          <div class="text-xs text-gray-500">CO-A8X2K1 · Draft · Feb 20, 2026 · 1C / 3AG</div>
+        </div>
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Draft</span>
+      </div>
+      
+      <!-- Existing CO: Draft -->
+      <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg mb-2 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors co-pick-item">
+        <input type="radio" name="coPickerRadio" class="w-4 h-4 text-blue-600 accent-blue-600">
+        <div class="flex-1">
+          <div class="text-sm font-semibold text-gray-800">Q2 Strategy B</div>
+          <div class="text-xs text-gray-500">CO-B3Y7M2 · Draft · Feb 20, 2026 · 2C / 5AG</div>
+        </div>
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Draft</span>
+      </div>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="flex justify-end gap-2 px-6 py-3 bg-gray-50 border-t border-gray-200">
+      <button class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+        onclick="document.getElementById('coPickerModal').classList.add('hidden')">Cancel</button>
+      <button class="px-4 py-2 text-sm text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700"
+        onclick="document.getElementById('coPickerModal').classList.add('hidden'); document.getElementById('entitySelectModal').classList.remove('hidden');">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Entity Selection Modal -->
+<div id="entitySelectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-xl mx-4 overflow-hidden">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Select Records to Include</h2>
+      <button class="text-gray-400 hover:text-gray-600 transition-colors"
+        onclick="document.getElementById('entitySelectModal').classList.add('hidden')" aria-label="Close">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
+      <p class="text-sm text-gray-500 mb-4">Choose which Campaigns and Ad Groups to include in this Change Order. The Advertiser is always included.</p>
+      
+      <!-- Entity Tree -->
+      <ul class="space-y-1">
+        <!-- Advertiser (locked/always included) -->
+        <li class="flex items-center gap-2 px-2 py-1.5 rounded-md opacity-60">
+          <input type="checkbox" checked disabled class="w-4 h-4 accent-blue-600">
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-900">ADV</span>
+          <span class="text-sm font-semibold text-gray-800">Goldmine Software Solutions</span>
+          <span class="text-[10px] text-gray-400 ml-1">always included</span>
+        </li>
+        
+        <!-- Campaign 1 with Ad Groups -->
+        <li class="ml-5">
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+            <input type="checkbox" checked class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="cam1-children">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+            <span class="text-sm text-gray-800">Tuscaloosa AL - Prog. Display</span>
+          </div>
+          <div id="cam1-children" class="ml-8 space-y-0.5">
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Local Consumers_Persona</span>
+            </div>
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Local Site Visitors_Retargeting</span>
+            </div>
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Local Consumers_Location Targeting</span>
+            </div>
+          </div>
+        </li>
+        
+        <!-- Campaign 2 with Ad Groups -->
+        <li class="ml-5">
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+            <input type="checkbox" class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="cam2-children">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+            <span class="text-sm text-gray-800">Tuscaloosa AL - Prog. Video</span>
+          </div>
+          <div id="cam2-children" class="ml-8 space-y-0.5">
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Video_Persona</span>
+            </div>
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Video_Retargeting</span>
+            </div>
+          </div>
+        </li>
+        
+        <!-- Campaign 3 (no ad groups) -->
+        <li class="ml-5">
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+            <input type="checkbox" class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="cam3-children">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+            <span class="text-sm text-gray-800">Tuscaloosa AL - Audio</span>
+          </div>
+          <div id="cam3-children" class="ml-8">
+            <div class="px-2 py-1 text-xs text-gray-400 italic">No ad groups</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="flex justify-end gap-2 px-6 py-3 bg-gray-50 border-t border-gray-200">
+      <button class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+        onclick="document.getElementById('entitySelectModal').classList.add('hidden')">Cancel</button>
+      <button class="px-4 py-2 text-sm text-white bg-green-600 border border-green-600 rounded-md hover:bg-green-700"
+        onclick="document.getElementById('entitySelectModal').classList.add('hidden'); window.location.href='./ChangeOrderDetails.html';">Create Change Order</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Campaign checkbox toggles all child AG checkboxes
+document.querySelectorAll('.entity-cam-check').forEach(cb => {
+  cb.addEventListener('change', function() {
+    const childrenId = this.getAttribute('data-children');
+    if (childrenId) {
+      document.querySelectorAll('#' + childrenId + ' input[type="checkbox"]').forEach(c => c.checked = this.checked);
+    }
+  });
+});
+
+// Status filter menu toggle
+document.getElementById('statusChip').addEventListener('click', function() {
+  document.getElementById('statusMenu').classList.toggle('hidden');
+});
+
+// Close menu on click outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#statusChip') && !e.target.closest('#statusMenu')) {
+    document.getElementById('statusMenu').classList.add('hidden');
+  }
+});
+
+// Search toggle
+document.getElementById('searchToggle').addEventListener('click', function() {
+  const wrapper = document.getElementById('searchWrapper');
+  wrapper.classList.toggle('expanded');
+  if (wrapper.classList.contains('expanded')) {
+    document.getElementById('searchInput').focus();
+  }
+});
+
+// Load advertiser data from localStorage
+document.addEventListener('DOMContentLoaded', function() {
+  const advertiserJson = localStorage.getItem('selectedAdvertiser');
+  if (advertiserJson) {
+    try {
+      const advertiser = JSON.parse(advertiserJson);
+      document.querySelectorAll('[data-bind="adv.name"]').forEach(el => el.textContent = advertiser.name || '—');
+      document.querySelectorAll('[data-bind="adv.account"]').forEach(el => el.textContent = advertiser.account || '—');
+      document.querySelectorAll('[data-bind="adv.id"]').forEach(el => el.textContent = advertiser.id || '—');
+      document.querySelectorAll('[data-bind="adv.deliveryId"]').forEach(el => el.textContent = advertiser.deliveryId || '—');
+      document.querySelectorAll('[data-bind="adv.reportingId"]').forEach(el => el.textContent = advertiser.reportingId || '—');
+      document.getElementById('breadcrumbAdvertiser').textContent = advertiser.name || '—';
+      document.querySelector('[data-sidebar-header]').textContent = advertiser.name || 'Advertiser';
+    } catch (e) {
+      console.error('Error parsing advertiser data:', e);
+    }
+  }
+});
+</script>
+
+</body>
+</html>

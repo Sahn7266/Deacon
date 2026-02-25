@@ -798,10 +798,111 @@ function clearCampaignEdits(campaignId){
     drawer.dataset.advAccount = opts.advertiserAccount || '';
     renderDrawer(opts);
   }
+
+  function openUniversalDrawer(opts){
+    const drawer = document.getElementById('auditDrawer');
+    if (!drawer) return;
+    drawer.classList.remove('translate-x-full');
+    drawer.dataset.campaignIds = JSON.stringify(opts.campaignIds || []);
+    drawer.dataset.advName = opts.advertiserName || '';
+    drawer.dataset.advAccount = opts.advertiserAccount || '';
+    drawer.dataset.universal = 'true';
+    renderUniversalDrawer(opts);
+  }
+
+  function renderUniversalDrawer({campaignIds, advertiserName, advertiserAccount}){
+    const drawer = document.getElementById('auditDrawer');
+    if (!drawer) return;
+    const list = drawer.querySelector('[data-audit-list]');
+    const notes = drawer.querySelector('[data-audit-notes]');
+    const ctx = drawer.querySelector('[data-audit-context]');
+    const clearBtn = drawer.querySelector('[data-clear]');
+    
+    // Hide clear button for universal export since it doesn't make sense for multiple campaigns
+    if (clearBtn) {
+      clearBtn.style.display = 'none';
+    }
+    
+    if (ctx) {
+      ctx.textContent = `Universal Export: ${advertiserName || 'Advertiser'} (${advertiserAccount || 'Account N/A'})`;
+    }
+
+    // Clear notes for universal export
+    if (notes) notes.value = '';
+
+    if (!list) return;
+    list.innerHTML = '';
+
+    if (!campaignIds || campaignIds.length === 0){
+      list.innerHTML = '<p class="text-sm text-gray-500 py-2">No campaigns found.</p>';
+      return;
+    }
+
+    // Process each campaign
+    campaignIds.forEach((campaignId, index) => {
+      const entries = getCampaignAudit(campaignId);
+      
+      // Skip campaigns with no entries
+      if (!entries.length) return;
+
+      // Group by entityType and entityId
+      const grouped = {};
+      entries.forEach(e => {
+        const entityKey = e.entityType + '|' + e.entityId;
+        if (!grouped[entityKey]) grouped[entityKey] = { 
+          meta: e, 
+          fields: {}, 
+          entityType: e.entityType, 
+          entityId: e.entityId 
+        };
+        const fieldKey = e.field;
+        if (!grouped[entityKey].fields[fieldKey]) grouped[entityKey].fields[fieldKey] = [];
+        grouped[entityKey].fields[fieldKey].push(e);
+      });
+
+      // Sort groups: campaigns first, then ad groups
+      const sortedGroups = Object.values(grouped).sort((a, b) => {
+        if (a.entityType === b.entityType) return 0;
+        if (a.entityType === 'campaign') return -1;
+        return 1;
+      });
+
+      // Add spacing between different campaigns (but not before the first one)
+      if (index > 0) {
+        const spacer = document.createElement('div');
+        spacer.className = 'my-6 border-t-2 border-gray-400';
+        list.appendChild(spacer);
+      }
+
+      sortedGroups.forEach((group, groupIndex) => {
+        const entityType = group.entityType;
+        
+        if (entityType === 'campaign') {
+          // Campaign section with hierarchical DSP/Ad Server structure
+          renderCampaignSection(list, group, index * 1000 + groupIndex);
+        } else {
+          // Ad Group section
+          renderAdGroupSection(list, group, index * 1000 + groupIndex);
+        }
+      });
+    });
+
+    if (list.children.length === 0) {
+      list.innerHTML = '<p class="text-sm text-gray-500 py-2">No logged actions yet.</p>';
+    }
+  }
+
   function closeDrawer(){
     const drawer = document.getElementById('auditDrawer');
     if (!drawer) return;
     drawer.classList.add('translate-x-full');
+    // Reset universal flag
+    drawer.dataset.universal = '';
+    // Show clear button again
+    const clearBtn = drawer.querySelector('[data-clear]');
+    if (clearBtn) {
+      clearBtn.style.display = '';
+    }
   }
 
   function initDrawerEvents(){
@@ -852,8 +953,10 @@ window.audit = {
     loadNotes,
     saveNotes,
     openDrawer,
+    openUniversalDrawer,
     closeDrawer,
     renderDrawer,
+    renderUniversalDrawer,
     initDrawerEvents
   };
 

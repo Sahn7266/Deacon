@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beacon - Change Order Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./assets/toast.css">
+  <script src="./assets/notifications.js"></script>
+  <script src="./assets/toast.js" defer></script>
+  <script src="./assets/sidebar.js" defer></script>
+  <link rel="stylesheet" href="./assets/theme.css">
+  <link rel="stylesheet" href="./assets/loading.css">
+  <script src="./assets/loading.js" defer></script>
+  <style>
+    body { font-family: 'apple-system', 'Segoe UI', 'Roboto', 'Inter', sans-serif; }
+    
+    /* Collapsible sections */
+    .entity-section {
+      border-radius: 0.5rem;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .entity-header {
+      cursor: pointer;
+      user-select: none;
+    }
+    .entity-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    .entity-content.expanded {
+      max-height: 2000px;
+    }
+    .chevron-icon {
+      transition: transform 0.2s ease;
+    }
+    .chevron-icon.rotated {
+      transform: rotate(180deg);
+    }
+    
+    /* Required field indicator */
+    .required-indicator::after {
+      content: " *";
+      color: #ef4444;
+    }
+  </style>
+</head>
+
+<body class="font-inter">
+  <div class="flex h-screen flex-col">
+    <!-- Header -->
+    <header class="border-b border-strong shadow-sm app-header">
+      <div class="flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-3">
+          <img src="./assets/Beaconlogo.svg" alt="Beacon Logo" class="h-12 w-auto" />
+        </div>
+
+        <nav class="flex items-center gap-3 ml-auto">
+            <a href="./index.html" class="text-base text-white hover:text-blue-100" style="font-size: 1.5rem; padding-right: 15px;" onmouseover="this.style.color='#48A9FE'" onmouseout="this.style.color='white'">
+            Advertisers
+            </a>
+          <span class="text-white select-none">|</span>
+
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notificationButton" class="p-2 rounded-md  text-white relative" title="Notifications" aria-label="View notifications" onmouseover="this.style.backgroundColor=''" onmouseout="this.style.backgroundColor=''" >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span id="notificationDot" class="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
+              <div class="p-3 border-b border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                  <button id="markAllReadBtn" class="text-xs text-blue-600 hover:text-blue-800">Mark all read</button>
+                </div>
+              </div>
+
+              <div class="max-h-80 overflow-y-auto">
+                <div id="notificationList">
+                  <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer notification-item" data-read="false">
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">Campaign Performance Alert</p>
+                        <p class="text-xs text-gray-500 mt-1">"Summer Sale" exceeded budget by 15%</p>
+                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-3 text-center border-t border-gray-200">
+                  <a href="#" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Waffle Menu -->
+          <div class="relative">
+            <button class="p-0 rounded-md text-white" id="menuButton" title="Menu" aria-label="Open navigation menu">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4h3v3H4V4zM8.5 4h3v3h-3V4zM13 4h3v3h-3V4zM4 8.5h3v3H4v-3zM8.5 8.5h3v3h-3V8.5zM13 8.5h3v3h-3V8.5zM4 13h3v3H4v-3zM8.5 13h3v3h-3V13zM13 13h3v3h-3V13z"></path>
+              </svg>
+            </button>
+            <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Advertisers</a>
+              <a href="#" id="menuProfile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="./Admin_Users.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Admin</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign Out</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Breadcrumb Bar -->
+    <div class="bg-white border-b border-gray-200 px-6 py-2">
+      <nav class="flex items-center text-sm text-gray-600">
+        <a href="./index.html" class="hover:text-blue-600 transition-colors">Advertisers</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <a href="./WFAdvertiserDetails.html" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <a href="./AdvertiserChangeOrders.html" class="hover:text-blue-600 transition-colors">Change Orders</a>
+        <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <span class="font-semibold text-gray-900">CO-A8X2K1</span>
+      </nav>
+    </div>
+
+    <!-- Body -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="bg-white w-64 p-4 border-r border-gray-200 overflow-y-auto transition-all duration-200 ease-in-out">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+          <div class="flex items-center gap-3">
+            <svg class="w-9 h-9 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <h2 data-sidebar-header class="text-base text-lg font-semibold text-gray-800">Change Order</h2>
+          </div>
+          <button id="sidebarToggle" class="p-1 rounded hover:bg-gray-100" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse/Expand">
+            <!-- Shown when expanded (collapse icon) -->
+            <svg id="iconCollapse" class="w-5 h-5 text-gray-900" viewBox="0 0 26 26" fill="currentColor">
+              <path fill="#000000" d="M21.5 11.5h-8.793l3.035-3.035a.5.5 0 10-.707-.707l-3.888 3.888a.518.518 0 00-.109.163.505.505 0 000 .382.518.518 0 00.109.163l3.888 3.888a.5.5 0 00.707-.707L12.707 12.5H21.5a.5.5 0 000-1zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z">
+	            </path>
+            </svg>
+            <!-- Shown when collapsed (expand icon) -->
+            <svg id="iconExpand" class="w-5 h-5 text-gray-900 hidden" viewBox="0 0 26 26" fill="currentColor">
+              <path fill="#000000" d="M21.962 12.191a.505.505 0 000-.382.518.518 0 00-.109-.163l-3.888-3.888a.5.5 0 10-.707.707l3.035 3.035H11.5a.5.5 0 000 1h8.793l-3.035 3.035a.5.5 0 10.707.707l3.888-3.888a.518.518 0 00.109-.163zM7.5 2h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 7h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 11.5h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 16h-5a.5.5 0 000 1h5a.5.5 0 000-1zM7.5 21h-5a.5.5 0 000 1h5a.5.5 0 000-1z">
+	            </path>
+            </svg>
+          </button>
+        </div>
+
+         <ul class="space-y-1 mt-4">
+          <li>
+            <a href="./WFAdvertiserDetails.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+              <span data-link-label>Overview</span>
+            </a>
+          </li>
+          <li>
+            <a href="./WFAdvertiserConnections.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+              <span data-link-label>Connections</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserCampaigns.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
+              <span data-link-label>Campaigns</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserChangeOrders.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
+              <svg class="w-6 h-6 mr-2 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <span data-link-label>Change Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
+              <span data-link-label>Ad Groups</span>
+            </a>
+          </li>
+         
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+       <div class="app-card rounded-lg shadow-lg overflow-hidden">
+          <!-- Page Header -->
+          <div class="px-6 pt-5 pb-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <!-- Editable CO Name -->
+                <input type="text" value="Q2 Strategy A" 
+                  class="text-2xl font-semibold text-gray-900 border-b-2 border-transparent hover:border-blue-300 focus:border-blue-500 focus:outline-none bg-transparent px-1 transition-colors"
+                  placeholder="Change Order Name">
+                <!-- Status Badge -->
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">Draft</span>
+              </div>
+              
+              <!-- Action Buttons -->
+              <div class="flex items-center gap-2">
+                <button class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                  onclick="document.getElementById('entitySelectModal').classList.remove('hidden')">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                  </svg>
+                  <span>Manage Entities</span>
+                </button>
+                <button class="flex items-center gap-2 px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  <span>Save</span>
+                </button>
+                <button class="flex items-center gap-2 px-4 py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                  </svg>
+                  <span>Sync Changes</span>
+                </button>
+                <button class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  <span>Export</span>
+                </button>
+              </div>
+            </div>
+            
+            <!-- CO Metadata -->
+            <div class="flex items-center gap-6 mt-3 text-sm text-gray-500">
+              <span><strong>ID:</strong> CO-A8X2K1</span>
+              <span><strong>Created:</strong> Feb 20, 2026</span>
+              <span><strong>Modified:</strong> Feb 23, 2026</span>
+              <span><strong>Owner:</strong> Matt Hunter</span>
+            </div>
+          </div>
+
+          <!-- Entity Sections -->
+          <div class="px-6 py-5 space-y-4">
+            
+            <!-- Advertiser Section (Blue background) -->
+            <div class="entity-section bg-blue-50 border border-blue-200">
+              <div class="entity-header flex items-center justify-between px-4 py-3" onclick="toggleSection('advSection')">
+                <div class="flex items-center gap-3">
+                  <svg id="advChevron" class="chevron-icon w-5 h-5 text-blue-600 rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-900">ADV</span>
+                  <h3 class="text-lg font-semibold text-blue-900">Goldmine Software Solutions</h3>
+                </div>
+                <span class="text-sm text-blue-600">Advertiser-level fields</span>
+              </div>
+              
+              <div id="advSection" class="entity-content expanded bg-white border-t border-blue-200">
+                <div class="px-6 py-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1 required-indicator">Advertiser Name</label>
+                      <input type="text" value="Goldmine Software Solutions" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Account #</label>
+                      <input type="text" value="123456" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                      <input type="text" value="https://goldminesoftware.com" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+                      <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option selected>Technology</option>
+                        <option>Healthcare</option>
+                        <option>Finance</option>
+                        <option>Retail</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Campaign 1 Section (Purple background) -->
+            <div class="entity-section bg-purple-50 border border-purple-200">
+              <div class="entity-header flex items-center justify-between px-4 py-3" onclick="toggleSection('cam1Section')">
+                <div class="flex items-center gap-3">
+                  <svg id="cam1Chevron" class="chevron-icon w-5 h-5 text-purple-600 rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+                  <h3 class="text-lg font-semibold text-purple-900">Tuscaloosa AL - Prog. Display</h3>
+                </div>
+                <span class="text-sm text-purple-600">3 Ad Groups</span>
+              </div>
+              
+              <div id="cam1Section" class="entity-content expanded bg-white border-t border-purple-200">
+                <div class="px-6 py-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1 required-indicator">Campaign Name</label>
+                      <input type="text" value="Tuscaloosa AL - Prog. Display" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1 required-indicator">Start Date</label>
+                        <input type="date" value="2026-03-01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1 required-indicator">End Date</label>
+                        <input type="date" value="2026-03-31" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1 required-indicator">Budget</label>
+                      <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-gray-500">$</span>
+                        <input type="number" value="25000" class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Pacing</label>
+                      <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option selected>Even</option>
+                        <option>ASAP</option>
+                        <option>Custom</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <!-- Nested Ad Groups -->
+                  <div class="space-y-3 pl-4 border-l-4 border-purple-200">
+                    <!-- Ad Group 1 -->
+                    <div class="entity-section bg-orange-50 border border-orange-200">
+                      <div class="entity-header flex items-center justify-between px-4 py-2" onclick="toggleSection('ag1Section')">
+                        <div class="flex items-center gap-3">
+                          <svg id="ag1Chevron" class="chevron-icon w-4 h-4 text-orange-600 rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                          </svg>
+                          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+                          <span class="text-sm font-medium text-orange-900">Local Consumers_Persona</span>
+                        </div>
+                      </div>
+                      <div id="ag1Section" class="entity-content expanded bg-white border-t border-orange-200">
+                        <div class="px-6 py-4">
+                          <!-- Read-only metadata row -->
+                          <div class="flex flex-wrap gap-x-8 gap-y-1 text-xs text-gray-600 mb-4">
+                            <span><span class="font-medium text-gray-500">ID:</span> AG-1EGU6Z</span>
+                            <span><span class="font-medium text-gray-500">Classification:</span> Programmatic Display</span>
+                            <span><span class="font-medium text-gray-500">Tactic:</span> Persona</span>
+                          </div>
+                          
+                          <!-- Editable form fields -->
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3">
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Start Date <span class="text-red-500 font-bold">*</span></label>
+                              <input type="date" value="2026-03-01" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none border-l-[3px] border-l-red-500">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">End Date <span class="text-red-500 font-bold">*</span></label>
+                              <input type="date" value="2027-02-28" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none border-l-[3px] border-l-red-500">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Impressions <span class="text-red-500 font-bold">*</span></label>
+                              <input type="text" value="500,000" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none border-l-[3px] border-l-red-500">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Monthly Impressions</label>
+                              <input type="text" placeholder="Optional" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Additional Notes / Instructions</label>
+                              <textarea placeholder="Targeting instructions, day parting, special requests..." rows="3"
+                                class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-y">Target local consumers within 60mi of Tuscaloosa. Focus on event/entertainment interests. Day parting: 8am-noon weekdays.</textarea>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Ad Group 2 -->
+                    <div class="entity-section bg-orange-50 border border-orange-200">
+                      <div class="entity-header flex items-center justify-between px-4 py-2" onclick="toggleSection('ag2Section')">
+                        <div class="flex items-center gap-3">
+                          <svg id="ag2Chevron" class="chevron-icon w-4 h-4 text-orange-600 rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                          </svg>
+                          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+                          <span class="text-sm font-medium text-orange-900">Local Site Visitors_Retargeting</span>
+                        </div>
+                      </div>
+                      <div id="ag2Section" class="entity-content expanded bg-white border-t border-orange-200">
+                        <div class="px-6 py-4">
+                          <!-- Read-only metadata row -->
+                          <div class="flex flex-wrap gap-x-8 gap-y-1 text-xs text-gray-600 mb-4">
+                            <span><span class="font-medium text-gray-500">ID:</span> AG-2RFT9K</span>
+                            <span><span class="font-medium text-gray-500">Classification:</span> Programmatic Display</span>
+                            <span><span class="font-medium text-gray-500">Tactic:</span> Retargeting</span>
+                          </div>
+                          
+                          <!-- Editable form fields -->
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3">
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Start Date <span class="text-red-500 font-bold">*</span></label>
+                              <input type="date" value="2026-03-01" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none border-l-[3px] border-l-red-500">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">End Date <span class="text-red-500 font-bold">*</span></label>
+                              <input type="date" value="2027-02-28" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none border-l-[3px] border-l-red-500">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Impressions <span class="text-red-500 font-bold">*</span></label>
+                              <input type="text" value="100,000" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none border-l-[3px] border-l-red-500">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Monthly Impressions</label>
+                              <input type="text" placeholder="Optional" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Additional Notes / Instructions</label>
+                              <textarea placeholder="Targeting instructions, day parting, special requests..." rows="3"
+                                class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-y"></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Ad Group 3 -->
+                    <div class="entity-section bg-orange-50 border border-orange-200">
+                      <div class="entity-header flex items-center justify-between px-4 py-2" onclick="toggleSection('ag3Section')">
+                        <div class="flex items-center gap-3">
+                          <svg id="ag3Chevron" class="chevron-icon w-4 h-4 text-orange-600 rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                          </svg>
+                          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+                          <span class="text-sm font-medium text-orange-900">Local Consumers_Location Targeting</span>
+                        </div>
+                      </div>
+                      <div id="ag3Section" class="entity-content expanded bg-white border-t border-orange-200">
+                        <div class="px-6 py-4">
+                          <!-- Read-only metadata row -->
+                          <div class="flex flex-wrap gap-x-8 gap-y-1 text-xs text-gray-600 mb-4">
+                            <span><span class="font-medium text-gray-500">ID:</span> AG-3KLP4W</span>
+                            <span><span class="font-medium text-gray-500">Classification:</span> Programmatic Display</span>
+                            <span><span class="font-medium text-gray-500">Tactic:</span> Location Targeting</span>
+                          </div>
+                          
+                          <!-- Editable form fields -->
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-3">
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Start Date <span class="text-red-500 font-bold">*</span></label>
+                              <input type="date" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none border-l-[3px] border-l-red-500">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">End Date <span class="text-red-500 font-bold">*</span></label>
+                              <input type="date" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none border-l-[3px] border-l-red-500">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Impressions <span class="text-red-500 font-bold">*</span></label>
+                              <input type="text" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none border-l-[3px] border-l-red-500">
+                            </div>
+                            <div>
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Monthly Impressions</label>
+                              <input type="text" placeholder="Optional" class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Additional Notes / Instructions</label>
+                              <textarea placeholder="Targeting instructions, day parting, special requests..." rows="3"
+                                class="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-y"></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- General Notes Section -->
+            <div class="entity-section bg-gray-50 border border-gray-200">
+              <div class="entity-header flex items-center justify-between px-4 py-3" onclick="toggleSection('notesSection')">
+                <div class="flex items-center gap-3">
+                  <svg id="notesChevron" class="chevron-icon w-5 h-5 text-gray-600 rotated" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                  <h3 class="text-lg font-semibold text-gray-900">General Notes / Cover Letter</h3>
+                </div>
+              </div>
+              
+              <div id="notesSection" class="entity-content expanded bg-white border-t border-gray-200">
+                <div class="px-6 py-4">
+                  <textarea rows="6" placeholder="Add any general notes, cover letter content, or special instructions for this change order..." 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none">This Change Order includes Q2 budget adjustments for the Tuscaloosa AL market campaigns.
+
+Key changes:
+- Increased budget allocation for persona targeting
+- Added location targeting ad group
+- Adjusted bid caps based on Q1 performance data
+
+Please review and approve by Feb 28, 2026.</textarea>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+<!-- Entity Selection Modal -->
+<div id="entitySelectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-xl mx-4 overflow-hidden">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Manage Entities</h2>
+      <button class="text-gray-400 hover:text-gray-600 transition-colors"
+        onclick="document.getElementById('entitySelectModal').classList.add('hidden')" aria-label="Close">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
+      <p class="text-sm text-gray-500 mb-4">Select which Campaigns and Ad Groups to include in this Change Order.</p>
+      
+      <!-- Entity Tree -->
+      <ul class="space-y-1">
+        <!-- Advertiser (locked/always included) -->
+        <li class="flex items-center gap-2 px-2 py-1.5 rounded-md opacity-60">
+          <input type="checkbox" checked disabled class="w-4 h-4 accent-blue-600">
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-900">ADV</span>
+          <span class="text-sm font-semibold text-gray-800">Goldmine Software Solutions</span>
+          <span class="text-[10px] text-gray-400 ml-1">always included</span>
+        </li>
+        
+        <!-- Campaign 1 with Ad Groups -->
+        <li class="ml-5">
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+            <input type="checkbox" checked class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="modal-cam1-children">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+            <span class="text-sm text-gray-800">Tuscaloosa AL - Prog. Display</span>
+          </div>
+          <div id="modal-cam1-children" class="ml-8 space-y-0.5">
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Local Consumers_Persona</span>
+            </div>
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Local Site Visitors_Retargeting</span>
+            </div>
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" checked class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Local Consumers_Location Targeting</span>
+            </div>
+          </div>
+        </li>
+        
+        <!-- Campaign 2 with Ad Groups -->
+        <li class="ml-5">
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+            <input type="checkbox" class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="modal-cam2-children">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+            <span class="text-sm text-gray-800">Tuscaloosa AL - Prog. Video</span>
+          </div>
+          <div id="modal-cam2-children" class="ml-8 space-y-0.5">
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Video_Persona</span>
+            </div>
+            <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-50">
+              <input type="checkbox" class="w-4 h-4 accent-blue-600">
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-orange-100 text-orange-800">AG</span>
+              <span class="text-xs text-gray-600">Video_Retargeting</span>
+            </div>
+          </div>
+        </li>
+        
+        <!-- Campaign 3 (no ad groups) -->
+        <li class="ml-5">
+          <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50">
+            <input type="checkbox" class="w-4 h-4 accent-blue-600 entity-cam-check" data-children="modal-cam3-children">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-purple-100 text-purple-800">CAM</span>
+            <span class="text-sm text-gray-800">Tuscaloosa AL - Audio</span>
+          </div>
+          <div id="modal-cam3-children" class="ml-8">
+            <div class="px-2 py-1 text-xs text-gray-400 italic">No ad groups</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Modal Footer -->
+    <div class="flex justify-end gap-2 px-6 py-3 bg-gray-50 border-t border-gray-200">
+      <button class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+        onclick="document.getElementById('entitySelectModal').classList.add('hidden')">Cancel</button>
+      <button class="px-4 py-2 text-sm text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700"
+        onclick="document.getElementById('entitySelectModal').classList.add('hidden');">Update Entities</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Toggle collapsible sections
+function toggleSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  const chevronId = sectionId.replace('Section', 'Chevron');
+  const chevron = document.getElementById(chevronId);
+  
+  if (section) {
+    section.classList.toggle('expanded');
+  }
+  if (chevron) {
+    chevron.classList.toggle('rotated');
+  }
+}
+
+// Campaign checkbox toggles all child AG checkboxes
+document.querySelectorAll('.entity-cam-check').forEach(cb => {
+  cb.addEventListener('change', function() {
+    const childrenId = this.getAttribute('data-children');
+    if (childrenId) {
+      document.querySelectorAll('#' + childrenId + ' input[type="checkbox"]').forEach(c => c.checked = this.checked);
+    }
+  });
+});
+
+// Load advertiser data from localStorage
+document.addEventListener('DOMContentLoaded', function() {
+  const advertiserJson = localStorage.getItem('selectedAdvertiser');
+  if (advertiserJson) {
+    try {
+      const advertiser = JSON.parse(advertiserJson);
+      document.getElementById('breadcrumbAdvertiser').textContent = advertiser.name || '—';
+    } catch (e) {
+      console.error('Error parsing advertiser data:', e);
+    }
+  }
+});
+</script>
+
+</body>
+</html>
