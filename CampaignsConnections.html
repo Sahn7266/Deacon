@@ -313,7 +313,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">Advertiser: —</a>
+        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -321,7 +321,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <a href="#" id="breadcrumbCampaign" class="hover:text-blue-600 transition-colors">Campaign: —</a>
+        <a href="#" id="breadcrumbCampaign" class="hover:text-blue-600 transition-colors">—</a>
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -1898,7 +1898,7 @@ window.addEventListener('DOMContentLoaded', () => {
       // Update breadcrumb advertiser name and link
       const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
       if (breadcrumbAdvertiser) {
-        breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
+        breadcrumbAdvertiser.textContent = `${advertiser.name || 'Unknown'}`;
         breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
       }
       
@@ -1912,7 +1912,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Update breadcrumb campaign name and link
     const breadcrumbCampaign = document.getElementById('breadcrumbCampaign');
     if (breadcrumbCampaign && campaignName && campaignId) {
-      breadcrumbCampaign.textContent = `Campaign: ${campaignName}`;
+      breadcrumbCampaign.textContent = `${campaignName}`;
       breadcrumbCampaign.href = `./CampaignDetails.html?campaignId=${encodeURIComponent(campaignId)}&campaignName=${encodeURIComponent(campaignName)}`;
     }
   } catch (e) {

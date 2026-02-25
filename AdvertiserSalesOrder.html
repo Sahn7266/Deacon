@@ -233,22 +233,8 @@
           <li>
             <a href="./WFAdvertiserDetails.html" data-nav-link
                class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+              <img src="./assets/svgs/Details.svg" alt="Overview" class="w-6 h-6 mr-2" />
               <span data-link-label>Overview</span>
-            </a>
-          </li>
-          <li>
-            <a href="./AdvertiserSalesOrder.html" data-nav-link
-               class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
-              <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
-              <span data-link-label>Sales Orders</span>
-            </a>
-          </li>
-          <li>
-            <a href="./WFAdvertiserConnections.html" data-nav-link
-               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
-              <span data-link-label>Connections (P2)</span>
             </a>
           </li>
           <li>
@@ -259,12 +245,33 @@
             </a>
           </li>
           <li>
-            <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
+            <a href="./AdvertiserAdGroup.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
               <span data-link-label>Ad Groups</span>
             </a>
           </li>
-          
+          <li>
+            <a href="./ChangeOrderList.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/ChangeOrder.svg" alt="Change Orders" class="w-6 h-6 mr-2" />
+              <span data-link-label>Change Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="./WFAdvertiserConnections.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+              <span data-link-label>Connections</span>
+            </a>
+          </li>
+          <li>
+            <a href="./AdvertiserSalesOrder.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
+              <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
+              <span data-link-label>Sales Orders</span>
+            </a>
+          </li>
         </ul>
       </nav>
 
@@ -996,7 +1003,7 @@ function fmtCurrency(n) {
           // Populate breadcrumbs
           const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
           if (breadcrumbAdvertiser) {
-            breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
+            breadcrumbAdvertiser.textContent = `${advertiser.name || 'Unknown'}`;
             breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
           }
         }

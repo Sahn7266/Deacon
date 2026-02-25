@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 900 550">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#111"/>
+    </marker>
+
+    <!-- optional: subtle hand-drawn-ish stroke -->
+    <filter id="rough">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="2" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.8"/>
+    </filter>
+  </defs>
+
+  <!-- Background (transparent). Remove if you want a white canvas:
+  <rect x="0" y="0" width="900" height="550" fill="#fff"/> -->
+
+  <!-- Boxes -->
+  <g stroke="#111" stroke-width="6" fill="000" stroke-linecap="round" stroke-linejoin="round" filter="url(#rough)">
+    <!-- top-right box -->
+    <rect x="510" y="140" width="200" height="150" rx="28" />
+    <!-- bottom-left box -->
+    <rect x="250" y="320" width="200" height="170" rx="28" />
+
+
+  </g>
+
+  <!-- Arrows (cycle) -->
+  <g stroke="#111" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" filter="url(#rough)">
+    <!-- from top-right to bottom-left (down then left-ish) -->
+    <path d="M500 220 L 350 220 L 350 305" />
+    <!-- from bottom-left to top-right (right then up) -->
+    <path d="M460 400 L 615 400 L 615 305" />
+  </g>
+</svg>

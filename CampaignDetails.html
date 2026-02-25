@@ -21,6 +21,8 @@
   <script src="./assets/audit.js" defer></script>
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
+  <link rel="stylesheet" href="./assets/changeorder.css">
+  <script src="./assets/changeorder.js" defer></script>
 
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
@@ -187,7 +189,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">Advertiser: —</a>
+        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -195,7 +197,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <span class="font-semibold text-gray-900" id="breadcrumbCampaign">Campaign: —</span>
+        <span class="font-semibold text-gray-900" id="breadcrumbCampaign">—</span>
       </nav>
     </div>
 
@@ -272,16 +274,14 @@
             <!-- Two-column campaign details layout -->
             <section>
               <div class="flex items-center justify-between mb-6">
-                <h1 id="campaignDetailsTitle" class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGN DETAILS</h1>
+                <div>
+                  <h1 class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGN OVERVIEW</h1>
+                  <p id="campaignDetailsSubtitle" class="text-sm text-gray-500 mx-2 mt-1"></p>
+                </div>
                 <div class="flex items-center gap-2">
                   <!-- Add to Change Order Button -->
-                  <button id="addToChangeOrderBtn"
-                    class="text-sm px-3 py-1 bg-green-600 border border-green-600 rounded-md text-white hover:bg-green-700 flex items-center gap-1.5 transition-colors"
-                    onclick="document.getElementById('coPickerModal').classList.remove('hidden')"
-                    title="Add this campaign to a Change Order">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
+                  <button id="addToCOBtn" onclick="openCOPickerModal()" class="text-sm px-3 py-1 bg-green-600 text-white border border-green-600 rounded-md hover:bg-green-700 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Add to Change Order
                   </button>
                   <button id="editGeneralBtn" class="text-sm px-3 py-1 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center gap-2">
@@ -369,7 +369,7 @@
                             Seed
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignSeed" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignSeed" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignSeed" class="hidden campaign-details-input" aria-label="Select Campaign Seed" title="Select Campaign Seed">
                               <option value="">-- Select Seed --</option>
                               <option value="Default Seed List">Default Seed List</option>
@@ -383,7 +383,7 @@
                             Campaign Organization
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignOrganization" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignOrganization" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignOrganization" class="hidden campaign-details-input" aria-label="Select Campaign Organization" title="Select Campaign Organization">
                               <option value="">-- Select Organization --</option>
                               <option value="Create new campaign group">Create new campaign group</option>
@@ -399,7 +399,7 @@
                             Pacing
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignPacing" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignPacing" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignPacing" class="hidden campaign-details-input" aria-label="Select Campaign Pacing" title="Select Campaign Pacing">
                               <option value="">-- Select Pacing --</option>
                               <option value="Pace Ahead">Pace Ahead</option>
@@ -414,7 +414,7 @@
                             Timezone
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignTimezone" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignTimezone" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignTimezone" class="hidden campaign-details-input" aria-label="Select Campaign Timezone" title="Select Campaign Timezone">
                               <option value="">-- Select Timezone --</option>
                               <option value="UTC">UTC (Coordinated Universal Time)</option>
@@ -432,7 +432,7 @@
                             Start Date (UTC)
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignStartDate" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignStartDate" class="text-gray-400 break-words">N/A</span>
                             <input id="campaignStartDate" type="date" class="hidden campaign-details-input" aria-label="Select Campaign Start Date" title="Select Campaign Start Date" />
                           </td>
                         </tr>
@@ -443,7 +443,7 @@
                             End Date (UTC)
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignEndDate" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignEndDate" class="text-gray-400 break-words">N/A</span>
                             <input id="campaignEndDate" type="date" class="hidden campaign-details-input" aria-label="Select Campaign End Date" title="Select Campaign End Date" />
                           </td>
                         </tr>
@@ -454,7 +454,7 @@
                             Campaign Channel
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignChannel" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignChannel" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignChannel" class="hidden campaign-details-input" aria-label="Select Campaign Channel" title="Select Campaign Channel">
                               <option value="">-- Select Channel --</option>
                               <option value="Display">Display</option>
@@ -471,7 +471,7 @@
                             Campaign Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignName" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignName" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignName" class="hidden campaign-details-input" aria-label="Select Campaign Name" title="Select Campaign Name">
                               <option value="">-- Select Campaign Name --</option>
                               <option value="Brand Awareness">Brand Awareness</option>
@@ -487,7 +487,7 @@
                             Campaign Budget
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignBudget" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignBudget" class="text-gray-400 break-words">N/A</span>
                             <input id="campaignBudget" type="number" step="0.01" min="0" class="hidden campaign-details-input" placeholder="0.00" />
                           </td>
                         </tr>
@@ -498,7 +498,7 @@
                             Campaign KPI
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignKPI" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignKPI" class="text-gray-400 break-words">N/A</span>
                             <select id="campaignKPI" class="hidden campaign-details-input" aria-label="Select Campaign KPI" title="Select Campaign KPI">
                               <option value="">-- Select KPI --</option>
                               <option value="Click-Through Rate (CTR)">Click-Through Rate (CTR)</option>
@@ -513,7 +513,7 @@
                             KPI Target
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayCampaignKPITarget" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayCampaignKPITarget" class="text-gray-400 break-words">N/A</span>
                             <input id="campaignKPITarget" type="number" step="0.01" min="0" class="hidden campaign-details-input" placeholder="0.00" />
                           </td>
                         </tr>
@@ -544,7 +544,7 @@
                             Campaign Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerCampaignName" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerCampaignName" class="text-gray-400 break-words">N/A</span>
                             <select id="adServerCampaignName" class="hidden campaign-details-input" aria-label="Select Ad Server Campaign Name" title="Select Ad Server Campaign Name">
                               <option value="">-- Select Campaign Name --</option>
                               <option value="Brandawareness">Brandawareness</option>
@@ -560,7 +560,7 @@
                             Schedule
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerSchedule" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerSchedule" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerSchedule" type="date" class="hidden campaign-details-input" aria-label="Select Ad Server Schedule" title="Select Ad Server Schedule" />
                           </td>
                         </tr>
@@ -571,7 +571,7 @@
                             Landing Page Name
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerLandingPageName" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerLandingPageName" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerLandingPageName" type="text" class="hidden campaign-details-input" placeholder="Enter landing page name" />
                           </td>
                         </tr>
@@ -582,7 +582,7 @@
                             Landing Page URL
                           </td>
                           <td class="px-6 py-1 text-sm">
-                            <span id="displayAdServerLandingPageURL" class="text-gray-800 break-words">N/A</span>
+                            <span id="displayAdServerLandingPageURL" class="text-gray-400 break-words">N/A</span>
                             <input id="adServerLandingPageURL" type="text" class="hidden campaign-details-input" placeholder="Enter any URL or value" aria-label="Enter Ad Server Landing Page URL" title="Enter Ad Server Landing Page URL" />
                           </td>
                         </tr>
@@ -1511,10 +1511,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const campaignId = urlParams.get('campaignId');
   const campaignName = urlParams.get('campaignName');
   
-  // Update the page title with campaign name
-  const titleElement = document.getElementById('campaignDetailsTitle');
-  if (titleElement && campaignName) {
-    titleElement.innerHTML = `<span style="color: #0F66A7;">${campaignName}</span>: Campaign Overview`;
+  // Update the page subtitle with campaign name
+  const subtitleElement = document.getElementById('campaignDetailsSubtitle');
+  if (subtitleElement && campaignName) {
+    subtitleElement.innerHTML = `<span style="color: #0F66A7;">${campaignName}</span>`;
   }
 
   // Populate breadcrumbs
@@ -1526,7 +1526,7 @@ window.addEventListener('DOMContentLoaded', () => {
       // Update breadcrumb advertiser name and link
       const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
       if (breadcrumbAdvertiser) {
-        breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
+        breadcrumbAdvertiser.textContent = `${advertiser.name || 'Unknown'}`;
         breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
       }
       
@@ -1540,7 +1540,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Update breadcrumb campaign name
     const breadcrumbCampaign = document.getElementById('breadcrumbCampaign');
     if (breadcrumbCampaign && campaignName) {
-      breadcrumbCampaign.textContent = `Campaign: ${campaignName}`;
+      breadcrumbCampaign.textContent = `${campaignName}`;
     }
   } catch (e) {
     console.warn('Failed to populate breadcrumbs:', e);
@@ -1667,69 +1667,6 @@ window.addEventListener('DOMContentLoaded', () => {
   safeInput('adServerLandingPageName', campaign.adServerLandingPageName);
   safeInput('adServerLandingPageURL', campaign.adServerLandingPageURL);
 });
-
-
-  </script>
-
-<!-- Change Order Picker Modal -->
-<div id="coPickerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 overflow-hidden">
-    
-    <!-- Modal Header -->
-    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-      <h2 class="text-lg font-semibold text-gray-900">Add to Change Order</h2>
-      <button id="coPickerCloseBtn" class="text-gray-400 hover:text-gray-600 transition-colors" 
-        onclick="document.getElementById('coPickerModal').classList.add('hidden')" aria-label="Close">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    
-    <!-- Modal Body -->
-    <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
-      <p class="text-sm text-gray-500 mb-4">Select an existing Change Order or create a new one.</p>
-      
-      <!-- Create New Option -->
-      <div class="flex items-center gap-3 p-3 border-2 border-dashed border-green-400 rounded-lg mb-3 cursor-pointer hover:bg-green-50 transition-colors"
-        onclick="document.getElementById('coPickerModal').classList.add('hidden'); document.getElementById('entitySelectModal').classList.remove('hidden');">
-        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-green-100 text-green-600 font-bold text-lg">+</div>
-        <div>
-          <div class="text-sm font-semibold text-green-700">Create New Change Order</div>
-          <div class="text-xs text-gray-500">Start a blank Change Order for this advertiser</div>
-        </div>
-      </div>
-      
-      <!-- Existing CO: Draft -->
-      <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg mb-2 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors co-pick-item">
-        <input type="radio" name="coPickerRadio" class="w-4 h-4 text-blue-600 accent-blue-600">
-        <div class="flex-1">
-          <div class="text-sm font-semibold text-gray-800">Q2 Strategy A</div>
-          <div class="text-xs text-gray-500">CO-A8X2K1 · Draft · Feb 20, 2026 · 1C / 3AG</div>
-        </div>
-        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Draft</span>
-      </div>
-      
-      <!-- Existing CO: Draft -->
-      <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg mb-2 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors co-pick-item">
-        <input type="radio" name="coPickerRadio" class="w-4 h-4 text-blue-600 accent-blue-600">
-        <div class="flex-1">
-          <div class="text-sm font-semibold text-gray-800">Q2 Strategy B</div>
-          <div class="text-xs text-gray-500">CO-B3Y7M2 · Draft · Feb 20, 2026 · 2C / 5AG</div>
-        </div>
-        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Draft</span>
-      </div>
-    </div>
-    
-    <!-- Modal Footer -->
-    <div class="flex justify-end gap-2 px-6 py-3 bg-gray-50 border-t border-gray-200">
-      <button class="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-        onclick="document.getElementById('coPickerModal').classList.add('hidden')">Cancel</button>
-      <button class="px-4 py-2 text-sm text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700"
-        onclick="document.getElementById('coPickerModal').classList.add('hidden'); document.getElementById('entitySelectModal').classList.remove('hidden');">Continue →</button>
-    </div>
-  </div>
-</div>
 
 <!-- Entity Selection Modal -->
 <div id="entitySelectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">

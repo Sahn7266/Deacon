@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="./assets/theme.css">
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
+  <link rel="stylesheet" href="./assets/changeorder.css">
+  <script src="./assets/changeorder.js" defer></script>
   <style>
     body { font-family: 'apple-system', 'Segoe UI', 'Roboto', 'Inter', sans-serif; }
 
@@ -331,22 +333,8 @@
           <li>
             <a href="./WFAdvertiserDetails.html" data-nav-link
                class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+              <img src="./assets/svgs/Details.svg" alt="Overview" class="w-6 h-6 mr-2" />
               <span data-link-label>Overview</span>
-            </a>
-          </li>
-          <!-- <li>
-            <a href="./AdvertiserSalesOrder.html" data-nav-link
-               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
-              <span data-link-label>Sales Orders</span>
-            </a>
-          </li> -->
-          <li>
-            <a href="./WFAdvertiserConnections.html" data-nav-link
-               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
-              <span data-link-label>Connections</span>
             </a>
           </li>
           <li>
@@ -355,23 +343,28 @@
               <img src="./assets/svgs/CampaignsSchedules.svg" alt="Campaigns" class="w-6 h-6 mr-2" />
               <span data-link-label>Campaigns</span>
             </a>
+          </li> -->
+          <li>
+            <a href="./AdvertiserAdGroup.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
+              <span data-link-label>Ad Groups</span>
+            </a>
           </li>
           <li>
-            <a href="./AdvertiserChangeOrders.html" data-nav-link
+            <a href="./ChangeOrderList.html" data-nav-link
                class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <svg class="w-6 h-6 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
+              <img src="./assets/svgs/ChangeOrder.svg" alt="Change Orders" class="w-6 h-6 mr-2" />
               <span data-link-label>Change Orders</span>
             </a>
           </li>
           <li>
-            <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-              <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
-              <span data-link-label>Ad Groups</span>
+            <a href="./WFAdvertiserConnections.html" data-nav-link
+               class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+              <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+              <span data-link-label>Connections</span>
             </a>
           </li>
-         
         </ul>
       </nav>
 
@@ -503,17 +496,10 @@
                 </div>
 
                 <!-- New Change Order Button -->
-                <div class="flex-1"></div>
-                <button id="newChangeOrderBtn"
-                  class="flex items-center gap-1.5 h-8 px-3 rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors mr-2"
-                  onclick="document.getElementById('coPickerModal').classList.remove('hidden')"
-                  title="Create New Change Order">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                  </svg>
-                  New Change Order
+                <button id="newChangeOrderBtn" onclick="openCOPickerModal()" class="flex items-center gap-2 px-3 py-2 text-sm bg-green-600 text-white border border-green-600 rounded-md hover:bg-green-700 transition-colors ml-auto" title="New Change Order">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                  <span>New Change Order</span>
                 </button>
-                <div class="h-6 border-l border-gray-400 mx-1"></div>
 
                 <!-- Universal Export Button -->
                 <button id="universalExportBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors mr-2" title="Export all campaigns and ad groups">
@@ -2189,7 +2175,7 @@ tr.appendChild(tdActions);
           // Populate breadcrumbs
           const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
           if (breadcrumbAdvertiser) {
-            breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
+            breadcrumbAdvertiser.textContent = `${advertiser.name || 'Unknown'}`;
             breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
           }
         }

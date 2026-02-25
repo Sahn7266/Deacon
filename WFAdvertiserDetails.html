@@ -17,6 +17,8 @@
   <link rel="stylesheet" href="./assets/theme.css">
   <link rel="stylesheet" href="./assets/loading.css">
   <script src="./assets/loading.js" defer></script>
+  <link rel="stylesheet" href="./assets/changeorder.css">
+  <script src="./assets/changeorder.js" defer></script>
 
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif; }
@@ -285,20 +287,8 @@
   <ul class="space-y-1 mt-4">
     <li>
       <a href="./WFAdvertiserDetails.html" data-nav-link class="flex items-center px-1 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Details.svg" alt="Details" class="w-6 h-6 mr-2" />
+        <img src="./assets/svgs/Details.svg" alt="Overview" class="w-6 h-6 mr-2" />
         <span data-link-label>Overview</span>
-      </a>
-    
-    <!-- <li>
-      <a href="./AdvertiserSalesOrder.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/SalesOrderExpense.svg" alt="Sales Orders" class="w-6 h-6 mr-2" />
-        <span data-link-label>Sales Orders</span>
-      </a>
-    </li> -->
-     <li>
-      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
-        <span data-link-label>Connections</span>
       </a>
     </li>
     <li>
@@ -308,18 +298,21 @@
       </a>
     </li>
     <li>
-      <a href="./AdvertiserChangeOrders.html" data-nav-link
-         class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <svg class="w-6 h-6 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-        </svg>
+      <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/AdGroups.svg" alt="Ad Groups" class="w-6 h-6 mr-2" />
+        <span data-link-label>Ad Groups</span>
+      </a>
+    </li>
+    <li>
+      <a href="./ChangeOrderList.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/ChangeOrder.svg" alt="Change Orders" class="w-6 h-6 mr-2" />
         <span data-link-label>Change Orders</span>
       </a>
     </li>
     <li>
-      <a href="./AdvertiserAdGroup.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
-        <img src="./assets/svgs/AdGroups.svg" class="w-6 h-6 mr-2" alt="">
-        <span data-link-label>Ad Groups</span>
+      <a href="./WFAdvertiserConnections.html" data-nav-link class="flex items-center px-1 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-md">
+        <img src="./assets/svgs/Blueprint.svg" alt="Connections" class="w-6 h-6 mr-2" />
+        <span data-link-label>Connections</span>
       </a>
     </li>
   
@@ -361,13 +354,8 @@
                 <h1 class="text-2xl font-semibold text-gray-900 mx-2">ADVERTISER OVERVIEW</h1>
                 <div class="flex items-center gap-2">
               <!-- New Change Order Button -->
-              <button id="newChangeOrderBtn" 
-                class="flex items-center gap-1.5 h-8 px-3 rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors"
-                onclick="document.getElementById('coPickerModal').classList.remove('hidden')"
-                title="Create New Change Order">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
+              <button id="newChangeOrderBtn" onclick="openCOPickerModal()" class="text-sm px-3 py-1 bg-green-600 text-white border border-green-600 rounded-md hover:bg-green-700 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 New Change Order
               </button>
               <!-- Ellipsis Dropdown Menu -->
@@ -715,126 +703,7 @@
 
           </div>
 
-          <!-- Campaigns Section (Full Width) -->
-          <div class="px-6 py-6 border-b border-gray-200">
-            <section>
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-2xl font-semibold text-gray-900 mx-2">CAMPAIGNS</h2>
-              </div>
-              <div class="overflow-x-auto border border-default rounded-md">
-                <table id="campaignTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
-                  <colgroup>
-                    <col style="width: 15%;">
-                    <col style="width: 25%;">
-                    <col style="width: 10%;">
-                    <col style="width: 20%;">
-                    <col style="width: 20%;">
-                    <col style="width: 10%;">
-                  </colgroup>
-                  <thead class="tbl-head">
-                    <tr>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="id">
-                          <span>ID</span>
-                        </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="name" aria-label="Sort by Name">
-                          <span>Name</span>
-                          <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
-                        </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="state" aria-label="Sort by State">
-                          <span>State</span>
-                          <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
-                        </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp" aria-label="Sort by DSP">
-                          <span>DSP</span>
-                          <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
-                        </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adServer" aria-label="Sort by Ad Server">
-                          <span>Ad Server</span>
-                          <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
-                        </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adGroups" aria-label="Sort by Ad Groups">
-                          <span>Ad Groups</span>
-                          <span class="sort-indicator text-xs text-gray-400" aria-hidden="true"></span>
-                        </button>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody id="campaignTableBody" class="divide-y">
-                    <!-- Campaign rows will be populated by JavaScript -->
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          </div>
-
-          <!-- Ad Groups Section (Full Width) -->
-          <div class="px-6 py-6">
-            <section>
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-2xl font-semibold text-gray-900 mx-2">AD GROUPS</h2>
-              </div>
-              <div class="overflow-x-auto border border-default rounded-md">
-                <table id="adGroupTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
-                  <colgroup>
-                    <col style="width: 12%;">
-                    <col style="width: 25%;">
-                    <col style="width: 15%;">
-                    <col style="width: 15%;">
-                    <col style="width: 15%;">
-                    <col style="width: 18%;">
-                  </colgroup>
-                  <thead class="tbl-head">
-                    <tr>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="id">
-                          <span>ID</span>
-                        </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="name">
-                          <span>Name</span>
-                        </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="dsp">
-                          <span>DSP</span>
-                        </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="adServer">
-                          <span>Ad Server</span>
-                        </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="classification">
-                          <span>Classification</span>
-                        </button>
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider">
-                        <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="campaign">
-                          <span>Campaign</span>
-                        </button>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody id="adGroupTableBody" class="divide-y">
-                    <!-- Ad group rows will be populated by JavaScript -->
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          </div>
+          <!-- Campaigns and Ad Groups tables removed per CO Change Spec (sections 1b/1c) -->
 
         </div>
       </main>
@@ -953,7 +822,7 @@
         if (adv) {
           const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
           if (breadcrumbAdvertiser) {
-            breadcrumbAdvertiser.textContent = `Advertiser: ${adv.name || 'Unknown'}`;
+            breadcrumbAdvertiser.textContent = `${adv.name || 'Unknown'}`;
           }
         }
 
@@ -1729,205 +1598,7 @@
   });
   </script>
 
-  <!-- Populate Campaigns and Ad Groups Tables -->
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('[CAMPAIGNS SCRIPT] Starting at:', new Date().toISOString());
-    // Get current advertiser
-    let adv = null;
-    try {
-      const rawObj = localStorage.getItem('adv_selected_data');
-      console.log('[CAMPAIGNS] Raw adv_selected_data:', rawObj);
-      if (rawObj) adv = JSON.parse(rawObj);
-    } catch {}
-
-    if (!adv) {
-      console.log('[CAMPAIGNS] No advertiser selected');
-      return;
-    }
-
-    console.log('[CAMPAIGNS] Loading data for advertiser:', adv?.name, 'ID:', adv?.id);
-
-    // Load and populate campaigns
-    // Get live ad group count for a campaign
-    function getAdGroupCount(campaignId, campaignName) {
-      try {
-        const adGroups = JSON.parse(localStorage.getItem('adgroups_data_v1') || '[]');
-        return adGroups.filter(ag => {
-          // Check multiple possible campaign reference formats
-          const agCampaignId = ag.campaignId || ag.campaign;
-          
-          // Direct match by ID
-          if (agCampaignId === campaignId) return true;
-          
-          // Match by campaign name
-          if (agCampaignId === campaignName) return true;
-          
-          return false;
-        }).length;
-      } catch (e) {
-        console.warn('Failed to count ad groups:', e);
-        return 0;
-      }
-    }
-
-    function loadCampaigns() {
-      const campaignTableBody = document.getElementById('campaignTableBody');
-      if (!campaignTableBody) return;
-
-      try {
-        const campaignsData = localStorage.getItem('campaign_tree_groups');
-        if (!campaignsData) {
-          campaignTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No campaigns found</td></tr>';
-          return;
-        }
-
-        const data = JSON.parse(campaignsData);
-        
-        // Flatten all campaigns from the data structure
-        let allCampaigns = [];
-        
-        // Add campaigns from top-level campaigns array
-        if (data.campaigns && Array.isArray(data.campaigns)) {
-          allCampaigns = allCampaigns.concat(data.campaigns);
-        }
-        
-        // Add campaigns from groups
-        if (data.groups && Array.isArray(data.groups)) {
-          data.groups.forEach(group => {
-            if (group.campaigns && Array.isArray(group.campaigns)) {
-              allCampaigns = allCampaigns.concat(group.campaigns);
-            }
-          });
-        }
-        
-        // Filter campaigns for this advertiser
-        const campaigns = allCampaigns.filter(c => String(c.advertiserId) === String(adv.id));
-
-        console.log('Found campaigns:', campaigns.length);
-
-        if (campaigns.length === 0) {
-          campaignTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No campaigns for this advertiser</td></tr>';
-          return;
-        }
-
-        campaignTableBody.innerHTML = '';
-        campaigns.forEach(c => {
-          // Calculate live ad group count
-          const adGroupCount = getAdGroupCount(c.id, c.beaconCampaignName || c.name);
-          
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-gray-50 campaign-row';
-          tr.dataset.campaignId = c.id;
-          tr.innerHTML = `
-            <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.beaconCampaignId || c.id || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm font-medium border-r border-default">
-              <a href="./CampaignDetails.html?campaignId=${encodeURIComponent(c.id)}&campaignName=${encodeURIComponent(c.beaconCampaignName || c.name)}" class="text-blue-600 hover:underline">
-                ${c.beaconCampaignName || c.name || ''}
-              </a>
-            </td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.state || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.dsp || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.adServer || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-right tabular-nums">${adGroupCount}</td>
-          `;
-          campaignTableBody.appendChild(tr);
-        });
-      } catch (e) {
-        console.error('Error loading campaigns:', e);
-        campaignTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Error loading campaigns</td></tr>';
-      }
-    }
-
-    // Load and populate ad groups
-    function loadAdGroups() {
-      const adGroupTableBody = document.getElementById('adGroupTableBody');
-      if (!adGroupTableBody) return;
-
-      try {
-        const adGroupsData = localStorage.getItem('adgroups_data_v1');
-        if (!adGroupsData) {
-          adGroupTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No ad groups found</td></tr>';
-          return;
-        }
-
-        const allAdGroups = JSON.parse(adGroupsData);
-        // Filter ad groups for this advertiser
-        const adGroups = allAdGroups.filter(ag => String(ag.advertiserId) === String(adv.id));
-
-        console.log('Found ad groups:', adGroups.length);
-
-        if (adGroups.length === 0) {
-          adGroupTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No ad groups for this advertiser</td></tr>';
-          return;
-        }
-
-        adGroupTableBody.innerHTML = '';
-        adGroups.forEach(ag => {
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-gray-50';
-          tr.innerHTML = `
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.id || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
-              <a href="./AdGroupDetails.html?id=${encodeURIComponent(ag.id)}&campaignId=${encodeURIComponent(ag.campaign || '')}" class="text-blue-600 hover:underline">
-                ${ag.name || ''}
-              </a>
-            </td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${(ag.connectors && ag.connectors.dsp) || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${(ag.connectors && ag.connectors.adServer) || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">${ag.classification || ag.multiviewClassification || ''}</td>
-            <td class="px-6 py-1 whitespace-nowrap text-sm text-gray-900">${ag.campaign || ''}</td>
-          `;
-          adGroupTableBody.appendChild(tr);
-        });
-      } catch (e) {
-        console.error('Error loading ad groups:', e);
-        adGroupTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Error loading ad groups</td></tr>';
-      }
-    }
-
-    // Initialize tables
-    loadCampaigns();
-    loadAdGroups();
-
-    // Listen for storage changes to update tables when data changes
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'campaign_tree_groups') {
-        console.log('Campaign data changed, reloading campaigns table...');
-        loadCampaigns();
-      }
-      if (e.key === 'adgroups_data_v1') {
-        console.log('Ad group data changed, reloading ad groups table...');
-        loadAdGroups();
-      }
-    });
-
-    // Also expose functions globally so they can be called from other scripts
-    window.refreshCampaignsTable = loadCampaigns;
-    window.refreshAdGroupsTable = loadAdGroups;
-
-    // Poll for changes every 2 seconds (for same-window updates)
-    let lastCampaignData = localStorage.getItem('campaign_tree_groups');
-    let lastAdGroupData = localStorage.getItem('adgroups_data_v1');
-    
-    setInterval(() => {
-      const currentCampaignData = localStorage.getItem('campaign_tree_groups');
-      const currentAdGroupData = localStorage.getItem('adgroups_data_v1');
-      
-      if (currentCampaignData !== lastCampaignData) {
-        console.log('Campaign data changed (polling), reloading...');
-        lastCampaignData = currentCampaignData;
-        loadCampaigns();
-      }
-      
-      if (currentAdGroupData !== lastAdGroupData) {
-        console.log('Ad group data changed (polling), reloading...');
-        lastAdGroupData = currentAdGroupData;
-        loadAdGroups();
-      }
-    }, 2000);
-  });
-  </script>
+  <!-- Campaigns and Ad Groups table scripts removed per CO Change Spec (sections 1b/1c) -->
 
 <!-- Change Order Picker Modal -->
 <div id="coPickerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">

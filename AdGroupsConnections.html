@@ -281,7 +281,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">Advertiser: —</a>
+        <a href="#" id="breadcrumbAdvertiser" class="hover:text-blue-600 transition-colors">—</a>
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -289,7 +289,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <a href="#" id="breadcrumbCampaign" class="hover:text-blue-600 transition-colors">Campaign: —</a>
+        <a href="#" id="breadcrumbCampaign" class="hover:text-blue-600 transition-colors">—</a>
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -297,7 +297,7 @@
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        <a href="#" id="breadcrumbAdGroup" class="hover:text-blue-600 transition-colors">Ad Group: —</a>
+        <a href="#" id="breadcrumbAdGroup" class="hover:text-blue-600 transition-colors">—</a>
         <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -1862,7 +1862,7 @@ window.addEventListener('DOMContentLoaded', () => {
       // Update breadcrumb advertiser name and link
       const breadcrumbAdvertiser = document.getElementById('breadcrumbAdvertiser');
       if (breadcrumbAdvertiser) {
-        breadcrumbAdvertiser.textContent = `Advertiser: ${advertiser.name || 'Unknown'}`;
+        breadcrumbAdvertiser.textContent = `${advertiser.name || 'Unknown'}`;
         breadcrumbAdvertiser.href = `./WFAdvertiserDetails.html?advertiserId=${advertiser.id}`;
       }
       
@@ -1904,7 +1904,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const breadcrumbCampaign = document.getElementById('breadcrumbCampaign');
       if (breadcrumbCampaign && campaign) {
         const campaignName = campaign.beaconCampaignName || campaign.name || 'Unknown';
-        breadcrumbCampaign.textContent = `Campaign: ${campaignName}`;
+        breadcrumbCampaign.textContent = `${campaignName}`;
         breadcrumbCampaign.href = `./CampaignDetails.html?campaignId=${encodeURIComponent(campaignId)}&campaignName=${encodeURIComponent(campaignName)}`;
       }
       
@@ -1925,7 +1925,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // Update breadcrumb ad group name and link
         const breadcrumbAdGroup = document.getElementById('breadcrumbAdGroup');
         if (breadcrumbAdGroup) {
-          breadcrumbAdGroup.textContent = `Ad Group: ${adGroup.name || 'Unknown'}`;
+          breadcrumbAdGroup.textContent = `${adGroup.name || 'Unknown'}`;
           breadcrumbAdGroup.href = `./AdGroupDetails.html?id=${encodeURIComponent(adGroupId)}&campaignId=${encodeURIComponent(campaignId)}`;
         }
       }
