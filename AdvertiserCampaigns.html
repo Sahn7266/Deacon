@@ -530,6 +530,9 @@
              <table id="campaignTable" class="min-w-full table-fixed rounded-md overflow-hidden tbl tbl-row-hover tbl-row-alt">
                <thead class="tbl-head">
                   <tr>
+                    <th scope="col" class="w-10 px-3 py-2 text-center border-r border-gray-200">
+                      <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 accent-blue-600 cursor-pointer" title="Select All">
+                    </th>
                     <th scope="col" class="text-sm font-medium text-gray-700 uppercase tracking-wider border-r border-gray-200">
                       <button type="button" class="sort-btn flex w-full items-center px-6 py-2 space-x-2" data-sort-key="id">
                         <span>ID</span>
@@ -2031,7 +2034,7 @@ try {
 
           if (rows.length === 0) {
             const tr = document.createElement('tr');
-            tr.innerHTML = '<td colspan="6" class="px-6 py-4 text-center text-gray-500">No results</td>';
+            tr.innerHTML = '<td colspan="8" class="px-6 py-4 text-center text-gray-500">No results</td>';
             tbody.appendChild(tr);
             return;
           }
@@ -2041,6 +2044,9 @@ try {
 
             if (r.type === 'ungrouped-header') {
               tr.innerHTML = `
+  <td class="px-3 py-1 text-center bg-gray-100">
+    <input type="checkbox" class="w-4 h-4 accent-blue-600 cursor-pointer group-select-checkbox" data-group-id="ungrouped" title="Select All Ungrouped">
+  </td>
   <td class="px-3 py-1 text-sm font-semibold bg-gray-100">
     <button data-action="toggle-ungrouped" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
       ${r.expanded ? '&minus;' : '+'}
@@ -2057,6 +2063,9 @@ try {
               tr.dataset.groupId = 'ungrouped';
             } else if (r.type === 'group') {
              tr.innerHTML = `
+  <td class="px-3 py-1 text-center bg-gray-100">
+    <input type="checkbox" class="w-4 h-4 accent-blue-600 cursor-pointer group-select-checkbox" data-group-id="${r.groupId}" title="Select All in Group">
+  </td>
   <td class="px-3 py-1 text-sm font-semibold bg-gray-100">
     <button data-action="toggle-group" data-group-id="${r.groupId}" class="w-4 h-4 inline-flex items-center justify-center rounded border border-strong bg-white mr-2" title="${r.expanded ? 'Collapse' : 'Expand'}">
       ${r.expanded ? '&minus;' : '+'}
@@ -2070,7 +2079,6 @@ try {
     <button data-action="delete-group" data-group-id="${r.groupId}" class="text-red-600 hover:underline" title="Delete Group">Delete</button>
   </td>
 `;
-;
               tr.className = 'row-group group-drop-zone';
               tr.dataset.groupId = r.groupId;
             } else {
@@ -2081,6 +2089,9 @@ tr.draggable = true;
 tr.dataset.campaignId = c.id;
 tr.dataset.groupId = r.groupId || 'ungrouped';
 tr.innerHTML = `
+  <td class="px-3 py-1 text-center border-r border-default">
+    <input type="checkbox" class="w-4 h-4 accent-blue-600 cursor-pointer row-select-checkbox" data-campaign-id="${c.id}" data-group-id="${r.groupId || 'ungrouped'}">
+  </td>
   <td class="px-6 py-1 whitespace-nowrap text-sm border-r border-default">${c.beaconCampaignId || c.id || ''}</td>
   <td class="px-6 py-1 whitespace-nowrap text-sm font-medium border-r border-default">
     <a href="./CampaignDetails.html?campaignId=${encodeURIComponent(c.id)}&campaignName=${encodeURIComponent(c.beaconCampaignName || c.name)}" class="text-blue-600 hover:underline">
@@ -2161,6 +2172,81 @@ tr.appendChild(tdActions);
       };
 
       app.init();
+    });
+  </script>
+
+  <!-- Checkbox Selection Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const tableBody = document.getElementById('campaignTableBody');
+      const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+
+      // Update select-all checkbox state based on row checkboxes
+      function updateSelectAllState() {
+        const rowCheckboxes = tableBody.querySelectorAll('.row-select-checkbox');
+        const checkedCount = tableBody.querySelectorAll('.row-select-checkbox:checked').length;
+        
+        if (checkedCount === 0) {
+          selectAllCheckbox.checked = false;
+          selectAllCheckbox.indeterminate = false;
+        } else if (checkedCount === rowCheckboxes.length) {
+          selectAllCheckbox.checked = true;
+          selectAllCheckbox.indeterminate = false;
+        } else {
+          selectAllCheckbox.checked = false;
+          selectAllCheckbox.indeterminate = true;
+        }
+      }
+
+      // Update group checkbox state based on its row checkboxes
+      function updateGroupCheckboxState(groupId) {
+        const groupCheckbox = tableBody.querySelector(`.group-select-checkbox[data-group-id="${groupId}"]`);
+        if (!groupCheckbox) return;
+
+        const groupRows = tableBody.querySelectorAll(`.row-select-checkbox[data-group-id="${groupId}"]`);
+        const checkedCount = tableBody.querySelectorAll(`.row-select-checkbox[data-group-id="${groupId}"]:checked`).length;
+
+        if (checkedCount === 0) {
+          groupCheckbox.checked = false;
+          groupCheckbox.indeterminate = false;
+        } else if (checkedCount === groupRows.length) {
+          groupCheckbox.checked = true;
+          groupCheckbox.indeterminate = false;
+        } else {
+          groupCheckbox.checked = false;
+          groupCheckbox.indeterminate = true;
+        }
+      }
+
+      // Select-all checkbox handler
+      if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+          const rowCheckboxes = tableBody.querySelectorAll('.row-select-checkbox');
+          const groupCheckboxes = tableBody.querySelectorAll('.group-select-checkbox');
+          rowCheckboxes.forEach(cb => cb.checked = this.checked);
+          groupCheckboxes.forEach(cb => {
+            cb.checked = this.checked;
+            cb.indeterminate = false;
+          });
+        });
+      }
+
+      // Event delegation for dynamically rendered checkboxes
+      tableBody.addEventListener('change', function(e) {
+        // Group checkbox clicked
+        if (e.target.classList.contains('group-select-checkbox')) {
+          const groupId = e.target.dataset.groupId;
+          const rowCheckboxes = tableBody.querySelectorAll(`.row-select-checkbox[data-group-id="${groupId}"]`);
+          rowCheckboxes.forEach(cb => cb.checked = e.target.checked);
+          updateSelectAllState();
+        }
+        // Row checkbox clicked
+        if (e.target.classList.contains('row-select-checkbox')) {
+          const groupId = e.target.dataset.groupId;
+          updateGroupCheckboxState(groupId);
+          updateSelectAllState();
+        }
+      });
     });
   </script>
 
